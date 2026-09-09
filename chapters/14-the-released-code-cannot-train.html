@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The released code cannot train · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="An assert against training mode, a NotImplementedError in the MoE forward, a balancer bias that is never initialised, and a timestep bias left as uninitialised memory that returned NaN on one rung and trained fine on another.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 14 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 03 · Making It Train</div>
+      <h1 class="vb-chapter-title">The released code cannot train</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 14 of 30</span>
+        <span class="vb-pill">⏱ 11 min read</span>
+        <span class="vb-pill">📊 5 figures</span>
+        <span class="vb-pill cost">4 bugs</span>
+      </div>
+
+      <p class="vb-chapter-blurb">An assert against training mode, a NotImplementedError in the MoE forward, a balancer bias that is never initialised, and a timestep bias left as uninitialised memory that returned NaN on one rung and trained fine on another.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>Moonshot released Kimi K3 with working modeling code. It loads the checkpoint, it runs a forward pass, it generates text, and every part of it is correct for the thing it was written to do. It cannot train, and it cannot train for four separate reasons, none of which is documented anywhere in the repository.</p>
+<p>We found all four in one afternoon, before a training loop existed, by running a GPU smoke test: build each rung of the ladder from scratch, take two optimizer steps on a short sequence, and assert that the loss is finite, starts near <code>ln(163,840) = 12.007</code> and goes down. That is a small amount of work to arrange, and it is the reason this chapter is about four bugs rather than about a run that died at hour nine.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-released-code-cannot-train-1.png" alt="The four blockers, found by a two-step smoke test before any training loop existed." loading="lazy"  data-fig="the-released-code-cannot-train-1.png"><span class="fig-ph">figure rendering &middot; The four blockers, found by a two-step smoke test before any training </span></div><figcaption>The four blockers, found by a two-step smoke test before any training loop existed.</figcaption></figure>
+<p>The four have a common cause, and it is worth naming before the details. Released inference code is code that has only ever been exercised in one mode, by one caller, with every tensor loaded from a checkpoint. Anything that matters only in the other mode was never wrong in a way anyone would notice.</p>
+<h2 id="blocker-one-the-router-asserts-it-is-not-training">Blocker one: the router asserts it is not training</h2>
+<p><code>KimiMoEGate.forward</code> computes its logits, applies the sigmoid, and then, immediately before top-k selection, does this:</p>
+<pre class="code" data-lang="python"><code># select top-k experts
+assert not self.training</code></pre>
+<p>That is the whole blocker. Calling <code>model.train()</code> and running a forward pass raises <code>AssertionError</code> with no message. It is the friendliest of the four, because it fails on the first forward, in the first second, with a stack trace pointing at the exact line.</p>
+<p>Why the assert is there is not stated, and we did not ask. The reasonable reading is that the gate's training path was never written, so the author blocked the door rather than leaving a silently-wrong path open. Our replacement, <code>TrainableMoEGate</code> in <code>train/moe_train.py</code>, copies the selection arithmetic from the reference line for line so that inference behaviour is unchanged, and adds the training path: load statistics, entropy, and the balancer state.</p>
+<h2 id="blocker-two-there-is-no-differentiable-dispatch">Blocker two: there is no differentiable dispatch</h2>
+<p>The second blocker sits one level up, in the sparse block that owns the experts:</p>
+<pre class="code" data-lang="python"><code>if not self.training:
+    y = self.moe_infer(hidden_states, topk_idx, topk_weight)
+else:
+    raise NotImplementedError("Training mode is not supported in KimiSparseMoeBlock")</code></pre>
+<p><code>moe_infer</code> is the only dispatch in the file, and it is decorated <code>@torch.no_grad()</code>. Removing the <code>NotImplementedError</code> and calling it anyway would not help: nothing inside it carries a gradient, so the experts would produce outputs and receive none of the loss.</p>
+<p>Dispatch is the operation that takes a batch of tokens, each routed to six of 256 experts, and arranges them so each expert can process its own tokens as one contiguous matrix. The reference does it by sorting the flattened expert indices, gathering the tokens into that order, running each expert on its slice, and then writing the results back with an in-place index assignment into a <code>torch.empty_like</code> buffer.</p>
+<p>The rewrite keeps the same arithmetic and changes two things. Nothing runs under <code>no_grad</code>, and the scatter back is done with an inverse permutation and a gather rather than an in-place write into uninitialised memory:</p>
+<pre class="code" data-lang="python"><code>n_tok, k = topk_idx.shape
+flat = topk_idx.reshape(-1)
+order = flat.argsort()
+sorted_tokens = hidden_states[order // k]        # differentiable gather
+counts = torch.bincount(flat, minlength=len(self.experts))
+
+chunks = []
+start = 0
+for i, c in enumerate(counts.tolist()):
+    if c == 0:
+        continue
+    chunks.append(self.experts[i](sorted_tokens[start:start + c]))
+    start += c
+outs = torch.cat(chunks, dim=0)
+
+inv = torch.empty_like(order)
+inv[order] = torch.arange(order.numel(), device=order.device)
+y = outs[inv]                                     # undo the sort, by gather</code></pre>
+<p>An index assignment into a fresh empty tensor is a poor autograd citizen: the buffer starts as garbage, the write is in place, and the gradient has to be threaded back through an operation whose output partly does not come from any input. A gather has none of those properties and is exactly as fast.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-released-code-cannot-train-2.png" alt="The released dispatch and its differentiable replacement. The sort and the per-expert slicing are identical." loading="lazy"  data-fig="the-released-code-cannot-train-2.png"><span class="fig-ph">figure rendering &middot; The released dispatch and its differentiable replacement. The sort and</span></div><figcaption>The released dispatch and its differentiable replacement. The sort and the per-expert slicing are identical.</figcaption></figure>
+<p>That Python expert loop is the version we started with, and it is also the single largest throughput problem in the project. Replacing it with a batched dispatch was worth 17.5x, taking MFU from 0.1% to 4.1% — measured on r2, the rung above ours, since that is where the MFU work was done. It has its own chapter in <em>Making It Fast</em>. For now the loop is correct, which is what the smoke test needed it to be.</p>
+<h2 id="blocker-three-the-balancer-does-not-exist">Blocker three: the balancer does not exist</h2>
+<p>K3's config names its load-balancing method in one field, <code>topk_method: noaux_tc</code>, and the released gate declares the tensor that method writes to:</p>
+<pre class="code" data-lang="python"><code>self.e_score_correction_bias = nn.Parameter(
+    torch.empty(self.num_experts),
+)
+self.reset_parameters()</code></pre>
+<p><code>reset_parameters</code> initialises <code>self.weight</code> and stops. The bias is left as <code>torch.empty</code>, and nothing in the file ever adds anything to it.</p>
+<p>For inference this is complete. <code>from_pretrained</code> overwrites every parameter with a loaded tensor, so the bias arrives fully formed, holding whatever values Moonshot's own training produced.<label for="sn-the-released-code-cannot-train-1" class="sn-ref">1</label><input type="checkbox" id="sn-the-released-code-cannot-train-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> This is the mechanism behind three of the four blockers. A parameter that is always overwritten by loaded weights can be left uninitialised with no observable consequence, and a module's <code>_init_weights</code> can cover only the layer types the author happened to think about, because in the checkpoint-loading path it does not run on anything that matters.</span> For pretraining from scratch, the tensor holds uninitialised memory on step 0 and never changes afterwards, which means routing is decided partly by whatever was in that page for the entire run.</p>
+<p>So the balancer had to be written. The rule is one line, inherited by K3 from DeepSeek-V3:</p>
+<pre class="code" data-lang=""><code>bias_i += gamma * sign(mean_load - load_i)</code></pre>
+<p>Our implementation declares the bias with <code>torch.zeros</code>, sets <code>requires_grad_(False)</code>, and holds it out of AdamW's parameter groups. It is updated by rule, not by gradient, and letting the optimizer see it would apply weight decay and momentum to a quantity whose update is already fully specified. The two rules would then disagree about where the bias should be.</p>
+<p>Choosing <code>gamma</code> is a measurement rather than a default, and it is the subject of the chapter on expert collapse, where the value inherited from DeepSeek-V3 turns out to be wrong for our batch size by a factor of ten. The point here is narrower: without this code, <code>noaux_tc</code> is a string in a config file.</p>
+<h2 id="blocker-four-a-bias-that-is-whatever-was-in-that-allocation">Blocker four: a bias that is whatever was in that allocation</h2>
+<p>The fourth is the one worth spending time on, because it is the only one that does not announce itself.</p>
+<p><code>KimiDeltaAttention</code> builds two raw parameters by hand. One of them is initialised in place:</p>
+<pre class="code" data-lang="python"><code>self.A_log = torch.nn.Parameter(torch.log(torch.empty(
+    self.num_heads, dtype=torch.float32).uniform_(1, 16)))
+
+...
+
+self.dt_bias = nn.Parameter(
+    torch.empty(projection_size, dtype=torch.float32))</code></pre>
+<p><code>A_log</code> calls <code>.uniform_(1, 16)</code> on its empty tensor and is fine. <code>dt_bias</code>, eleven lines later in the same constructor, does not. And <code>KimiPreTrainedModel._init_weights</code>, which is the mechanism that would ordinarily catch it, handles <code>nn.Linear</code> and <code>nn.Embedding</code> and nothing else. A bare <code>nn.Parameter</code> is neither.</p>
+<p><code>dt_bias</code> is the timestep bias handed to the gated delta-rule kernel, one of nine KDA layers in r1. It is not a decorative term. It sits inside a softplus and sets the effective step size of the recurrence, so its magnitude controls how fast the linear-attention state decays.</p>
+<p>Now consider what <code>torch.empty</code> actually returns. It allocates memory and does not write to it, so the tensor contains whatever bytes were already at that address, reinterpreted as float32. What those bytes are depends on the allocator, on what the process did earlier, on the CUDA caching allocator's block reuse, and on nothing you control. There are three ways this can go, and we saw two of them in the same smoke test:</p>
+<ul><li>The bytes decode to <code>inf</code> or <code>NaN</code>, or to values large enough that the kernel overflows. The loss is <code>NaN</code> on step 0 and the run is obviously broken.</li><li>The bytes decode to finite but wrong values. The model trains, the loss falls, every dashboard is green, and the recurrence has a step size nobody chose. There is no error and no alarm.</li><li>The bytes happen to be small and roughly sane. Nothing observable is wrong.</li></ul>
+<p><strong>Rung r2 trained normally while r1 returned <code>NaN</code> from step 0, from the same code, in the same smoke run.</strong> The two models differ only in width and depth, so they allocate different-sized tensors in a different order, and their <code>dt_bias</code> allocations landed on different garbage. Had the ladder been r2-only, this bug would have shipped into the run.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-released-code-cannot-train-3.png" alt="Uninitialised memory does not fail; it samples. The middle outcome is the one that reaches production." loading="lazy"  data-fig="the-released-code-cannot-train-3.png"><span class="fig-ph">figure rendering &middot; Uninitialised memory does not fail; it samples. The middle outcome is </span></div><figcaption>Uninitialised memory does not fail; it samples. The middle outcome is the one that reaches production.</figcaption></figure>
+<p>The middle outcome is the reason this bug deserves a chapter section rather than a line in a changelog. A crash is a bug report. A silent quality regression is a model that is a little worse than it should be for a reason that will never be found, because there is nothing to search for. We would have spent the money, gotten a slightly worse loss curve, and attributed it to scale.</p>
+<h2 id="the-fix-and-the-check-that-is-not-a-fix">The fix, and the check that is not a fix</h2>
+<p><code>train/init_patch.py</code> initialises <code>dt_bias</code> the way Mamba and GatedDeltaNet initialise their timestep parameters: sample a timestep uniformly in log-space over <code>[1e-3, 1e-1]</code>, then invert the softplus so that <code>softplus(dt_bias)</code> covers that range.</p>
+<pre class="code" data-lang="python"><code>dt = torch.exp(
+    torch.rand(p.shape, device=p.device, dtype=torch.float32)
+    * (torch.log(torch.tensor(dt_max)) - torch.log(torch.tensor(dt_min)))
+    + torch.log(torch.tensor(dt_min))
+).clamp(min=floor)
+# inverse softplus: b = dt + log(-expm1(-dt))
+p.copy_((dt + torch.log(-torch.expm1(-dt))).to(p.dtype))</code></pre>
+<p>Log-space rather than linear space, because the quantity being sampled spans two orders of magnitude and a linear sample would put almost all of the mass at the fast end. The inverse softplus is there because the kernel applies <code>softplus</code> to this parameter, so what we want to control is the distribution after that transform, not before it.</p>
+<p>The second half of the file is not a fix. It is a check that runs before step 0:</p>
+<pre class="code" data-lang="python"><code>def assert_initialised(model) -&gt; dict:
+    bad = []
+    for name, t in list(model.named_parameters()) + list(model.named_buffers()):
+        if t.is_floating_point() and not torch.isfinite(t).all():
+            bad.append(name)
+    if bad:
+        raise ValueError(f"non-finite values in a freshly initialised model: {bad[:10]}")</code></pre>
+<p>Every parameter and buffer must be finite before the first forward pass. It costs one pass over the parameters, and it converts "the loss is <code>NaN</code> somewhere" into "this named tensor is bad", which is a different quality of debugging problem.</p>
+<p>It is also incomplete, and the docstring in the file says so. Uninitialised memory is usually finite garbage rather than <code>inf</code>, so this check catches the loud outcome and misses the quiet one. It exists because the next uninitialised tensor will not announce itself either, and a cheap check that catches one case in three is worth having when the cost of the miss is a run that finishes and is wrong.<label for="sn-the-released-code-cannot-train-2" class="sn-ref">2</label><input type="checkbox" id="sn-the-released-code-cannot-train-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> The obvious stronger check is to compare every parameter's statistics against what the initialisation scheme should have produced, which would catch finite garbage as well. We did not build it. <code>assert_initialised</code> has caught nothing since <code>init_dt_bias</code> was written, which is the correct outcome for a guard and also the reason it is difficult to justify extending.</span></p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-released-code-cannot-train-4.png" alt="The initialisation and the pre-flight check. The check is deliberately incomplete and is documented as such." loading="lazy"  data-fig="the-released-code-cannot-train-4.png"><span class="fig-ph">figure rendering &middot; The initialisation and the pre-flight check. The check is deliberately</span></div><figcaption>The initialisation and the pre-flight check. The check is deliberately incomplete and is documented as such.</figcaption></figure>
+<h2 id="two-more-traps-in-the-same-family">Two more traps in the same family</h2>
+<p>Neither of the next two is in the modeling code's arithmetic, and both belong to the same class: something that works in the released setting and quietly does not in ours.</p>
+<p><strong><code>transformers</code> must be pinned to 4.57.6.</strong> The Kimi modeling code imports <code>OutputRecorder</code> at module scope. Version 5.x of <code>transformers</code> removed it, and a requirement of <code>transformers&gt;=4.56</code> resolves to 5.x, so the import fails before any model is constructed. A module-scope import error is at least a fast failure, but it is the kind of failure that appears weeks later on a fresh container image while the original environment continues to work, and it is worth a pin rather than a range.</p>
+<p><strong><code>gradient_checkpointing_enable()</code> is a silent no-op on this modeling code.</strong> The model declares <code>supports_gradient_checkpointing = True</code>. <code>KimiModel.__init__</code> sets <code>self.gradient_checkpointing = False</code>. The decoder loop then calls <code>decoder_layer(...)</code> directly, and there is no <code>_gradient_checkpointing_func</code> anywhere in the file. The flag is written and never read. <code>KimiDecoderLayer</code> is a plain <code>nn.Module</code> rather than transformers' <code>GradientCheckpointingLayer</code>, which is the only generic mechanism in the pinned version, so nothing else picks it up either.</p>
+<p>Calling it produces the log line "<code>use_cache=True</code> is incompatible with gradient checkpointing", which is precisely the reassuring message you would expect if it were working.</p>
+<p>The tell was in our own benchmark data and went unread for days. At 8,192 tokens per microbatch, peak memory read <strong>76.7 GB with checkpointing off and 76.8 GB with it on</strong>. Activation checkpointing that is running trades memory for recomputation; it cannot leave memory unchanged. <strong>Identical memory is the signature of a no-op.</strong> The conclusion originally drawn from that grid, that checkpointing was slower per token but bought a larger microbatch and therefore won, compared two runs that differed only in batch size.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-released-code-cannot-train-5.png" alt="The measurement that identified the no-op. It had been sitting in our own results table for days." loading="lazy"  data-fig="the-released-code-cannot-train-5.png"><span class="fig-ph">figure rendering &middot; The measurement that identified the no-op. It had been sitting in our </span></div><figcaption>The measurement that identified the no-op. It had been sitting in our own results table for days.</figcaption></figure>
+<p>Real checkpointing needed one non-obvious thing beyond wrapping the layers: <code>cfg.use_cache = False</code>. The KV cache is mutated inside the forward pass, so the recomputed forward sees different state than the original and <code>torch.utils.checkpoint</code> raises <code>CheckpointError</code>. Setting <code>use_cache=False</code> was the one thing the no-op call had actually been doing.<label for="sn-the-released-code-cannot-train-3" class="sn-ref">3</label><input type="checkbox" id="sn-the-released-code-cannot-train-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> A related shim belongs to the same family and is described in the MFU chapters: MLA runs on an sdpa implementation registered under the <code>flash_attention_2</code> key, because the model hard-forces that string and the asymmetric-head-dim padding only runs on that branch. It is numerically identical and slower, which means every MFU figure in this book understates what flash attention would give.</span></p>
+<h2 id="what-the-smoke-test-bought">What the smoke test bought</h2>
+<p>All four blockers were found by <code>smoke_all</code>: build every rung, two steps, assert the loss is finite, starts near 12.007 and decreases. It takes a few minutes of GPU time and it was written before the training loop.</p>
+<p>Three of the four would have been found anyway, in the first second of the first run, by a crash. The fourth would not. On r2 it does not crash, and on r1 it crashes only sometimes, so a project that smoke-tested one rung on one day had a real chance of carrying an uninitialised timestep bias into a multi-day run. What the smoke test bought was not the discovery of the loud bugs; it was running the same code on three models on the same afternoon, which is what made the non-deterministic one visible as non-determinism rather than as a mystery.<label for="sn-the-released-code-cannot-train-4" class="sn-ref">4</label><input type="checkbox" id="sn-the-released-code-cannot-train-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> The build path was later hardened for the same reason. <code>train/build.py</code> is now the only way any model is constructed, and it raises if a patch matched zero modules rather than proceeding. A patch that silently matched nothing produces a run that carries more memory than it should and gives up the fused kernel's 1.38x, with no error, which is the same failure shape as everything in this chapter.</span></p>
+<p>The general form of the rule is this. Code released for inference has been exercised in one mode with every tensor loaded from disk. Before training with it, check the assumptions that only the other mode makes: which parameters are constructed rather than loaded, which branches are gated on <code>self.training</code>, which decorators suppress gradients, and which flags are written without being read. Every one of the four blockers, and both of the traps after them, is on that list.</p>
+<p>The next chapter builds the training loop around this patched model: the WSD schedule, 131,072 tokens per step, and a spike protocol written down before the run rather than during it.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 13</span>
+              <span class="vb-nav-title">The mix, and the bug that would have trained on one source</span>
+            </a>
+            <a href="./15-the-training-loop.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 15 →</span>
+              <span class="vb-nav-title">The training loop</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

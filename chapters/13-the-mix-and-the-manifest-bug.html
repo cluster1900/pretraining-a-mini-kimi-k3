@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The mix, and the bug that would have trained on one source · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="Stable and decay mixes built from measured tokens-per-file, and a string-splitting bug that pointed four of six sources at files that did not exist while the loader silently renormalised onto the two that survived.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 13 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 02 · The Data</div>
+      <h1 class="vb-chapter-title">The mix, and the bug that would have trained on one source</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 13 of 30</span>
+        <span class="vb-pill">⏱ 11 min read</span>
+        <span class="vb-pill">📊 6 figures</span>
+        
+      </div>
+
+      <p class="vb-chapter-blurb">Stable and decay mixes built from measured tokens-per-file, and a string-splitting bug that pointed four of six sources at files that did not exist while the loader silently renormalised onto the two that survived.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>A corpus is not a training set until something decides how much of it the model sees, and when. Ours is 104.80 billion tokens in 1,063 shards across six sources, and the run consumed 5.00 billion of them. Which 5.00 billion, and in what proportions, is the mix.</p>
+<p>There are two mixes rather than one, because the schedule has two phases. WSD holds the learning rate flat through a long stable phase and decays it over the final 15%, and the data switches at the same boundary: general web through the stable phase, then maths, code and synthetic reasoning through the decay. The stable mix in r1's run was <strong>59.5% fineweb-edu, 25.5% web-diverse, 10.0% code-python, 3.0% finemath and 2.0% open-web-math</strong>.</p>
+<p>Those five numbers are the subject of this chapter twice over: how they were arrived at, and the period during which they were a fiction that every dashboard in the system would have kept reporting while the model trained on one source.</p>
+<h2 id="mixes-are-specified-over-roles-not-over-sources">Mixes are specified over roles, not over sources</h2>
+<p>The natural way to write a mix is a dictionary from source name to weight. We did not do that, because of what happens when a source disappears. Two of the six repositories we wanted were gated, and one of them never cleared. Specified directly over sources, losing one means either hand-editing every weight or letting the survivors absorb the gap in whatever proportions renormalisation produces, which would have quietly changed how much web data the model saw.</p>
+<p>So a mix is specified at two levels: weights over <strong>roles</strong>, and weights over the sources that fill each role.</p>
+<pre class="code" data-lang="python"><code># Stage 3: ~2% warmup, long stable phase, final ~15% decay.
+DECAY_FRACTION = 0.15
+
+STABLE_ROLES = {"web": 0.85, "code": 0.10, "math": 0.05, "reasoning": 0.00}
+DECAY_ROLES  = {"web": 0.25, "code": 0.25, "math": 0.30, "reasoning": 0.20}
+
+SOURCE_WEIGHTS = {
+    "web":       {"fineweb-edu": 0.70, "web-diverse": 0.30},
+    "code":      {"code-python": 1.0},
+    "math":      {"finemath": 0.6, "open-web-math": 0.4},
+    "reasoning": {"cosmopedia": 1.0},
+}
+
+# Above this we are re-showing the same tokens rather than adding information.
+MAX_EPOCHS = 4.0</code></pre>
+<p>A source going missing now rebalances inside its own role and leaves the role weights untouched. If <code>web-diverse</code> had failed to resolve, <code>fineweb-edu</code> would have absorbed its 30% of the web role and the model would still have seen 85% web during the stable phase. The planner records a warning when this happens rather than doing it silently, a distinction this chapter returns to.</p>
+<p>The stable mix quoted above falls straight out of these constants: 0.85 × 0.70 = 0.595 for fineweb-edu, 0.85 × 0.30 = 0.255 for web-diverse, 0.10 for code-python, and the maths role's 0.05 split 0.6 / 0.4 into 0.030 and 0.020. Cosmopedia carries the reasoning role, weighted zero during the stable phase, so it appears in one mix and not the other.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-mix-and-the-manifest-bug-1.png" alt="The mix is weights over roles, then weights over the sources filling each role. The stable percentages are the product o" loading="lazy"  data-fig="the-mix-and-the-manifest-bug-1.png"><span class="fig-ph">figure rendering &middot; The mix is weights over roles, then weights over the sources filling e</span></div><figcaption>The mix is weights over roles, then weights over the sources filling each role. The stable percentages are the product of the two columns.</figcaption></figure>
+<h2 id="the-file-budget-comes-from-a-measurement-not-an-estimate">The file budget comes from a measurement, not an estimate</h2>
+<p>A mix in tokens has to become a mix in files, because files are what the ingest workers download and tokenize. The conversion needs tokens-per-file, and there are two ways to get it.</p>
+<p>The convenient way is to assume a tokens-per-document figure, multiply by the rows in a parquet file, and move on. That number is wrong in three directions at once. Tokenizers differ, and a document costs a different number of tokens under K3's 163,840-entry BPE than under any other. Decontamination removes documents before they are counted, at a rate varying from 0.0280% on web-diverse to 0.7239% on finemath. And it is wrong for <code>code-python</code> by an order of magnitude, because the ungated fallback repository keeps every language in one directory and <strong>94% of what was downloaded was discarded</strong> to extract Python.</p>
+<p>The measured way is a dry run. Before the real ingest, a sampling pass reads two files per source through the full pipeline, with the real tokenizer, the real 13-gram filter and the real extraction, and records what came out the other end.<label for="sn-the-mix-and-the-manifest-bug-1" class="sn-ref">1</label><input type="checkbox" id="sn-the-mix-and-the-manifest-bug-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> The dry run also produces the per-benchmark hit counts that later became the HumanEval investigation. Its job here is narrower: how many tokens does one file of this source actually contribute, after everything that removes tokens has run.</span> The file budget is then arithmetic over those measurements:</p>
+<pre class="code" data-lang="python"><code>def file_budget(p, tokens_per_file, files_available):
+    """`tokens_per_file` comes from the dry run — measured,
+    post-decontamination, with this tokenizer. Assuming it is the trap."""
+    for src, want in p["source_tokens"].items():
+        tpf = tokens_per_file.get(src)
+        if not tpf:
+            notes.append(f"{src}: no measurement, cannot size the file budget")
+            continue
+        need = int(want / tpf) + 1
+        have = files_available.get(src, 0)
+        if have and need &gt; have:
+            epochs = need / have
+            ...</code></pre>
+<p>Two properties of that function are deliberate. A source with no measurement produces a note and no allocation, rather than a plausible guess. And when the budget asks for more files than exist, the code computes the implied epoch count and refuses above <code>MAX_EPOCHS = 4.0</code>, because a small model trained repeatedly on the same subset memorises it instead of learning from it.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-mix-and-the-manifest-bug-2.png" alt="The file budget. Every quantity in it is measured under the conditions the real ingest runs under." loading="lazy"  data-fig="the-mix-and-the-manifest-bug-2.png"><span class="fig-ph">figure rendering &middot; The file budget. Every quantity in it is measured under the conditions</span></div><figcaption>The file budget. Every quantity in it is measured under the conditions the real ingest runs under.</figcaption></figure>
+<h2 id="reserving-the-decay-shards-first">Reserving the decay shards first</h2>
+<p>The manifests are built over the shards that exist on the volume, and the decay phase is allocated before the stable phase rather than after, because the anneal is the smaller and more valuable claim. If the decay phase re-showed tokens the model had already seen, the final 15% of training would be a second epoch over familiar data rather than fresh maths and code, and the benchmark movement it is supposed to produce would be attributable to neither. So decay shards are taken from the tail of each source's shard list, the stable phase gets what remains, and disjointness is asserted rather than assumed:</p>
+<pre class="code" data-lang="python"><code>stable_names = {n for s in phases["stable"]["sources"].values() for n in s["shards"]}
+decay_names  = {n for s in phases["decay"]["sources"].values()  for n in s["shards"]}
+overlap = stable_names &amp; decay_names
+if overlap:
+    raise AssertionError(
+        f"{len(overlap)} shards appear in both phases — the anneal would "
+        "re-show tokens from the stable phase")</code></pre>
+<p>The manifests are <strong>947 stable shards and 94 decay shards</strong>, with the assertion passing.</p>
+<h2 id="what-the-loader-does-with-them">What the loader does with them</h2>
+<p>The dataloader reads the two manifests and produces packed sequences at 4,096 tokens. Three of its properties matter to the rest of the run.</p>
+<p><strong>Sampling is per sequence, not per shard.</strong> For every sequence, the loader draws a source from the mix weights and takes the next 4,097 tokens from that source's cursor. Reading one shard to exhaustion before moving to the next would give the model hours of pure code followed by hours of pure web, which is a curriculum nobody chose. Per-sequence sampling keeps the realised mix close to the target at every point in training rather than only in aggregate.</p>
+<p><strong>Packing crosses document boundaries.</strong> Documents are separated by the EOS token, 163585, and sequences are cut at 4,096 regardless of where those boundaries fall. Nothing is spent on padding, and EOS teaches the model where a document ends.</p>
+<p><strong>State is explicit.</strong> Each source stream carries a shard index, an offset within that shard and an epoch counter; the loader carries its RNG state and per-source token totals. All of it goes into the checkpoint, so a resume continues from the exact token it stopped at rather than restarting the epoch or silently re-showing tokens.<label for="sn-the-mix-and-the-manifest-bug-2" class="sn-ref">2</label><input type="checkbox" id="sn-the-mix-and-the-manifest-bug-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> The chapter on checkpointing covers how this was verified: <code>resume_equivalence</code> trains past a checkpoint twice and compares per-step losses. It found an off-by-one in the checkpoint's step label, and after the fix the first resumed step is bitwise identical at 0.00e+00.</span></p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-mix-and-the-manifest-bug-3.png" alt="The loader. Sources are sampled for each sequence, sequences are packed across document boundaries, and the cursor is pa" loading="lazy"  data-fig="the-mix-and-the-manifest-bug-3.png"><span class="fig-ph">figure rendering &middot; The loader. Sources are sampled for each sequence, sequences are packe</span></div><figcaption>The loader. Sources are sampled for each sequence, sequences are packed across document boundaries, and the cursor is part of the run's state.</figcaption></figure>
+<h2 id="the-bug">The bug</h2>
+<p>The manifest builder walks the <code>.json</code> sidecars on the volume, one per shard, recording each shard's name, token count and path. An earlier version did not use the sidecar's filename directly. It rebuilt the name:</p>
+<pre class="code" data-lang="python"><code>name = source + "-" + stem.split("-", 1)[1]</code></pre>
+<p>The intent was normalisation: take the source, take everything after the first hyphen, reassemble. On a source whose name has no hyphen this is the identity function. <code>finemath-w000-s0000</code> splits into <code>finemath</code> and <code>w000-s0000</code>, and reassembles unchanged.</p>
+<p>On a source whose name contains a hyphen it is not. <code>fineweb-edu-w000-s0000</code> splits at the <em>first</em> hyphen, into <code>fineweb</code> and <code>edu-w000-s0000</code>, and reassembling with the full source name gives <strong><code>fineweb-edu-edu-w000-s0000</code></strong>, a file that has never existed.</p>
+<p>Four of our six source names contain a hyphen. Two do not.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-mix-and-the-manifest-bug-4.png" alt="The rebuild is the identity function on unhyphenated names, which is why it looked correct on the two sources anyone wou" loading="lazy"  data-fig="the-mix-and-the-manifest-bug-4.png"><span class="fig-ph">figure rendering &middot; The rebuild is the identity function on unhyphenated names, which is w</span></div><figcaption>The rebuild is the identity function on unhyphenated names, which is why it looked correct on the two sources anyone would test first.</figcaption></figure>
+<p>Now consider what a dataloader should do when a manifest names a file that is not there.</p>
+<h2 id="the-failure-that-was-not-a-crash">The failure that was not a crash</h2>
+<p>The loader's original behaviour was to skip what it could not find. For each source it built the list of shard paths, filtered to the ones that exist, dropped any source left with nothing, renormalised the weights over whatever remained so the probabilities still summed to one, and started training.</p>
+<p>That is a reasonable thing for a loader to do if the goal is to keep going. Applied here, with four of six sources resolving to nonexistent paths, the stable mix's five sources reduce to one: <code>cosmopedia</code> is weighted zero during the stable phase, and <code>finemath</code> is the only other unhyphenated name. Its 3.0% weight, renormalised over a set containing only itself, becomes 100%.</p>
+<p><strong>The entire stable phase would have trained on finemath.</strong></p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-mix-and-the-manifest-bug-5.png" alt="The intended stable mix and the mix the run would actually have used. Nothing in the pipeline reported the difference." loading="lazy"  data-fig="the-mix-and-the-manifest-bug-5.png"><span class="fig-ph">figure rendering &middot; The intended stable mix and the mix the run would actually have used. </span></div><figcaption>The intended stable mix and the mix the run would actually have used. Nothing in the pipeline reported the difference.</figcaption></figure>
+<p>This is the class of bug that concerns us most in this project, and it is worth naming precisely why.</p>
+<p>A crash is a good outcome. It costs an hour and tells you where to look. A wrong number in a report is a middling outcome, because it is at least in a report, where someone may notice it. This bug produces neither. It produces a run that starts normally, trains for 38,147 steps, checkpoints correctly, passes every gate in the monitoring system, ends with a loss curve of the expected shape, and returns a model that is wrong for a reason appearing in none of the metrics being collected.</p>
+<p>It would probably have looked <em>better</em> than the real run, too. Our final held-out perplexity by source is 10.24 on finemath against 22.35 on fineweb-edu and 37.74 on web-diverse. A model trained on one narrow maths corpus reports a lower training loss than one trained across six sources, so the number a human watches most closely would have moved in the direction that reads as success. We did not run that experiment, so this is reasoning from the per-source perplexities rather than a measurement. It is enough to make the point: the loss curve is not a control on the data.</p>
+<h2 id="fail-loudly-on-missing-inputs">Fail loudly on missing inputs</h2>
+<p>The fix has three parts, and only the first is about the bug.</p>
+<p>The name rebuild was deleted. The sidecar's filename is the shard's name, so the manifest builder now uses <code>sidecar.stem</code> directly, with the reason written into the code so nobody normalises it again.</p>
+<p>The loader's default behaviour was then inverted. Missing shards are collected during construction, and if any are missing the constructor raises:</p>
+<pre class="code" data-lang="python"><code># Silently dropping a source and renormalising the rest changes the data
+# distribution without changing anything visible. That is how a
+# "59.5% fineweb-edu" stable phase became 100% finemath, undetected, in the
+# first build of these manifests. Fail loudly by default.
+if missing and not allow_missing:
+    detail = ", ".join(f"{n}: {a}/{b} shards absent"
+                       for n, (a, b) in missing.items())
+    raise FileNotFoundError(
+        f"manifest references shards that do not exist ({detail}). "
+        "Rebuild the manifests, or pass allow_missing=True to proceed "
+        "with a deliberately reduced mix.")</code></pre>
+<p>The escape hatch remains, because there are legitimate reasons to train on a subset, such as a smoke test on one downloaded shard. However it now has to be requested by name at the call site, where it is visible in a code review, rather than being the default that arrives when nobody is watching.<label for="sn-the-mix-and-the-manifest-bug-3" class="sn-ref">3</label><input type="checkbox" id="sn-the-mix-and-the-manifest-bug-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> <code>allow_missing=True</code> also stores the missing-shard tally on the loader, so a run that deliberately proceeds with a reduced mix still carries a record of what it dropped.</span></p>
+<p>The third part is telemetry. The loader exposes both the mix it is producing and the mix it was asked for, and the training loop reports both:</p>
+<pre class="code" data-lang="python"><code>"realised_mix": loader.realised_mix(),
+# both, so the monitor can gate on drift rather than on a
+# human noticing that a share looks wrong
+"target_mix":   loader.target_mix(),</code></pre>
+<p><code>realised_mix()</code> is computed from a per-source token counter incremented as sequences are emitted, so it is the outcome and not the intention. Publishing the target alongside it makes drift a subtraction rather than an inference. This is the same correction we made when router entropy passed a collapsing run: measure the outcome, publish it next to what was asked for, and do not require a person to remember the right value.<label for="sn-the-mix-and-the-manifest-bug-4" class="sn-ref">4</label><input type="checkbox" id="sn-the-mix-and-the-manifest-bug-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> The reporting cadence is ten steps for most of the run, with the first hundred steps at every step and steps 100 to 1,000 at every fifth, because that is when problems appear. At 131,072 tokens per step, a ten-step interval puts 1.3 million tokens between telemetry points.</span></p>
+<h2 id="the-evidence-that-it-works">The evidence that it works</h2>
+<p>r1's stable phase, realised against target, from the run's own telemetry:</p>
+<div class="tbl-wrap"><table><thead><tr><th>source</th><th>target</th><th>realised</th></tr></thead><tbody><tr><td>fineweb-edu</td><td>59.5%</td><td><strong>59.5%</strong></td></tr><tr><td>web-diverse</td><td>25.5%</td><td><strong>25.5%</strong></td></tr><tr><td>code-python</td><td>10.0%</td><td><strong>10.0%</strong></td></tr><tr><td>finemath</td><td>3.0%</td><td><strong>3.0%</strong></td></tr><tr><td>open-web-math</td><td>2.0%</td><td><strong>2.0%</strong></td></tr></tbody></table></div>
+<p>The realised mix tracks the target to three decimal places, held through the stable phase to step 32,430 and reported across all 38,147 steps. That agreement is a check that the loader draws from the sources it claims to, rather than a result about the data.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-mix-and-the-manifest-bug-6.png" alt="The mix telemetry from the completed run. Reporting the target beside the realised value is what makes drift visible wit" loading="lazy"  data-fig="the-mix-and-the-manifest-bug-6.png"><span class="fig-ph">figure rendering &middot; The mix telemetry from the completed run. Reporting the target beside </span></div><figcaption>The mix telemetry from the completed run. Reporting the target beside the realised value is what makes drift visible without anyone remembering the intended number.</figcaption></figure>
+<h2 id="the-transferable-part">The transferable part</h2>
+<p>Graceful degradation is a good default in a serving system. A recommendation service that loses one feature store and returns slightly worse recommendations is behaving correctly, because the alternative is returning nothing.</p>
+<p>An experiment is not a serving system. When the thing degrading is the experimental setup, a fallback converts a loud failure into a silent one, and silent failures in a $252.35 run are paid for at the end. The loader that skipped missing shards and renormalised applied a serving instinct to a measurement instrument, and it very nearly cost the run its meaning.</p>
+<p>Two rules came out of this. <strong>Missing inputs raise, and the permission to continue without them is a named argument at the call site.</strong> And <strong>anything the run is configured to do gets measured and published next to the configuration</strong>, so that agreement is observed rather than trusted. Both are cheap: an <code>if</code> statement, and two lines in a telemetry dictionary.</p>
+<p>The three distributed bugs in the sharding chapter share this shape, each producing a run that completes and is quietly wrong. This one would have been the hardest to find afterwards, because a model trained entirely on maths would still have produced a falling loss, a full set of checkpoints, and twenty-four benchmark evaluations nobody would have had a reason to doubt.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./12-the-tokenizer.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 12</span>
+              <span class="vb-nav-title">The tokenizer we did not train</span>
+            </a>
+            <a href="./14-the-released-code-cannot-train.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 14 →</span>
+              <span class="vb-nav-title">The released code cannot train</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

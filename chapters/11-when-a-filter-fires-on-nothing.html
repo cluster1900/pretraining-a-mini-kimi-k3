@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>When a filter fires on nothing · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="HumanEval matched 88.78 times per indexed n-gram against HellaSwag&#x27;s 0.02, and every removed document was generic Python. What that measured, why it was not leakage, and the coverage limit we report rather than bury.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 11 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 02 · The Data</div>
+      <h1 class="vb-chapter-title">When a filter fires on nothing</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 11 of 30</span>
+        <span class="vb-pill">⏱ 11 min read</span>
+        <span class="vb-pill">📊 5 figures</span>
+        <span class="vb-pill cost">88.78</span>
+      </div>
+
+      <p class="vb-chapter-blurb">HumanEval matched 88.78 times per indexed n-gram against HellaSwag&#x27;s 0.02, and every removed document was generic Python. What that measured, why it was not leakage, and the coverage limit we report rather than bury.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>The decontamination pass produced one report, and the report produced one row that did not fit. Across the whole corpus, 107,291,411 documents were scanned and 138,064 were removed for containing a 13-word window that also appears in one of eight benchmark test sets. The per-source removal rates came out in the shape the previous chapter describes as believable: the maths corpora dropped around ten times more than the web, and nothing dropped uniformly.</p>
+<p>The per-benchmark column is where the trouble was. Raw match counts are not comparable across benchmarks, because a benchmark with a larger indexed footprint has more chances to match. So the counts were divided by the number of unique 13-grams each set contributed to the index, which gives a rate rather than a total.<label for="sn-when-a-filter-fires-on-nothing-1" class="sn-ref">1</label><input type="checkbox" id="sn-when-a-filter-fires-on-nothing-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> The index holds <strong>2,398,082</strong> unique 13-grams across all eight sets, 24 MB on disk. MMLU contributes far more of them than HumanEval does, so an unnormalised comparison between the two says more about split sizes than about contamination.</span></p>
+<div class="tbl-wrap"><table><thead><tr><th>benchmark</th><th>hits per indexed 13-gram</th></tr></thead><tbody><tr><td>hellaswag</td><td>0.02</td></tr><tr><td>gsm8k</td><td>0.06</td></tr><tr><td>piqa</td><td>0.08</td></tr><tr><td>arc_challenge</td><td>0.12</td></tr><tr><td>mmlu</td><td>0.70</td></tr><tr><td>triviaqa</td><td>0.88</td></tr><tr><td><strong>humaneval</strong></td><td><strong>88.78</strong></td></tr></tbody></table></div>
+<p>Six of the seven sets that matched anything sit between 0.02 and 0.88. HumanEval sits at <strong>88.78</strong>, which is between roughly one hundred and four thousand times the rate of every other set in the same suite, measured in the same pass, against the same corpus.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/when-a-filter-fires-on-nothing-1.png" alt="Match rate per indexed n-gram across the eight-set suite. WinoGrande is absent because it matched nothing at all, which " loading="lazy"  data-fig="when-a-filter-fires-on-nothing-1.png"><span class="fig-ph">figure rendering &middot; Match rate per indexed n-gram across the eight-set suite. WinoGrande i</span></div><figcaption>Match rate per indexed n-gram across the eight-set suite. WinoGrande is absent because it matched nothing at all, which is discussed at the end of this chapter.</figcaption></figure>
+<h2 id="the-first-reading-and-why-it-was-plausible">The first reading, and why it was plausible</h2>
+<p>The first reading was that the Python corpus was heavily contaminated with HumanEval. That reading is worth stating in full, because it was reasonable and it was wrong, and the gap between those two facts is what this chapter is about.</p>
+<p>HumanEval is 164 hand-written programming problems, each with a docstring prompt and a canonical solution. It is one of the most-copied evaluation sets in existence. Its problems appear in blog posts, in tutorial repositories, in the README of every code model, and in the training-data audits of half the papers that cite it. A Python corpus scraped from public repositories containing HumanEval solutions is not a surprising hypothesis. It is close to the default expectation.</p>
+<p>The rate also pointed the right way for that story. Contamination should concentrate where the benchmark's subject matter concentrates, and it did: the two maths corpora dropped at 0.7239% and 0.6747% against 0.0280% for general web text. A code benchmark firing hardest against the code corpus is the same pattern, one source over.</p>
+<p>What did not fit was the magnitude. A rate two orders of magnitude above the next-highest set is not a stronger version of the same phenomenon. Contamination that severe would mean the Python corpus was substantially made of benchmark text, and the removal rate for that source was 0.2251%. Those two claims cannot both be true. Either almost every matching document was being counted many times, or the matches were not what the word "match" implies.</p>
+<h2 id="reading-what-came-out">Reading what came out</h2>
+<p>The ingest workers keep the first 25 dropped documents per shard, with the matching benchmark, the number of matching 13-grams, and a 400-character excerpt. That sample existed for exactly this situation, and it settled the question in the time it took to read it.</p>
+<pre class="code" data-lang="python"><code>if len(st["dropped_examples"]) &lt; 25:
+    st["dropped_examples"].append({
+        "benchmarks": [idx.names[int(i)] for i in ids],
+        "ngram_hits": int(hits.size),
+        "excerpt": text[:400],
+    })</code></pre>
+<p>The documents attributed to HumanEval were license headers, loop boilerplate of the form <code>for x in range(0, size_x)</code>, and tutorial code. They were ordinary Python files. None of them contained a HumanEval problem, a HumanEval docstring, or a HumanEval solution. They contained Python that looks like all other Python.</p>
+<p>That observation eliminates hash collision as well, which was the other candidate explanation. A collision produces a document with no visible relationship to the benchmark. These documents had a visible relationship: they shared real, readable, common code with the indexed text. The filter was working exactly as specified. The specification was the problem.</p>
+<h2 id="cause-one-the-normaliser-is-built-for-prose">Cause one: the normaliser is built for prose</h2>
+<p>The previous chapter described the byte translation table every document and every benchmark row passes through before any hashing happens: <code>A-Z</code> lowercased, <code>a-z</code> and <code>0-9</code> kept, every other byte replaced by a space.</p>
+<pre class="code" data-lang="python"><code>_XLAT = np.full(256, 32, dtype=np.uint8)          # everything -&gt; space
+for _c in range(ord("a"), ord("z") + 1):
+    _XLAT[_c] = _c
+for _c in range(ord("A"), ord("Z") + 1):
+    _XLAT[_c] = _c + 32                            # A-Z lowercased
+for _c in range(ord("0"), ord("9") + 1):
+    _XLAT[_c] = _c</code></pre>
+<p>For prose that is the right choice, and it is what makes the filter match copies rather than only originals. A benchmark question that has passed through a content management system, a PDF extractor and a blog theme differs from the original in case, punctuation and whitespace, and stripping those three away is precisely what lets the match survive.</p>
+<p>For code it removes most of the signal. Punctuation in Python is not decoration. Commas, colons, parentheses and brackets carry the structure, and the identifiers that remain are drawn from a small shared vocabulary of <code>for</code>, <code>in</code>, <code>range</code>, <code>def</code>, <code>self</code>, <code>return</code>, <code>len</code>, <code>i</code>, <code>x</code>, <code>n</code>. Consider one line:</p>
+<pre class="code" data-lang=""><code>for i, a in enumerate(numbers):      -&gt;    for i a in enumerate numbers</code></pre>
+<p>Six words survive from a line that was structurally specific. Chain a few such lines together and the 13-word window that results is not a fingerprint of any particular file. It is a fingerprint of Python.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/when-a-filter-fires-on-nothing-2.png" alt="The same normalisation step, applied to a sentence and to a line of Python. It preserves the sentence and dissolves the " loading="lazy"  data-fig="when-a-filter-fires-on-nothing-2.png"><span class="fig-ph">figure rendering &middot; The same normalisation step, applied to a sentence and to a line of Py</span></div><figcaption>The same normalisation step, applied to a sentence and to a line of Python. It preserves the sentence and dissolves the line.</figcaption></figure>
+<h2 id="cause-two-we-indexed-the-test-harness">Cause two: we indexed the test harness</h2>
+<p>The second cause is a choice in the benchmark registry rather than in the hashing.</p>
+<p>Deciding which columns of a benchmark row go into the index is a judgement about what a contaminated document would actually contain. For HellaSwag and PIQA, the answer options are the benchmark, so they must be indexed. For GSM8K, the worked solution is the leak. For TriviaQA, the answer aliases are single entities like a city name, so only the questions are indexed. For HumanEval, the original registry entry indexed the prompt, the canonical solution, and the <code>test</code> column.</p>
+<p>The <code>test</code> column is not benchmark content in the sense the other columns are. It is the harness that checks a candidate solution, and across all 164 problems it is close to the same few lines of scaffolding: a <code>check</code> function, a candidate argument, a sequence of asserts. Indexing it puts that scaffolding into the index 164 times over, and then normalisation strips out the punctuation that distinguished one instance of it from another.</p>
+<p>The result is a set of index entries that are, after normalisation, generic assertion boilerplate. Any Python file in the corpus containing a test suite of a similar shape matches them, and matches them repeatedly, because the pattern recurs throughout a single file.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/when-a-filter-fires-on-nothing-3.png" alt="The second cause. A column that is nearly constant across the benchmark becomes, once de-punctuated, an index entry that" loading="lazy"  data-fig="when-a-filter-fires-on-nothing-3.png"><span class="fig-ph">figure rendering &middot; The second cause. A column that is nearly constant across the benchmar</span></div><figcaption>The second cause. A column that is nearly constant across the benchmark becomes, once de-punctuated, an index entry that matches ordinary code.</figcaption></figure>
+<h2 id="two-causes-that-multiply">Two causes that multiply</h2>
+<p>Either cause alone would have raised HumanEval's rate. Together they multiply, and the multiplication is what produces a figure like 88.78 rather than something in the range of two or three.</p>
+<p>Normalisation lowers the specificity of every code n-gram in the index. The <code>test</code> column then fills the index with the least specific code in the benchmark, repeated. The rate is a count of matching n-grams rather than matching documents, so a single ordinary Python file with a handful of test functions contributes many hits, and the denominator is small because HumanEval is only 164 problems.<label for="sn-when-a-filter-fires-on-nothing-2" class="sn-ref">2</label><input type="checkbox" id="sn-when-a-filter-fires-on-nothing-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> The worker accumulates <code>hits_by_benchmark</code> by adding the number of matching windows, not by adding one per dropped document. That is the correct choice for a diagnostic, since it distinguishes a document that shares one window from one that shares fifty, and it is the reason a rate above 1.0 is arithmetically possible at all.</span> Every term in that arithmetic pushes in the same direction.</p>
+<p>The registry entry now records the reasoning next to the fields, so that a future reader does not have to reconstruct it:</p>
+<pre class="code" data-lang="python"><code>Benchmark(
+    "humaneval",
+    [Candidate("openai/openai_humaneval", None, "test"),
+     Candidate("openai_humaneval", None, "test")],
+    # `test` DROPPED after measurement. It is near-identical scaffolding
+    # across all 164 problems (`def check(candidate): assert candidate(...)`),
+    # so once normalisation strips punctuation its 13-grams match ordinary
+    # Python everywhere.
+    fields=["prompt", "canonical_solution"],
+    note="test scaffolding excluded — it generated boilerplate false positives",
+)</code></pre>
+<h2 id="what-it-cost-and-what-we-did">What it cost, and what we did</h2>
+<p>The question that decides the response is not how badly the filter misbehaved. It is how much corpus was lost.</p>
+<p>The Python source removed 28,968 documents from 12,866,649 scanned, a rate of <strong>0.2251%</strong>, and wrote 14.90B tokens. If every one of those removals were a false positive attributable to HumanEval, the damage is a fifth of one percent of the code corpus. There is no plausible mechanism by which losing 0.225% of one source, selected by a criterion uncorrelated with quality, changes what the model learns. Re-ingesting the source would have cost real compute and real time to recover something that is not measurable at the far end.<label for="sn-when-a-filter-fires-on-nothing-3" class="sn-ref">3</label><input type="checkbox" id="sn-when-a-filter-fires-on-nothing-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> The cost of being wrong in the other direction was also bounded here. HumanEval and GSM8K are post-training benchmarks and were deliberately not run on r1, which is a base model that has only ever done next-token prediction. Removing too much Python on HumanEval's account could not have flattered a HumanEval score, because no HumanEval score was ever produced.</span></p>
+<p>So no re-ingest was performed. Two changes went into the code for any future run. The first is the field list above, with <code>test</code> dropped. The second is a threshold on <code>NgramIndex.check</code>, so that a corpus can require several matching n-grams before a document is discarded rather than one:</p>
+<pre class="code" data-lang="python"><code>def check(self, text: str, n: int = NGRAM_N,
+          min_matches: int = 1) -&gt; tuple[bool, dict[str, int]]:
+    """(contaminated, {benchmark: n_matching_ngrams}).
+
+    `min_matches` guards against incidental collisions. One shared 13-gram is
+    decisive for prose but not for code: normalisation strips punctuation, so
+    de-punctuated Python idiom collides across unrelated files. Raising this
+    for code corpora trades a little recall for a lot of precision.
+    """</code></pre>
+<p>The default stays at 1, so prose sources behave as before and the change is opt-in per corpus. <strong>Neither fix has been re-measured against the corpus.</strong> The 104.80B-token corpus, from which r1 drew the 5,000,003,584 tokens it trained on, was produced by the pipeline as it stood during the run, with the <code>test</code> column indexed and a single matching n-gram sufficient to drop a document. What is in this chapter is a diagnosis and a code change, not a second measurement, and the two should not be read as the same thing.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/when-a-filter-fires-on-nothing-4.png" alt="The path from the anomalous number to the decision. The measurement that mattered was not the match rate; it was the fra" loading="lazy"  data-fig="when-a-filter-fires-on-nothing-4.png"><span class="fig-ph">figure rendering &middot; The path from the anomalous number to the decision. The measurement th</span></div><figcaption>The path from the anomalous number to the decision. The measurement that mattered was not the match rate; it was the fraction of the corpus lost.</figcaption></figure>
+<h2 id="the-limit-that-has-nothing-to-do-with-code">The limit that has nothing to do with code</h2>
+<p>The same report carries a second scope limit, and it belongs next to every benchmark number in this book rather than in a footnote at the back.</p>
+<p>A 13-gram filter can only remove text it can index. A benchmark row shorter than 13 words produces no 13-gram at all, so it never enters the index, and no document in the corpus can ever be matched against it. The row is not weakly protected. It is not protected.</p>
+<p>The extractor counts those rows separately for exactly this reason, and the report emits the count per benchmark:</p>
+<pre class="code" data-lang="python"><code>coverage[name] = {
+    "rows": rows,
+    "rows_indexed": rows - short,
+    "rows_too_short": short,
+    "coverage": (rows - short) / rows if rows else 0.0,
+    "ngrams": s.get("ngrams", 0),
+}</code></pre>
+<p><strong>TriviaQA is 49% covered.</strong> Of its 17,944 rows, 9,163 are too short to yield a single 13-gram, which follows directly from the shape of the set: a TriviaQA question is usually one line, and only the questions are indexed because the answer aliases are single entities. PIQA is the next lowest at <strong>92%</strong>. Five of the eight sets sit at 99 to 100%.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/when-a-filter-fires-on-nothing-5.png" alt="Coverage per benchmark. The uncovered half of TriviaQA is a limit of the method, not a failure of the run." loading="lazy"  data-fig="when-a-filter-fires-on-nothing-5.png"><span class="fig-ph">figure rendering &middot; Coverage per benchmark. The uncovered half of TriviaQA is a limit of t</span></div><figcaption>Coverage per benchmark. The uncovered half of TriviaQA is a limit of the method, not a failure of the run.</figcaption></figure>
+<p>This is not a defect that can be repaired by tuning. It is what a 13-gram method is. A shorter n would cover more rows and would also match ordinary English, which trades a stated limit for an unstated flood of false positives of exactly the kind this chapter has just finished diagnosing. The workable response is to publish the coverage number beside the accuracy number, so a reader can see which claim is fully supported and which is half supported.</p>
+<h2 id="winogrande-s-zero">WinoGrande's zero</h2>
+<p>One set recorded no matches at all, and the report warned about it, because a benchmark with zero hits across 107 million documents usually means a broken extractor rather than a clean corpus. The gate treats that as a warning rather than a failure:</p>
+<pre class="code" data-lang="python"><code>if decon["benchmarks_with_zero_hits"]:
+    warns.append(f"no n-gram hits for {decon['benchmarks_with_zero_hits']} — "
+                 "check those extractors before trusting their scores")</code></pre>
+<p>The warning fired on WinoGrande, and the zero is plausibly genuine. WinoGrande sentences are short, and the two options differ by a single word, so the indexed text is both small and highly specific. The index self-check gives some assurance that extraction worked, since every benchmark row tested against the index it was built from was detected, 1,414 of 1,414.<label for="sn-when-a-filter-fires-on-nothing-4" class="sn-ref">4</label><input type="checkbox" id="sn-when-a-filter-fires-on-nothing-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> The self-check exists because a renamed column is the quiet way decontamination becomes a no-op. The extractor still runs, still produces rows, and silently indexes empty strings. Building the index and then asking it to find its own source rows catches that in seconds.</span> What the check cannot tell us is whether a longer WinoGrande row would have matched something, because there were few long rows to begin with.</p>
+<p>We report it as a warning that was raised, examined, and left standing rather than as a result.</p>
+<h2 id="what-this-generalises-to">What this generalises to</h2>
+<p>Three things from this episode transfer to any filter, in any pipeline.</p>
+<p><strong>A component that fires far more than its peers is measuring something other than what you named it after.</strong> The name on the filter was "HumanEval contamination". What it measured was "resembles de-punctuated Python". Those two quantities agree on the benchmark rows and diverge everywhere else, and the divergence only becomes visible when the rate is compared against sibling rates in the same run. Comparing HumanEval's match count to its own expectation would have taught us nothing, because nobody had an expectation for it. Comparing it to seven other sets measured identically took one column of arithmetic.</p>
+<p><strong>Look at what was removed before deciding what the number means.</strong> The sample of dropped documents cost nothing to keep and settled a question that no amount of further reasoning about hash functions would have settled. Any filter that discards data should retain a readable sample of what it discarded, with attribution, because the sample is the only evidence that distinguishes a working filter from a filter that works on the wrong thing.</p>
+<p><strong>A high catch rate is not a result.</strong> It is easy to read 88.78 as the filter succeeding, and to write the sentence about how much contamination was caught in the Python corpus. That sentence would have been in this book, it would have been wrong, and nothing downstream would ever have contradicted it, because the benchmark it referred to was never run. The measurement that mattered was not the one that looked impressive. It was the ratio of removed documents to scanned documents in the affected source, which came to 0.225%, and told us the correct response was to fix the code, write down that the fix is unverified, and move on.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./10-decontamination.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 10</span>
+              <span class="vb-nav-title">Decontamination, and the report that makes the numbers defensible</span>
+            </a>
+            <a href="./12-the-tokenizer.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 12 →</span>
+              <span class="vb-nav-title">The tokenizer we did not train</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

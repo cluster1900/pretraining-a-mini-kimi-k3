@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The training loop · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="Warmup, stable and decay instead of cosine; 131,072 tokens per step from 4,096 x 4 x 8; a learning rate transferred from one measured sweep; and the spike protocol written down before the run rather than at 3am.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 15 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 03 · Making It Train</div>
+      <h1 class="vb-chapter-title">The training loop</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 15 of 30</span>
+        <span class="vb-pill">⏱ 14 min read</span>
+        <span class="vb-pill">📊 7 figures</span>
+        <span class="vb-pill cost">WSD</span>
+      </div>
+
+      <p class="vb-chapter-blurb">Warmup, stable and decay instead of cosine; 131,072 tokens per step from 4,096 x 4 x 8; a learning rate transferred from one measured sweep; and the spike protocol written down before the run rather than at 3am.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>A pretraining run is one loop body executed a very large number of times. Ours executed it 38,147 times over roughly 55 hours on a single H200, and every iteration did the same six things: read a batch, compute a loss, decide whether to trust that loss, take an optimizer step, nudge the router's balancing biases, and occasionally tell someone outside the process what happened.</p>
+<p>The interesting design decisions are all in the fourth and sixth of those. This chapter is about the schedule that set the learning rate, the batch arithmetic that fed the loop, the protocol that decided when a step was not to be trusted, and the telemetry contract that made the run observable from outside. The chapter before this one covered the four blockers that had to be fixed before any of this could run at all. The chapter after it covers the router balancer whose update lives inside step five.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-training-loop-1.png" alt="The loop body. Steps 1 to 3 run eight times per optimizer step; step 5 runs once." loading="lazy"  data-fig="the-training-loop-1.png"><span class="fig-ph">figure rendering &middot; The loop body. Steps 1 to 3 run eight times per optimizer step; step 5</span></div><figcaption>The loop body. Steps 1 to 3 run eight times per optimizer step; step 5 runs once.</figcaption></figure>
+<h2 id="warmup-stable-decay">Warmup, stable, decay</h2>
+<p>The learning rate schedule almost every tutorial reaches for is cosine decay: start low, warm up, then follow a cosine curve down to some floor at the end of training. It works well and it has one property that is easy to overlook. <strong>Cosine commits you to a total step count on step one.</strong> The value of the cosine at step <em>n</em> depends on the total, so if you decide at step 20,000 that the run deserves another two billion tokens, you cannot simply continue. The schedule you have been following was shaped for a different endpoint, and extending it means the learning rate you have already applied was wrong for the run you are now doing.</p>
+<p>We used <strong>WSD</strong> — warmup, stable, decay — instead. The learning rate ramps linearly over the first 2% of steps, holds at its peak for the long middle, then decays linearly over the final 15% to a floor of 10% of peak.</p>
+<pre class="code" data-lang="python"><code>def wsd_lr(step, total, peak, warmup_frac=0.02, decay_frac=0.15, min_frac=0.1):
+    """Warmup -&gt; stable -&gt; linear decay to `min_frac` x peak."""
+    warm = max(1, int(total * warmup_frac))
+    decay_start = int(total * (1.0 - decay_frac))
+    if step &lt; warm:
+        return peak * (step + 1) / warm
+    if step &lt; decay_start:
+        return peak
+    frac = (step - decay_start) / max(1, total - decay_start)
+    return peak * (1.0 - (1.0 - min_frac) * min(1.0, frac))</code></pre>
+<p>For our run, <code>total = 38,147</code>, so warmup ran for <code>int(38,147 x 0.02) = 762</code> steps and the first step's learning rate was <code>6.00e-4 / 762 = 7.87e-7</code>. The run's own step-0 telemetry recorded <strong>7.87e-7</strong>, which is a small check that the schedule the loop applied is the schedule written above rather than a different one with the same name.</p>
+<p>The reason to prefer WSD is what happens to a checkpoint taken during the stable phase. Its learning rate is the peak, and the peak does not depend on the total step count, so that checkpoint can be branched and trained further under any endpoint you later choose. A run that turns out to be worth extending can be extended. A run that turns out not to be can be decayed early from wherever it has reached, and a decayed model is a usable model rather than an interrupted one.</p>
+<p>That property matters here because <strong>the constraint on this project was the budget, not the schedule.</strong> The whole ladder existed to price a flagship run whose token budget was still being revised, and the token budget was revised, twice. A schedule that had to be declared correctly on step one would have made each revision a restart.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-training-loop-2.png" alt="The two schedules over the same 38,147 steps. The flat middle is what makes a checkpoint extendable." loading="lazy"  data-fig="the-training-loop-2.png"><span class="fig-ph">figure rendering &middot; The two schedules over the same 38,147 steps. The flat middle is what </span></div><figcaption>The two schedules over the same 38,147 steps. The flat middle is what makes a checkpoint extendable.</figcaption></figure>
+<p>The decay is not merely a cooldown. Loss falls fastest in the decay phase in most WSD runs, and it did in ours: the r1 evaluation series shows held-out perplexity dropping from 15.84 at 4.273B tokens to <strong>13.61</strong> at 5.000B, which is the steepest stretch of the whole run and sits entirely after the decay boundary. The benchmarks chapter takes that curve apart properly.</p>
+<h2 id="the-anneal-and-the-decay-share-a-boundary">The anneal and the decay share a boundary</h2>
+<p>The decay phase is also where the data mix changes. Our corpus was built as two disjoint manifests, <strong>947 stable shards and 94 decay shards</strong>, and the decay manifest is weighted toward maths, code and reasoning-heavy text. Both switches are driven by the same predicate:</p>
+<pre class="code" data-lang="python"><code>def in_decay_phase(step, total, decay_frac=0.15):
+    return step &gt;= int(total * (1.0 - decay_frac))</code></pre>
+<pre class="code" data-lang="python"><code>want_decay = in_decay_phase(step, total_steps)
+if want_decay and phase != "decay" and "decay" in loaders:
+    phase = "decay"
+    loader = loaders["decay"]
+    print(f"[step {step}] entering DECAY phase — switching to the anneal mix")</code></pre>
+<p>r1 crossed that boundary at <strong>step 32,430</strong>, having seen <strong>4.25 billion tokens</strong>.<label for="sn-the-training-loop-1" class="sn-ref">1</label><input type="checkbox" id="sn-the-training-loop-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> The predicate flips at <code>int(38,147 x 0.85) = 32,424</code>. The run's history records the transition at 32,430 because telemetry is reported every ten steps after step 1,000, so the first report that saw <code>phase == "decay"</code> was the one at 32,430. The switch happened six steps earlier than the number in the log, which is worth knowing before anyone tries to reconcile the two.</span> From that step onward it trained on the decay mix at a falling learning rate, and the two changes are deliberately not separable in this run. We did not run an ablation with the anneal and the decay at different boundaries, so we cannot attribute the shape of the final loss curve to one rather than the other, and the evaluation chapter says so where it reports the numbers.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-training-loop-3.png" alt="The learning-rate decay and the data anneal begin at the same step, by construction." loading="lazy"  data-fig="the-training-loop-3.png"><span class="fig-ph">figure rendering &middot; The learning-rate decay and the data anneal begin at the same step, by</span></div><figcaption>The learning-rate decay and the data anneal begin at the same step, by construction.</figcaption></figure>
+<h2 id="the-batch-and-the-number-that-is-not-the-batch">The batch, and the number that is not the batch</h2>
+<p>Four numbers multiply together to make one optimizer step:</p>
+<div class="tbl-wrap"><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td>sequence length</td><td>4,096</td></tr><tr><td>sequences per microbatch</td><td>4</td></tr><tr><td><strong>microbatch</strong></td><td><strong>16,384 tokens</strong></td></tr><tr><td>gradient accumulation</td><td>8</td></tr><tr><td><strong>tokens per optimizer step</strong></td><td><strong>131,072</strong></td></tr></tbody></table></div>
+<p>Multiplying that by the 38,147 steps gives <strong>5,000,003,584</strong> tokens, which is where the run's headline token count comes from. It is not a round number because the step count was chosen to reach five billion, not the other way around: <code>round(5e9 / 131,072) = 38,147</code>, and 38,147 steps of 131,072 tokens overshoots five billion by 3,584 tokens.</p>
+<p>Now the distinction that the entire next section of this book rests on. <strong>Gradient accumulation raises the tokens per optimizer step. It does not raise the microbatch, and the microbatch is what sets MFU.</strong></p>
+<p>The GPU never sees 131,072 tokens at once. It sees 16,384 tokens, computes a forward and backward pass on them, keeps the gradients, and does it again seven more times before the optimizer runs. Every kernel launch, every padded expert buffer, every activation tensor is sized by 16,384. Accumulation amortises only the work that happens once per optimizer step — the AdamW update, the gradient clip, the balancer update, the telemetry — and that work is a small fraction of the total.</p>
+<p>This is not an argument, it is a measurement, and it was taken on <strong>r2, the rung above ours</strong>. When the fused <code>situ</code> kernel freed 40 GB, the resulting MFU gain came entirely from being able to raise the microbatch from 16,384 to 24,576 tokens: at equal batch the kernel scored <strong>5.5% against 5.6%</strong>, and at the larger microbatch it scored <strong>7.7%</strong> at 41,294 tokens per second. The kernel won by allowing a bigger microbatch, not by being faster. Accumulation could not have produced that gain at any setting.<label for="sn-the-training-loop-2" class="sn-ref">2</label><input type="checkbox" id="sn-the-training-loop-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> Which is why the MFU chapters are all about memory. Microbatch is bounded by memory, memory is dominated by activations, and the levers that matter are the ones that make activations smaller. Accumulation is orthogonal to all of it, and it is the first thing people suggest.</span></p>
+<p>For r1 the arithmetic runs as follows. The run sustained <strong>28,936 tokens per second</strong> near the end, and MFU is <code>6 x active_params x tokens_per_second / peak_FLOPs</code>, so <code>6 x 145e6 x 28,936 / 989e12 = 2.5%</code>. That is the number the loop reported, and it is measured on the real run rather than in a benchmark harness. The same model measured in the harness at a 16,384-token microbatch reached 66,877 tokens per second and 5.9% MFU. Both figures are real; the gap between them is the subject of its own discussion in the opening chapter.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-training-loop-4.png" alt="The microbatch and the optimizer batch are different quantities, and only one of them appears in the MFU calculation." loading="lazy"  data-fig="the-training-loop-4.png"><span class="fig-ph">figure rendering &middot; The microbatch and the optimizer batch are different quantities, and o</span></div><figcaption>The microbatch and the optimizer batch are different quantities, and only one of them appears in the MFU calculation.</figcaption></figure>
+<h2 id="one-learning-rate-measured-once">One learning rate, measured once</h2>
+<p>The peak learning rate came from a single sweep, run at r1's width on short runs: <strong>four rates, 600 steps each, on identical data with an identical seed.</strong></p>
+<pre class="code" data-lang="python"><code>lrs = [1e-4, 3e-4, 6e-4, 1e-3]
+handles = [run.spawn(which, steps, seq_len, batch, 1, lr, "H200", 0, "",
+                     True, None) for lr in lrs]</code></pre>
+<p>Short runs are enough for this question because learning-rate problems announce themselves early: too low and the loss plateaus high within a few hundred steps, too high and it spikes or goes to NaN. The sweep recorded <strong>zero loss spikes across all four rates</strong>, and the best final loss was at <strong>6.00e-4</strong>.</p>
+<p>Every other rung's learning rate is that one measurement transferred by width:</p>
+<pre class="code" data-lang="python"><code># r1 hidden  512 -&gt; 6.00e-4      r3 hidden 1024 -&gt; 4.24e-4
+# r2 hidden  768 -&gt; 4.90e-4      flagship 1536 -&gt; 3.46e-4
+RUNG_LR = {"r1": 6.00e-4, "r2": 4.90e-4, "r3": 4.24e-4}</code></pre>
+<p>The rule is <code>6e-4 * sqrt(512 / width)</code>. This is <strong>standard-parameterisation transfer, not muP</strong>, and it is the weakest assumption in the recipe. Under standard parameterisation the optimal learning rate is expected to fall roughly as the inverse square root of width, which is a rule of thumb with empirical support and not a theorem. muP is the principled alternative: it reparameterises initialisation and per-layer learning rates so that the optimal rate is width-invariant by construction, which would let one sweep transfer exactly instead of approximately. We did not implement it.</p>
+<p>Stating this plainly matters more than it might appear, because the flagship's 3.46e-4 was going to be applied to a 35.56-billion-parameter run on two B300s at $7.10 an hour each, derived from one 600-step sweep on a model with a third of the width and a fraction of a percent of the parameters. The flagship failed for an unrelated reason — 69.5% dead experts and a stall at step 890 of 76,294 — so this assumption was never tested at the scale where it would have mattered most.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-training-loop-5.png" alt="The learning rate was measured once and transferred by a rule of thumb. The rule is written down rather than buried." loading="lazy"  data-fig="the-training-loop-5.png"><span class="fig-ph">figure rendering &middot; The learning rate was measured once and transferred by a rule of thumb</span></div><figcaption>The learning rate was measured once and transferred by a rule of thumb. The rule is written down rather than buried.</figcaption></figure>
+<h2 id="weight-decay-and-a-deviation-recorded-rather-than-hidden">Weight decay, and a deviation recorded rather than hidden</h2>
+<p>AdamW ran with <code>betas=(0.9, 0.95)</code>, <code>eps=1e-8</code> and weight decay 0.1, applied through two parameter groups:</p>
+<pre class="code" data-lang="python"><code>def param_groups(model, skip_ids, weight_decay):
+    """Two groups: decay the matrices, do not decay anything 1-D."""
+    decay, no_decay = [], []
+    for p in model.parameters():
+        if not p.requires_grad or id(p) in skip_ids:
+            continue
+        (decay if p.dim() &gt;= 2 else no_decay).append(p)
+    return [{"params": decay, "weight_decay": weight_decay},
+            {"params": no_decay, "weight_decay": 0.0}]</code></pre>
+<p>Everything one-dimensional — RMSNorm gains, biases, KDA's timestep bias — receives no weight decay. Decaying a normalisation gain pulls toward zero the very scale the layer exists to set. Every large open training run does this, so it is a default rather than a tuning choice.</p>
+<p>The part worth recording is that <strong>the r1 learning-rate sweep that produced 6.00e-4 ran with a single parameter group and decay on everything.</strong> The interaction between weight decay on 1-D parameters and the optimal learning rate is second-order, and we did not re-run the sweep after splitting the groups. It is a difference between the conditions the constant was measured under and the conditions it was used under, which is exactly the class of thing that is easy to leave in a code comment nobody reads.</p>
+<p>The <code>skip_ids</code> set holds the router's <code>e_score_correction_bias</code> tensors, which are excluded from the optimizer entirely. Their update rule is already fully specified by the balancer, and handing them to AdamW would have momentum and weight decay fighting a rule that is not a gradient. The expert-collapse chapter covers what that rule does.</p>
+<h2 id="the-spike-protocol-written-before-the-run">The spike protocol, written before the run</h2>
+<p>Loss spikes are a normal event in large pretraining runs and a fatal one if handled badly. The policy was written into the loop before the first real run rather than improvised during it:</p>
+<ul><li>A step whose loss is NaN or infinite is skipped.</li><li>A step whose loss exceeds <strong>1.5x</strong> a running EMA of recent losses is skipped.</li><li>A skip means gradients are dropped and the optimizer does not step. One batch of data is lost.</li><li><strong>Five consecutive skips abort the run</strong> and ask for a rollback rather than grinding on through a divergence.</li></ul>
+<p>Two details in the implementation are less obvious than the policy.</p>
+<pre class="code" data-lang="python"><code>if self.ema is not None and step &gt; self.warmup_steps and loss &gt; self.ema * self.ratio:
+    ...
+    return True, f"loss {loss:.3f} &gt; {self.ratio}x EMA {self.ema:.3f}"
+# only healthy steps update the baseline, or one spike drags the EMA up
+# and the next spike looks normal
+self.ema = loss if self.ema is None else 0.98 * self.ema + 0.02 * loss</code></pre>
+<p>First, <strong>the EMA is updated only on steps that were not skipped.</strong> If a spike were folded into the baseline, the baseline would rise toward the spike, and the second spike of a developing divergence would sit under the threshold that the first one broke. The detector would grow more permissive exactly as the run grew less healthy.</p>
+<p>Second, <strong>the guard's EMA is training state and is saved in the checkpoint.</strong> A resume that restarts it at <code>None</code> disables spike detection for the whole of the guard's warmup window and then re-derives a baseline from whatever the loss happens to be at that moment. The run would come back from a crash with its safety system off, at the point in its life when a crash has just demonstrated that something is wrong.<label for="sn-the-training-loop-3" class="sn-ref">3</label><input type="checkbox" id="sn-the-training-loop-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> The checkpoint carries model weights, optimizer moments, the dataloader cursor, all four RNG states, tokens seen, spend to date and the spike-guard EMA. The checkpointing chapter argues that a checkpoint holding anything less is not a checkpoint of the run, and shows the resume-equivalence test that proved this one is.</span></p>
+<p><strong>r1 skipped zero steps across all 38,147.</strong> No NaN, no loss above 1.5x its EMA, no aborts. That is a statement about how uneventful the run was rather than about how good the protocol is, and the protocol is untested by it. The place we know the machinery is needed is distributed training, where every rank must reach the same skip decision or the optimizer desynchronises. r1 never met that case: it fit on one H200 and was never sharded, so its guard only ever ran on a single rank. The all-reduce of the loss before the guard sees it was written for the models above r1, and it was on the flagship's two B300s that the desynchronisation it prevents was actually diagnosed. The sharding chapter goes through that bug and the two others alongside it.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-training-loop-6.png" alt="The protocol as implemented. It never fired on r1." loading="lazy"  data-fig="the-training-loop-6.png"><span class="fig-ph">figure rendering &middot; The protocol as implemented. It never fired on r1.</span></div><figcaption>The protocol as implemented. It never fired on r1.</figcaption></figure>
+<h2 id="the-telemetry-contract">The telemetry contract</h2>
+<p>Every ten steps, rank 0 assembles a dictionary and hands it to the monitor.<label for="sn-the-training-loop-4" class="sn-ref">4</label><input type="checkbox" id="sn-the-training-loop-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> Logging is dense early and sparse later: every step below step 100, every fifth step below step 1,000, then every <code>log_every</code> steps. At 131,072 tokens per step, a flat interval of ten steps puts 1.31 million tokens between reports, which at the run's sustained 28,936 tokens per second is about forty-five seconds of blank dashboard — tolerable in the middle of the run, and far too coarse over the first hundred steps, which is when problems appear. The call is <code>.spawn()</code> rather than <code>.remote()</code>, so a slow monitor cannot throttle training, and the whole thing is wrapped in a bare <code>except</code> that prints and continues. Telemetry observes the run; it must never be able to gate it.</span> The fields are fixed, and choosing them was a design decision rather than an afterthought:</p>
+<pre class="code" data-lang="python"><code>m = {
+    "stage": stage, "step": step, "phase": phase,
+    "total_steps": total_steps,
+    "tokens_seen": tokens_seen,
+    "target_tokens": total_steps * step_tokens,
+    "loss": loss, "lr": lr, "grad_norm": float(gnorm),
+    "mfu": mfu_of(active_params, tok_s, peak_flops),
+    "tok_per_s": tok_s,
+    "router_entropy_min": router.get("router_entropy_min"),
+    "dead_expert_frac": router.get("dead_expert_frac"),
+    "load_imbalance": router.get("load_imbalance_max"),
+    "spikes_skipped": guard.total_skipped,
+    "spend_usd": spend_usd_start + elapsed_h * usd_per_hour,
+    "status": "running",
+    "eta": f"{(total_steps - step) * dt / 3600:.1f}h",
+    ...
+}</code></pre>
+<p>Three of those fields are worth pointing at.</p>
+<p><code>dead_expert_frac</code> is there because router entropy was not enough. That is the whole subject of the next chapter: at step 20 of the first real run, entropy read 0.99 out of 1.0 while 94.5% of experts were receiving no tokens. Both metrics are reported here, and the gate is on the second one.</p>
+<p><code>tokens_seen</code> against <code>target_tokens</code> is reported rather than derived on the dashboard, because the two can disagree. <code>target_tokens</code> is <code>total_steps x step_tokens</code>, and <code>tokens_seen</code> accumulates what the loader actually delivered, multiplied by the world size on a sharded run. A mismatch between them is a real bug rather than a display quirk.</p>
+<p><code>spend_usd</code> is tracked by the training loop itself, from its own elapsed time and the hourly rate, and it is carried across a resume through the checkpoint. This is what makes a budget gate possible at all: a process that knows what it has spent can be told to stop at a number. An earlier version reset it to zero on resume, which meant an over-budget gate could never fire on a run that had been restarted even once, which is precisely the long run such a gate exists to protect.</p>
+<p>Here are the first and last reports of the run, side by side.</p>
+<div class="tbl-wrap"><table><thead><tr><th>field</th><th>step 0</th><th>step 38,140</th></tr></thead><tbody><tr><td>loss</td><td><strong>12.100</strong></td><td><strong>2.623</strong></td></tr><tr><td>lr</td><td>7.87e-7</td><td>6.07e-5</td></tr><tr><td>tok/s</td><td>716</td><td>28,936</td></tr><tr><td>mfu</td><td>—</td><td>2.5%</td></tr><tr><td>dead_expert_frac</td><td>0.0%</td><td><strong>0.0%</strong></td></tr><tr><td>load_imbalance</td><td>2.36</td><td>4.0</td></tr><tr><td>router_entropy_min</td><td>—</td><td>0.973</td></tr><tr><td>grad_norm</td><td>—</td><td>0.299</td></tr><tr><td>spend_usd</td><td>~0</td><td><strong>$252.35</strong></td></tr></tbody></table></div>
+<p>The step-0 loss is the one worth checking rather than celebrating. A model that has learned nothing spreads its probability mass evenly over the vocabulary, and the cross-entropy of a uniform distribution over 163,840 tokens is <code>ln(163,840) = 12.007</code>. We measured <strong>12.100</strong>. If that number had come out at 6, the loss would have been computed over the wrong axis; if it had come out at 30, the initialisation would have been wrong. It is the cheapest sanity check available in this entire project and it costs one step.</p>
+<p>The step-0 throughput of <strong>716 tokens per second</strong> against a sustained 28,936 is the allocator growing and the kernels autotuning. This is why MFU measurement discipline in this project always discards the first two steps.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-training-loop-7.png" alt="The run's first and last telemetry reports. Every field in between has the same shape." loading="lazy"  data-fig="the-training-loop-7.png"><span class="fig-ph">figure rendering &middot; The run's first and last telemetry reports. Every field in between has</span></div><figcaption>The run's first and last telemetry reports. Every field in between has the same shape.</figcaption></figure>
+<h2 id="what-the-loop-is-for">What the loop is for</h2>
+<p>Almost nothing in this chapter is novel. WSD is standard practice, gradient accumulation is a two-line pattern, spike skipping is folklore that several open runs have published, and no weight decay on 1-D parameters is in every large open recipe.</p>
+<p>What made the difference was writing them down before the run rather than during it, and reporting enough state that a failure would be visible from outside the process. The spike protocol never fired. The budget gate never fired. The dead-expert gate never fired. On a run that finishes cleanly, all of that machinery looks like overhead, and the only way to know whether it was worth building is to compare against the flagship, which had the same machinery, collapsed with 69.5% dead experts and load imbalance between 74 and 85, and was stopped at step 890 of 76,294 having spent $48.33. It stopped at 1.2% of its step count, and it stopped because the gates fired.</p>
+<p>The loop's job is not to make training work. It is to make the difference between a run that is working and a run that is not visible before the money is gone.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./14-the-released-code-cannot-train.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 14</span>
+              <span class="vb-nav-title">The released code cannot train</span>
+            </a>
+            <a href="./16-expert-collapse.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 16 →</span>
+              <span class="vb-nav-title">Expert collapse, and the metric that missed it</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

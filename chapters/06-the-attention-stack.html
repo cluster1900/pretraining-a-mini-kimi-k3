@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The attention stack: nine KDA layers and three MLA · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="The delta rule with a per-channel forget gate, multi-head latent attention at a 128/64/128 split, and why exactly every fourth layer keeps exact global retrieval.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 06 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 01 · The Model</div>
+      <h1 class="vb-chapter-title">The attention stack: nine KDA layers and three MLA</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 6 of 30</span>
+        <span class="vb-pill">⏱ 11 min read</span>
+        <span class="vb-pill">📊 6 figures</span>
+        <span class="vb-pill cost">3:1</span>
+      </div>
+
+      <p class="vb-chapter-blurb">The delta rule with a per-channel forget gate, multi-head latent attention at a 128/64/128 split, and why exactly every fourth layer keeps exact global retrieval.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>r1 has twelve layers, and only three of them compute attention in the sense the word usually carries. Layers 4, 8 and 12 run multi-head latent attention, where every token can look at every earlier token and the model keeps a key-value cache that grows with the sequence. The other nine run Kimi Delta Attention, which keeps no cache at all and instead carries a fixed-size state that each token reads from and writes to as it passes.</p>
+<p>That 3:1 ratio is not ours. K3 as released has 93 layers, 69 of them KDA and 24 of them full attention, with the full-attention layers placed on every fourth index: <code>[4, 8, 12, ... 88, 92, 93]</code>. We kept the rule rather than the count, so at twelve layers the same rule puts full attention on 4, 8 and 12 and leaves nine KDA layers around them.</p>
+<p>This chapter is about what each mechanism costs and what it buys. The from-scratch construction of both modules, with runnable code for the recurrence and the latent projections, is a different book in this library.<label for="sn-the-attention-stack-1" class="sn-ref">1</label><input type="checkbox" id="sn-the-attention-stack-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> <em>Build Kimi K3 from Scratch</em>, which builds Kimi Delta Attention, Gated MLA, Attention Residuals and LatentMoE as small modules you can run on a laptop. Here we assume they exist and ask what they cost to train.</span> Here we care about the two questions a training run makes you answer: how much memory does the past occupy, and how much of the GPU's time does this part of the model consume.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-attention-stack-1.png" alt="The layer stack in K3 and in r1. We kept the placement rule and scaled the depth." loading="lazy"  data-fig="the-attention-stack-1.png"><span class="fig-ph">figure rendering &middot; The layer stack in K3 and in r1. We kept the placement rule and scaled</span></div><figcaption>The layer stack in K3 and in r1. We kept the placement rule and scaled the depth.</figcaption></figure>
+<h2 id="two-ways-to-carry-the-past">Two ways to carry the past</h2>
+<p>Every autoregressive layer has to give the current token access to the tokens before it, and there are two structurally different ways to arrange that.</p>
+<p>Full attention stores them. Each earlier token contributes a key and a value, both are kept, and the current query is compared against every key. Nothing is lost, because nothing is summarised. The cost is that the stored keys and values grow linearly with the sequence, and the comparison grows quadratically with it.</p>
+<p>Linear attention summarises them. The layer carries a state matrix, each token updates it, and each token reads from it. The state has a fixed size that does not depend on how many tokens have gone past, so memory is constant and the per-token work is constant. What is lost is exactness: a fixed-size summary of an unbounded history is lossy by construction.</p>
+<p>For a 4,096-token context, which is what r1 trained at, the difference is a memory line item. For K3's <code>max_position_embeddings</code> of <strong>1,048,576</strong>, it decides whether the model exists. A million-token sequence in a full-attention layer stores a million keys and a million values, and the score matrix it implies has a million rows and a million columns. Nine layers out of every twelve avoiding that is the reason a 1M context is affordable at all.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-attention-stack-2.png" alt="The two ways of giving a token access to its history. K3 uses one for three layers in four and the other for the fourth." loading="lazy"  data-fig="the-attention-stack-2.png"><span class="fig-ph">figure rendering &middot; The two ways of giving a token access to its history. K3 uses one for </span></div><figcaption>The two ways of giving a token access to its history. K3 uses one for three layers in four and the other for the fourth.</figcaption></figure>
+<h2 id="kda-a-recurrence-with-a-forget-gate">KDA: a recurrence with a forget gate</h2>
+<p>Kimi Delta Attention is a linear-attention recurrence built on the delta rule. The name describes the update: rather than only accumulating new key-value products into the state, the layer first removes what the state currently associates with the incoming key, then writes the new association in its place. An accumulate-only linear attention overwrites nothing, so repeated or contradictory information piles up and the state saturates. Writing a difference keeps the state usable for longer.</p>
+<p>Around that core the module adds four things, all of which r1 inherits from K3's configuration unchanged.</p>
+<p><strong>A per-channel forget gate.</strong> Each channel of the state gets its own decay factor, produced from the hidden state by a low-rank pair of projections. A single scalar decay per head would force every channel to forget at the same rate, which is the wrong constraint when some channels carry a syntactic fact that expires within a clause and others carry a topic that persists for a page. The gate is clamped below by <code>gate_lower_bound</code> of <strong>-5.0</strong>, which bounds how fast any channel is allowed to be wiped, and prevents a single token from erasing the state.</p>
+<p><strong>A short convolution of kernel size 4.</strong> Queries, keys and values each pass through a depthwise convolution over a four-token window with a Swish activation before entering the recurrence. This is the same trick Mamba-style models use, and it gives each position a small amount of local mixing that a purely recurrent update is slow to build.</p>
+<p><strong>L2 normalisation on queries and keys.</strong> Both are normalised to unit length before the recurrence, inside the kernel. This bounds the magnitude of what any single token can write into the state, which is what keeps the recurrence numerically stable over thousands of steps of accumulation in bf16.</p>
+<p><strong>No explicit positional encoding.</strong> There are no rotary embeddings in a KDA layer, and none are needed. Position is carried by the recurrence itself, because the state at token <em>t</em> is a function of exactly the tokens before <em>t</em> in order, and by the four-token convolution window, which is position-sensitive by construction.</p>
+<p>The call into the kernel makes the shape of it visible:</p>
+<pre class="code" data-lang="python"><code>o, recurrent_state = chunk_kda(
+    q=q, k=k, v=v,                      # after short conv + Swish
+    g=g,                                # per-channel forget gate
+    beta=beta,                          # per-head write strength
+    A_log=self.A_log, dt_bias=self.dt_bias,
+    use_qk_l2norm_in_kernel=True,
+    use_gate_in_kernel=True,
+    use_beta_sigmoid_in_kernel=True,
+    safe_gate=self.gate_lower_bound is not None,
+    lower_bound=self.gate_lower_bound,  # -5.0
+)</code></pre>
+<p><code>chunk_kda</code> is the training path. It processes the sequence in chunks so the recurrence can be expressed as a sequence of matrix multiplications rather than a token-by-token loop, which is what makes a recurrent layer trainable at 4,096 tokens on a GPU at all. The single-token path, <code>fused_recurrent_kda</code>, is only used at inference with a cache.</p>
+<p>Two of those arguments carry a story from elsewhere in this book. <code>dt_bias</code> is created with <code>torch.empty</code> in the released code and never initialised, and <code>_init_weights</code> covers only <code>nn.Linear</code> and <code>nn.Embedding</code>, so it reaches the kernel as uninitialised memory. That failed non-deterministically: rung r2 trained normally while r1 returned NaN from step 0, from the same bug.<label for="sn-the-attention-stack-2" class="sn-ref">2</label><input type="checkbox" id="sn-the-attention-stack-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> Fixed in <code>train/init_patch.py</code> with a Mamba-style <code>dt_bias</code> initialisation and an <code>assert_initialised</code> finite check that runs before step 0. The chapter on the four blockers in the released code covers all of them.</span></p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-attention-stack-3.png" alt="The KDA data path. Everything left of the recurrence prepares what gets written into the state." loading="lazy"  data-fig="the-attention-stack-3.png"><span class="fig-ph">figure rendering &middot; The KDA data path. Everything left of the recurrence prepares what get</span></div><figcaption>The KDA data path. Everything left of the recurrence prepares what gets written into the state.</figcaption></figure>
+<h2 id="mla-compressing-the-cache-and-the-dimension-that-will-not-compress">MLA: compressing the cache, and the dimension that will not compress</h2>
+<p>Multi-head latent attention attacks the other side of the trade. It keeps exact attention and shrinks what has to be stored, by projecting the hidden state down to a small latent vector and caching that instead of full keys and values. Keys and values are reconstructed from the latent by an up-projection when they are needed.</p>
+<p>K3's split is <code>qk_nope_head_dim</code> <strong>128</strong>, <code>qk_rope_head_dim</code> <strong>64</strong>, <code>v_head_dim</code> <strong>128</strong>, with <code>kv_lora_rank</code> 512 and <code>q_lora_rank</code> 1536. r1 uses the same <strong>128 / 64 / 128</strong> split, unchanged, and scales only the two low-rank widths with the hidden size.</p>
+<p>The 64-dimensional middle term is where the design gets interesting, and it exists because compressed latents and rotary position embeddings are in direct conflict.</p>
+<p>Rotary embeddings apply a position-dependent rotation to queries and keys before the dot product. The saving that makes latent attention worth doing comes from folding the key up-projection into the query side, so the cached latent never has to be expanded during decoding. That folding is a matrix identity, and it only holds if nothing position-dependent sits between the latent and the query. A rotation applied per position sits exactly there, and it does not commute with the up-projection, so applying rotary to a reconstructed key destroys the identity and the cache saving with it.</p>
+<p>The resolution is to split the head. <strong>128 dimensions carry no position at all</strong> and are reconstructed from the compressed latent, which is the "nope" part of the name. <strong>64 dimensions are computed directly from the hidden state, never compressed</strong>, and are the only place position lives. Those 64 dimensions are produced once and shared across all heads rather than per head, so the incompressible part of the cache stays small. Values get their own 128 dimensions, also reconstructed from the latent.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-attention-stack-4.png" alt="Latent attention splits the head so that the compressible part and the position-carrying part never have to be the same " loading="lazy"  data-fig="the-attention-stack-4.png"><span class="fig-ph">figure rendering &middot; Latent attention splits the head so that the compressible part and the</span></div><figcaption>Latent attention splits the head so that the compressible part and the position-carrying part never have to be the same numbers.</figcaption></figure>
+<p>The asymmetry at the bottom of that figure matters for a reason that has nothing to do with modelling. A query head is 192 wide and a value head is 128 wide, and every fast attention kernel we could use assumes they are equal. The fix in the released code is to pad the value to 192 with zeros and slice the output back to 128, which is exact rather than approximate. It is also written to run on one code path only, which produced the first of two practical notes at the end of this chapter.</p>
+<h2 id="why-keep-any-full-attention">Why keep any full attention</h2>
+<p>If the state view is cheaper in memory and linear in sequence length, the question is why the stack keeps twenty-four full-attention layers out of ninety-three rather than zero.</p>
+<p>A fixed-size state is a summary, and a summary cannot support exact retrieval of an arbitrary earlier token. Asked to copy a specific string that appeared 30,000 tokens ago, or to return a value from a table halfway up a long document, a stack made only of recurrences has to have already decided, at the moment that token went past, that it was worth keeping. The delta rule improves the odds considerably over accumulate-only linear attention, because editing the state is far better than filling it. It does not change the fact that the state has a bounded capacity and the history does not.</p>
+<p>A full-attention layer has the opposite property. It has no capacity limit on what it can retrieve, because it kept everything, and it pays for that at every token.</p>
+<p>Interleaving them lets the network choose. Information that needs exact recall can be routed through the layers that kept everything, while the bulk of the sequence modelling happens in layers that cost a constant amount per token. Placing full attention on every fourth index rather than, say, the last three layers, means no long stretch of the network is ever more than three layers from exact global access.</p>
+<p>The cost accounting is the part worth carrying away. In r1, three layers out of twelve maintain a KV cache, so cache memory is <strong>a quarter</strong> of what a full-attention stack of the same shape would need. In K3, 24 of 93 layers do, which is just over a quarter, and at a context of 1,048,576 tokens that quarter is the difference between a model that ships and one that does not.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-attention-stack-5.png" alt="What each layer type can reach, and why the exact layers are spread evenly rather than stacked at the end." loading="lazy"  data-fig="the-attention-stack-5.png"><span class="fig-ph">figure rendering &middot; What each layer type can reach, and why the exact layers are spread ev</span></div><figcaption>What each layer type can reach, and why the exact layers are spread evenly rather than stacked at the end.</figcaption></figure>
+<h2 id="what-r1-keeps-and-what-it-scales">What r1 keeps, and what it scales</h2>
+<p>Held identical to K3, at any width:</p>
+<div class="tbl-wrap"><table><thead><tr><th></th><th>K3</th><th>r1</th></tr></thead><tbody><tr><td>full attention placement</td><td>every 4th layer</td><td>every 4th layer</td></tr><tr><td><code>head_dim</code></td><td>128</td><td>128</td></tr><tr><td>MLA split (nope / rope / value)</td><td>128 / 64 / 128</td><td>128 / 64 / 128</td></tr><tr><td><code>short_conv_kernel_size</code></td><td>4</td><td>4</td></tr><tr><td><code>gate_lower_bound</code></td><td>-5.0</td><td>-5.0</td></tr><tr><td><code>use_full_rank_gate</code></td><td>set</td><td>set</td></tr></tbody></table></div>
+<p>Scaled with width:</p>
+<div class="tbl-wrap"><table><thead><tr><th></th><th>K3</th><th>r1</th></tr></thead><tbody><tr><td>layers</td><td>93</td><td>12</td></tr><tr><td>KDA / MLA layers</td><td>69 / 24</td><td>9 / 3</td></tr><tr><td><code>hidden_size</code></td><td>7,168</td><td>512</td></tr><tr><td>attention heads</td><td>96</td><td>8</td></tr><tr><td>KDA heads</td><td>—</td><td>4</td></tr><tr><td>context</td><td>1,048,576</td><td>4,096</td></tr></tbody></table></div>
+<p>The head counts are the only part of the attention stack that moves with scale, and they move because head width is held at 128 while hidden size shrinks by a factor of fourteen. At r1's hidden size of 512, four KDA heads at 128 wide is exactly the hidden dimension, and eight attention heads at 128 is twice it. Keeping <code>head_dim</code> fixed rather than fixed head <em>count</em> is what preserves the per-head arithmetic that the delta rule and the latent split were designed around.<label for="sn-the-attention-stack-3" class="sn-ref">3</label><input type="checkbox" id="sn-the-attention-stack-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> This choice is also what makes KDA the largest single item in the always-on parameter budget at flagship scale: 340.3M of the 834M floor. The chapter on scaling down works through that budget.</span></p>
+<h2 id="two-practical-notes">Two practical notes</h2>
+<p><strong>The MLA layers did not run on flash-attention.</strong> The released modeling code hard-forces the string <code>flash_attention_2</code> as its attention implementation, and the 192-against-128 padding described above only runs on that branch. Our MLA layers therefore run an <strong>sdpa shim registered under the <code>flash_attention_2</code> key</strong>. Numerically it is identical, because the padding is zeros and the output is sliced back. It is slower. Every MFU number in this book that involves MLA was measured on that shim, which means every one of them <strong>understates</strong> what flash-attention would have given. In r1 the exposure is bounded by the interleave, since only 3 of 12 layers are MLA at all.<label for="sn-the-attention-stack-4" class="sn-ref">4</label><input type="checkbox" id="sn-the-attention-stack-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> An MFU figure is only comparable to another MFU figure measured on the same backend, on the same hardware, at the same batch shape. The chapter on what MFU is spends its length on exactly this, and the fitting error in attempt 13, where an H200 result and a B200 result were fitted together, is the cautionary case.</span></p>
+<p><strong>The profile retired flash-attention as a lever anyway.</strong> The MFU investigation ran sixteen numbered attempts, almost all of them on r2, the 307M-active rung above ours, on one H200. Attempt 6 was the hypothesis that the KDA or attention kernels were the cost. It was rejected by measurement, and the corrected profile, taken on r2 at 16,384 tokens per step and counting CUDA kernels only, put the two rows at:</p>
+<div class="tbl-wrap"><table><thead><tr><th>area</th><th>share of GPU time</th></tr></thead><tbody><tr><td>KDA (fla-core Triton)</td><td><strong>9.1%</strong></td></tr><tr><td>attention</td><td><strong>3.9%</strong></td></tr></tbody></table></div>
+<p>Against elementwise at 41.9% and copy and index at 24.7%. A good deal of build effort had gone into installing flash-attn before that profile existed, and the largest prize available for all of it was some fraction of 3.9%.<label for="sn-the-attention-stack-5" class="sn-ref">5</label><input type="checkbox" id="sn-the-attention-stack-5" class="sn-toggle"><span class="sidenote"><sup>5</sup> The first version of that profile table read 4.6% for KDA and 5.1% for attention, and also carried an unexplained 30.2% "other". It summed PyTorch operator rows together with the CUDA kernels those operators launch, which double-counts. The corrected numbers are the ones above. Both versions say the same thing about flash-attn.</span></p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-attention-stack-6.png" alt="The corrected profile. The two rows this chapter is about sit near the bottom of it." loading="lazy"  data-fig="the-attention-stack-6.png"><span class="fig-ph">figure rendering &middot; The corrected profile. The two rows this chapter is about sit near the</span></div><figcaption>The corrected profile. The two rows this chapter is about sit near the bottom of it.</figcaption></figure>
+<h2 id="what-this-chapter-buys-the-rest-of-the-book">What this chapter buys the rest of the book</h2>
+<p>Two things carry forward.</p>
+<p>The first is a way of reading any hybrid attention stack. Ask what each layer type does with the past, then count how many layers of each kind there are, and the memory behaviour of the whole model falls out. Nine layers with a fixed state and three with a growing cache is a model whose long-context memory is dominated by three layers, and that is a design decision rather than an accident of implementation.</p>
+<p>The second is a caution that the rest of the book keeps returning to. Attention is the part of a transformer that most engineering attention has been spent on, and it is the part most people reach for first when a run is slow. On this architecture, at this scale, the whole attention stack accounted for 13.0% of GPU time in the r2 profile, and the fastest available kernel for a quarter of the layers was not installed. Neither fact cost the run anything measurable, because the time was going somewhere else entirely. Finding out where took one profiling run, and that run is the next section of this book.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./05-scaling-it-down-without-lying.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 05</span>
+              <span class="vb-nav-title">Scaling it down without lying about it</span>
+            </a>
+            <a href="./07-the-moe-that-actually-routes.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 07 →</span>
+              <span class="vb-nav-title">The mixture of experts that actually routes</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FP8, and the bigger GPU that scored worse · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="Two attempts at FP8, four to eleven times slower than the format it replaces, and a B200 that is 20% faster in absolute throughput at roughly half the MFU. Both results are real, and both are about ratios.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 24 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 04 · Making It Fast</div>
+      <h1 class="vb-chapter-title">FP8, and the bigger GPU that scored worse</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 24 of 30</span>
+        <span class="vb-pill">⏱ 10 min read</span>
+        <span class="vb-pill">📊 5 figures</span>
+        <span class="vb-pill cost">0.19x</span>
+      </div>
+
+      <p class="vb-chapter-blurb">Two attempts at FP8, four to eleven times slower than the format it replaces, and a B200 that is 20% faster in absolute throughput at roughly half the MFU. Both results are real, and both are about ratios.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>The profile in the previous chapter left us pointed at a specific resource. Only about 12% of GPU time was arithmetic and 41.9% was elementwise work that moves data without computing much, so the quantity to economise is bytes crossing the memory bus rather than floating-point operations. Two ideas follow directly from that. Use a smaller number format, so every byte moved carries the same information in half the space. Or rent a card with more bandwidth and more memory, so the bytes move faster and more of them fit.</p>
+<p>We tried both. Neither worked, and the two failures have the same shape. Each is a question about a ratio, and in each case the quantity we had reasoned about is the one on top, while the quantity that decided the outcome sits underneath it.</p>
+<p>This chapter covers attempts 11 and 15, FP8 tried naively and then the way production systems do it, and attempt 10, a Blackwell B200 standing in for an H200. It closes with attempt 13, an invalid measurement that attempt 10 had already made it possible to catch, and that we did not catch until a fitted exponent changed sign.</p>
+<p>All of it was measured on <strong>r2</strong>, the 307M-active rung above the one this book is about, on a single H200 unless a B200 is named. None of these results came from r1's own run.</p>
+<h2 id="fp8-taken-at-face-value">FP8, taken at face value</h2>
+<p>FP8 is an eight-bit floating-point format with tensor-core support on both Hopper and Blackwell, and against bfloat16 it halves the bytes for every weight and every activation it touches. The expert weights hold most of a mixture-of-experts model's parameters and every token reads six of them, so the expert matmuls looked like the largest single saving available. PyTorch exposes the operation directly as <code>torch._scaled_mm</code>.</p>
+<p>The complication is range. FP8 carries roughly two decimal digits, so a tensor has to be scaled into the format's usable band before the matmul and scaled back after it. The straightforward implementation reads:</p>
+<pre class="code" data-lang="python"><code>sx = x.abs().amax() / 448.0          # 448 is the max of float8_e4m3fn
+xq = (x / sx).to(torch.float8_e4m3fn)
+y  = torch._scaled_mm(xq, wq.t(), scale_a=sx, scale_b=sw, out_dtype=x.dtype)</code></pre>
+<p>Three lines, one of them a library call, and every one of them correct.<label for="sn-fp8-and-the-bigger-gpu-1" class="sn-ref">1</label><input type="checkbox" id="sn-fp8-and-the-bigger-gpu-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> <code>float8_e4m3fn</code> is four exponent bits and three mantissa bits, with no infinities, which is why its maximum representable value is 448 rather than a power of two. The alternative FP8 type, <code>e5m2</code>, trades mantissa for range and is normally used for gradients rather than activations. We only measured <code>e4m3fn</code>, because a format that cannot represent the forward pass accurately does not need a backward-pass measurement.</span></p>
+<p>We benchmarked it at the shapes our expert layers actually use, rather than at a square shape chosen to look good, and the result was uniform across all of them. FP8 ran at between <strong>0.19x and 0.09x</strong> of bfloat16's speed, which is to say it was several times slower than the format it was replacing, and it was about <strong>five times less accurate</strong> on the same shapes.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/fp8-and-the-bigger-gpu-1.png" alt="The reasoning behind FP8 and the operation the naive implementation actually performs. Measured on r2's expert shapes, o" loading="lazy"  data-fig="fp8-and-the-bigger-gpu-1.png"><span class="fig-ph">figure rendering &middot; The reasoning behind FP8 and the operation the naive implementation ac</span></div><figcaption>The reasoning behind FP8 and the operation the naive implementation actually performs. Measured on r2's expert shapes, one H200.</figcaption></figure>
+<h2 id="why-it-was-slower">Why it was slower</h2>
+<p>The arithmetic is not the cost, which is the sentence the profile chapter ended on, arriving here in a different costume.</p>
+<p>Each call computes <code>amax</code>, a full reduction over the entire tensor, then divides by the resulting scalar, clamps and casts. That is several complete passes over the data before the matmul is allowed to start. Our expert matmuls in bfloat16 are small enough to finish in tens of microseconds, and a handful of extra passes over a tensor of that size costs more than the matmul does, so the total is larger however efficient the matmul that follows turns out to be.</p>
+<p>The accuracy result has a separate cause. Per-tensor scaling means one scalar governs the whole tensor, so a single outlier value sets the scale and everything else is compressed into whatever dynamic range is left.<label for="sn-fp8-and-the-bigger-gpu-2" class="sn-ref">2</label><input type="checkbox" id="sn-fp8-and-the-bigger-gpu-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> Per-block or per-row scaling fixes this by giving each row or each tile of the tensor its own scale factor, which is what production FP8 implementations do. We did not implement it, because by the time the accuracy problem mattered the speed result had already ruled the approach out at these shapes. The accuracy figure is recorded here so that nobody reads 0.19x as the only objection.</span> That is why the relative error is five times bfloat16's rather than the two or three times a bit-count argument would predict.</p>
+<p>The naive result is therefore not evidence that FP8 does not work. It is evidence that FP8 applied as a dtype change at the call site is a scaling subsystem in a dtype's clothing, and that the subsystem costs more than the format saves.</p>
+<h2 id="fp8-the-way-production-does-it">FP8 the way production does it</h2>
+<p>Attempt 15 implemented the three things production FP8 does differently, all of which are about doing work once instead of doing it every time.</p>
+<p><strong>Persistent quantised weights.</strong> Weights change once per optimizer step, not once per forward pass. Quantising them after the step and reusing the result removes an entire reduction, division and cast from every call, and the saving grows with the number of forward passes each optimizer step contains.</p>
+<p><strong>Delayed scaling.</strong> Instead of reducing over the activation tensor to find its maximum, keep a running maximum from previous steps and update it once per step, outside the hot path. The scale is then slightly stale, which is the design's accepted cost, and no reduction sits on the critical path.</p>
+<p><strong>Keeping scale application out of the reduction path</strong>, so the matmul receives inputs that are already scaled and the two operations do not serialise against each other.</p>
+<p>All three were implemented and measured on the same shapes as the naive version. Amortising made FP8 <strong>2.1x better than the naive version</strong>, which is what it was supposed to do and confirms that the three changes address a real cost. FP8 remained <strong>2.8x slower than bfloat16</strong>.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/fp8-and-the-bigger-gpu-2.png" alt="Attempt 15. Persistent quantised weights and delayed scaling remove the weight-side cost entirely, and the activation-si" loading="lazy"  data-fig="fp8-and-the-bigger-gpu-2.png"><span class="fig-ph">figure rendering &middot; Attempt 15. Persistent quantised weights and delayed scaling remove th</span></div><figcaption>Attempt 15. Persistent quantised weights and delayed scaling remove the weight-side cost entirely, and the activation-side cost is what decides the result.</figcaption></figure>
+<p>The remaining gap is structural rather than a matter of tuning. We amortised the weight quantisation, and every call still quantises the activations, which means dividing, clamping and casting: three passes over <code>x</code> before the matmul begins. The matmul those passes serve is itself a matter of tens of microseconds. Three passes over the input cannot be made cheaper than that, so the sum cannot come out below bfloat16's number.</p>
+<h2 id="the-shape-that-decides-it">The shape that decides it</h2>
+<p>There is a specific architectural reason these matmuls are small, and it is one of the features that makes K3 a K3.</p>
+<p>The latent mixture of experts routes tokens through a bottleneck at half the hidden size before they reach an expert. In r1 that latent width is 256, half of hidden 512. On r2, where these measurements were taken, hidden is 768 and the latent width is 384, and that 384 is the inner dimension of the expert matmuls we benchmarked. An expert matmul in this architecture is 384 wide, and a matmul that narrow, even over a microbatch of 16,384 tokens, finishes in tens of microseconds.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/fp8-and-the-bigger-gpu-3.png" alt="The latent bottleneck that makes the architecture cheap per token is the same feature that makes FP8 unprofitable in it." loading="lazy"  data-fig="fp8-and-the-bigger-gpu-3.png"><span class="fig-ph">figure rendering &middot; The latent bottleneck that makes the architecture cheap per token is t</span></div><figcaption>The latent bottleneck that makes the architecture cheap per token is the same feature that makes FP8 unprofitable in it.</figcaption></figure>
+<p>FP8 pays off when the matmul dominates the quantisation surrounding it, which is true of the large dense matmuls inside a large model and is not true here. Making it win at these shapes means fusing the activation quantisation into the kernel that produces the activations, so that no separate pass over the data exists at all. In practice that means writing the entire expert forward as one Triton kernel rather than calling <code>torch._scaled_mm</code>, and as the chapter on the two kernels that worked showed, a single fused kernel is already a substantial piece of work.</p>
+<p>The transferable rule is a comparison anyone can make before writing a line of quantisation code. Time the matmul, then estimate the passes over the data the quantisation requires. If the matmul is measured in tens of microseconds, the quantisation dominates no matter how carefully it is written.</p>
+<h2 id="a-bigger-gpu">A bigger GPU</h2>
+<p>Attempt 10 changed the hardware instead of the code, which is a clean experiment: it separates our implementation's limits from the machine's.</p>
+<p>The reasoning was that the ceiling had twice turned out to be memory rather than speed. The fused <code>situ</code> kernel of attempt 8 won 1.38x purely by freeing 40 GB, which allowed a 50% larger microbatch, and the dispatch cleanup of attempt 9 made each step 13% faster while leaving peak MFU unchanged, because no larger batch would fit. A B200 carries 180 GB and a higher peak than an H200, so it was the obvious card to try.</p>
+<p>We ran r2 at 24,576 tokens per step on both cards:</p>
+<div class="tbl-wrap"><table><thead><tr><th>gpu</th><th>tokens per step</th><th>tokens/s</th><th>MFU</th></tr></thead><tbody><tr><td>H200</td><td>24,576</td><td>41,041</td><td><strong>7.7%</strong></td></tr><tr><td>B200</td><td>24,576</td><td>49,169</td><td><strong>4.0%</strong></td></tr></tbody></table></div>
+<p>The B200 is <strong>20% faster in absolute throughput and scores roughly half the MFU</strong>. Both numbers are correct, and the first time you read them together they do not look like they can be.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/fp8-and-the-bigger-gpu-4.png" alt="All three panels describe the same pair of runs. Which card looks better depends entirely on which quantity you divide b" loading="lazy"  data-fig="fp8-and-the-bigger-gpu-4.png"><span class="fig-ph">figure rendering &middot; All three panels describe the same pair of runs. Which card looks bett</span></div><figcaption>All three panels describe the same pair of runs. Which card looks better depends entirely on which quantity you divide by.</figcaption></figure>
+<p>They can, because MFU is a ratio and the denominator changed. MFU divides the useful arithmetic by the card's own peak, and the B200's peak is <strong>2.3 times</strong> the H200's. We extracted 1.2 times more work from 2.3 times more capability, so a larger share of the machine sat idle and the percentage fell while the wall clock improved.</p>
+<p>It is worth writing the definition out at this point, because the whole confusion lives in it. We compute <code>MFU = 6 x active_parameters x tokens_per_second / peak_FLOPs</code>, where the H200's bf16 peak is taken as roughly <strong>989 TFLOP/s</strong>. The numerator belongs to the model and the run, and the denominator belongs to the card alone. Move to a card with a larger peak without moving the numerator by as much, and the ratio falls even though every quantity we care about improved. Well-tuned dense training reaches 40 to 55% on this measure, and mixture-of-experts runs score lower, so a number in the single digits is not by itself the alarming reading it appears to be.</p>
+<p>This holds for every utilisation metric and not only this one. <strong>MFU is a ratio, so a faster GPU can lower it.</strong> Comparing MFU across different hardware measures how well each chip is being used, not which chip finishes sooner.</p>
+<p>For a hardware decision the useful figure is tokens per dollar-second, which has money in the denominator instead of FLOPs. At $4.54 per hour the H200 delivers <strong>9,040</strong> tokens per dollar-second and at $6.25 per hour the B200 delivers 7,867. The slower card is <strong>15% more cost-efficient</strong>, so moving to the bigger GPU would have made the headline MFU look worse and cost more per token at the same time.<label for="sn-fp8-and-the-bigger-gpu-3" class="sn-ref">3</label><input type="checkbox" id="sn-fp8-and-the-bigger-gpu-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> Memory is the other quantity that does not behave the way raw capacity predicts. In attempt 8 the 40 GB freed by a fused kernel bought a 50% larger microbatch and a 1.38x gain, so a memory saving turned into a throughput gain by a route that had nothing to do with bandwidth. The chapter on the silent fallback shows the opposite case, where peak memory stops responding to batch size at all.</span></p>
+<h2 id="the-fit-that-flipped-sign">The fit that flipped sign</h2>
+<p>Attempt 13 is where these two results meet, and it is the one worth reading twice.</p>
+<p>Our estimate of the flagship's MFU rested on fitting throughput against active parameters across two rungs, r1 at 145M and r2 at 307M, both on an H200. That fit gives <code>active^0.35</code> and extrapolates to 12.5%. A two-point power law is weak evidence for a number about to price a training run, so a third point was worth having. Rung r3 does not fit on an H200 at a useful batch size, so we ran it on a B200 and refitted all three.</p>
+<p>The result was <code>active^-0.32</code>. A negative exponent implies that larger models are systematically less efficient than smaller ones, which would have turned the flagship's projected cost the wrong way and made the whole ladder look like a poor bet.</p>
+<p>Nothing crashed. The regression was implemented correctly, the arithmetic was right, and the number looked like the sort of disappointing result a careful measurement sometimes returns.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/fp8-and-the-bigger-gpu-5.png" alt="The invalid fit and its correction. The B200 point carries a systematic offset that has nothing to do with model size." loading="lazy"  data-fig="fp8-and-the-bigger-gpu-5.png"><span class="fig-ph">figure rendering &middot; The invalid fit and its correction. The B200 point carries a systemati</span></div><figcaption>The invalid fit and its correction. The B200 point carries a systematic offset that has nothing to do with model size.</figcaption></figure>
+<p>It is an artefact. Attempt 10 had already established that a B200 scores roughly half the MFU of an H200 for the same work, so mixing the two cards in a fit meant to isolate model size put a systematic offset of a factor of two into one of the three points. Normalising r3's <strong>3.6%</strong> to the H200's peak gives about <strong>8.2%</strong>, which sits above r2 and restores the positive scaling the two-point fit had found.</p>
+<p>Two details about how this was caught matter more than the corrected number.</p>
+<p>The first is that the code carried a comment asserting that MFU computed against each card's own peak keeps the numbers comparable across cards. That is exactly backwards, and our own measurement two attempts earlier had already demonstrated it. A comment written while implementing a measurement records what its author believed at that moment, and it can contradict a result the same project has already produced.</p>
+<p>The second is that nothing about the run flagged it. There was no crash, no warning and no implausible magnitude. The only thing that caught it was noticing that the fitted exponent had changed sign between two runs of the same analysis, and asking why. A measurement can be implemented correctly and still measure the wrong quantity, and the failure mode of the wrong quantity is a plausible number.<label for="sn-fp8-and-the-bigger-gpu-4" class="sn-ref">4</label><input type="checkbox" id="sn-fp8-and-the-bigger-gpu-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> This is the same class of error as the router entropy in the chapter on expert collapse, where a correctly implemented metric read 0.99 while 94.5% of experts were dead. In both cases the code was right, the quantity was wrong, and the check that caught it was a comparison against a second measurement rather than a closer reading of the code.</span></p>
+<h2 id="what-the-three-attempts-share">What the three attempts share</h2>
+<p>FP8 was reasoned about as bytes per value, which it does halve. What decided it was the ratio of the matmul to the fixed cost of the passes that produce those bytes, and that cost does not shrink when the values do. Amortisation moved half of it out of the hot path and the half that remained was already larger than the matmul.</p>
+<p>The bigger GPU was reasoned about as bandwidth, memory and throughput, all of which improved. What changed the headline was the denominator, the card's own peak, which grew faster than our ability to use it.</p>
+<p>The invalid fit was a denominator error made twice, once in the measurement and once in the comment explaining why the measurement was fine.</p>
+<p>None of the three needed a new kernel or a subtle bug to go wrong. Each needed only that a ratio be read without checking what it divides by. The practical defence is to keep an absolute number beside every percentage. Throughput in tokens per second and cost in tokens per dollar-second are not measured against a moving reference, and in all three attempts they told the correct story while the percentage did not.</p>
+<p>The next chapter is where a measurement finally does point at something real. A throughput curve that moves up and down as the batch grows, and a peak memory figure that does not move at all, are two shapes no scaling story produces, and together they exposed a dispatch path quietly reverting to the loop it had been written to replace.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./23-two-kernels-that-worked.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 23</span>
+              <span class="vb-nav-title">Two kernels that worked, and one that did not</span>
+            </a>
+            <a href="./25-the-silent-fallback.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 25 →</span>
+              <span class="vb-nav-title">The silent fallback</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

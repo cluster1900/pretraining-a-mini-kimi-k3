@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to read this book · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="A worklog, not a tutorial: every number is measured, every failed idea is written up as fully as the successful ones, and the commands that produced each figure are included.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 03 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 00 · Start Here</div>
+      <h1 class="vb-chapter-title">How to read this book</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 3 of 30</span>
+        <span class="vb-pill">⏱ 11 min read</span>
+        <span class="vb-pill">📊 6 figures</span>
+        
+      </div>
+
+      <p class="vb-chapter-blurb">A worklog, not a tutorial: every number is measured, every failed idea is written up as fully as the successful ones, and the commands that produced each figure are included.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>A worklog is a record of work in the order it was done. It is not a syllabus, and it is not a tutorial that has been tidied up after the fact so that every step follows from the one before it. This book is a worklog, and the arrangement that follows from that decision is worth explaining before the technical chapters begin, because a reader expecting a textbook will find the order strange.</p>
+<p>The project it records ran from 27 July 2026, when Moonshot AI released Kimi K3, to 7 August 2026, when the numbers in this book were pinned. In those days we built a 1.02-billion-parameter replica of K3's architecture, assembled and decontaminated a 104.80-billion-token corpus, found four reasons the released modeling code cannot train at all, ran sixteen numbered attempts at improving throughput, trained the first rung of a scaling ladder for 38,147 steps on one H200 at a cost of $252.35, and watched the largest model in the same ladder fail.</p>
+<p>The chapters appear in roughly that order. Where the work doubled back — and it did, several times — the chapter doubles back with it.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/how-to-read-this-book-1.png" alt="The book's seven sections against the stretch of work that produced them." loading="lazy"  data-fig="how-to-read-this-book-1.png"><span class="fig-ph">figure rendering &middot; The book's seven sections against the stretch of work that produced th</span></div><figcaption>The book's seven sections against the stretch of work that produced them.</figcaption></figure>
+<h2 id="why-chronological-rather-than-thematic">Why chronological rather than thematic</h2>
+<p>A thematic ordering would put every routing decision in one chapter, every throughput decision in another, and every distributed-training decision in a third. It reads more cleanly. It also destroys the information we most want to keep, which is <em>when</em> each thing was known.</p>
+<p>The load balancer is the clearest case. The constant that controls it, <code>gamma</code>, was swept at 4,096 tokens per step, chosen, and then re-swept at the real 131,072 tokens per step because the batch had changed by a factor of 32. A thematic chapter would report the second sweep, since it is the one that governed the run. The worklog reports both, in order, because the reason the second sweep exists is the argument the first sweep produced. Reading the two in sequence teaches something the final answer alone does not.</p>
+<p>The same holds for the throughput work, most of which was measured on r2, one rung above the model this book is about. Sixteen attempts were run and three worked. Presented thematically, the thirteen that did not work become a list of things to avoid. Presented in order, they become thirteen inferences drawn from reading the code, followed by the profile that explained why the code behaved as it did. The second version is the useful one, and it only exists if the chapters stay in the order the work happened.</p>
+<h2 id="the-three-kinds-of-chapter">The three kinds of chapter</h2>
+<p>Chapters in this book do one of three jobs, and knowing which job a chapter is doing tells you how to read it.</p>
+<p><strong>Architecture chapters</strong> describe what we built and why the numbers in it are those numbers. Section 01 is entirely architecture: K3's released configuration, the arithmetic of shrinking it, the attention stack, the mixture of experts, and the parameter counter. These chapters are structural. They contain few measurements and a lot of arithmetic, and their claims are checkable by rereading the config rather than by rerunning anything.</p>
+<p><strong>Engineering chapters</strong> describe what broke. The four blockers in the released modeling code, the manifest bug that would have trained the stable phase on one corpus, the checkpoint commit that lived only in a dying container, the three distributed bugs that complete a run and return a wrong model — these are the chapters where something was already wrong and had to be found.<label for="sn-how-to-read-this-book-1" class="sn-ref">1</label><input type="checkbox" id="sn-how-to-read-this-book-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> One of the four blockers fails non-deterministically, which is why it took a rung comparison to find. <code>KimiDeltaAttention.dt_bias</code> is allocated with <code>torch.empty</code> and never initialised, so it holds whatever was in that memory. r2 trained normally on it while r1 returned NaN from step 0, from the same line of code.</span> They follow a fixed shape: the symptom, what the symptom looked like it meant, and the measurement that identified the actual cause.</p>
+<p><strong>Measurement chapters</strong> report what the system did. The MFU investigation, the profile, the gamma sweeps, the loss curve and the twenty-four benchmark evaluations belong here. Every number in them is attributed, and every number that is an extrapolation rather than a measurement is labelled as one in the sentence that carries it.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/how-to-read-this-book-2.png" alt="The three chapter types and what each one is asking the reader to check." loading="lazy"  data-fig="how-to-read-this-book-2.png"><span class="fig-ph">figure rendering &middot; The three chapter types and what each one is asking the reader to chec</span></div><figcaption>The three chapter types and what each one is asking the reader to check.</figcaption></figure>
+<h2 id="how-to-read-a-measurement-in-this-book">How to read a measurement in this book</h2>
+<p>This is the convention that carries the most weight in the chapters that follow, and misreading it produces a wrong belief about what was actually trained.</p>
+<p>The project trained four models, not one. They form a ladder: <strong>r1</strong> at 1.02B total and 145M active, <strong>r2</strong> at 2.93B and 307M active, <strong>r3</strong> at 6.63B and 562M active, and a <strong>flagship</strong> at 35.56B and 1,237M active.<label for="sn-how-to-read-this-book-2" class="sn-ref">2</label><input type="checkbox" id="sn-how-to-read-this-book-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> A scaling ladder fixes the recipe and varies only scale, so that throughput and hyperparameters measured cheaply on a small rung can be used to price a large one. The chapter on scaling down explains how the rungs were sized; the closing chapter explains what the ladder was ultimately for.</span> They ran on different hardware, and several of the most quoted numbers in this book were measured on a rung that is not the one the book is about.</p>
+<p>r1 is the model this book is about. <strong>r1 trained on one H200 and was never sharded.</strong> Every distributed-training result — FSDP2, ZeRO-3, the 498 GB of optimizer state, the three bugs that do not crash — comes from the flagship on two B300s, and describes what the models above r1 required rather than anything r1 did. Most of the throughput work was measured on r2, one rung up. The fused-dispatch cliff, the last of the sixteen attempts, was measured on the flagship.</p>
+<p>So every measurement in this book carries three pieces of provenance, and we write them into the sentence rather than into a footnote: which rung, which GPU, and whether the number came from a benchmark harness or from the real 38,147-step run.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/how-to-read-this-book-3.png" alt="The provenance every measurement in this book carries. Numbers measured on r2 and on the flagship appear throughout, and" loading="lazy"  data-fig="how-to-read-this-book-3.png"><span class="fig-ph">figure rendering &middot; The provenance every measurement in this book carries. Numbers measure</span></div><figcaption>The provenance every measurement in this book carries. Numbers measured on r2 and on the flagship appear throughout, and are labelled where they appear.</figcaption></figure>
+<p>There is a fourth distinction inside that third slot, and it is larger than expected. A benchmark harness runs a fixed shape for a few dozen steps with nothing else attached. A real run carries a schedule, a dataloader reading from 1,063 shards, checkpoint writes every 100 steps, and all the accumulated state that $252.35 of H200 time at $4.54 an hour buys. On r1, the harness measured <strong>66,877 tokens per second at 5.9% MFU</strong>, and the run that actually happened sustained <strong>27,600 to 28,900 tokens per second at 2.4 to 2.5%</strong>. Both figures are correct. Neither is a substitute for the other, and where this book quotes one it says which.</p>
+<p>The same gap between a probe and a run shows up in the checkpointing and monitoring chapters, which is why they sit where they do. Checkpoints are written every 100 steps rather than the original 250, so about fifteen minutes of work is at risk instead of about thirty-two, and a <code>COMPLETE</code> marker is written last so that a partially written directory is never resumed from. Two monitoring thresholds had to be changed once auto-stop became real: an <code>MFU_FLOOR</code> of 0.20 fired on every step of every healthy run, because measured MFU here is 5 to 8%, and an expert-collapse gate that was fatal on a single reading fired on a trajectory that reaches 69 to 95% dead experts in the first thirty steps and then recovers. The floor is now 3% and collapse requires five consecutive reports. Numbers of that kind only make sense against a real run, and the book presents them that way.</p>
+<p>One caveat rides along with every MFU number here, so it is easiest to state once. MLA runs on an sdpa shim registered under the <code>flash_attention_2</code> key, because the released modeling code hard-forces that string and the asymmetric-head-dim padding only runs on that branch. It is numerically identical and slower, so every MFU figure in this book understates what flash attention would give.<label for="sn-how-to-read-this-book-3" class="sn-ref">3</label><input type="checkbox" id="sn-how-to-read-this-book-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> Two version pins matter if you intend to run any of this: <code>transformers</code> must be <strong>4.57.6</strong>, because <code>&gt;=4.56</code> resolves to 5.x, which removed <code>OutputRecorder</code>, an import the Kimi modeling code makes at module scope; and <code>datasets</code> is pinned to <strong>2.21.0</strong> because 3.x removed script datasets, which the evaluation suite needs.</span></p>
+<h2 id="what-did-not-finish">What did not finish</h2>
+<p>Of the four models on the ladder, one finished.</p>
+<p>r1 completed its full 5,000,003,584-token budget. r2 and r3 were stopped at 75% and 50% of their token budgets when the compute workspace was disabled, so their loss values of 2.99 and 2.95 are mid-run readings and are reported as such. The flagship was launched on 6 August 2026 and failed: 69.5% dead experts, load imbalance between 74 and 85, then a stall, at step 890 of a planned 76,294, having spent $48.33.</p>
+<p>Several other things in this project were planned and never run, and they do not appear as results anywhere in the book. Peer comparisons against SmolLM2-1.7B, Qwen3-1.7B and Llama-3.2-1B were designed and not executed. No supervised fine-tuning, instruction tuning or reasoning distillation was performed, so r1 is a base model that has only ever done next-token prediction. GSM8K and HumanEval are post-training benchmarks and were deliberately not run. The flagship's 12.5% MFU is an extrapolation from a two-point power law and is never described as a measurement.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/how-to-read-this-book-4.png" alt="The state of the ladder. Three of four rungs are incomplete, and the chapters that draw on them say so where they do." loading="lazy"  data-fig="how-to-read-this-book-4.png"><span class="fig-ph">figure rendering &middot; The state of the ladder. Three of four rungs are incomplete, and the c</span></div><figcaption>The state of the ladder. Three of four rungs are incomplete, and the chapters that draw on them say so where they do.</figcaption></figure>
+<p>We put this in the orientation section rather than in a closing note because the engineering described in Sections 03, 04 and 05 was built for all four models. A reader who meets FSDP2 in Section 05 without having been told that the model it was built for never trained past step 890 would reasonably assume otherwise.</p>
+<h2 id="what-we-assume-and-what-is-built-up-here">What we assume, and what is built up here</h2>
+<p>We assume a reader knows what a transformer is at the level of a forward pass — attention, a feed-forward block, residual connections, a softmax over a vocabulary — and understands backpropagation well enough to be unsurprised by optimizer state. We assume basic PyTorch: modules, tensors, an optimizer step, and what <code>.backward()</code> does.</p>
+<p>Everything specific to this project is built up in the book. Kimi Delta Attention and multi-head latent attention are explained in Section 01 before they are used. Mixture-of-experts routing, top-k selection and the aux-loss-free balancer are built from the router equation in Section 01 and then taken apart again in Section 03 when they fail. Triton is introduced in Section 04 at the point where a fused activation kernel becomes the cheapest available option, not before. FSDP2 and ZeRO-3 are built from the arithmetic of what has to live on each rank, in Section 05. Model FLOPs Utilization gets its own chapter before any MFU number is quoted at length.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/how-to-read-this-book-5.png" alt="The background this book expects, and the material it constructs. The companion volume covers the module-level implement" loading="lazy"  data-fig="how-to-read-this-book-5.png"><span class="fig-ph">figure rendering &middot; The background this book expects, and the material it constructs. The </span></div><figcaption>The background this book expects, and the material it constructs. The companion volume covers the module-level implementations this book takes as given.</figcaption></figure>
+<p>There is a companion volume in the same library, <em>Build Kimi K3 from Scratch</em>, which builds every one of K3's components in plain PyTorch as small runnable code: Kimi Delta Attention, gated MLA, attention residuals, LatentMoE. This book assumes those modules exist and asks a different question, which is what it costs to train them on real data without wasting the money. The two can be read in either order. If you want to know how a delta-rule attention layer computes its output, that book answers it. If you want to know why nine of twelve layers are delta-rule layers and what that ratio does to throughput, this one does.</p>
+<h2 id="figures-sidenotes-code-and-numbers">Figures, sidenotes, code and numbers</h2>
+<p>Four conventions run through every chapter.</p>
+<p><strong>Figures</strong> are hand-drawn diagrams and carry a consistent colour grammar: blue for mechanism and data movement, green for specifications and measured quantities, red for dimensions and warnings, purple for code and configuration, orange for emphasis. Numbered circles give the reading order where a figure has one. Most figures end with a dashed box holding the single sentence the figure exists to support. Prose always introduces a figure before it appears and refers back to it afterwards, so a figure never has to be interpreted alone.</p>
+<p><strong>Sidenotes</strong> sit in the right margin and carry the caveats that would derail a paragraph: a version pin, a hardware exception, a counter that double-counts under activation checkpointing, an exact figure where the prose has rounded. They are skippable on a first pass and are usually where the sharp edges live.</p>
+<p><strong>Code blocks</strong> are real excerpts from the project, and where it helps we name the file — <code>train/ladder.py</code> for the ladder definition, <code>train/moe_train.py</code> for the trainable gate and the balancer, <code>train/init_patch.py</code> for the initialisation fix, <code>train/situ_triton.py</code> for the fused activation. No API in this book is invented. Where a code block shows an output value, that value is a measured one.</p>
+<p><strong>Numbers</strong> appear in bold in the prose at first mention and again in a table where a table is the clearer form. The bold number and the table always agree; where they do not, the table is a summary of several runs and the prose says which one it is quoting.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/how-to-read-this-book-6.png" alt="The page conventions used throughout. Sidenotes are skippable on a first pass; the figures are not." loading="lazy"  data-fig="how-to-read-this-book-6.png"><span class="fig-ph">figure rendering &middot; The page conventions used throughout. Sidenotes are skippable on a fir</span></div><figcaption>The page conventions used throughout. Sidenotes are skippable on a first pass; the figures are not.</figcaption></figure>
+<h2 id="who-gets-the-most-from-this">Who gets the most from this</h2>
+<p>The reader this book was written for has trained a small model at least once, has read a modern architecture paper, and now wants to know what stands between those two things and a run that survives contact with a GPU bill. The gap is not conceptual. It is decontamination, checkpoint semantics, load-balancer constants, kernel launch counts, alert thresholds and the difference between a benchmark and a run, and none of those appear in papers because they are not results.</p>
+<p>A second reader will find it useful for a different reason: anyone about to spend real money on a training run and wanting to know where it goes. The cost of r1 was $252.35 of H200 time.<label for="sn-how-to-read-this-book-4" class="sn-ref">4</label><input type="checkbox" id="sn-how-to-read-this-book-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> That figure is r1's GPU bill and nothing else. The corpus pass cost roughly $17 of CPU, the continuous evaluation ran on a separate A100 at about $0.13 per evaluation every ~1,000 steps, and the flagship's failed launch spent $48.33 of its own. Storage is the recurring line at $0.09 per GiB per month.</span> The MFU investigation exists because at 2.4 to 2.5% MFU, about 97.5% of that rental was not doing the arithmetic we were paying for, and the sixteen attempts to change that are the most transferable material here.</p>
+<p>The data chapter serves the same reader. The corpus pass scanned 107,291,411 documents and removed 138,064 of them, a rate of 0.1287%, and the per-source rates are the interesting part: the two maths corpora dropped at 0.7239% and 0.6747% against 0.0280% for plain web text. A filter that fires uniformly across sources is the result that should worry you. That chapter also states its own coverage limit rather than burying it, because a benchmark row shorter than thirteen words produces no 13-gram and cannot be filtered against at all, which leaves TriviaQA only 49% covered.</p>
+<p>The reader who will be disappointed is one looking for a strong model. r1 reaches <strong>33.4%</strong> on HellaSwag, against a 25% chance level, and stays at chance on MMLU and ARC-Challenge for the whole run. At 145M active parameters and 5B tokens, those flat curves are the capability boundary of the scale, not failures of the run, and the evaluation chapter says so before it says anything else.</p>
+<h2 id="three-ways-through">Three ways through</h2>
+<p>Read it front to back if you want the project as it happened. Sections 00 and 01 set up the model, and everything after them is consequences.</p>
+<p>Read Section 04 alone if you care about throughput. It stands on its own, needs only the ladder definition from Section 01, and contains the profile that explained the whole investigation.</p>
+<p>Read Sections 03 and 05 alone if you are about to run something large and want the failures without the architecture. The four blockers, the expert collapse, the checkpoint that lived in a dying container, the twenty-four failure-injection tests and the three distributed bugs are all there, and every one of them describes a run that completes while being wrong.</p>
+<p>Whichever route you take, carry the provenance rule with you. Which rung, which GPU, harness or run. Almost every way of misreading this book starts with dropping one of those three.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./02-what-makes-a-run-lab-grade.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 02</span>
+              <span class="vb-nav-title">What makes a run lab-grade</span>
+            </a>
+            <a href="./04-reading-k3s-config.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 04 →</span>
+              <span class="vb-nav-title">Reading K3&#x27;s config, line by line</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

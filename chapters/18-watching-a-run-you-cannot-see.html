@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Watching a run you cannot see · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="Liveness from heartbeat timestamps rather than log streams, twenty-four failure-injection tests, and two alert thresholds that would have killed healthy runs the moment the kill switch started working.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 18 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 03 · Making It Train</div>
+      <h1 class="vb-chapter-title">Watching a run you cannot see</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 18 of 30</span>
+        <span class="vb-pill">⏱ 11 min read</span>
+        <span class="vb-pill">📊 6 figures</span>
+        
+      </div>
+
+      <p class="vb-chapter-blurb">Liveness from heartbeat timestamps rather than log streams, twenty-four failure-injection tests, and two alert thresholds that would have killed healthy runs the moment the kill switch started working.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>A training run on rented hardware is invisible by default. The GPU is in someone else's data centre, the process is inside a container we have no shell on, and the only thing coming back is a log stream. That arrangement works until it does not, and on 30 July it did not: a log reader on this project displayed <code>0/12 shards</code> for thirty-five minutes while the engine it was reading had already crashed.</p>
+<p>Nothing about that reader was broken. The stream had stopped, and a stream that has stopped is indistinguishable from a stream whose producer has nothing new to say. Absence of output is not evidence of anything.</p>
+<p>The rule that came out of that incident is the design decision everything else in the monitoring system is built on. <strong>Liveness is never inferred from a log stream.</strong> The training loop writes an explicit heartbeat timestamp into shared state, and the watchdog compares that timestamp to the wall clock. A run is alive because it said so recently, not because it has not yet said otherwise.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/watching-a-run-you-cannot-see-1.png" alt="The 30 July incident and the rule it produced. The heartbeat is a positive statement with a timestamp on it; a quiet log" loading="lazy"  data-fig="watching-a-run-you-cannot-see-1.png"><span class="fig-ph">figure rendering &middot; The 30 July incident and the rule it produced. The heartbeat is a posi</span></div><figcaption>The 30 July incident and the rule it produced. The heartbeat is a positive statement with a timestamp on it; a quiet log is not a statement at all.</figcaption></figure>
+<h2 id="what-the-loop-reports-and-who-reads-it">What the loop reports, and who reads it</h2>
+<p>The training loop calls a <code>report</code> function every N steps with a fixed set of fields: stage, step, tokens seen, target tokens, loss, learning rate, MFU, tokens per second, minimum router entropy, dead-expert fraction, spend so far, status and ETA. The call is cheap and fire-and-forget. It stamps the current time onto the payload as <code>heartbeat_at</code>, appends a trimmed copy to that run's history, and returns.</p>
+<p>Everything downstream reads from that state rather than from the run. The watchdog wakes on its own schedule whether or not a human is watching, evaluates every registered run against its own history, writes its findings back, and can stop a run outright. The dashboard is only a viewer. The supervisor, described in the chapter on checkpointing, is a separate schedule that relaunches runs that have died.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/watching-a-run-you-cannot-see-2.png" alt="The shape of the system. Telemetry is written once and read by three independent consumers, none of which the training p" loading="lazy"  data-fig="watching-a-run-you-cannot-see-2.png"><span class="fig-ph">figure rendering &middot; The shape of the system. Telemetry is written once and read by three i</span></div><figcaption>The shape of the system. Telemetry is written once and read by three independent consumers, none of which the training process waits on.</figcaption></figure>
+<p>Keeping the state per run rather than global matters more than it looks. An earlier version wrote every run into a single <code>latest</code> and a single <code>history</code>, which was correct while exactly one model trained at a time and destructive the moment two did. Three rungs trained concurrently, so buckets are keyed by run identifier and every trend gate is computed over one model's own points.<label for="sn-watching-a-run-you-cannot-see-1" class="sn-ref">1</label><input type="checkbox" id="sn-watching-a-run-you-cannot-see-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> The history buffer keeps the earliest points as well as the most recent, rather than a plain tail. A run logging every ten steps produces thousands of points, and discarding the oldest would throw away the window in which expert collapse happens and recovers, which is the only evidence the balancer ever worked.</span></p>
+<h2 id="the-gates">The gates</h2>
+<p>A gate is a pure function of the latest telemetry snapshot and a window of history. Purity is what makes the next section possible: every gate can be driven with synthetic telemetry on a laptop, without Modal and without a GPU.<label for="sn-watching-a-run-you-cannot-see-2" class="sn-ref">2</label><input type="checkbox" id="sn-watching-a-run-you-cannot-see-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> The window matters as well as the snapshot. The watchdog wakes on a fixed schedule, and a NaN loss or a spike is transient — it can appear and be overwritten between two polls. The first version of this checked only the current snapshot and passed a NaN straight through.</span></p>
+<div class="tbl-wrap"><table><thead><tr><th>gate</th><th>level</th><th>what it catches</th></tr></thead><tbody><tr><td><code>LOSS_NAN</code></td><td>FATAL</td><td>loss went NaN or Inf anywhere in the window</td></tr><tr><td><code>LOSS_SPIKE</code></td><td>WARN</td><td>loss jumped against its own trailing median</td></tr><tr><td><code>EXPERT_COLLAPSE</code></td><td>FATAL</td><td>dead-expert fraction high across consecutive reports</td></tr><tr><td><code>DEAD_EXPERTS</code></td><td>WARN</td><td>dead-expert fraction high once</td></tr><tr><td><code>NO_ROUTER_TELEMETRY</code></td><td>WARN</td><td>the dead-expert metric stopped being reported</td></tr><tr><td><code>LOAD_IMBALANCE</code></td><td>WARN</td><td>median expert-load imbalance elevated, not just spiking</td></tr><tr><td><code>STALLED</code></td><td>FATAL</td><td>heartbeat older than the threshold</td></tr><tr><td><code>GRAD_EXPLODE</code> / <code>GRAD_VANISH</code></td><td>WARN / FATAL</td><td>pre-clip gradient norm too large, or at zero</td></tr><tr><td><code>THROUGHPUT_DROP</code></td><td>WARN</td><td>recent throughput below this run's own established median</td></tr><tr><td><code>LOSS_PLATEAU</code></td><td>WARN</td><td>loss stopped improving during the stable phase</td></tr><tr><td><code>CHECKPOINT_STALE</code></td><td>WARN</td><td>saves have quietly stopped</td></tr><tr><td><code>MIX_DRIFT</code></td><td>WARN</td><td>realised data mix diverged from the manifest target</td></tr><tr><td><code>DUPLICATE_REPORTERS</code></td><td>WARN</td><td>step numbers going backwards repeatedly</td></tr><tr><td><code>OVER_BUDGET</code></td><td>FATAL</td><td>spend past the cap</td></tr><tr><td><code>SUPERVISOR_STALE</code></td><td>WARN</td><td>the supervision system itself stopped running</td></tr></tbody></table></div>
+<p>The second half of that list was added for the multi-day runs, and every entry in it describes the same class of failure: a way for a run to waste days while looking healthy. A crash announces itself. A run whose throughput silently halved keeps producing a falling loss curve and quietly doubles its own cost.</p>
+<h2 id="half-the-tests-assert-silence">Half the tests assert silence</h2>
+<p>There are twenty-four failure-injection tests for these gates. Twelve of them inject a failure and assert the matching gate fires. The other twelve inject something healthy and assert that nothing fires at all.</p>
+<p>The second set took the work, because the interesting cases are the look-alikes. Loss going flat is a plateau during the stable phase and the expected shape during decay, so the plateau gate is scoped to the stable phase and asserted silent during decay. Loss also moves erratically in the first few hundred steps, so the gate has a minimum step and is asserted silent at step 500 on a deliberately flat trace. A dead-expert fraction of 90% is a collapse if it persists and ordinary early training if it recovers, so both traces are in the suite and only one may fire.</p>
+<pre class="code" data-lang="python"><code>("plateau NOT flagged during decay",
+ lambda: "LOSS_PLATEAU" not in codes(base(phase="decay"), hist(loss=FLAT))),
+("collapse-then-recover is NOT auto-stopped",
+ lambda: "EXPERT_COLLAPSE" not in codes(
+     base(dead_expert_frac=0.9),
+     hist(dead=lambda i: 0.9 if i &lt; 70 else 0.01))),
+("a previous run's history does not trigger gates",
+ lambda: "THROUGHPUT_DROP" not in codes(
+     base(tok_per_s=6000),
+     hist(tps=lambda i: 28936.0, run_id=PREV) + hist(n=4, tps=lambda i: 6000.0))),</code></pre>
+<p>The third of those was written after the gate fired for real. A rung was restarted, its first steps were compared against the previous run's established throughput median, and the watchdog reported a large regression on a run that was behaving normally. History is now filtered to the current run before any trend is computed.</p>
+<p>The reason to spend half a test suite on silence is not tidiness. A gate that fires during normal operation teaches whoever reads the dashboard to scroll past it, and a dashboard that is scrolled past carries the impression of supervision without the substance. The load-imbalance gate is a small example: the snapshot version warned repeatedly through one night on runs whose dead-expert fraction never left the healthy range, so it now compares the median of a recent window. A balancer correcting a spike is what a working balancer looks like; only the median moves when the balancer is losing.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/watching-a-run-you-cannot-see-3.png" alt="The test suite. Detection is the easy half." loading="lazy"  data-fig="watching-a-run-you-cannot-see-3.png"><span class="fig-ph">figure rendering &middot; The test suite. Detection is the easy half.</span></div><figcaption>The test suite. Detection is the easy half.</figcaption></figure>
+<h2 id="two-thresholds-that-became-dangerous-the-day-the-kill-switch-worked">Two thresholds that became dangerous the day the kill switch worked</h2>
+<p>For a period, the auto-stop path did not stop anything. It set a flag, pushed an event and returned, and the flag was read by nothing, so a fatal condition at three in the morning produced a red dashboard and a GPU that kept billing. Fixing that is a few lines. What the fix changed is the cost of a false positive: every threshold that had been producing a harmless red box was now attached to a working cancel. Two of them were dangerous on the day that happened.</p>
+<p><strong><code>MFU_FLOOR = 0.20</code>.</strong> The constant was written from what well-tuned dense training reaches, which is 40 to 55%, and 20% looked like a generous floor. Measured MFU on r2, the rung above ours and the model most of the MFU work was done on, is 5 to 8%, so the gate fired on every step of every healthy run. It had been ignored for exactly that reason, which is how it survived long enough to become armed. The floor was reset to 3%, and r1's own sustained <strong>2.4 to 2.5%</strong> later showed that even 3% sits above the least efficient healthy run on the ladder, so it had to move again. A floor must be placed under the smallest healthy model, not the largest, because smaller models carry proportionally more overhead per FLOP.</p>
+<p><strong><code>EXPERT_COLLAPSE</code>, evaluated on a single snapshot.</strong> As we saw when the router collapsed, the dead-expert fraction of a healthy run passes through <strong>69 to 95%</strong> in its first thirty steps or so at every balancer strength we measured, and then recovers. A snapshot gate reads the peak of that trajectory as a fatal collapse, so with a working cancel behind it the pair cancels healthy runs during their first minute, repeatedly, and the supervisor is correctly forbidden from undoing a deliberate stop. The gate now requires <strong>five consecutive reports</strong> above the threshold before it is fatal; a single high reading is a warning that the balancer may still recover.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/watching-a-run-you-cannot-see-4.png" alt="The two calibrations. A threshold nobody acts on is a comment; a threshold wired to a cancel is a decision." loading="lazy"  data-fig="watching-a-run-you-cannot-see-4.png"><span class="fig-ph">figure rendering &middot; The two calibrations. A threshold nobody acts on is a comment; a thres</span></div><figcaption>The two calibrations. A threshold nobody acts on is a comment; a threshold wired to a cancel is a decision.</figcaption></figure>
+<h2 id="stopping-and-restarting-are-not-the-same-verdict">Stopping and restarting are not the same verdict</h2>
+<p><code>STALLED</code> is still detected and still labelled fatal. It no longer triggers auto-stop.</p>
+<p>The reasoning is about what each response means afterwards. <code>STALLED</code> says the run has gone quiet, which is a liveness problem the supervisor already handles correctly: it cancels the call and relaunches from the last checkpoint, losing at most the work since the last save. Auto-stopping instead marks the run <strong>deliberately stopped</strong>, and a deliberate stop is never undone, because undoing one would resurrect a collapsing run in a loop forever. So a transient hang, or a single checkpoint save that ran long, would have taken a healthy run off its GPU and left it there until a human noticed.<label for="sn-watching-a-run-you-cannot-see-3" class="sn-ref">3</label><input type="checkbox" id="sn-watching-a-run-you-cannot-see-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> The flagship writes roughly 213 GB per checkpoint and the save blocks the loop, so its heartbeat legitimately goes quiet for a long time. A run whose last reported status was <code>checkpointing</code> gets a much longer grace period than one that simply went silent; killing it mid-write would destroy a healthy run and leave a torn checkpoint behind.</span></p>
+<p>Auto-stop is now reserved for pathologies a restart cannot fix: NaN loss, a sustained router collapse, gradients that have vanished, and a breached budget. Restarting any of those reproduces them.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/watching-a-run-you-cannot-see-5.png" alt="The split between the two responses. The asymmetry is that a restart is reversible and a deliberate stop is not." loading="lazy"  data-fig="watching-a-run-you-cannot-see-5.png"><span class="fig-ph">figure rendering &middot; The split between the two responses. The asymmetry is that a restart i</span></div><figcaption>The split between the two responses. The asymmetry is that a restart is reversible and a deliberate stop is not.</figcaption></figure>
+<h2 id="alerts-nobody-could-read">Alerts nobody could read</h2>
+<p>Every finding the watchdog raised was pushed onto a queue that nothing drained. Alerts had accumulated there since the system was first deployed, in a place no human and no page ever looked, and the mechanism worked correctly the entire time.</p>
+<p>Findings now also go to a bounded event log that both the dashboard and the terminal status view display, so a finding raised at three in the morning is visible at nine. Two smaller problems were found alongside it. The dashboard had been showing nothing at all for a period, because a duplicated declaration in its inline script is a syntax error, and a script that fails to parse produces no charts and no cards, leaving a page stuck on "loading".<label for="sn-watching-a-run-you-cannot-see-4" class="sn-ref">4</label><input type="checkbox" id="sn-watching-a-run-you-cannot-see-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> The page now installs a top-level error handler that replaces the content with the words "DASHBOARD BROKEN", and its script is syntax-checked before deploy. A blank page and a healthy page look similar enough at a glance; a page that says it is broken does not.</span> And it had been replaying the watchdog's stored verdicts rather than evaluating current telemetry, so it could show a fatal condition from a previous run for as long as the stale verdict lived.</p>
+<h2 id="supervising-the-supervision">Supervising the supervision</h2>
+<p>A pre-flight check before the ladder launched turned up two problems in the system that was supposed to be protecting it.</p>
+<p>The first: <code>heartbeat_at</code> is zero for a run that has not reported yet. The supervisor computed heartbeat age as <code>now - heartbeat_at</code>, which for a fresh run is about <strong>29 million minutes</strong>, so every newly launched run looked as though it had been silent since 1970. r2 was relaunched <strong>three minutes after it was launched</strong>, while it was still pulling its container image, and the supervisor of that period did not cancel the original before spawning the replacement. Two processes were then training the same rung into the same checkpoint directory, caught before either reached step 100 and wrote one. The fix has three parts: the heartbeat test applies only once a run has ever reported, a startup grace period covers image pull and model build, and the supervisor cancels before it relaunches.</p>
+<p>The second: r3 was not supervised at all. Registration for crash recovery had been global, and making it per-run silently dropped it. The run furthest along was the one with no protection, which is the shape these bugs tend to have: the longest-running thing is the one most likely to have been registered under the older convention, and the most expensive one to lose.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/watching-a-run-you-cannot-see-6.png" alt="The two failures the pre-flight check found. Both are in the recovery system rather than the training code." loading="lazy"  data-fig="watching-a-run-you-cannot-see-6.png"><span class="fig-ph">figure rendering &middot; The two failures the pre-flight check found. Both are in the recovery </span></div><figcaption>The two failures the pre-flight check found. Both are in the recovery system rather than the training code.</figcaption></figure>
+<p>Both fixes are specific. What was added because of them is general: the watchdog now checks a short list of invariants about the supervision system itself on every pass. Every reporting run must be registered for crash recovery, or nothing will bring it back when it dies. The newest checkpoint each live run would resume from must belong to that run, or a restart loads the wrong model. And the supervisor must have run recently, which the watchdog can see and the supervisor cannot. The two schedules check each other; if both stop, only a person notices, which is the residual risk we accepted.<label for="sn-watching-a-run-you-cannot-see-5" class="sn-ref">5</label><input type="checkbox" id="sn-watching-a-run-you-cannot-see-5" class="sn-toggle"><span class="sidenote"><sup>5</sup> The auto-stop path has its own end-to-end test: it spawns a stand-in function, injects a fatal telemetry snapshot, runs the real watchdog, and asserts the call is actually dead afterwards. That test immediately caught a bug in the fix itself: the cancel was being issued with an argument this client does not accept, so it had been failing silently. A kill switch that has never been fired against a real process is a kill switch of unknown state.</span></p>
+<h2 id="what-it-looked-like-on-the-run-that-finished">What it looked like on the run that finished</h2>
+<p>r1 trained for 38,147 steps with all of this armed, and no gate raised a fatal finding. At the last full report the telemetry read loss <strong>2.623</strong>, learning rate 6.07e-5, throughput <strong>28,936 tok/s</strong>, MFU 2.5%, dead experts <strong>0.0%</strong>, load imbalance 4.0, minimum router entropy 0.973, gradient norm 0.299, and spend <strong>$252.35</strong>. Zero loss spikes were skipped across the run.</p>
+<p>That is a quiet record, and the quietness is the result. The value of this system on r1 was not that it caught something; it is that when the dashboard was green, green meant something, because the gates had been tested against the healthy shapes as well as the broken ones. Three things here transfer to any long run on hardware we do not own.</p>
+<p><strong>Liveness needs a positive statement with a timestamp.</strong> Anything else, whether a log line, an open connection or a process that has not exited, measures a proxy that correlates with the thing until the moment you need it not to. This is the same error as reading router entropy to detect expert collapse, in different clothing.</p>
+<p><strong>A threshold that nobody acts on is a comment.</strong> Both dangerous constants had been visibly wrong for a while, and both were tolerated because their only consequence was a red box. The day the cancel started working they became decisions, and a threshold that becomes a decision should be re-derived from measurement rather than inherited.</p>
+<p><strong>Test the recovery system as a system.</strong> The gates were well covered before any of the supervision bugs appeared, and none of those bugs were in a gate. They were in registration, in an arithmetic edge case at time zero, and in a cancel call that had never been fired at a real process.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./17-checkpointing.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 17</span>
+              <span class="vb-nav-title">Checkpointing that survives losing the GPU</span>
+            </a>
+            <a href="./19-what-mfu-is.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 19 →</span>
+              <span class="vb-nav-title">What MFU is, and why it is the exchange rate</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

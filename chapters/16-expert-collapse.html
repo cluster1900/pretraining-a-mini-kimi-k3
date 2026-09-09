@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Expert collapse, and the metric that missed it · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="Twenty steps in, 94.5% of experts were receiving no tokens while router entropy read 0.99 out of 1.0. Why entropy passes a collapsing run, and the four-value sweep that fixed it.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 16 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 03 · Making It Train</div>
+      <h1 class="vb-chapter-title">Expert collapse, and the metric that missed it</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 16 of 30</span>
+        <span class="vb-pill">⏱ 9 min read</span>
+        <span class="vb-pill">📊 5 figures</span>
+        <span class="vb-pill cost">94.5%</span>
+      </div>
+
+      <p class="vb-chapter-blurb">Twenty steps in, 94.5% of experts were receiving no tokens while router entropy read 0.99 out of 1.0. Why entropy passes a collapsing run, and the four-value sweep that fixed it.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>A mixture-of-experts layer holds many small feed-forward networks and sends each token to a few of them. Ours holds 256 and sends each token to 6. That arrangement is what lets a 1.02-billion-parameter model cost only 145 million parameters of compute per token, and it comes with a failure mode that has no equivalent in a dense model: the router can decide it likes a handful of experts and stop using the rest.</p>
+<p>Twenty steps into the first real training run, <strong>94.5% of our experts were receiving zero tokens.</strong></p>
+<p>What makes this worth a chapter is not that it happened. Every mixture-of-experts model does this early in training, and the literature says so. What makes it worth a chapter is that the metric we had chosen in advance to detect exactly this condition was reading 0.99 out of 1.0 while it happened, and would have let the run continue to completion.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/expert-collapse-1.png" alt="The monitoring metric and the model's actual state, at the same moment in the same run." loading="lazy"  data-fig="expert-collapse-1.png"><span class="fig-ph">figure rendering &middot; The monitoring metric and the model's actual state, at the same moment</span></div><figcaption>The monitoring metric and the model's actual state, at the same moment in the same run.</figcaption></figure>
+<h2 id="why-entropy-misses-it">Why entropy misses it</h2>
+<p>The router produces a score for every expert for every token, and our chosen health metric was the entropy of those scores. Entropy is high when a distribution is spread out and low when it concentrates, so low entropy should mean the router has picked favourites. The reasoning is sound, and the implementation was correct.</p>
+<p>The problem is which distribution gets measured. Entropy was computed over the <strong>mean</strong> routing scores across the batch, and those means stay close to uniform even when routing has collapsed completely. Selection is top-k, and top-k does not care about the size of a gap. If expert 7 scores 0.51 and expert 118 scores 0.49 for every token in the batch, the mean scores are nearly identical, the entropy over them is nearly maximal, and expert 118 never gets selected once.</p>
+<p>That is the whole mechanism. A tiny, consistent score difference wins every time, and averaging hides it because averaging is precisely the operation that removes the per-token detail selection depends on.</p>
+<p>The fix at the monitoring level is to stop measuring the scores and start measuring the outcome. <strong>Dead-expert fraction</strong> — the share of experts that received no tokens this step — is computed after routing, is invariant to how the router arrived at its decision, and cannot be satisfied by a distribution that looks uniform on average.</p>
+<pre class="code" data-lang="python"><code># what we were measuring
+entropy = -(mean_scores * mean_scores.log()).sum()      # 0.9999 during collapse
+
+# what we should have been measuring
+dead_frac = (expert_load == 0).float().mean()            # 0.945 during collapse
+imbalance = expert_load.max() / expert_load.mean()       # how lopsided the survivors are</code></pre>
+<p>Both of the lower two quantities went into the training loop's telemetry, and both are reported every ten steps for the rest of this book.<label for="sn-expert-collapse-1" class="sn-ref">1</label><input type="checkbox" id="sn-expert-collapse-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> <code>expert_load</code> is a per-expert token counter accumulated inside the gate during the forward pass. Under activation checkpointing it is incremented twice per step, once in the forward and once in the recompute, so the counters double. Every consumer of them is scale-invariant — <code>sign(mean - load)</code>, <code>load.max()/load.mean()</code>, <code>(load == 0).mean()</code> — so the doubling changes nothing, but it is the kind of thing that produces a confusing graph if you forget it.</span></p>
+<h2 id="the-balancer-k3-inherits">The balancer K3 inherits</h2>
+<p>K3's configuration names its balancing method in one field: <code>topk_method: noaux_tc</code>. The <code>noaux</code> is the interesting part. It stands for "no auxiliary loss", and it describes an approach K3 inherits from DeepSeek-V3 that balances expert load without adding a term to the loss function at all.</p>
+<p>The conventional approach adds an auxiliary loss that penalises imbalanced routing, then weights it against the language-modelling loss with a coefficient. That coefficient is a genuine tension: too small and the router collapses, too large and the router is pushed to spread tokens evenly whether or not spreading them helps prediction. The model is being asked to optimise two objectives that disagree.</p>
+<p>The aux-loss-free approach removes the tension by moving the intervention out of the loss entirely. Each expert carries a scalar bias that is added to its score <strong>for selection purposes only</strong>:</p>
+<pre class="code" data-lang="python"><code>scores = router(x).sigmoid()                 # [tokens, n_experts]
+topk = (scores + e_score_correction_bias).topk(k, dim=-1).indices
+weights = scores.gather(-1, topk)            # note: the ORIGINAL scores, unbiased</code></pre>
+<p>The bias decides <em>which</em> experts are chosen. The weight applied to a chosen expert's output is read from the original, unbiased score. So the bias can move load around freely without ever changing the magnitude of any expert's contribution, and gradient descent never sees it.</p>
+<p>After each step, every bias moves one small increment in the direction that evens out the load:</p>
+<pre class="code" data-lang=""><code>bias_i += gamma * sign(mean_load - load_i)</code></pre>
+<p>An expert that received fewer tokens than average becomes slightly easier to select. An expert that received more becomes slightly harder. The update uses only the sign of the difference, not its magnitude, so a wildly overloaded expert and a mildly overloaded one are pushed back by the same amount per step.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/expert-collapse-2.png" alt="The aux-loss-free balancer. The bias changes which experts are chosen and never changes what a chosen expert contributes" loading="lazy"  data-fig="expert-collapse-2.png"><span class="fig-ph">figure rendering &middot; The aux-loss-free balancer. The bias changes which experts are chosen </span></div><figcaption>The aux-loss-free balancer. The bias changes which experts are chosen and never changes what a chosen expert contributes.</figcaption></figure>
+<p>There is one more design decision hidden in that code, and it caused a crash later in the project when the model was sharded across GPUs: the bias must be held out of the optimizer. It is not a learned parameter. AdamW would apply weight decay and momentum to a quantity whose entire update rule is already specified, and the two rules would fight. In our implementation it is excluded from the parameter groups, and when we later moved to sharded training it also had to be excluded from sharding, so that every rank computes routing identically by construction.<label for="sn-expert-collapse-2" class="sn-ref">2</label><input type="checkbox" id="sn-expert-collapse-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> On the flagship this was not optional. Leaving the bias in the sharded parameter set produced <code>aten::add_.Tensor got mixed torch.Tensor and DTensor</code>, which is at least a loud failure. The quieter version of the same problem is covered in the chapter on distributed bugs: if each rank computes the balancer update from its own local expert load rather than the global load, the biases diverge and the same token routes to different experts depending on which GPU happens to hold it.</span></p>
+<p>One detail of the released code is worth stating before we go further, because it explains why any of this had to be written at all. <code>e_score_correction_bias</code> exists in Moonshot's released modeling code as a tensor, and it is <strong>never initialised and never updated</strong>. The field is declared, the config names <code>noaux_tc</code> as the routing method, and no code anywhere in the release moves the value. The balancer described in this chapter is not a reimplementation of something that shipped; it is the thing the released config refers to and the released code does not contain. That is one of four separate reasons the released code cannot train, and the chapter before this one covers the other three.</p>
+<h2 id="choosing-gamma-by-measuring-it">Choosing gamma by measuring it</h2>
+<p>DeepSeek-V3 uses <code>gamma = 0.001</code>. The obvious move is to use the same number, and the obvious move is wrong, for a reason that generalises well beyond this parameter.</p>
+<p>The bias update is applied once per step, and its size relative to the score distribution determines how fast load can move. But the <em>load</em> it responds to is measured over one step's worth of tokens. DeepSeek balances over millions of tokens per step. Our first measurements balanced over 4,096. The same constant means something different when the signal it reacts to is three orders of magnitude noisier.</p>
+<p>So we measured it. Four values, 120 steps each, on the real architecture:</p>
+<div class="tbl-wrap"><table><thead><tr><th>gamma</th><th>worst dead</th><th>final dead</th><th>final imbalance</th><th>final loss</th></tr></thead><tbody><tr><td>1e-3 (DeepSeek-V3's value)</td><td>97.3%</td><td>87.1%</td><td>42.8</td><td>7.815</td></tr><tr><td><strong>1e-2 (chosen)</strong></td><td>81.6%</td><td><strong>0.8%</strong></td><td><strong>9.3</strong></td><td>7.824</td></tr><tr><td>5e-2</td><td>75.8%</td><td>23.4%</td><td>21.6</td><td>7.940</td></tr><tr><td>2e-1</td><td>90.2%</td><td>90.2%</td><td>41.2</td><td>8.002</td></tr></tbody></table></div>
+<p>Three things in that table are worth extracting.</p>
+<p><strong>Every setting collapses early.</strong> The "worst dead" column ranges from 75.8% to 97.3%, and the best-performing value is not the one with the lowest peak. Collapse in the first tens of steps is not a symptom of a bad balancer; it is what an untrained router does. The question a gate must ask is not whether experts died but whether they came back.</p>
+<p><strong>The response is not monotonic.</strong> Going from 1e-3 to 1e-2 fixes the problem, and going further to 2e-1 makes it as bad as it was at 1e-3. The reason is visible in the update rule: it uses <code>sign</code>, so a step of 0.2 moves a bias by 0.2 regardless of how far off the load actually is. Once the step is larger than the score gaps it is trying to close, the same experts flip from overloaded to underloaded and back on every iteration, and the bias oscillates instead of converging.</p>
+<p><strong>Final loss is unchanged.</strong> Across a two-hundred-fold range of gamma, final loss moves from 7.815 to 8.002, and the chosen setting is within 0.01 of the worst-balancing one. <strong>Balancing is free.</strong> It is not trading language-modelling quality for load distribution, which is exactly the property the aux-loss-free design is supposed to have, and it is pleasant to see it hold in a measurement rather than in an argument.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/expert-collapse-3.png" alt="The four sweeps. The peak is not the signal; the recovery is." loading="lazy"  data-fig="expert-collapse-3.png"><span class="fig-ph">figure rendering &middot; The four sweeps. The peak is not the signal; the recovery is.</span></div><figcaption>The four sweeps. The peak is not the signal; the recovery is.</figcaption></figure>
+<h2 id="re-measuring-when-the-batch-changed">Re-measuring when the batch changed</h2>
+<p>The sweep above ran at 4,096 tokens per step. The actual run trains at 131,072 tokens per step, a factor of 32.</p>
+<p>Having just written down that DeepSeek's constant was wrong for us because their batch differs from ours, it would have been difficult to justify carrying our own constant across a 32-fold change in the same quantity. So the sweep was repeated at the real batch size:</p>
+<div class="tbl-wrap"><table><thead><tr><th>gamma</th><th>worst dead</th><th>final dead</th><th>final imbalance</th><th>final loss</th></tr></thead><tbody><tr><td>1e-3</td><td>95.3%</td><td>52.0%</td><td>42.8</td><td>7.082</td></tr><tr><td><strong>1e-2</strong></td><td>68.8%</td><td><strong>0.0%</strong></td><td><strong>3.1</strong></td><td>7.122</td></tr><tr><td>5e-2</td><td>78.5%</td><td>32.4%</td><td>33.5</td><td>7.162</td></tr><tr><td>2e-1</td><td>93.0%</td><td>84.0%</td><td>33.5</td><td>7.487</td></tr></tbody></table></div>
+<p>The same value wins, and it wins more cleanly: final dead fraction 0.0% against 0.8%, and final imbalance 3.1 against 9.3. The larger batch gives the balancer a less noisy load signal to react to, so the same step size lands better.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/expert-collapse-4.png" alt="The gamma sweep repeated at the batch size the run actually used. The winner is unchanged and its margin improves." loading="lazy"  data-fig="expert-collapse-4.png"><span class="fig-ph">figure rendering &middot; The gamma sweep repeated at the batch size the run actually used. The </span></div><figcaption>The gamma sweep repeated at the batch size the run actually used. The winner is unchanged and its margin improves.</figcaption></figure>
+<p>The collapse-then-recover shape is confirmed at the real batch as well, and that confirmation went straight into the monitoring design. A gate that declares expert collapse from a single observation would fire on every healthy run in this project during its first thirty steps.<label for="sn-expert-collapse-3" class="sn-ref">3</label><input type="checkbox" id="sn-expert-collapse-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> This nearly caused real damage. When the watchdog gained the ability to actually stop a run, <code>EXPERT_COLLAPSE</code> was still a single-snapshot check, and a healthy trajectory that passes through 69-95% dead in its first tens of steps would have been cancelled automatically. The gate now requires five consecutive reports above the threshold.</span></p>
+<h2 id="what-it-looked-like-in-the-run-that-finished">What it looked like in the run that finished</h2>
+<p>r1 trained for 38,147 steps with <code>gamma = 1e-2</code> and the dead-expert gate armed. The relevant telemetry, from the run's own history:</p>
+<ul><li>step 0: dead experts <strong>0.0%</strong>, load imbalance 2.36, router entropy 0.9999</li><li>step 38,140 (the last full report): dead experts <strong>0.0%</strong>, load imbalance 4.0, router entropy 0.973</li></ul>
+<p>Between them, 38,000 steps in which the dead-expert fraction never triggered the gate. The early collapse still happened — it happens in every run — and the balancer pulled it back before the first reported step at the 10-step reporting interval.</p>
+<p>The imbalance figure drifting from 2.36 to 4.0 over the run is worth a note, because it is a real effect rather than noise. Early in training the router has no opinion, so load is nearly uniform for the least interesting possible reason. As training proceeds the router develops genuine preferences: some experts specialise in code, some in prose, and a batch that happens to contain more code tokens will load the code experts more. An imbalance of 4.0 with zero dead experts is a router that has learned something and is still using its whole capacity. An imbalance of 2.36 at step 0 is a router that has learned nothing.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/expert-collapse-5.png" alt="Expert health across the completed run. Rising imbalance with no dead experts is the healthy shape." loading="lazy"  data-fig="expert-collapse-5.png"><span class="fig-ph">figure rendering &middot; Expert health across the completed run. Rising imbalance with no dead </span></div><figcaption>Expert health across the completed run. Rising imbalance with no dead experts is the healthy shape.</figcaption></figure>
+<h2 id="the-transferable-part">The transferable part</h2>
+<p>Three things here are worth carrying to any mixture-of-experts model, and none of them are specific to K3.</p>
+<p><strong>Measure the outcome, not the intention.</strong> Router entropy measures what the router was trying to do. Dead-expert fraction measures what happened. When the two can disagree — and averaging over a batch is exactly the operation that lets them disagree — the outcome is the one that matters. This is the same error, in a different costume, as reading a log stream to decide whether a process is alive: it measures a proxy that is correlated with the thing until the moment you need it not to be.</p>
+<p><strong>A constant from a paper is a measurement taken under someone else's conditions.</strong> <code>gamma = 0.001</code> is correct for DeepSeek-V3. It was wrong for us by a factor of ten, and the difference is entirely explained by batch size, which is stated plainly in both papers and is easy to skip past. When you adopt a constant, write down which of your conditions differ from the source's, and re-measure the ones that touch it.</p>
+<p><strong>A gate must be tested against healthy data as well as broken data.</strong> It is straightforward to write a detector that catches collapse. The harder requirement is a detector that stays quiet during the collapse-and-recovery every healthy run performs in its first thirty steps. Half of the twenty-four failure-injection tests in this project assert silence rather than detection, for exactly this reason. A gate that cries wolf during normal operation trains its readers to ignore it, which leaves you worse off than having no gate at all.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./15-the-training-loop.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 15</span>
+              <span class="vb-nav-title">The training loop</span>
+            </a>
+            <a href="./17-checkpointing.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 17 →</span>
+              <span class="vb-nav-title">Checkpointing that survives losing the GPU</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

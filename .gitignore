@@ -1,0 +1,13 @@
+.DS_Store
+._*
+Thumbs.db
+__pycache__/
+*.py[cod]
+.venv/
+.idea/
+.vscode/
+*.log
+*.tmp
+epub_work/
+chapters_cache.json
+/output/

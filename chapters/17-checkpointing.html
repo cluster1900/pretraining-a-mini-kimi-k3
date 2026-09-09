@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkpointing that survives losing the GPU · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="A checkpoint is the whole run, not the weights: optimizer moments, dataloader cursor, RNG, the spike-guard EMA. Proven by resuming twice and comparing the losses bitwise.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 17 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 03 · Making It Train</div>
+      <h1 class="vb-chapter-title">Checkpointing that survives losing the GPU</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 17 of 30</span>
+        <span class="vb-pill">⏱ 12 min read</span>
+        <span class="vb-pill">📊 7 figures</span>
+        
+      </div>
+
+      <p class="vb-chapter-blurb">A checkpoint is the whole run, not the weights: optimizer moments, dataloader cursor, RNG, the spike-guard EMA. Proven by resuming twice and comparing the losses bitwise.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>r1 took 38,147 steps and about 55 hours of a single H200 to finish, which is what $252.35 buys at $4.54 an hour. Over a window that long, on rented hardware, the run has to survive things unrelated to the model: a preempted container, a node fault, an out-of-memory kill from a neighbour, and a platform that terminates any function at 24 hours. The design question is not whether a long run gets interrupted. It is what an interruption costs.</p>
+<p>When we looked, the answer was: everything.</p>
+<h2 id="the-hole">The hole</h2>
+<p>Checkpoints were being written to a Modal Volume, a durable filesystem shared between containers. A Volume persists what a container wrote <strong>on commit</strong>. Until <code>commit()</code> is called the writes exist only in that container's view of the mount, and when the container dies the view dies with it.</p>
+<p><code>ckpt_vol.commit()</code> was called exactly once, after <code>train()</code> returned.</p>
+<p>That single placement makes every checkpoint conditional on the run ending normally, which is the one case in which checkpoints are not needed. A crash at hour 40 of a 92-hour run would have lost all of it and restarted from step 0. Nothing in the code looks wrong on inspection: the saves happen, the files appear, the directory listing inside the container is correct. The evidence was on the volume rather than in the code, and the volume held nothing for the run that was supposedly writing to it.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/checkpointing-1.png" alt="The commit placement that made every checkpoint conditional on the run finishing normally." loading="lazy"  data-fig="checkpointing-1.png"><span class="fig-ph">figure rendering &middot; The commit placement that made every checkpoint conditional on the run</span></div><figcaption>The commit placement that made every checkpoint conditional on the run finishing normally.</figcaption></figure>
+<p>The fix is one line moved, and the rest of this chapter is about the other things that had to be true before moving it was worth anything.</p>
+<h2 id="commit-on-every-save-and-save-more-often">Commit on every save, and save more often</h2>
+<p>The first change is the one in the figure: <code>commit_fn</code> is called immediately after each save returns, so a checkpoint is durable when it is written rather than when the job ends.</p>
+<p>The second change is the interval. Checkpoints were taken every 250 steps; they are now taken every <strong>100</strong>. The interval is the size of the window lost when the process dies, so at 250 steps roughly 32 minutes of training is at risk at any moment, and at 100 steps roughly 15. The cost is that the save runs 2.5 times as often, and a save blocks the loop for as long as it takes to write weights and optimizer state to a network filesystem.<label for="sn-checkpointing-1" class="sn-ref">1</label><input type="checkbox" id="sn-checkpointing-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> That has a consequence for monitoring rather than for training: the heartbeat goes quiet for the duration, and r1's final save was long enough to trip a stall gate tuned for a healthy step cadence. The loop now reports <code>status: "checkpointing"</code> before it starts writing, so the watchdog and the supervisor can apply a longer, save-specific grace.</span></p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/checkpointing-2.png" alt="The checkpoint interval sets the size of the window an interruption destroys." loading="lazy"  data-fig="checkpointing-2.png"><span class="fig-ph">figure rendering &middot; The checkpoint interval sets the size of the window an interruption de</span></div><figcaption>The checkpoint interval sets the size of the window an interruption destroys.</figcaption></figure>
+<h2 id="a-checkpoint-is-the-whole-run">A checkpoint is the whole run</h2>
+<p>Saving model weights is the part everyone does, and on its own it does not continue a run. The gap between "the weights are safe" and "the run can continue" is where most of the damage here lives:</p>
+<div class="tbl-wrap"><table><thead><tr><th>what</th><th>why it is training state</th></tr></thead><tbody><tr><td>model weights</td><td>the obvious part</td></tr><tr><td>optimizer moments</td><td>AdamW's first and second moments; without them the resumed steps are a fresh optimizer warming up</td></tr><tr><td>dataloader cursor</td><td>per-source shard index and byte offset, so the run does not re-read tokens it has seen</td></tr><tr><td>RNG — torch, CUDA, numpy, python</td><td>dropout masks and the loader's source draws must continue the same sequence</td></tr><tr><td>spike-guard EMA</td><td>the baseline the spike detector compares against</td></tr><tr><td>tokens seen</td><td>the budget the run is priced on</td></tr><tr><td>spend to date</td><td>the budget cap</td></tr></tbody></table></div>
+<p>The save writes three files and then a marker, in that order:</p>
+<pre class="code" data-lang="python"><code>torch.save({"model": model.state_dict(), "optimizer": opt.state_dict(),
+            "step": step,
+            "rng": {"torch": torch.get_rng_state(),
+                    "cuda": (torch.cuda.get_rng_state_all()
+                             if torch.cuda.is_available() else None),
+                    "numpy": np.random.get_state(),
+                    "python": random.getstate()}},
+           path / "state.pt")
+(path / "loader.json").write_text(json.dumps(loader.state_dict(), default=str))
+(path / "meta.json").write_text(json.dumps({**meta, "step": step}, indent=2))
+(path / COMPLETE).write_text("ok")</code></pre>
+<figure class="fig"><div class="fig-frame"><img src="../figures/checkpointing-3.png" alt="What a save writes, in the order it writes it. The marker goes down only after everything else is on disk." loading="lazy"  data-fig="checkpointing-3.png"><span class="fig-ph">figure rendering &middot; What a save writes, in the order it writes it. The marker goes down on</span></div><figcaption>What a save writes, in the order it writes it. The marker goes down only after everything else is on disk.</figcaption></figure>
+<p>Two of these were missing at first, and neither absence produces an error.</p>
+<p><strong>The spike-guard EMA.</strong> The training loop carries a guard that compares each step's loss against an exponential moving average and skips the optimizer step when the loss exceeds it by a set ratio.<label for="sn-checkpointing-2" class="sn-ref">2</label><input type="checkbox" id="sn-checkpointing-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> The guard also skips on NaN or Inf and aborts after a number of consecutive skips. It is described in full in the chapter on the training loop; here only its state matters.</span> That EMA is training state. A resume that restarts it at <code>None</code> disables spike detection for the guard's warmup window, then re-derives a baseline from whatever the loss happens to be at that moment. The run resumes with its safety system switched off, at exactly the point after a crash when it is most likely to be needed, and nothing reports that this has happened. The guard's state is carried in <code>meta.json</code> and reloaded with the rest:</p>
+<pre class="code" data-lang="python"><code>def state_dict(self) -&gt; dict:
+    return {"ema": self.ema, "consecutive": self.consecutive,
+            "total_skipped": self.total_skipped, "events": self.events[-50:]}</code></pre>
+<p><strong>Tokens seen and spend to date.</strong> Starting these at zero on a resume makes a restarted run report a fraction of the tokens it actually showed the model, which corrupts the number the project is priced on. It also resets accumulated spend, so the budget cap can never fire on a run that has been restarted even once. The cap was unenforceable on precisely the long runs it exists to protect, which is the shape of this whole class of bug: the safety mechanism is disabled by the event it was built for.</p>
+<h2 id="the-complete-marker">The COMPLETE marker</h2>
+<p>A save is not atomic. A crash partway through writing leaves a directory containing some of the files, with plausible names and sizes, and nothing about it says it is torn. Resuming from half-written weights turns one lost hour into a lost run, quietly, because the loss curve after a bad load looks like a spike rather than like a corrupted load.</p>
+<p>The marker file is therefore written last, after every other byte is on disk, and the loader refuses anything without it:</p>
+<pre class="code" data-lang="python"><code>if not (path / COMPLETE).exists():
+    raise RuntimeError(
+        f"{path} has no {COMPLETE} marker — it is a torn checkpoint from an "
+        "interrupted save. Resume from the previous one instead of training "
+        "on half-written weights.")</code></pre>
+<p><code>latest_checkpoint()</code> applies the same filter when it scans, so a torn directory is invisible to auto-resume rather than rejected on load.</p>
+<p>There is a second filter beside it, because checkpoint directories are organised per <strong>rung</strong>, not per run. Every experiment ever conducted on r1 leaves its files in the same place: the learning-rate sweep from the training-loop chapter ran four rates for 600 steps each, and its checkpoints sit alongside the real run's. Neither the directory name nor the recorded step orders the two correctly, because they used different batch sizes, so both obvious heuristics pick the sweep. A relaunch would then have resumed the real pretraining run from an unrelated experiment, and the only visible symptom would have been one jump in the loss, which reads as a spike.<label for="sn-checkpointing-3" class="sn-ref">3</label><input type="checkbox" id="sn-checkpointing-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> The same failure had a second form: r1's directory also held a <code>final</code> from a 40-step smoke test, and an earlier version of the ranking treated any directory named <code>final</code> as infinitely recent. A relaunch of a run hundreds of steps in would have adopted the smoke test and continued from it happily.</span></p>
+<p>Checkpoints therefore record the run that wrote them, and auto-resume considers only its own. r1's run id is 103.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/checkpointing-4.png" alt="Auto-resume rejects torn checkpoints and checkpoints belonging to other experiments on the same rung." loading="lazy"  data-fig="checkpointing-4.png"><span class="fig-ph">figure rendering &middot; Auto-resume rejects torn checkpoints and checkpoints belonging to othe</span></div><figcaption>Auto-resume rejects torn checkpoints and checkpoints belonging to other experiments on the same rung.</figcaption></figure>
+<p>Every launcher passes <code>resume="auto"</code>, which resolves to the newest complete checkpoint belonging to the run. That is what makes a restart idempotent: relaunching the same command continues the run rather than silently starting a second one from step 0. r1 fits on one H200 and was never sharded, so for our run a single process resolves the path and uses it. On the larger models, which needed FSDP2 across two B300s, rank 0 resolves the path and broadcasts it, because ranks that resolve independently can land on different checkpoints.</p>
+<h2 id="proving-that-a-resume-is-the-same-run">Proving that a resume is the same run</h2>
+<p>All of the above is a design. It does not answer whether a resumed run continues the same run or merely a similar one, and that distinction is invisible in a loss curve: a run that lost its optimizer moments, its data cursor or its RNG produces a curve that looks like training with a little more noise in it.</p>
+<p><code>resume_equivalence</code> answers it directly. It trains a short run, recording the loss at every step, then rebuilds from the checkpoint at a chosen cut point and trains forward again over the same steps. If the resume is correct, the second pass reproduces the first pass's losses from the cut onward. The test is strong because it fails if <strong>any</strong> piece of state was not restored — weights, optimizer moments, the dataloader position, RNG, the position in the learning-rate schedule, the spike guard's EMA, or the router's rule-updated bias from the previous chapter.</p>
+<p>It found a real bug, and not in any of the things it was built to check.</p>
+<p>The checkpoint was written after <code>opt.step()</code>, so the state it holds is the state after that step completed. It was labelled with the index of the step that had just run, and those two differ by one. A resume therefore re-executed a step the checkpoint had already applied, and the resumed trace reproduced the original <strong>shifted by one position</strong>, bitwise identical on the first compared point. The weights were right and the data cursor was right; the step counter was wrong, so the learning-rate schedule and the token budget drift by one step per restart, silently and cumulatively.</p>
+<pre class="code" data-lang="python"><code># A checkpoint is named by COMPLETED STEPS, not by the index of the step
+# that just ran.
+completed = step + 1</code></pre>
+<figure class="fig"><div class="fig-frame"><img src="../figures/checkpointing-5.png" alt="The off-by-one the equivalence test found, and the two traces after the fix." loading="lazy"  data-fig="checkpointing-5.png"><span class="fig-ph">figure rendering &middot; The off-by-one the equivalence test found, and the two traces after th</span></div><figcaption>The off-by-one the equivalence test found, and the two traces after the fix.</figcaption></figure>
+<p>After the fix, the first resumed step differs from the original by <strong>0.00e+00</strong> — bitwise identical — and the difference grows to about <strong>5e-3</strong> over the following twenty steps.</p>
+<p>Those two numbers are asserted separately, and conflating them made the first version of the test unusable. The first resumed step is the state test: nothing has had a chance to diverge numerically yet, so if weights, moments, cursor, RNG and schedule were all restored, the loss must be bitwise identical, and any state that was not restored appears here as a difference orders of magnitude above noise. Everything after that is drift, which is expected, because bf16 matmul reductions are not bitwise reproducible across two processes with different allocation histories. An early version required a tight tolerance across the whole window and failed a resume that was in fact exact, which is the wrong direction of error for a gate standing in front of multi-day runs.</p>
+<h2 id="retention">Retention</h2>
+<p>Keeping every checkpoint is not an option, and the arithmetic that shows why comes from the flagship rather than from r1. A flagship checkpoint is about <strong>213 GB</strong> of weights and optimizer state, and at the interval then in use, one every 250 steps across its planned schedule, keeping all of them came to <strong>128 PB</strong>.</p>
+<p>The rule is <strong>last 3, plus every 5,000th</strong>. The last three exist for crash recovery, which needs recency and nothing else. The sparse spine exists for a different reason: the run uses a warmup-stable-decay schedule rather than cosine, and any point in the stable phase is a legitimate branch point for a fresh decay. Everything between is deleted as soon as it is neither recent nor on the spine.</p>
+<p>For r1, <strong>15 checkpoints survive</strong> on the <code>kimi-mini-ckpt</code> volume, ending in <code>r1/final</code>. A save every 100 steps across 38,147 steps is a little over 380 of them written, so retention deletes the large majority of what the run produced and keeps the small set that is either recent enough to recover from or spaced widely enough to branch from. Deletion happens at save time rather than in a sweep afterwards, because a sweep that has to run at the end has the same defect as a commit that has to run at the end.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/checkpointing-6.png" alt="The retention rule, and the storage figure that forced it." loading="lazy"  data-fig="checkpointing-6.png"><span class="fig-ph">figure rendering &middot; The retention rule, and the storage figure that forced it.</span></div><figcaption>The retention rule, and the storage figure that forced it.</figcaption></figure>
+<h2 id="the-23-hour-time-box-and-the-supervisor">The 23-hour time box, and the supervisor</h2>
+<p>Modal terminates a function at 24 hours. r1 needed about 55 hours of H200 time, so the run cannot be a single function call regardless of how well it checkpoints; without a time box it would be killed at 24 hours at whatever step it happened to be on. The loop therefore carries a wall-clock limit of <strong>23 hours</strong>. When it is reached the loop saves, commits, and returns a result containing the path to resume from. The launcher spawns the next segment with that path and re-registers it, so a long run is a chain of segments joined at checkpoints rather than one process. r1's 55 hours is three segments; the 92-hour run in the crash arithmetic above is four.</p>
+<p>The other half of recovery is the segment that ends for a reason nobody planned. A supervisor runs on a five-minute cron. It restarts a run only when the registered call has ended or its heartbeat has been dead long enough, the watchdog did not deliberately stop it, and it had not already reported that it was done. Undoing a deliberate stop would resurrect a collapsing run forever.</p>
+<p>The interesting parameter is the cap. Restarts are capped at <strong>8 consecutive</strong> failures, and the counter <strong>resets after 2,000 healthy steps</strong>. Counting cumulative rather than consecutive failures would leave a long healthy run unprotected precisely because it had been protected earlier: eight preemptions spread over a week, each followed by thousands of normal steps, is evidence the mechanism works. Eight in a row with no progress between them is a deterministic crash that a relaunch will not fix, and the correct behaviour is to stop and wait for a person.</p>
+<p>The supervisor also has to be careful about what counts as a dead heartbeat, and the first version was not. <code>heartbeat_at</code> sits at zero until the loop files its first report, so the age of the heartbeat on a newly launched run computes as the age of the epoch, roughly 29 million minutes. A run three minutes old, still pulling its container image and not yet in the training loop, therefore read as long dead. The supervisor relaunched it and did not cancel the original, which left two processes writing into the same checkpoint directory. Two writers on one directory is worse than no checkpoints at all: the interleaved saves are individually well-formed, the <code>COMPLETE</code> markers go down, and a later resume picks up whichever one landed last. The fix is to treat a heartbeat that has never been written as a run that has not started yet, and to give a launch a grace period before any liveness rule applies to it.<label for="sn-checkpointing-4" class="sn-ref">4</label><input type="checkbox" id="sn-checkpointing-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> The rule the monitoring chapter states more generally is that liveness is never inferred from a log stream, only from an explicit timestamp the loop writes. That rule exists because on 30 July a stale log reader showed "0/12 shards" for 35 minutes after the engine had already crashed.</span></p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/checkpointing-7.png" alt="The time box that splits a run into segments, and the supervisor that restarts the ones that end unexpectedly." loading="lazy"  data-fig="checkpointing-7.png"><span class="fig-ph">figure rendering &middot; The time box that splits a run into segments, and the supervisor that </span></div><figcaption>The time box that splits a run into segments, and the supervisor that restarts the ones that end unexpectedly.</figcaption></figure>
+<h2 id="what-carries-over">What carries over</h2>
+<p>Three things here are not specific to this model or this platform.</p>
+<p><strong>Durability has a boundary, and it is worth knowing where it sits.</strong> A file written inside a container, a page written to a buffer, a row written inside a transaction: each looks written and is not durable until something else happens. The commit bug was a mistake about where that boundary was, and it survived review because the code reads correctly if you assume the boundary is elsewhere.</p>
+<p><strong>Save the state the safety systems live in.</strong> Weights and optimizer moments are the state everyone remembers. The spike detector's baseline, the accumulated spend and the token counter decide whether the run's protections still work after a restart, and all three defaulted to a value that quietly disabled something at the moment it was most needed.</p>
+<p><strong>Write the marker last and check it first.</strong> Detecting a torn write reduces to putting one cheap observation after all the expensive ones. It costs a file, and without it a half-written directory is indistinguishable from a checkpoint to an automated relaunch at three in the morning.</p>
+<p>The test matters more than the mechanisms, because the mechanisms are easy to write and hard to verify by reading. <code>resume_equivalence</code> costs a few minutes on one GPU, runs before every long launch, and caught a defect that would have shifted the learning-rate schedule by one step on every restart. It found it by comparing two numbers that should have been equal.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./16-expert-collapse.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 16</span>
+              <span class="vb-nav-title">Expert collapse, and the metric that missed it</span>
+            </a>
+            <a href="./18-watching-a-run-you-cannot-see.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 18 →</span>
+              <span class="vb-nav-title">Watching a run you cannot see</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>What MFU is, and why it is the exchange rate · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="Model FLOPs Utilization from first principles, the four ways a measurement fools you, and the arithmetic that turns a percentage into a training budget.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 19 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 04 · Making It Fast</div>
+      <h1 class="vb-chapter-title">What MFU is, and why it is the exchange rate</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 19 of 30</span>
+        <span class="vb-pill">⏱ 10 min read</span>
+        <span class="vb-pill">📊 7 figures</span>
+        <span class="vb-pill cost">6N</span>
+      </div>
+
+      <p class="vb-chapter-blurb">Model FLOPs Utilization from first principles, the four ways a measurement fools you, and the arithmetic that turns a percentage into a training budget.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>A GPU is rented by the hour and used by the arithmetic operation. Those two units are not the same, and the ratio between them decides whether a fixed budget buys five billion training tokens or fifty. That ratio has a name, Model FLOPs Utilization, and this section of the book is six chapters about moving it.</p>
+<p>This chapter defines it, works one example with our own run's numbers, and covers the four ways the measurement will fool you. All four cost us time.</p>
+<h2 id="the-definition">The definition</h2>
+<p><strong>Model FLOPs Utilization</strong>, usually written MFU, answers one question: of all the arithmetic a GPU is capable of performing, how much did the training actually use?</p>
+<pre class="code" data-lang=""><code>MFU = (useful FLOPs per second) / (GPU peak FLOPs per second)</code></pre>
+<p>The denominator comes from the vendor. An H200 performs roughly <strong>989 trillion</strong> bf16 floating-point operations per second, and that is the number every measurement in this section is divided by.<label for="sn-what-mfu-is-1" class="sn-ref">1</label><input type="checkbox" id="sn-what-mfu-is-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> Peak FLOP/s figures are dense bf16 vendor specifications rather than something we measured, and our harness holds one such figure per card type. Because the denominator is per-card, an MFU figure is only comparable against one measured on the same card. The B200's peak is 2.3 times the H200's, which is why the same model at a higher token rate can score a lower percentage there. The chapter on the bigger GPU shows what happens when that rule is forgotten.</span></p>
+<p>The numerator is where the convention lives. Counting the exact number of multiplications a transformer performs is possible but tedious, and it changes every time the architecture does. The standard approximation instead prices the model per parameter per token: <strong>six</strong> floating-point operations per parameter per token, two in the forward pass and four in the backward pass. Each parameter takes part in one multiply and one add going forward, and the backward pass computes a gradient with respect to the input and a gradient with respect to the weight, which is twice that work again.</p>
+<p>So the numerator collapses to a product of three things we already know:</p>
+<pre class="code" data-lang=""><code>useful FLOPs per second = 6 x active_parameters x tokens_per_second</code></pre>
+<p>For a mixture-of-experts model the word <em>active</em> is doing real work in that expression. Our r1 holds 1.02 billion parameters and 145 million of them participate in any given token, so the numerator uses 145 million. The parameters that sit idle for a token cost memory and cost nothing in FLOPs, which is the arrangement the architecture exists to buy.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/what-mfu-is-1.png" alt="The formula, term by term. Only the tokens-per-second term is measured; the rest are known before the run starts." loading="lazy"  data-fig="what-mfu-is-1.png"><span class="fig-ph">figure rendering &middot; The formula, term by term. Only the tokens-per-second term is measured</span></div><figcaption>The formula, term by term. Only the tokens-per-second term is measured; the rest are known before the run starts.</figcaption></figure>
+<h2 id="one-worked-example-with-our-own-numbers">One worked example, with our own numbers</h2>
+<p>At step 38,140 of the completed r1 run — the last full telemetry report before the end — the training loop was moving <strong>28,936 tokens per second</strong> on one H200.</p>
+<p>Put the three numbers into the numerator:</p>
+<pre class="code" data-lang=""><code>6 x 145,000,000 x 28,936 = 2.52e13 FLOP/s = 25.2 TFLOP/s</code></pre>
+<p>Divide by the H200's peak:</p>
+<pre class="code" data-lang=""><code>25.2 / 989 = 0.0255 = 2.5%</code></pre>
+<p>Which is the 2.5% the run reported. Across the whole 55 hours, r1 held <strong>27,600 to 28,900 tokens per second at 2.4 to 2.5% MFU</strong>. Roughly 97.5% of the arithmetic capability we rented went to something other than arithmetic.</p>
+<p>The same calculation on the benchmark harness gives a different answer for the same model on the same card. At 16,384 tokens per microbatch, r1 measured <strong>66,877 tokens per second</strong>:</p>
+<pre class="code" data-lang=""><code>6 x 145,000,000 x 66,877 = 5.82e13 = 58.2 TFLOP/s
+58.2 / 989 = 5.9%</code></pre>
+<p>Both figures are correct measurements of different things. The benchmark measures a shape: one batch, repeated, with nothing else happening. The run measures a schedule, a dataloader reading shards from a network volume, a checkpoint every 100 steps, an evaluation worker, and 38,147 consecutive steps of all of it. We report each as what it is, and never the more flattering one as both.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/what-mfu-is-2.png" alt="The same arithmetic applied to our benchmark and to our run, both on r1." loading="lazy"  data-fig="what-mfu-is-2.png"><span class="fig-ph">figure rendering &middot; The same arithmetic applied to our benchmark and to our run, both on r</span></div><figcaption>The same arithmetic applied to our benchmark and to our run, both on r1.</figcaption></figure>
+<h2 id="why-nobody-reaches-100">Why nobody reaches 100%</h2>
+<p>A GPU at 100% MFU would spend every clock cycle on the multiply-accumulate units, with operands already in registers. Real training spends time on work that is necessary and is not arithmetic: moving tensors between high-bandwidth memory and the compute units, launching kernels, normalising, casting, adding residuals, and in a distributed run, waiting for other cards.</p>
+<p>The reference points set the scale any measurement should be read against.</p>
+<div class="tbl-wrap"><table><thead><tr><th>regime</th><th>MFU</th></tr></thead><tbody><tr><td>well-tuned dense training</td><td>40-55%</td></tr><tr><td>mixture of experts</td><td>lower, because routing moves data without computing</td></tr><tr><td>our r2 after the full investigation</td><td><strong>7.7%</strong></td></tr><tr><td>our r1 run, sustained</td><td><strong>2.4-2.5%</strong></td></tr></tbody></table></div>
+<p>A mixture-of-experts model starts at a structural disadvantage rather than an implementation failure. Routing a token to an expert means gathering that token's hidden state out of a contiguous batch, placing it into a per-expert buffer, running the expert, and scattering the result back. None of the gathering or scattering performs a useful floating-point operation, and all of it consumes memory bandwidth. The sparser the model, the larger the ratio of movement to arithmetic, and r1 sends each token to 6 of 256 experts.</p>
+<p>Knowing the scale also protects against a monitoring bug we hit later. When the watchdog gained the ability to stop a run automatically, its floor was <code>MFU_FLOOR = 0.20</code>, the figure a healthy dense run might approach. It fired on every step of every healthy run in the project. The floor is now 3%.<label for="sn-what-mfu-is-2" class="sn-ref">2</label><input type="checkbox" id="sn-what-mfu-is-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> A threshold written from literature rather than from your own measurements is a threshold that has never seen your system. The chapter on monitoring covers the two gates in this project that were actively dangerous the moment they could act, and this was one of them.</span></p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/what-mfu-is-3.png" alt="Where the numbers in this section sit. The band on the right is what dense training reaches; the flags on the left are o" loading="lazy"  data-fig="what-mfu-is-3.png"><span class="fig-ph">figure rendering &middot; Where the numbers in this section sit. The band on the right is what d</span></div><figcaption>Where the numbers in this section sit. The band on the right is what dense training reaches; the flags on the left are ours.</figcaption></figure>
+<h2 id="mfu-is-the-exchange-rate-between-money-and-tokens">MFU is the exchange rate between money and tokens</h2>
+<p>Everything above is definition. This is the part that makes a percentage worth six chapters.</p>
+<p>A pretraining budget is denominated in dollars, but what it buys is tokens, and MFU is the rate at which one converts into the other. With the model and the hardware fixed, doubling MFU halves the cost of a fixed token budget, or doubles the token budget at fixed cost.</p>
+<p>Our own run gives the cleanest version of that statement. r1 trained on 5.00 billion tokens on one H200 rented at <strong>$4.54 per hour</strong>, for a total of <strong>$252.35</strong>, which is about <strong>55 hours</strong> of wall clock at 2.4 to 2.5% MFU. At 40% MFU, the low end of what well-tuned dense training reaches, the same token count would have taken roughly a sixteenth of that time and cost roughly a sixteenth of that money. That is arithmetic on a ratio rather than a measurement, and it assumes a version of this model that does not exist. It does describe what the gap is worth.</p>
+<p>The flagship, planned for two B300s at <strong>$7.10 per hour</strong> each, would have paid the same rate on a larger bill. Two extrapolations from our own measurements disagree about what it would have scored: the size fit taken over r1 and r2 with the optimisations in place gives <code>active^0.35</code> and projects <strong>12.5%</strong>, while the earlier fit in attempt 3 gives <code>active^0.39</code> and projects <strong>2.3%</strong>. Both are extrapolations from a handful of points rather than measurements, and we quote them as such. The distance between them is the point. A factor of five in utilisation is a factor of five in tokens bought, and token count is one of the two quantities that decide what a model of a given size ends up knowing.</p>
+<p>The exchange rate also runs across hardware, not only across code. Attempt 10 rented a B200 for the same 24,576-token microbatch that gave r2 <strong>41,041 tok/s at 7.7%</strong> MFU on an H200. The B200 returned <strong>49,169 tok/s at 4.0%</strong> MFU: 20% more throughput against a peak 2.3 times larger. Priced per dollar-second, the H200 delivered <strong>9,040</strong> tokens and the B200 <strong>7,867</strong>, so the slower card was 15% more cost-efficient. An MFU investigation is therefore not performance engineering bolted onto a research project; it is the project's budget line.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/what-mfu-is-4.png" alt="The same money and the same model at two utilisations, and the same microbatch on two cards. This is why a percentage ge" loading="lazy"  data-fig="what-mfu-is-4.png"><span class="fig-ph">figure rendering &middot; The same money and the same model at two utilisations, and the same mi</span></div><figcaption>The same money and the same model at two utilisations, and the same microbatch on two cards. This is why a percentage gets its own section of the book.</figcaption></figure>
+<h2 id="measuring-without-fooling-yourself">Measuring without fooling yourself</h2>
+<p>Before optimising anything, the measurement has to be trustworthy. Four mistakes cost us real time, and each one produces a number that looks plausible.</p>
+<p><strong>Discard the first two steps.</strong> The opening steps of any measurement include one-time costs that will never be paid again: the caching allocator growing to its working size, kernels autotuning against shapes they have just been handed, caches populating. Averaging those in reports a step time no subsequent step will match. Our benchmark drops the first two timed steps and averages the rest.</p>
+<p><strong>Warm up long enough for the router to settle.</strong> This one is specific to mixture-of-experts models, and it is the mistake most likely to be made by someone adapting a dense benchmark. A freshly initialised router collapses, as the chapter on expert collapse describes, and routes almost every token to a handful of experts. The fused dispatch pads every expert's buffer to the size of the busiest one, so a collapsed router produces enormous padding and a step time with no relation to steady state. The benchmark therefore warms up <strong>40 to 120 steps</strong> before starting a stopwatch, and it returns the load imbalance measured at the moment of timing alongside the MFU, so a measurement taken on an unsettled router is visible in the output rather than hidden in it.</p>
+<p><strong>Keep MFU and HFU apart.</strong> With activation checkpointing, the forward pass is recomputed during the backward pass so its intermediate activations do not have to be stored. The chip therefore performs roughly <strong>8N</strong> floating-point operations per token instead of 6N. That extra 2N is work the hardware really did, and it is not useful work, because it produces nothing the model did not already have. <strong>Hardware FLOPs Utilization</strong>, HFU, is the 8N figure; MFU is the 6N figure. Reporting HFU as MFU inflates the number by a third. Our benchmark returns both, from the same measurement, in the same dictionary.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/what-mfu-is-5.png" alt="The two utilisation figures differ by exactly the recompute." loading="lazy"  data-fig="what-mfu-is-5.png"><span class="fig-ph">figure rendering &middot; The two utilisation figures differ by exactly the recompute.</span></div><figcaption>The two utilisation figures differ by exactly the recompute.</figcaption></figure>
+<p><strong>Put the warmup inside the error handler.</strong> This is the least interesting mistake and it cost the most. A benchmark sweep walks a list of shapes, and at some shape the batch no longer fits in memory. That is an expected outcome, and the correct behaviour is to record a failure for that shape and continue. Our first sweep placed the warmup loop outside the <code>try</code> block, so the out-of-memory exception from one oversized batch propagated out of the sweep and killed every other measurement with it. An hour of GPU time produced one error message.</p>
+<p>The fixed version keeps everything, warmup included, inside the guard:</p>
+<pre class="code" data-lang="python"><code>imbalance = None
+times = []
+try:
+    for _ in range(warmup):                       # 40-120 steps
+        loss = model(input_ids=ids, labels=ids).loss
+        loss.backward()
+        opt.step()
+        opt.zero_grad(set_to_none=True)
+        imbalance = balancer_step(model).get("load_imbalance_max")
+
+    for i in range(steps):
+        torch.cuda.synchronize()
+        t0 = time.time()
+        loss = model(input_ids=ids, labels=ids).loss
+        loss.backward()
+        opt.step()
+        opt.zero_grad(set_to_none=True)
+        balancer_step(model)
+        torch.cuda.synchronize()
+        times.append(time.time() - t0)
+except Exception as e:
+    return {"which": which, "batch": batch, "seq_len": seq_len,
+            "error": f"{type(e).__name__}: {str(e)[:400]}"}</code></pre>
+<p>Two details there matter. The <code>torch.cuda.synchronize()</code> calls on both sides of the timed region exist because CUDA work is asynchronous: without them, <code>time.time()</code> measures how long Python took to queue the work rather than how long the GPU took to do it. And <code>balancer_step</code> runs inside the timed region, because it runs in training too, and a benchmark that omits a per-step cost the real loop pays measures a model nobody trains.</p>
+<p>The reduction to a percentage is then four lines:</p>
+<pre class="code" data-lang="python"><code>step_s = sum(times[2:]) / max(len(times) - 2, 1)   # drop the first two
+tok_s  = (batch * seq_len) / step_s
+mfu    = 6 * active * tok_s / peak
+hfu    = (8 if checkpointing else 6) * active * tok_s / peak</code></pre>
+<figure class="fig"><div class="fig-frame"><img src="../figures/what-mfu-is-6.png" alt="One measurement, start to finish. The enclosing try block is not optional." loading="lazy"  data-fig="what-mfu-is-6.png"><span class="fig-ph">figure rendering &middot; One measurement, start to finish. The enclosing try block is not optio</span></div><figcaption>One measurement, start to finish. The enclosing try block is not optional.</figcaption></figure>
+<p>A fifth discipline is bookkeeping rather than measurement: the benchmark and the training loop must build the same model.<label for="sn-what-mfu-is-3" class="sn-ref">3</label><input type="checkbox" id="sn-what-mfu-is-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> Ours drifted. For a period the benchmark applied the fused Triton <code>situ</code> activation while the training path did not, so every MFU and memory number described a configuration no run had used. Both now build the model through the same function, and any deliberate deviation from the training configuration is recorded alongside the measurement rather than left implicit.</span></p>
+<h2 id="where-the-measurements-come-from">Where the measurements come from</h2>
+<p>Every number in this section came from one of two harnesses. The first sweeps a list of shapes and prints one row each of tokens per step, step time, tokens per second, MFU, HFU, peak memory and load imbalance. The second is the kernel profile that ends the investigation, and it gets its own chapter. Both default to <code>r2</code>, the rung above the one this book's run used, because that is where most of this section's work was measured.<label for="sn-what-mfu-is-4" class="sn-ref">4</label><input type="checkbox" id="sn-what-mfu-is-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> Two attributions that apply to the whole section. Attempts 1 through 15 were measured on r2, 307 million active parameters, on one H200; attempt 16, the fused-dispatch cliff, was measured on the flagship across two B300s, and that model failed at step 890. Also, our MLA runs on an sdpa shim registered under the <code>flash_attention_2</code> key, because the released modeling code hard-forces that string. It is numerically identical and slower, so every MFU figure here understates what flash attention would give.</span></p>
+<h2 id="where-this-section-goes">Where this section goes</h2>
+<p>Two numbers frame everything that follows.</p>
+<p>The first is <strong>7.7%</strong>, which is what r2 reached on one H200 over an investigation of sixteen numbered attempts, of which three worked. Attempts 1 through 15 were all measured on r2; attempt 16 belongs to the flagship on two B300s and is a separate story. The route to 7.7% was not gradual. Attempt 1 found that the expert dispatch was running 3,840 sequential kernel launches per step and replaced it with batched matrix multiplies, which moved MFU from <strong>0.1% to 4.1%</strong> in a single change. Reducing padding waste by balancing the router took it from 4.1% to 4.6%, and keeping <code>situ</code> out of float32 added a further 0.1 point. Attempt 8 fused the <code>situ</code> activation into one Triton kernel, which at equal batch size was not faster at all, scoring 5.5% against the 5.6% baseline; what it did was free enough memory for a 50% larger microbatch, and at 24,576 tokens per microbatch the number reached <strong>7.7%</strong>. Thirteen other attempts, each with reasoning that looked sound at the time, moved nothing.</p>
+<p>The second is <strong>2.4 to 2.5%</strong>, which is what r1's actual 38,147-step run sustained. That is the number attached to the $252.35.</p>
+<p>Between them sits the finding that explains both, from a profiling run that should have been our first: only about <strong>12% of GPU time</strong> was matrix multiplication, and <strong>41.9%</strong> was elementwise operations that move data without computing much. A model in that state is memory-bandwidth bound, and the levers that work on a compute-bound model — a bigger batch, more memory, faster attention kernels, lower-precision matmuls — do not apply. We tried all four before we measured. The next six chapters are that story in order.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/what-mfu-is-7.png" alt="The trajectory of this section, measured on r2; the bar on the right is r1's run." loading="lazy"  data-fig="what-mfu-is-7.png"><span class="fig-ph">figure rendering &middot; The trajectory of this section, measured on r2; the bar on the right i</span></div><figcaption>The trajectory of this section, measured on r2; the bar on the right is r1's run.</figcaption></figure></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./18-watching-a-run-you-cannot-see.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 18</span>
+              <span class="vb-nav-title">Watching a run you cannot see</span>
+            </a>
+            <a href="./20-the-expert-loop.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 20 →</span>
+              <span class="vb-nav-title">The expert loop: eight times the work, the same time</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

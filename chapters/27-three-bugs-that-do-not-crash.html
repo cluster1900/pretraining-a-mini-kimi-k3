@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Three distributed bugs that do not crash · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="Every rank reading the same tokens, a load balancer computed on per-rank load, and a spike guard each rank decided independently. Each one completes the run and returns a model that is wrong in a way no error reports.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 27 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 05 · More Than One GPU</div>
+      <h1 class="vb-chapter-title">Three distributed bugs that do not crash</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 27 of 30</span>
+        <span class="vb-pill">⏱ 10 min read</span>
+        <span class="vb-pill">📊 7 figures</span>
+        
+      </div>
+
+      <p class="vb-chapter-blurb">Every rank reading the same tokens, a load balancer computed on per-rank load, and a spike guard each rank decided independently. Each one completes the run and returns a model that is wrong in a way no error reports.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>r1 fits on one H200 and was never sharded. Everything above it on the ladder does not, and the flagship — 35.56 billion parameters, 498 GB of optimizer state, 86% of two B300 cards — required FSDP2 across two processes. Building that trainer produced three bugs, and none of them raise an exception.</p>
+<p>That last property is what makes them worth a chapter. A run that crashes costs an afternoon. A run that completes, writes a checkpoint, reports a falling loss and returns a model that is quietly wrong costs the whole run plus every decision taken on its numbers. All three bugs below are of the second kind, and all three were found by reading the code with one question in mind, because no measurement we had would have found them.</p>
+<p>The question is the transferable part, so we state it first: <strong>which quantities in this training step are defined over the whole batch, and which are now computed per rank?</strong> Single-GPU code does not distinguish, because on one GPU they are the same thing.</p>
+<h2 id="bug-1-every-rank-read-the-same-tokens">Bug 1: every rank read the same tokens</h2>
+<p>Data parallelism works because each rank consumes a different slice of the batch. Our <code>MixtureLoader</code> samples a source per sequence at the mix weights and pulls tokens from that source's <code>SourceStream</code>, a cursor over its shards. The natural way to make two ranks differ is to seed them differently, and the loader does take a seed.</p>
+<p>The seed does nothing.</p>
+<pre class="code" data-lang="python"><code>class SourceStream:
+    def __init__(self, name: str, shard_paths: list[Path], seed: int = 0):
+        if not shard_paths:
+            raise ValueError(f"source {name!r} has no shards")
+        self.name = name
+        self.paths = shard_paths
+        self.shard_idx = 0
+        self.offset = 0</code></pre>
+<p>The parameter is accepted and never stored. Every stream starts at shard 0, offset 0, and <code>take(n)</code> walks forward deterministically from there. A different seed on the <code>MixtureLoader</code> changes only which <em>source</em> each sequence is drawn from, so two ranks read the same fineweb-edu bytes in the same order, interleaved differently with the same code bytes and the same maths bytes.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/three-bugs-that-do-not-crash-1.png" alt="The dataloader before and after. Seeding the ranks differently looks like it should be enough, and is not." loading="lazy"  data-fig="three-bugs-that-do-not-crash-1.png"><span class="fig-ph">figure rendering &middot; The dataloader before and after. Seeding the ranks differently looks l</span></div><figcaption>The dataloader before and after. Seeding the ranks differently looks like it should be enough, and is not.</figcaption></figure>
+<p>Consider what the run would have produced. Each rank computes a gradient on its own microbatch, and FSDP2 reduce-scatters those gradients so the optimizer sees their average. The average of <code>world</code> copies of one gradient is that gradient, so the optimizer takes exactly the step it would have taken on one rank's data, at <code>world</code> times the cost. <strong>The effective batch would have been <code>1/world</code> of the claimed figure</strong>, which at two B300s is half.</p>
+<p>Now consider the telemetry. Loss is a per-sequence average and would have been correct for the batch each rank actually saw. Throughput would have been correct, because the ranks really were processing that many tokens. <code>tokens_seen</code> multiplies the microbatch by the world size, so the duplicates would have counted as distinct tokens and the run would have reported its full token budget on schedule. Dead-expert fraction, load imbalance, gradient norm and learning rate would all have been correct. There is no gate in our monitor, and we could not build one from these signals, that reads differently when two ranks read identical bytes.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/three-bugs-that-do-not-crash-2.png" alt="The six metrics the run reports, and the quantity none of them touch." loading="lazy"  data-fig="three-bugs-that-do-not-crash-2.png"><span class="fig-ph">figure rendering &middot; The six metrics the run reports, and the quantity none of them touch.</span></div><figcaption>The six metrics the run reports, and the quantity none of them touch.</figcaption></figure>
+<p>The fix is to stop making the streams diverge and make them disjoint instead. Shards are dealt out round-robin at loader construction:</p>
+<pre class="code" data-lang="python"><code>if world &gt; 1:
+    if len(found) &lt; world:
+        raise ValueError(
+            f"source {name!r} has {len(found)} shards but world_size "
+            f"is {world}; some rank would get no data from it and the "
+            "realised mix would differ per rank")
+    found = sorted(found)[rank::world]</code></pre>
+<p>The guard above the split matters as much as the split. A source with fewer shards than ranks would leave some rank with no data from it, and the loader would drop that source and renormalise the remaining weights, so rank 0 would train on the target mix and rank 1 on a different one. That is the silent-renormalisation failure that turned a six-source stable phase into 100% finemath in the first build of the mix manifests, arriving from a new direction.<label for="sn-three-bugs-that-do-not-crash-1" class="sn-ref">1</label><input type="checkbox" id="sn-three-bugs-that-do-not-crash-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> Loader state is therefore per rank, and the sharded checkpoint writes one <code>loader_rank{n}.json</code> per rank. Resuming into a different world size changes the shard split and makes the old cursors meaningless, so <code>dcp_load</code> prints that the data position was not restored rather than silently restarting the corpus.</span></p>
+<h2 id="bug-2-the-balancer-balanced-the-wrong-thing">Bug 2: the balancer balanced the wrong thing</h2>
+<p>The aux-loss-free balancer K3 inherits updates a per-expert selection bias after every optimizer step:</p>
+<pre class="code" data-lang=""><code>bias_i += gamma * sign(mean_load - load_i)</code></pre>
+<p>That rule is defined on the load of the whole batch. Our gate accumulates <code>expert_load</code> as a buffer during the forward pass, which on one GPU is the whole batch and under FSDP2 is one rank's slice of it.</p>
+<p>Each rank would therefore have computed <code>sign(mean - load)</code> from a different vector and applied a different update to its own copy of the bias. The biases would have drifted apart over 76,294 steps, and because the bias decides selection, <strong>the same token would route to different experts depending on which GPU held it</strong>. No consistency check in the model would notice, and each rank's local view would look healthy: every rank would report a low dead-expert fraction on its own load vector while the model as a whole had no single router.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/three-bugs-that-do-not-crash-3.png" alt="The balancer before and after the all-reduce. Nothing crashes in the left-hand picture; the model trains against an inco" loading="lazy"  data-fig="three-bugs-that-do-not-crash-3.png"><span class="fig-ph">figure rendering &middot; The balancer before and after the all-reduce. Nothing crashes in the l</span></div><figcaption>The balancer before and after the all-reduce. Nothing crashes in the left-hand picture; the model trains against an incoherent router.</figcaption></figure>
+<p>The fix is one line, and where it goes is the interesting part.</p>
+<pre class="code" data-lang="python"><code>def balancer_step(self) -&gt; dict:
+    load = self.expert_load
+    if torch.distributed.is_available() and torch.distributed.is_initialized():
+        torch.distributed.all_reduce(load, op=torch.distributed.ReduceOp.SUM)
+
+    total = load.sum()
+    if total &lt;= 0:
+        return {"updated": False}</code></pre>
+<p>The all-reduce sits <strong>before</strong> the <code>total &lt;= 0</code> early return, not after it. Written the other way round, a rank whose gate routed nothing in a window would return early and skip the collective while the other rank blocked on it, and NCCL would wait. The run does not crash; it stops, with both processes alive and the last log line looking ordinary. So the fix for a silent-wrongness bug contains, one line away, a silent-hang bug, and both are resolved by the same discipline: a collective is part of the control flow, and every rank must reach it on every path.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/three-bugs-that-do-not-crash-4.png" alt="The same two statements in two orders. One of them stops a multi-day run with no diagnostic." loading="lazy"  data-fig="three-bugs-that-do-not-crash-4.png"><span class="fig-ph">figure rendering &middot; The same two statements in two orders. One of them stops a multi-day r</span></div><figcaption>The same two statements in two orders. One of them stops a multi-day run with no diagnostic.</figcaption></figure>
+<p>Making the load global has a second effect that was welcome rather than planned. The dead-expert fraction and load imbalance the collapse gate reads come from the same vector, so after the all-reduce they describe the model rather than one rank, which sees a fraction of the tokens and always looks more collapsed than the model is.</p>
+<h2 id="bug-3-the-spike-guard-would-have-desynchronised-the-optimizer">Bug 3: the spike guard would have desynchronised the optimizer</h2>
+<p>Our spike protocol skips any step whose loss exceeds 1.5 times a running EMA, or whose loss is NaN or infinite. The guard is deterministic given its input, and it is the input that was wrong.</p>
+<p>Each rank computed its own average loss over its own gradient-accumulation microbatches and handed that number to its own <code>SpikeGuard</code>. Two ranks holding different tokens produce different losses, and a threshold applied to two different numbers can return two different answers. One rank calls <code>opt.step()</code> while the other calls <code>opt.zero_grad()</code> and continues.</p>
+<p>At that moment the ranks hold different weights. FSDP2 keeps only a shard of each parameter per rank and all-gathers the full tensor before every layer's forward, so the next forward assembles each weight matrix from shards belonging to two different models. Nothing checks that they agree. Training continues, the loss falls, and the model is a blend no optimizer step ever produced.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/three-bugs-that-do-not-crash-5.png" alt="The spike guard desynchronising the optimizer, and the reduction that removes the possibility." loading="lazy"  data-fig="three-bugs-that-do-not-crash-5.png"><span class="fig-ph">figure rendering &middot; The spike guard desynchronising the optimizer, and the reduction that </span></div><figcaption>The spike guard desynchronising the optimizer, and the reduction that removes the possibility.</figcaption></figure>
+<p>The fix reduces the loss before the guard sees it:</p>
+<pre class="code" data-lang="python"><code>if distributed:
+    t = torch.tensor([loss], device="cuda", dtype=torch.float64)
+    dist.all_reduce(t, op=dist.ReduceOp.SUM)
+    loss = float(t.item()) / world
+
+skip, reason = guard.check(step, loss)</code></pre>
+<p>The guard's input is now identical on every rank, and the guard is a pure function of its input, so the decision is identical by construction. There are two ways to make ranks agree: compute the same thing on each, or compute it once and share it. The first is a claim about arithmetic that has to stay true through every future edit; the second is a property of the code.</p>
+<p>r1 skipped <strong>zero</strong> spikes across 38,147 steps, which is a useful reminder about this class of bug: on the run that finished, this code path never executed.<label for="sn-three-bugs-that-do-not-crash-2" class="sn-ref">2</label><input type="checkbox" id="sn-three-bugs-that-do-not-crash-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> Which is why half of the twenty-four failure-injection tests in the monitoring suite construct the condition artificially. The spike protocol, the abort-after-five-consecutive-skips rule and the NaN branch were exercised against synthetic loss traces, because r1's real trace never left the healthy band.</span></p>
+<h2 id="two-more-in-the-same-family">Two more in the same family</h2>
+<p>The same audit turned up two more places where sharding changes the meaning of correct-looking code.</p>
+<p><strong>The router bias must not be sharded.</strong> <code>e_score_correction_bias</code> is updated by rule rather than by gradient, from plain buffers. Once <code>fully_shard</code> has run the bias is a DTensor and the update is not, and the in-place add fails with <code>aten::add_.Tensor got mixed torch.Tensor and DTensor</code>. That was the error the first FSDP2 flagship probe returned, and it is the one member of this group that does crash. It can be repaired by distributing the update to match the bias, which we keep as a fallback, but the better fix is to hold the tensor out of sharding with <code>fully_shard(ignored_params=...)</code>. A replicated bias fed by an all-reduced load is identical on every rank because there is one copy of the rule and one copy of its input, rather than identical if the sharding arithmetic is right.<label for="sn-three-bugs-that-do-not-crash-3" class="sn-ref">3</label><input type="checkbox" id="sn-three-bugs-that-do-not-crash-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> The tensor is one float per expert per mixture-of-experts layer, so replicating it costs tens of kilobytes against hundreds of gigabytes of weights and optimizer state.</span></p>
+<p><strong>Decoder-layer outputs that are views must be cloned.</strong> FSDP2 warns that <code>KimiDecoderLayer</code> returns a view tensor, and that an in-place operation on that view will silently drop the pre-backward hook and skip the all-gather, which can produce <strong>wrong gradients</strong> with no error. The attention-residual path reshapes with <code>.view(batch_size, seq_len, hidden_size)</code> and the model threads both returned values through 24 layers, so establishing by inspection that no aliasing survives is possible in principle and is not a proof worth betting a multi-day run on. We wrap each layer's forward and clone any returned tensor whose <code>_base is not None</code>:</p>
+<pre class="code" data-lang="python"><code>def _deview(t):
+    if isinstance(t, torch.Tensor) and t._base is not None:
+        return t.clone()
+    if isinstance(t, tuple):
+        return tuple(_deview(x) for x in t)
+    return t</code></pre>
+<p>The common case costs nothing, because a tensor that is not a view is returned unchanged. The aliasing case costs one <code>[batch, sequence, hidden]</code> copy per layer across the flagship's 24 layers, which is small against a 288 GB card.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/three-bugs-that-do-not-crash-6.png" alt="The two remaining sharding fixes. Only the first announces itself." loading="lazy"  data-fig="three-bugs-that-do-not-crash-6.png"><span class="fig-ph">figure rendering &middot; The two remaining sharding fixes. Only the first announces itself.</span></div><figcaption>The two remaining sharding fixes. Only the first announces itself.</figcaption></figure>
+<h2 id="the-general-lesson">The general lesson</h2>
+<p>Single-GPU code has one source of truth for every quantity. There is one batch, one loss, one expert-load vector, one gradient norm, and any statistic computed anywhere in the step is automatically a statistic of the whole run. Sharding removes that guarantee without removing the code that relied on it: every expression that read a tensor now reads a slice, and none of it changes a line of source.</p>
+<p>The audit is therefore mechanical. Walk the training step and, for each quantity, ask what it is defined over. If the answer is the whole batch or the whole model, it needs an explicit collective or a guarantee of replication.</p>
+<div class="tbl-wrap"><table><thead><tr><th>quantity</th><th>defined over</th><th>what it becomes when sharded</th><th>what we did</th></tr></thead><tbody><tr><td>the tokens in a step</td><td>the whole batch</td><td>one rank's slice, maybe a duplicate</td><td>dealt shards <code>paths[rank::world]</code></td></tr><tr><td>expert load</td><td>the whole batch</td><td>one rank's routing</td><td>all-reduced before the update</td></tr><tr><td>the spike threshold's input</td><td>the whole batch</td><td>one rank's loss</td><td>all-reduced before the guard</td></tr><tr><td>the balancer bias</td><td>the model</td><td>a DTensor slice</td><td>held out of sharding</td></tr><tr><td>tokens seen, cost, MFU</td><td>the node</td><td>one rank's share</td><td>multiplied by world at the source</td></tr></tbody></table></div>
+<p>The last row is the same error in reporting rather than in training. Throughput in the loop is a node figure, because the step token count already multiplies by world, so dividing it by one card's peak FLOPs would report MFU too high by exactly the world size, which on two cards is double. The hourly rate is multiplied by world for the same reason: every rank is billed, and one rank's share understates the cost of the run by the factor the ladder was built to price.</p>
+<p>The failure mode across this table is worth naming precisely. It is not an exception, and it is not a wrong answer that shows up as a diverging loss. It is <strong>a slightly different model</strong>: one trained at half the intended batch, or with a router that disagrees with itself, or with weights blended from two optimizer trajectories. Every such run finishes, produces a checkpoint that loads, and yields evaluation numbers that are internally consistent and slightly worse than they should be. There is no baseline to notice against, because the correct version of the run is what you were trying to produce.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/three-bugs-that-do-not-crash-7.png" alt="The audit, as a list. The right-hand column is the reason it is worth doing before the run rather than after." loading="lazy"  data-fig="three-bugs-that-do-not-crash-7.png"><span class="fig-ph">figure rendering &middot; The audit, as a list. The right-hand column is the reason it is worth </span></div><figcaption>The audit, as a list. The right-hand column is the reason it is worth doing before the run rather than after.</figcaption></figure>
+<h2 id="what-was-verified-and-what-still-failed">What was verified, and what still failed</h2>
+<p>With all five fixes in place, FSDP2 was verified end to end on the flagship: 24 layers sharded, 24 activation-checkpointed, loss falling <strong>12.313 to 11.662</strong> over four steps, dead experts 0.0%, imbalance 3.3, gradient norms 30.5 to 14.75, peak memory <strong>177.9 GB of 287.4</strong>, or 62% of one card.<label for="sn-three-bugs-that-do-not-crash-4" class="sn-ref">4</label><input type="checkbox" id="sn-three-bugs-that-do-not-crash-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> The probe had to be launched with <code>--detach</code>. Without it, Modal prints the image-build logs, then "Stopping app — local entrypoint completed", and the FunctionCall raises <code>RemoteError</code> with an empty message. That reads exactly like a crash and is not one, which cost us a debugging session on a run that was working.</span></p>
+<p>That is the sharding working. It is not the flagship working. The 35.56-billion-parameter run was launched on 6 August 2026 and failed for a reason unrelated to this chapter: 69.5% of its experts went dead, load imbalance sat between 74 and 85, and it stalled at step 890 of 76,294 having spent $48.33. The balancer constant that recovers r1 from its early collapse did not recover the flagship, which is a scale finding rather than a distributed-correctness one.</p>
+<p>The shape of that ledger is the point. Three bugs that would have produced a finished, plausible, wrong model were removed before the run started, at a cost of four lines and one wrapper. The bug that killed the flagship announced itself within the first hundred steps, on a metric we had already learned to watch. The expensive failures are the quiet ones, and sharding a mixture-of-experts model is where the most of them are available.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./26-sharding-the-model.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 26</span>
+              <span class="vb-nav-title">Sharding the model across GPUs</span>
+            </a>
+            <a href="./28-the-loss-curve.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 28 →</span>
+              <span class="vb-nav-title">The loss curve, end to end</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

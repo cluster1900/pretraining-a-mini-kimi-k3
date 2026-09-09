@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The profile: only 12% of the time is arithmetic · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="Grouping every CUDA kernel by which part of the model it belongs to, the double-counting mistake in the first version of the table, and what memory-bandwidth-bound means for every lever available.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 22 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 04 · Making It Fast</div>
+      <h1 class="vb-chapter-title">The profile: only 12% of the time is arithmetic</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 22 of 30</span>
+        <span class="vb-pill">⏱ 10 min read</span>
+        <span class="vb-pill">📊 5 figures</span>
+        <span class="vb-pill cost">45.6%</span>
+      </div>
+
+      <p class="vb-chapter-blurb">Grouping every CUDA kernel by which part of the model it belongs to, the double-counting mistake in the first version of the table, and what memory-bandwidth-bound means for every lever available.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>By the time we ran the profiler we had already spent five numbered attempts on the throughput problem, and the fifth one was the warning. Recomputing <code>situ</code>'s intermediates in the backward pass, rather than saving them in float32 through the forward, freed <strong>40 GB</strong> of memory, which is what the arithmetic predicted. That memory bought a 50% larger microbatch, from 16,384 to 24,576 tokens per step. The larger microbatch moved MFU by <strong>0.1 percentage points</strong>.</p>
+<p>Earlier in the investigation the levers had moved MFU in whole multiples. Attempt 1, replacing the sequential expert loop with batched matrix multiplies, took MFU from <strong>0.1% to 4.1%</strong>. Now a 50% larger microbatch bought essentially nothing. A lever that stops responding has stopped being the constraint, and there was no further reading of the code that would tell us what the new constraint was.</p>
+<p>So we stopped forming hypotheses and measured where the GPU time was going.</p>
+<h2 id="the-table">The table</h2>
+<p>We ran the PyTorch profiler on <strong>r2, the rung above ours, at 16,384 tokens per step on one H200</strong>, and grouped every CUDA kernel by which part of the model it belongs to.<label for="sn-the-profile-1" class="sn-ref">1</label><input type="checkbox" id="sn-the-profile-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> r2 is 2.93B total / 307M active. Almost all of the MFU investigation was measured there rather than on r1, because r2 was the largest rung that still fits comfortably on a single H200 with room to sweep batch sizes. r1, the model this book is about, trained at 131,072 tokens per step; the 16,384 figure here is a benchmark-harness setting, not the run's.</span></p>
+<div class="tbl-wrap"><table><thead><tr><th>area</th><th>share of GPU time</th></tr></thead><tbody><tr><td>elementwise</td><td>41.9%</td></tr><tr><td>copy / index</td><td>24.7%</td></tr><tr><td>matmul (gemm and bmm)</td><td>11.6%</td></tr><tr><td>KDA (fla-core Triton)</td><td>9.1%</td></tr><tr><td>other</td><td>4.8%</td></tr><tr><td>reduction and normalisation</td><td>4.0%</td></tr><tr><td>attention</td><td>3.9%</td></tr></tbody></table></div>
+<p>The individual kernels say the same thing from a different angle. <code>aten::mul</code> is <strong>10.2%</strong> of GPU time. <code>aten::copy_</code> is <strong>8.6%</strong>. Vectorized elementwise kernels are <strong>4.2%</strong>. <code>aten::mm</code>, an actual matrix multiplication, is <strong>3.9%</strong>.</p>
+<p><strong>Only about 12% of GPU time is matrix multiplication.</strong></p>
+<p>Elementwise operations and copies together are <strong>66.6%</strong>. Those are the two categories that read a tensor, do very little with it, and write it back. Roughly 88% of the time, the card we were renting at $4.54 per hour was not doing the arithmetic that MFU measures.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-profile-1.png" alt="Every CUDA kernel in a training step, grouped by which part of the model it belongs to. Measured on r2, the rung above t" loading="lazy"  data-fig="the-profile-1.png"><span class="fig-ph">figure rendering &middot; Every CUDA kernel in a training step, grouped by which part of the mod</span></div><figcaption>Every CUDA kernel in a training step, grouped by which part of the model it belongs to. Measured on r2, the rung above the one this book trained.</figcaption></figure>
+<h2 id="the-first-version-of-this-table-was-wrong">The first version of this table was wrong</h2>
+<p>That table is the corrected one. The first version we produced reported an unexplained <strong>30.2% "other"</strong> bucket and put copies at <strong>8.6%</strong>, and we very nearly acted on it. It was the second-largest entry in the profile, we did not know what was in it, and the plan written down at the time began with an item that read, in effect, find out what "other" is.</p>
+<p>The mistake was in how the rows were summed. PyTorch's <code>key_averages()</code> returns two kinds of row in the same list. There are <code>aten::</code> operator entries, which are the operations your model code calls, and there are CUDA kernel entries, which are what those operators launch on the device. A single <code>aten::mul</code> may dispatch one vectorized elementwise kernel, and both the operator and the kernel appear as rows carrying the same device time. Summing the list adds that time twice.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-profile-2.png" alt="The double-count, and what it hid. The corrected table counts CUDA kernels only." loading="lazy"  data-fig="the-profile-2.png"><span class="fig-ph">figure rendering &middot; The double-count, and what it hid. The corrected table counts CUDA ker</span></div><figcaption>The double-count, and what it hid. The corrected table counts CUDA kernels only.</figcaption></figure>
+<p>The corrected table counts CUDA kernels only, and the correction was not cosmetic. Copies moved from 8.6% to <strong>24.7%</strong> and became the second-largest line in the profile. The unexplained 30.2% bucket dropped to 4.8%, which is small enough to stop worrying about.<label for="sn-the-profile-2" class="sn-ref">2</label><input type="checkbox" id="sn-the-profile-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> The individual <code>aten::copy_</code> row is still 8.6% in the corrected list of top kernels. The area is 24.7% because the copy and index group holds many kernels besides that one — gathers, scatters, <code>cat</code> copies, dtype conversions — and the flawed table had only ever been reading the single largest of them.</span></p>
+<p>That single correction redirected the next month of work. A profile that says copies are 8.6% invites you to leave them alone. A profile that says copies are 24.7% makes the sort-and-gather in the expert dispatch the second thing on the list, and the dispatch cleanup that followed is worth <strong>13% per step</strong>, which we describe in the chapter on the two kernels that worked.</p>
+<h2 id="what-memory-bandwidth-bound-means-physically">What memory-bandwidth bound means physically</h2>
+<p>The phrase is used often enough to have gone slightly abstract, so it is worth spelling out what the GPU is actually doing during that 66.6%.</p>
+<p>A GPU has two resources that can run out. It has arithmetic units, which on an H200 do roughly <strong>989 trillion bf16 operations per second</strong>, and it has a bus to high-bandwidth memory, which moves bytes between HBM and the chip. Any kernel consumes some of each. The ratio of arithmetic to bytes moved is what decides which resource the kernel waits on.</p>
+<p>A matrix multiplication has a favourable ratio. Loading two tiles of size <code>n × n</code> costs on the order of <code>n²</code> bytes and produces on the order of <code>n³</code> multiply-accumulates, so as the tile grows the arithmetic outruns the loading, and the arithmetic units become the thing that limits you. That is the regime MFU is designed to measure, and it is why a well-tuned dense transformer reaches 40 to 55%.</p>
+<p>An elementwise operation has the worst possible ratio. Consider <code>situ</code>, K3's activation, which computes <code>beta * tanh(gate / beta) * sigmoid(gate)</code> on the gate branch and a second scaled <code>tanh</code> on the up branch, with <strong>beta 4.0 and linear-beta 25.0</strong>. Written as ordinary PyTorch it becomes a chain of separate kernels: one divides, one takes a tanh, one takes a sigmoid, one multiplies, and so on. Each of those kernels reads the full tensor out of HBM, performs one or two floating-point operations per element, and writes the full tensor back. The arithmetic units are idle almost the entire time; the bus is saturated the entire time.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-profile-3.png" alt="The physical picture behind the table. Elementwise kernels move the whole tensor to do one operation per element." loading="lazy"  data-fig="the-profile-3.png"><span class="fig-ph">figure rendering &middot; The physical picture behind the table. Elementwise kernels move the wh</span></div><figcaption>The physical picture behind the table. Elementwise kernels move the whole tensor to do one operation per element.</figcaption></figure>
+<p>Copies are the same story with the arithmetic removed entirely. A gather reads a tensor and writes a permuted version of it, and performs no floating-point work at all. Our expert dispatch sorts tokens by expert, gathers them into a padded buffer, runs the experts, then scatters the results back. Every one of those movements is pure bus traffic. At r2's 256 experts across 15 mixture-of-experts layers, there is a great deal of it.</p>
+<p>This is what the table means when it says the model is memory-bandwidth bound. The GPU is not struggling with the calculation. It is spending its time carrying tensors back and forth across the bus so that a small amount of calculation can happen to them.</p>
+<h2 id="why-the-six-ideas-had-to-fail">Why the six ideas had to fail</h2>
+<p>The six attempts that preceded the successful ones are written up individually in the previous chapter. Read against the profile, they collapse into a single failure, and it is a more useful way to remember them.</p>
+<div class="tbl-wrap"><table><thead><tr><th>#</th><th>the hypothesis</th><th>the profile line that kills it</th><th>measured</th></tr></thead><tbody><tr><td>2</td><td>padding waste in the expert buffer dominates</td><td>matmul is 11.6%; padding only wastes matmul</td><td>imbalance 42.8 → 1.8, MFU 4.1% → 4.6%</td></tr><tr><td>3</td><td>MFU rises with model size</td><td>bandwidth cost per token barely moves with width</td><td><code>active^0.39</code></td></tr><tr><td>4</td><td>chunking the expert buffer saves memory</td><td>memory was not the constraint</td><td>5% memory, MFU fell</td></tr><tr><td>5</td><td><code>situ</code> holding float32 copies is the cost</td><td>correct diagnosis, wrong lever — it bought batch, not bandwidth</td><td>−40 GB, MFU +0.1pp</td></tr><tr><td>6</td><td>KDA or attention kernels are the cost</td><td>attention 3.9%, KDA 9.1% in the grouped table</td><td>4.6% and 5.1% of runtime</td></tr><tr><td>7</td><td><code>torch.compile</code> will fuse the elementwise work</td><td>the densest elementwise regions are opaque to Inductor</td><td>1.04x</td></tr></tbody></table></div>
+<p>Attempts 2, 3, 4 and 5 were all formed by reading code and reasoning about it, and all four are variations on one belief: that the arithmetic or the memory footprint was the thing to fix. The profile says the arithmetic is 11.6% of runtime, so making it cheaper cannot buy much, and it says nothing at all about the memory footprint, because the footprint had already stopped mattering when the batch lever saturated.</p>
+<p>Attempts 6 and 7 are slightly different, in that the profile is what killed them rather than what explained them afterwards. We had spent a run of build attempts trying to install flash-attn before we knew that attention was <strong>5.1%</strong> of runtime in the attempt-6 measurement, and 3.9% in the corrected kernel grouping.<label for="sn-the-profile-3" class="sn-ref">3</label><input type="checkbox" id="sn-the-profile-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> The two groupings put KDA and attention in slightly different places — 4.6% and 5.1% in the attempt-6 reading, 9.1% and 3.9% in the corrected kernel table. The split between them depends on how you assign the <code>fla-core</code> Triton kernels. Neither ordering changes what follows: both are far below the elementwise line, and a perfect attention kernel could not have recovered more than a few points.</span> A kernel that occupies 5% of your runtime can at best return 5% of your runtime, and only if it becomes free.</p>
+<p><code>torch.compile</code> is the one that deserved to work. Fusion is the standard remedy for a bandwidth-bound model, and fusion is what Inductor does. It returned <strong>1.04x</strong>, and the reason is visible in the setup rather than in the profile: <code>fla-core</code>'s Triton kernels and our own <code>situ</code> autograd function are both opaque to the compiler, and they sit exactly where the elementwise work is densest. The compiler had very little it was allowed to fuse across.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-profile-4.png" alt="The six failed attempts against the measurement that explains all of them." loading="lazy"  data-fig="the-profile-4.png"><span class="fig-ph">figure rendering &middot; The six failed attempts against the measurement that explains all of t</span></div><figcaption>The six failed attempts against the measurement that explains all of them.</figcaption></figure>
+<h2 id="what-the-profile-pointed-at-instead">What the profile pointed at instead</h2>
+<p>A profile is only worth the decisions it changes, so it is fair to ask which decisions this one changed.</p>
+<p>It ranked the remaining work by bytes moved rather than by FLOPs saved. Under that criterion the largest available target is the elementwise chain in <code>situ</code>, because it touches <code>[experts, capacity, ffn_dim]</code>, the largest tensor in the model, several times per layer. Fusing it into a single Triton kernel that reads the input once, keeps every intermediate in registers, and writes the output once was <strong>attempt 8</strong>, and it worked: <strong>1.38x</strong>, MFU from 5.6% to <strong>7.7%</strong>. It is worth noting how it won, because the profile predicted the mechanism and got the mechanism slightly wrong. At equal batch size the fused kernel is not faster, 5.5% against 5.6%. The entire gain is the 40 GB it frees, which allows a 50% larger microbatch at 24,576 tokens.</p>
+<p>The second target came from the correction. Copies at 24.7% made the sort-and-gather worth attacking, which became <strong>attempt 9</strong>: <strong>13% faster per step</strong>, with peak MFU unchanged. Had we kept the flawed table, with copies sitting at 8.6% and an unexplained 30.2% bucket above them, that work would have been ranked below chasing the bucket.</p>
+<p>It also removed items from the list. CUDA graphs were never tried, because the profile establishes that the run is not launch-bound; the launch-bound problem was attempt 1, which had already been fixed by replacing 3,840 sequential kernel launches — 256 experts across 15 mixture-of-experts layers — with batched matrix multiplies, taking step time at 2,048 tokens from <strong>3.999 s to 0.228 s</strong>. And it set the expectation for FP8 correctly. A bandwidth-bound model cares about bytes moved, and FP8 halves the bytes for both weights and activations in the expert path, so it was the largest single idea available. It was measured twice. The naive version, attempt 11, came back at <strong>0.19x to 0.09x</strong> and five times less accurate. Amortising the quantisation properly, attempt 15, was <strong>2.1x better than naive and still 2.8x slower than bf16</strong>. Being pointed at the right resource does not guarantee that a particular way of saving it pays.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-profile-5.png" alt="How the corrected profile reordered the work. Two of the three items ranked up paid; one did not." loading="lazy"  data-fig="the-profile-5.png"><span class="fig-ph">figure rendering &middot; How the corrected profile reordered the work. Two of the three items r</span></div><figcaption>How the corrected profile reordered the work. Two of the three items ranked up paid; one did not.</figcaption></figure>
+<h2 id="what-this-profile-does-not-say">What this profile does not say</h2>
+<p>Three limits belong with the table rather than in a footnote.</p>
+<p>It was measured on <strong>r2 on one H200</strong>, not on r1, and not on the flagship. MFU is only comparable across runs on the same hardware, which we learned the expensive way in attempt 13, where fitting r1 and r2 on an H200 together with r3 on a B200 produced <code>active^-0.32</code>, a negative scaling exponent implying that larger models are less efficient. Normalising r3's 3.6% to the H200's peak gives about 8.2%, which sits above r2 and restores the positive slope. The shape of this profile is likely to hold across the ladder, because the architecture is held fixed across the rungs, however the shares are not measurements of r1.</p>
+<p>It was measured with MLA running on an <strong>sdpa shim registered under the <code>flash_attention_2</code> key</strong>, because the released modeling code hard-forces that string and the asymmetric-head-dim padding only runs on that branch. The shim is numerically identical and slower, so the 3.9% attention line understates what a real flash-attention path would have cost, which makes the case against attempt 6 stronger rather than weaker.<label for="sn-the-profile-4" class="sn-ref">4</label><input type="checkbox" id="sn-the-profile-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> This is the single place in the investigation where a measurement error would have pushed us toward the right conclusion for the wrong reason. If the shim were inflating the attention share rather than deflating it, attempt 6 might have looked worth revisiting.</span></p>
+<p>And it does not say what to build. It says that the model spends two thirds of its time moving tensors so that a small amount of arithmetic can be applied to them, and that the remedy is fewer round trips to HBM. Delivering that properly means hand-written fused kernels across the <code>situ</code> and mixture-of-experts path, which is an engineering project rather than a tuning pass, and it is the reason the investigation closes at a measured <strong>5.6% on r2</strong> rather than anywhere near the range well-tuned dense training reaches.</p>
+<h2 id="the-standing-lesson">The standing lesson</h2>
+<p>Six attempts were spent on hypotheses formed by reading code. Every one of them was reasonable when it was written down, every one of them was about arithmetic or memory footprint, and all six were wrong in the same way. The profile took one run.</p>
+<p>The order should have been reversed, and the reason is not that we were careless. Reading code tells you what operations exist and what they cost in theory. It does not tell you what fraction of wall-clock time each one occupies on a specific card at a specific shape, and that fraction is the only thing that decides which optimisation is worth writing. The two are related closely enough that reasoning about the code feels like it should work, which is precisely what makes six consecutive failures possible.</p>
+<p>Two smaller rules come out of the same episode and are worth carrying. <strong>Count CUDA kernels, not operator rows</strong>, because the profiler returns both and summing them double-counts every operation. And <strong>check what fraction of your time is in matmuls before you optimise anything</strong>, because if that fraction is low, no amount of batch size, memory headroom or faster attention will help, and every hour spent on those levers is an hour spent on the resource that was never scarce.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./21-six-ideas-that-did-not-work.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 21</span>
+              <span class="vb-nav-title">Six ideas that did not work</span>
+            </a>
+            <a href="./23-two-kernels-that-worked.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 23 →</span>
+              <span class="vb-nav-title">Two kernels that worked, and one that did not</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Two kernels that worked, and one that did not · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="A fused situ activation that won by being smaller rather than faster, a dispatch cleanup worth 13% per step, and a numerically perfect RMSNorm kernel that ran out of memory on shapes the released module handles.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 23 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 04 · Making It Fast</div>
+      <h1 class="vb-chapter-title">Two kernels that worked, and one that did not</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 23 of 30</span>
+        <span class="vb-pill">⏱ 10 min read</span>
+        <span class="vb-pill">📊 6 figures</span>
+        <span class="vb-pill cost">1.38x</span>
+      </div>
+
+      <p class="vb-chapter-blurb">A fused situ activation that won by being smaller rather than faster, a dispatch cleanup worth 13% per step, and a numerically perfect RMSNorm kernel that ran out of memory on shapes the released module handles.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>The profile in the previous chapter named two targets and dismissed everything else. Elementwise operations took <strong>41.9%</strong> of GPU time, copy and index kernels took <strong>24.7%</strong>, and matrix multiplication — the arithmetic MFU is actually measuring — took about 12%. A model in that state is not short of compute. It is short of memory bandwidth, and the only work worth doing is work that moves fewer bytes.</p>
+<p>Three attempts followed directly from that profile. Two of them worked. The third produced a kernel that computes the right answer and cannot be used.</p>
+<p>All three were measured on <strong>r2</strong>, the rung above the one this book trains: 307 million active parameters, on a single H200. Every percentage below belongs to r2 rather than to the run described in the rest of the book. Both rungs sit on one card, so nothing here involves sharding; r1 was never distributed at all.<label for="sn-two-kernels-that-worked-1" class="sn-ref">1</label><input type="checkbox" id="sn-two-kernels-that-worked-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> This matters for reading the numbers rather than for the conclusions. r1's benchmark figure with the same optimisations in place is 66,877 tokens per second at 5.9% MFU, and the 38,147-step run it actually performed sustained 27,600 to 28,900 tokens per second at 2.4 to 2.5%. The kernels below were written against r2 and shipped into the same code path both rungs use.</span></p>
+<h2 id="attempt-8-one-kernel-instead-of-seven">Attempt 8: one kernel instead of seven</h2>
+<p>K3's activation function is <code>situ</code>, parameterised by <code>beta = 4.0</code> and <code>linear_beta = 25.0</code>. It splits its input in half, applies one nonlinearity to the gate half and another to the up half, and multiplies the two together. Written with PyTorch operators, that is roughly seven separate CUDA kernels:</p>
+<pre class="code" data-lang="python"><code>gate   = x[..., :d].to(float32)              # read + write
+up     = x[..., d:].to(float32)              # read + write
+t      = tanh(gate / beta)                   # read + write
+s      = sigmoid(gate)                       # read + write
+situ_a = beta * t * s                        # read + write
+up     = linear_beta * tanh(up / linear_beta)  # read + write
+out    = (situ_a * up).to(bf16)              # read + write</code></pre>
+<p>Every line in that listing reads a tensor from HBM, performs a small amount of arithmetic, and writes the result back. In a mixture-of-experts layer the tensor being read has shape <code>[experts, capacity, ffn_dim]</code>, which is the largest tensor in the model. The arithmetic is trivial and the traffic is not, which is exactly the shape the profile described: <code>aten::mul</code> alone was <strong>10.2%</strong> of all GPU time.</p>
+<p>One kernel that reads the input once, holds every intermediate in registers, and writes the output once removes about six of those round trips.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/two-kernels-that-worked-1.png" alt="The released activation and the fused replacement. The operations are identical; the number of trips to memory is not." loading="lazy"  data-fig="two-kernels-that-worked-1.png"><span class="fig-ph">figure rendering &middot; The released activation and the fused replacement. The operations are </span></div><figcaption>The released activation and the fused replacement. The operations are identical; the number of trips to memory is not.</figcaption></figure>
+<h3 id="the-backward-had-to-be-derived-by-hand">The backward had to be derived by hand</h3>
+<p>The forward is straightforward. The backward is the part that decides whether the kernel is worth writing at all, because the memory saving only survives if we refuse to store the intermediates that autograd would otherwise differentiate through. That means writing the derivatives out:</p>
+<pre class="code" data-lang=""><code>a(g) = beta * tanh(g/beta) * sigmoid(g)
+b(u) = linear_beta * tanh(u/linear_beta)
+y    = a(g) * b(u)
+
+da/dg = (1 - tanh(g/beta)^2) * sigmoid(g)
+      + beta * tanh(g/beta) * sigmoid(g) * (1 - sigmoid(g))
+db/du = 1 - tanh(u/linear_beta)^2</code></pre>
+<p>The backward kernel recomputes <code>a</code> and <code>b</code> from the saved input rather than reading them from a stored tensor. That is the decision that carries the memory saving into the backward pass: recomputing two nonlinearities from a tensor already in registers costs a handful of instructions, while storing them costs two full-size tensors per activation site for the whole backward.<label for="sn-two-kernels-that-worked-2" class="sn-ref">2</label><input type="checkbox" id="sn-two-kernels-that-worked-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> This Triton build has no <code>tl.math.tanh</code>. The kernel uses <code>tanh(x) = 2 * sigmoid(2x) - 1</code>, which is an exact algebraic identity rather than an approximation, and <code>tl.sigmoid</code> is present in every build. Checking which maths functions your Triton version actually exposes is worth doing before writing the kernel rather than after.</span></p>
+<h3 id="correctness-first-and-a-tolerance-that-lied">Correctness first, and a tolerance that lied</h3>
+<p>Before any timing, the kernel was compared against the released module on values and gradients, across both <code>linear_beta</code> settings and both dtypes. Relative error came out at <strong>1.7e-07 in float32</strong> and <strong>3.0e-03 in bfloat16</strong>, both inside what the dtype carries.</p>
+<p>The first version of that check reported a failure, and the kernel was not at fault. The check used an absolute tolerance. <code>situ</code> multiplies by <code>beta</code> and by <code>linear_beta</code>, so its outputs are scaled well above unit magnitude, and a threshold that is reasonable for values near 1 asks bfloat16 for more significant digits than it has once values are two orders of magnitude larger. An absolute threshold silently becomes stricter as the tensors it judges get larger, which is why every comparison in this project is relative to the output scale.</p>
+<h3 id="the-result-and-the-direction-it-came-from">The result, and the direction it came from</h3>
+<div class="tbl-wrap"><table><thead><tr><th>situ</th><th>tokens per microbatch</th><th>MFU</th><th>outcome</th></tr></thead><tbody><tr><td>released</td><td>16,384</td><td>5.6%</td><td>fits</td></tr><tr><td>released</td><td>24,576</td><td>—</td><td>out of memory</td></tr><tr><td>fused</td><td>16,384</td><td>5.5%</td><td>40 GB less memory</td></tr><tr><td>fused</td><td>24,576</td><td><strong>7.7%</strong></td><td>41,294 tok/s, 133.7 GB</td></tr></tbody></table></div>
+<p>At equal batch size the fused kernel is <strong>not faster</strong>: 5.5% against 5.6%, which is within measurement noise and slightly on the wrong side of it. Every one of the seven kernel launches it removed, and every round trip to HBM those launches performed, bought nothing measurable in time.</p>
+<p>What it bought was <strong>40 GB</strong>. The intermediates that are no longer materialised are no longer allocated, and 40 GB is enough headroom for a microbatch 50% larger. At 24,576 tokens per microbatch the same kernel runs at <strong>41,294 tokens per second and 7.7% MFU</strong>, against 5.6% before, which is the 1.38x that appears in the attempt log.</p>
+<p>The natural assumption runs the other way. A fused kernel is supposed to win by being quicker. This one won by being smaller, and the smallness converted into MFU through the batch size rather than through the clock.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/two-kernels-that-worked-2.png" alt="The chain from fusion to MFU. The step that pays is the memory, not the clock, and the two are connected only through th" loading="lazy"  data-fig="two-kernels-that-worked-2.png"><span class="fig-ph">figure rendering &middot; The chain from fusion to MFU. The step that pays is the memory, not th</span></div><figcaption>The chain from fusion to MFU. The step that pays is the memory, not the clock, and the two are connected only through the batch size.</figcaption></figure>
+<h2 id="attempt-9-the-copies-we-were-making-ourselves">Attempt 9: the copies we were making ourselves</h2>
+<p>The corrected profile put copy and index kernels at <strong>24.7%</strong> of GPU time, second only to elementwise work, with <code>aten::copy_</code> at <strong>8.6%</strong> on its own. Copies perform no arithmetic at all, so every copy removed is pure gain. The question is which of them are ours.</p>
+<p>Reading our own expert dispatch, two were avoidable.</p>
+<p>The first was a full materialisation. The dispatch sorts tokens by expert, and it built the sorted tensor directly:</p>
+<pre class="code" data-lang="python"><code>order = torch.argsort(flat, stable=True)
+src   = x[order // k]            # [N*k, d] — a copy of every token, once per routed slot</code></pre>
+<p>At top-6 that is six copies of the activation tensor, created before any arithmetic happens, and then immediately copied again into the padded buffer the batched matmuls read from. The fix is to keep the index rather than the tensor and gather once, straight into the padded buffer:</p>
+<pre class="code" data-lang="python"><code>tok_of = order // k                  # [N*k] indices, not [N*k, d] of data
+...
+idx = tok_of[sel]
+xp[e_loc, r_loc] = x[idx]            # one gather, into the buffer we needed anyway</code></pre>
+<p>The second was the output path. Having sorted the tokens, we undid the sort back into <code>[N*k, d]</code>, reshaped to <code>[N, k, d]</code>, multiplied by the routing weights, and reduced over <code>k</code>. Each of those steps allocates and fills a full-size tensor, so that is three more of them for an operation that is, in the end, a weighted scatter-accumulate. A single <code>index_add_</code> folds the un-sort, the weighting and the reduction into one pass over the data.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/two-kernels-that-worked-3.png" alt="The dispatch path before and after. Four full-size tensors disappear and no arithmetic changes." loading="lazy"  data-fig="two-kernels-that-worked-3.png"><span class="fig-ph">figure rendering &middot; The dispatch path before and after. Four full-size tensors disappear a</span></div><figcaption>The dispatch path before and after. Four full-size tensors disappear and no arithmetic changes.</figcaption></figure>
+<p><strong>The result.</strong> Step time at 16,384 tokens per microbatch fell by <strong>13%</strong>. Peak MFU stayed at <strong>7.7%</strong>.</p>
+<p>Those two sentences look contradictory and are not. The peak MFU figure is measured at 24,576 tokens per microbatch, where memory sits at 133.7 GB and there is no room for a larger batch. The run is memory-capped rather than time-capped, so making each step 13% quicker moves the throughput at every batch size we can fit without moving the batch size we can fit, and the headline number is set by the latter. Attempt 8 raised the ceiling by lowering the memory; attempt 9 moved us faster underneath a ceiling that did not move.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/two-kernels-that-worked-4.png" alt="The two working attempts act on different axes. One lowers the ceiling; the other moves faster beneath it." loading="lazy"  data-fig="two-kernels-that-worked-4.png"><span class="fig-ph">figure rendering &middot; The two working attempts act on different axes. One lowers the ceiling</span></div><figcaption>The two working attempts act on different axes. One lowers the ceiling; the other moves faster beneath it.</figcaption></figure>
+<p><strong>A check worth doing.</strong> <code>index_add_</code> accumulates contributions in a different order than a reduction over <code>k</code>, and floating-point addition is not associative, so the results are permitted to differ. We compared the new path against the looped reference implementation and found <strong>3.9e-08</strong>, the same figure the original fused dispatch produced against the same reference, so the ordering did not matter at this shape. It might at another one, which is why that comparison runs every time rather than once.<label for="sn-two-kernels-that-worked-3" class="sn-ref">3</label><input type="checkbox" id="sn-two-kernels-that-worked-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> The looped reference is the per-expert Python loop that attempt 1 replaced. It is roughly 17.5 times slower and is kept precisely for this: a slow implementation whose only job is to be obviously correct is worth its runtime, because it turns "the fast path is probably fine" into a number.</span></p>
+<h2 id="attempt-14-a-correct-kernel-that-could-not-be-used">Attempt 14: a correct kernel that could not be used</h2>
+<p>RMSNorm written with PyTorch operators takes several passes over its input: square, reduce, normalise, scale. One Triton kernel does it in a single pass. r2 has 16 layers, and each carries two norms plus the latent mixture-of-experts norm, so the forward pass runs a normalisation close to fifty times and the traffic adds up.</p>
+<p>The backward was derived by hand, including the term for <code>rstd</code>'s own dependence on <code>x</code>, which is the term that is easiest to drop:</p>
+<pre class="code" data-lang=""><code>dx = (w*dy - xhat * mean(xhat * w * dy)) * rstd</code></pre>
+<p><strong>Correctness.</strong> Verified against the released module across several hidden sizes and both dtypes, on values and on gradients, with the same relative-error check attempt 8 used. Every configuration passed. The kernel computes the right thing.</p>
+<p><strong>The result.</strong> Every configuration ran out of memory, including shapes the released module handles comfortably. Not slower, not marginally worse: out of memory at 16,384 tokens per microbatch, where the released path fits with room to spare, and out of memory at 24,576.</p>
+<p>The first diagnosis was easy to find and wrong. The backward allocated <code>dw_part = torch.empty_like(xc)</code>, a full <code>[rows, hidden]</code> scratch tensor per normalisation, purely to compute the weight gradient before summing it. At 24,576 rows across every normalisation in the model, all live until backward finishes, that is a large amount of scratch for a quantity whose final shape is one vector. So it was replaced with the arrangement production kernels use: a <code>[n_prog, n_cols]</code> partial-reduction buffer, far smaller, with each program accumulating a stripe of rows in registers and summing the partials at the end.</p>
+<p>Correctness held. It still ran out of memory at both shapes.</p>
+<p>That second measurement earns the attempt its section, because it eliminated the explanation we reached for first. The scratch buffer was not the cause.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/two-kernels-that-worked-5.png" alt="The likelier explanation. The kernel allocates almost nothing; the autograd Function around it pins what checkpointing w" loading="lazy"  data-fig="two-kernels-that-worked-5.png"><span class="fig-ph">figure rendering &middot; The likelier explanation. The kernel allocates almost nothing; the aut</span></div><figcaption>The likelier explanation. The kernel allocates almost nothing; the autograd Function around it pins what checkpointing was there to throw away.</figcaption></figure>
+<p>The likelier explanation is an interaction we did not anticipate when we wrote it. <code>_FusedRMSNorm</code> is a custom <code>torch.autograd.Function</code>, and it calls <code>save_for_backward(x, weight, rstd)</code>. Tensors saved that way are retained outside the gradient-checkpoint region. Each normalisation therefore pins a full-size input that checkpointing would otherwise have discarded and recomputed, and the custom Function quietly defeats the checkpointing it sits inside.</p>
+<p>This is worth knowing before writing any fused kernel for a checkpointed model. A hand-written <code>autograd.Function</code> that saves its input can cost more memory than the operators it replaced, even when the kernel body allocates almost nothing. The routes around it are to make the kernel recompute from something already saved, which is what the fused <code>situ</code> kernel does, or to let the checkpoint boundary own the saving.<label for="sn-two-kernels-that-worked-4" class="sn-ref">4</label><input type="checkbox" id="sn-two-kernels-that-worked-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> Checkpointing was itself a fight on this model. <code>gradient_checkpointing_enable()</code> is a silent no-op on the released Kimi code: it declares support, sets the flag, and the decoder loop never calls the checkpoint function. The tell was in our own memory numbers — 76.7 GB with it off and 76.8 GB with it on at 8,192 tokens. Identical memory is the signature of a no-op. Making it real also required <code>use_cache = False</code>, because the KV cache is mutated inside the forward and the recomputed forward would otherwise see different state.</span></p>
+<p><strong>What we learned.</strong> A kernel can be numerically perfect and still be a regression. This one removes passes over the data and spends far more memory than it saves, and memory is the resource that converted into MFU at every step of this investigation. <strong>"Verified correct" and "ready to use" are different claims</strong>, and the gap between them is not in the numerics.</p>
+<p>There is a second, smaller lesson in how it was diagnosed. The first stacked benchmark run reported out-of-memory for every configuration, which reads like a capacity limit rather than a regression. Re-running at 16,384 tokens, where the released path fits comfortably, isolated the problem to the new kernel in a single measurement. A benchmark sweep should always contain a shape that is known to work, because a table of failures with no control tells you nothing about which change caused them.</p>
+<h2 id="what-the-three-have-in-common">What the three have in common</h2>
+<figure class="fig"><div class="fig-frame"><img src="../figures/two-kernels-that-worked-6.png" alt="The three kernel attempts. Two wins and one failure, all three decided by the same resource." loading="lazy"  data-fig="two-kernels-that-worked-6.png"><span class="fig-ph">figure rendering &middot; The three kernel attempts. Two wins and one failure, all three decided</span></div><figcaption>The three kernel attempts. Two wins and one failure, all three decided by the same resource.</figcaption></figure>
+<p>Three attempts, three outcomes, and the same resource decided all of them.</p>
+<p>Attempt 8 removed six round trips over the largest tensor in the model and gained nothing measurable in time, then gained 1.38x by freeing 40 GB. Attempt 9 removed four full-size tensors from the dispatch path, made every step 13% quicker, and left the headline MFU exactly where it was because the headline is set at the largest batch that fits. Attempt 14 removed several passes over the data, computed the right answer at every shape we checked, and could not run at all because of what its autograd wrapper retained.</p>
+<p>On a memory-bandwidth-bound model, bytes are the currency and MFU is denominated in batch size. That is a narrower conclusion than "fuse your kernels", and it predicts the results above in a way the general advice does not. It also predicts what comes next: FP8 is attractive because it halves the bytes crossing the bus, and a bigger GPU is attractive because it has more memory and more bandwidth. Both were tried, and neither behaved the way the argument suggests.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./22-the-profile.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 22</span>
+              <span class="vb-nav-title">The profile: only 12% of the time is arithmetic</span>
+            </a>
+            <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 24 →</span>
+              <span class="vb-nav-title">FP8, and the bigger GPU that scored worse</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

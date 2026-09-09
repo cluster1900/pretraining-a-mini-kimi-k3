@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The loss curve, end to end · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="Starting at ln(163,840), the stable phase, the switch to the decay mix at step 32,430, zero skipped spikes and zero dead experts across 38,147 steps.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 28 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 06 · Did It Work</div>
+      <h1 class="vb-chapter-title">The loss curve, end to end</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 28 of 30</span>
+        <span class="vb-pill">⏱ 11 min read</span>
+        <span class="vb-pill">📊 7 figures</span>
+        <span class="vb-pill cost">12.10 → 2.62</span>
+      </div>
+
+      <p class="vb-chapter-blurb">Starting at ln(163,840), the stable phase, the switch to the decay mix at step 32,430, zero skipped spikes and zero dead experts across 38,147 steps.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>A training run reports on itself. Ours wrote a line of telemetry every ten steps for most of its life, carrying the loss, the learning rate, throughput, MFU, the gradient norm, the router's health and the money spent so far. This chapter reads r1's run end to end from those lines, in the order they arrived. The reasoning behind the schedule belongs to the training-loop chapter; here we are reading what came back.</p>
+<p>The first line is the most useful one in the run, and it is not a result.</p>
+<p>Step 0: loss <strong>12.100</strong>, learning rate 7.87e-7, 716 tokens per second, dead experts 0.0%, load imbalance 2.36.</p>
+<h2 id="step-0-is-a-check">Step 0 is a check</h2>
+<p>A model that has learned nothing spreads its probability mass evenly across the vocabulary, and the cross-entropy of a uniform distribution over 163,840 tokens is <code>ln(163,840) = 12.007</code>. Our first reported loss was 12.100. The agreement says that the embedding matrix was initialised at a sensible scale, that the output projection was not producing large logits, that the labels were shifted correctly against the inputs, and that the loss being averaged is the loss we think it is. A step-0 loss of 4 would have meant the labels were leaking into the inputs; a step-0 loss of 40 would have meant an initialisation with the wrong variance. Neither failure announces itself later in any way that is easy to attribute.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-loss-curve-1.png" alt="The first line of telemetry from the run. Every value in it tests the setup rather than describing the model." loading="lazy"  data-fig="the-loss-curve-1.png"><span class="fig-ph">figure rendering &middot; The first line of telemetry from the run. Every value in it tests the </span></div><figcaption>The first line of telemetry from the run. Every value in it tests the setup rather than describing the model.</figcaption></figure>
+<p>The 716 tokens per second in the same line is a number to read and discard. At step 0 the CUDA caching allocator is still growing its pools, the Triton autotuner is still choosing configurations for the fused kernels, and the dataloader has not filled anything. The measurement discipline established during the MFU investigation was to throw away the first two steps for exactly this reason, and 716 tok/s is about 2.5% of what the same loop sustained an hour later.<label for="sn-the-loss-curve-1" class="sn-ref">1</label><input type="checkbox" id="sn-the-loss-curve-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> The same discipline is why the loop checks its own initialisation before step 0 rather than inferring it from the first few telemetry lines. One of the four blockers in the released modeling code left KDA's timestep bias as uninitialised memory, which failed non-deterministically: at one point r2 trained normally while r1 returned NaN from step 0. A finite check on every parameter before the first forward pass turns that into an immediate error instead of a puzzling loss curve.</span></p>
+<p>The router numbers in the same line are covered in the chapter on expert collapse and need one sentence here: dead experts 0.0% and imbalance 2.36 at step 0 describe a router that has no opinions yet, not a router that is working well.<label for="sn-the-loss-curve-2" class="sn-ref">2</label><input type="checkbox" id="sn-the-loss-curve-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> The same chapter records why entropy is the wrong gate to watch. Twenty steps into an earlier run, 94.5% of experts were receiving zero tokens while router entropy read 0.99 out of 1.0, because entropy is computed over mean routing scores while top-k selection concentrates regardless. The dead-expert fraction is the metric that would have caught it.</span></p>
+<h2 id="three-phases-and-where-each-one-starts">Three phases, and where each one starts</h2>
+<p>The schedule is warmup-stable-decay. Warmup takes the learning rate from near zero to peak over the first 2% of steps, the stable phase holds peak through the long middle, and the decay phase brings it down over the final 15% to a floor of one tenth of peak. The whole schedule is eight lines:</p>
+<pre class="code" data-lang="python"><code>def wsd_lr(step: int, total: int, peak: float, warmup_frac: float = 0.02,
+           decay_frac: float = 0.15, min_frac: float = 0.1) -&gt; float:
+    """Warmup -&gt; stable -&gt; linear decay to `min_frac` x peak."""
+    warm = max(1, int(total * warmup_frac))
+    decay_start = int(total * (1.0 - decay_frac))
+    if step &lt; warm:
+        return peak * (step + 1) / warm
+    if step &lt; decay_start:
+        return peak
+    frac = (step - decay_start) / max(1, total - decay_start)
+    return peak * (1.0 - (1.0 - min_frac) * min(1.0, frac))</code></pre>
+<p>At r1's 38,147 steps that gives a warmup of 762 steps and a first learning rate of <code>6.00e-4 / 762 = 7.87e-7</code>, the value the run reported at step 0. Those 762 steps at 131,072 tokens each are roughly 100 million tokens, 2% of the budget, spent bringing the optimizer up to speed. The decay phase began at <strong>step 32,430</strong>, with <strong>4.25 billion tokens</strong> already seen.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-loss-curve-2.png" alt="The learning-rate schedule as the run executed it. The three segments are the three phases this chapter reads separately" loading="lazy"  data-fig="the-loss-curve-2.png"><span class="fig-ph">figure rendering &middot; The learning-rate schedule as the run executed it. The three segments </span></div><figcaption>The learning-rate schedule as the run executed it. The three segments are the three phases this chapter reads separately.</figcaption></figure>
+<h2 id="the-stable-phase-read-from-throughput">The stable phase, read from throughput</h2>
+<p>The stable phase covers 83% of the steps, and nothing interesting happened in it, which is the desired outcome. The learning rate sat at 6.00e-4. Throughput settled into a band of <strong>27,600 to 28,900 tokens per second</strong> at <strong>2.4 to 2.5% MFU</strong> and stayed there for the rest of the run.</p>
+<p>Those two numbers are the same number. MFU is defined as</p>
+<pre class="code" data-lang=""><code>MFU = 6 x active_parameters x tokens_per_second / peak_FLOPs</code></pre>
+<p>and with r1's 145 million active parameters against an H200's roughly 989 TFLOP/s in bf16, <code>6 x 145e6 x 28,936 / 989e12 = 2.5%</code>. The formula has no free choices once the active-parameter count is fixed, so throughput and MFU move together; reporting both is a convenience rather than two pieces of evidence.<label for="sn-the-loss-curve-3" class="sn-ref">3</label><input type="checkbox" id="sn-the-loss-curve-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> MFU uses <em>active</em> parameters, not total. A mixture-of-experts model would otherwise score a factor of seven higher on r1 simply by holding weights it does not use for a given token, and the number would stop meaning anything comparable to a dense run.</span></p>
+<p>Two and a half percent is a low number and it is not defended here. The chapters on MFU work through sixteen numbered attempts at raising it, of which three worked, and they end at a kernel profile in which only about 12% of GPU time is matrix multiplication. Note that the profile, and most of the attempt log, was measured on <strong>r2</strong>, the 307-million-active rung above ours, on its own single H200; the conclusion drawn there is that the model is memory-bandwidth bound, and r1 shares the architecture that makes it so.</p>
+<p>What this chapter can add is that the number was stable. The run cost $252.35 at $4.54 per hour, which is about 55 hours of card time, and across those 55 hours there was no downward drift, no degradation as checkpoints accumulated, and no step where throughput halved and stayed halved. A run that is slow and steady is a different problem from a run that is slow and drifting, and only the first can be attacked by optimising kernels.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-loss-curve-3.png" alt="Throughput over the run. The band is flat, which makes the MFU number a property of the model rather than of the machine" loading="lazy"  data-fig="the-loss-curve-3.png"><span class="fig-ph">figure rendering &middot; Throughput over the run. The band is flat, which makes the MFU number </span></div><figcaption>Throughput over the run. The band is flat, which makes the MFU number a property of the model rather than of the machine's condition.</figcaption></figure>
+<h2 id="the-switch-at-step-32-430">The switch at step 32,430</h2>
+<p>At step 32,430 two things changed at once, and they changed together by construction. The learning rate began its linear descent, and the dataloader switched from the stable mix to the decay mix. Both are driven by the same step fraction in the same loop:</p>
+<pre class="code" data-lang="python"><code>for step in range(start_step, total_steps):
+    # the LR schedule and the data mix switch together
+    want_decay = in_decay_phase(step, total_steps)
+    if want_decay and phase != "decay" and "decay" in loaders:
+        phase = "decay"
+        loader = loaders["decay"]
+        print(f"[step {step}] entering DECAY phase — switching to the anneal mix")
+
+    lr = wsd_lr(step, total_steps, peak_lr)</code></pre>
+<p>Coupling them has a cost worth naming. When the learning rate anneals and the data distribution shifts at the same step, the run cannot afterwards attribute the improvement in the final phase to one or the other. Separating them would need two runs at $252 each, and the budget was not spent that way, so the effect is reported as a joint one.</p>
+<p>The loss at the boundary was <strong>2.858</strong>.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-loss-curve-4.png" alt="Both halves of the anneal begin at the same step because both are driven by the same predicate. Their effects therefore " loading="lazy"  data-fig="the-loss-curve-4.png"><span class="fig-ph">figure rendering &middot; Both halves of the anneal begin at the same step because both are driv</span></div><figcaption>Both halves of the anneal begin at the same step because both are driven by the same predicate. Their effects therefore cannot be separated after the fact.</figcaption></figure>
+<h2 id="the-decay-and-the-final-numbers">The decay, and the final numbers</h2>
+<p>From step 32,430 the learning rate fell linearly toward a floor of 6.00e-5, one tenth of peak. The last full telemetry report, at step 38,140, read:</p>
+<div class="tbl-wrap"><table><thead><tr><th>field</th><th>value</th></tr></thead><tbody><tr><td>loss</td><td><strong>2.623</strong></td></tr><tr><td>learning rate</td><td>6.07e-5</td></tr><tr><td>MFU</td><td>2.5%</td></tr><tr><td>throughput</td><td>28,936 tok/s</td></tr><tr><td>spend</td><td>$252.35</td></tr><tr><td>dead experts</td><td><strong>0.0%</strong></td></tr><tr><td>load imbalance</td><td>4.0</td></tr><tr><td>router entropy, minimum</td><td>0.973</td></tr><tr><td>gradient norm</td><td>0.299</td></tr></tbody></table></div>
+<p>The learning rate reads 6.07e-5 rather than the 6.00e-5 floor because step 38,140 is seven steps short of the end, so the schedule was about 99.9% of the way through its descent.<label for="sn-the-loss-curve-4" class="sn-ref">4</label><input type="checkbox" id="sn-the-loss-curve-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> The floor exists because a linear decay all the way to zero spends its last thousands of steps making updates too small to matter, and because a checkpoint taken at a non-zero learning rate can be resumed and extended. Neither mattered for r1, which was never extended.</span></p>
+<p>Loss fell from 2.858 at the phase boundary to 2.62 at the end. Held-out perplexity fell by 40% across the whole run and the steepest part of that fall sits inside this phase; the next chapter reports that series across twenty-four evaluation points.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-loss-curve-5.png" alt="The loss curve for the completed run. The bend after step 32,430 is the learning-rate decay and the data anneal acting t" loading="lazy"  data-fig="the-loss-curve-5.png"><span class="fig-ph">figure rendering &middot; The loss curve for the completed run. The bend after step 32,430 is th</span></div><figcaption>The loss curve for the completed run. The bend after step 32,430 is the learning-rate decay and the data anneal acting together.</figcaption></figure>
+<h2 id="why-neighbouring-reports-disagree">Why neighbouring reports disagree</h2>
+<p>The reported losses near the end of the run do not descend cleanly from one report to the next; they oscillate around a flat trend. This is not instability and it is not a measurement error. Each reported loss is the loss of that single step's batch, averaged over the eight microbatches that make up the step, and nothing more. It is not a running average and it is not smoothed in any way.</p>
+<p>A step's batch is 131,072 tokens drawn from six corpora whose per-token difficulty varies widely: final held-out perplexity by source runs from 5.42 on Python code to 37.74 on general web text, with fineweb-edu at 22.35 and finemath at 10.24 in between. A batch that happens to draw a larger share of easy, highly predictable text scores lower than one that does not, and at 131,072 tokens that effect is large enough to dominate the step-to-step change once the curve has flattened.</p>
+<p>Two consequences follow. No single reported loss should be quoted to three decimal places as though it were the model's loss. And a plot of raw reported losses looks noisy at the end of a run precisely because the improvement has slowed: once the step-to-step gain is smaller than the batch-to-batch variance, the variance is all that is visible.</p>
+<p>This book quotes <strong>2.623 at step 38,140</strong> as the final loss, because that is the last complete report the run produced, and rounds it to <strong>2.62</strong> in prose. It is the end of the run rather than the best point in a noisy sample, and quoting the lowest report instead would be a different claim from the one the run supports.<label for="sn-the-loss-curve-5" class="sn-ref">5</label><input type="checkbox" id="sn-the-loss-curve-5" class="sn-toggle"><span class="sidenote"><sup>5</sup> The cleanest fix would be to report a windowed mean alongside the per-step loss, so the dashboard shows both the raw signal and its trend. Our loop does not do this; the spike guard maintains an EMA of the loss internally for its own threshold, but that EMA was never included in the telemetry payload.</span></p>
+<h2 id="what-the-telemetry-can-and-cannot-tell-us-about-health">What the telemetry can and cannot tell us about health</h2>
+<p>The run's health record is short and it is good. Across 38,147 steps: <strong>zero loss spikes skipped</strong>, dead-expert fraction <strong>0.0%</strong> at the end, load imbalance rising gently from 2.36 to 4.0, router entropy minimum 0.973, and a gradient norm of 0.299 at the last report, having never diverged.</p>
+<p>The zero-spike figure deserves a precise reading, because it is stronger than the ten-step reporting interval would suggest. The spike guard runs on <strong>every</strong> step, not on reported steps: it compares each step's loss against its own exponential moving average, skips the optimizer update if the loss exceeds that average by the configured multiple, and reports the skip immediately, outside the normal logging interval.<label for="sn-the-loss-curve-6" class="sn-ref">6</label><input type="checkbox" id="sn-the-loss-curve-6" class="sn-toggle"><span class="sidenote"><sup>6</sup> Reporting the skip was a fix rather than the original behaviour. The first version continued to the next step without emitting telemetry, so the spiking or NaN loss never reached the monitor and every loss-based gate was blind to exactly the events the spike protocol exists to handle.</span> A spike large enough to be skipped therefore could not have hidden between two reports, and zero skips is a per-step fact.</p>
+<p>What the interval hides is everything smaller than the guard's threshold. An excursion lasting one to nine steps that stayed under the guard's multiple of the EMA is invisible in the history and cannot be recovered after the fact. We do not claim the loss was monotonic between reports; we claim that no step tripped a threshold set against a running average of the loss, and that the reported points show no trend break.</p>
+<p>The guard's state is also part of what a resume restores. The checkpoint written every 100 steps carries the model weights, the optimizer moments, the dataloader cursor, four random-number generator states, the tokens seen, the spend to date and the spike guard's EMA, so a run that resumes does not restart the guard from a cold average and skip healthy steps while it warms up. r1 was never interrupted, so none of that machinery was exercised on this run; it is described here because the telemetry it protects is what this chapter reads.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-loss-curve-6.png" alt="The reporting interval and the spike guard have different resolutions. The stronger claim comes from the guard, which ru" loading="lazy"  data-fig="the-loss-curve-6.png"><span class="fig-ph">figure rendering &middot; The reporting interval and the spike guard have different resolutions.</span></div><figcaption>The reporting interval and the spike guard have different resolutions. The stronger claim comes from the guard, which runs on every step.</figcaption></figure>
+<h2 id="the-benchmark-and-the-run-disagree-by-a-factor-of-two">The benchmark and the run disagree by a factor of two</h2>
+<p>One gap in this run's numbers is large enough that leaving it unexplained would be a defect in the report. Our own benchmark harness measured r1 at <strong>66,877 tokens per second and 5.9% MFU</strong>, at 16,384 tokens per microbatch and 92.5 GB of memory. The run that actually happened, on the same model and on a single H200 with no sharding of any kind, sustained 27,600 to 28,900 tok/s at 2.4 to 2.5%. Less than half. Both figures come from the same formula and the same 145 million active parameters, so the entire discrepancy is throughput.</p>
+<p>A benchmark and a run measure different objects. The benchmark measures one microbatch's forward and backward pass, repeated after a warmup, with nothing else in the loop. A step of the real run pays for:</p>
+<ul><li><strong>eight microbatches</strong>, not one, with a gradient-norm clip and an optimizer step at the end of them;</li><li>the <strong>dataloader</strong>, reading and collating tokens from six shard streams on a real filesystem rather than replaying one resident tensor;</li><li>the <strong>balancer update</strong>, which reads per-expert load off the gate and writes 256 bias values per MoE layer;</li><li><strong>telemetry</strong>, including a synchronising <code>torch.cuda.synchronize()</code> on every step;</li><li><strong>checkpoint writes every 100 steps</strong>, roughly 381 across the run, each blocking the loop while it writes weights, optimizer moments, the dataloader cursor and four random-number generator states, then commits the volume;</li><li>and <strong>55 hours</strong> of running, against a benchmark reporting the mean of a handful of steps taken while the card is fresh.</li></ul>
+<p>We did not decompose that gap into contributions. It would have taken ablation runs the budget did not have, and any breakdown offered here would be an estimate presented in the register of a measurement. What we can say is which figure describes what: 66,877 tok/s is the model's cost on this card under ideal conditions, and 28,936 tok/s is the cost of training it. The second is the number the $252.35 was charged against.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-loss-curve-7.png" alt="The two throughput figures this book reports for r1, and what the run pays for that the benchmark does not." loading="lazy"  data-fig="the-loss-curve-7.png"><span class="fig-ph">figure rendering &middot; The two throughput figures this book reports for r1, and what the run </span></div><figcaption>The two throughput figures this book reports for r1, and what the run pays for that the benchmark does not.</figcaption></figure>
+<h2 id="what-the-curve-is-evidence-for">What the curve is evidence for</h2>
+<p>The run went from 12.100, a correctly initialised model knowing nothing, to 2.62 over five billion tokens and $252.35, without a skipped step, without losing an expert, and with a gradient norm that fell to 0.299 rather than climbing. It did all of that on one H200, on one process, with no sharded state to keep consistent; the FSDP2 work and the three distributed bugs described later in the book belong to the flagship, whose own run failed at step 890 of 76,294 with 69.5% dead experts. That is a clean run, and a clean run is the precondition for the evaluation chapter meaning anything: benchmark scores taken from a run that spiked, stalled or silently collapsed measure the incident rather than the recipe.</p>
+<p>What the curve is not evidence for is quality. Training loss is not comparable across tokenizers, data mixes or models, and 2.62 on our corpus and K3's vocabulary cannot be placed against any published number. It says the model fitted this data better over time. Whether the resulting model can do anything is a separate question, answered by held-out perplexity and by benchmarks, which the next chapter reports across twenty-four points taken during the run rather than once at the end.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./27-three-bugs-that-do-not-crash.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 27</span>
+              <span class="vb-nav-title">Three distributed bugs that do not crash</span>
+            </a>
+            <a href="./29-benchmarks-across-tokens.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 29 →</span>
+              <span class="vb-nav-title">Benchmarks across tokens, not at the end</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

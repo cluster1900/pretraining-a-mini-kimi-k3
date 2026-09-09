@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scaling it down without lying about it · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="Why a &#x27;40M active parameter&#x27; model is arithmetically impossible with a 163,840-token vocabulary, what the 834M always-on floor taught us, and how r1&#x27;s 1.02B total / 145M active was actually chosen.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 05 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 01 · The Model</div>
+      <h1 class="vb-chapter-title">Scaling it down without lying about it</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 5 of 30</span>
+        <span class="vb-pill">⏱ 12 min read</span>
+        <span class="vb-pill">📊 6 figures</span>
+        <span class="vb-pill cost">145M</span>
+      </div>
+
+      <p class="vb-chapter-blurb">Why a &#x27;40M active parameter&#x27; model is arithmetically impossible with a 163,840-token vocabulary, what the 834M always-on floor taught us, and how r1&#x27;s 1.02B total / 145M active was actually chosen.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>Kimi K3 has 93 layers, a hidden size of 7,168, and 896 experts of which 16 fire for any given token. r1 has 12 layers, a hidden size of 512, and 256 experts of which 6 fire. Getting from the first set of numbers to the second looks like a division problem: pick a shrink factor, apply it to every dimension, keep the ratios, and call the result a small K3.</p>
+<p>That procedure produces a model. It does not produce a small K3, and the arithmetic that shows why is the subject of this chapter. Two corrections were made along the way, one at the flagship's scale and one at the ladder's, and both were forced by a parameter counter rather than by an argument. Note that r1 is the rung that finished: it trained on one H200 and was never sharded. The flagship, where the first of the two corrections was made, was launched on 6 August 2026 and failed at step 890 of 76,294 with 69.5% dead experts, so everything said about it below is a design measurement rather than a result from a completed run.</p>
+<h2 id="what-the-naive-shrink-does">What the naive shrink does</h2>
+<p>K3's hidden size is 7,168 and r1's is 512, so the shrink factor is 14. Applying it to depth gives <code>93 / 14 = 6.6</code> layers, and applying it to the expert pool gives 64 experts with top-1 routing. Applying it to the vocabulary would give about 11,700 tokens.</p>
+<p>That last step is the one that cannot be taken. We keep K3's tokenizer unchanged, all 163,840 tokens of it, because the eventual reasoning-distillation stage operates at the token level and requires teacher and student to share a vocabulary. A retrained 12,000-token tokenizer would make the small model cheaper and would also make it a different model that cannot be compared with the one it is replicating.</p>
+<p>So one dimension of the architecture is pinned at full size while every other dimension shrinks by a factor of fourteen. Everything unusual about the arithmetic below follows from that single asymmetry.<label for="sn-scaling-it-down-without-lying-1" class="sn-ref">1</label><input type="checkbox" id="sn-scaling-it-down-without-lying-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> The pinned vocabulary reaches further down the stack than the parameter count. Our token shards are raw little-endian <code>uint32</code> with no header, and the width is <code>uint32</code> rather than <code>uint16</code> precisely because the vocabulary is 163,840: a 16-bit token id would silently truncate every id above 65,535, which is most of K3's vocabulary. Document boundaries are marked by the EOS id 163585.</span></p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/scaling-it-down-without-lying-1.png" alt="Scaling every dimension by the same factor is not available to us, because the tokenizer is held fixed by a downstream r" loading="lazy"  data-fig="scaling-it-down-without-lying-1.png"><span class="fig-ph">figure rendering &middot; Scaling every dimension by the same factor is not available to us, bec</span></div><figcaption>Scaling every dimension by the same factor is not available to us, because the tokenizer is held fixed by a downstream requirement.</figcaption></figure>
+<h2 id="the-embedding-tax">The embedding tax</h2>
+<p>A tied embedding costs <code>vocab x hidden</code> parameters, and it is active for every token: the input lookup and the output projection are the same matrix, and both run on every forward pass. At r1's width that is <code>163,840 x 512 = 83.9M</code> parameters.</p>
+<p>r1 has <strong>145M active parameters</strong> in total. The embedding is <strong>83.9M of them, which is 58%</strong>. In K3, measured on K3's own configuration by the same counter, embeddings are <strong>1.1% of active parameters</strong>.<label for="sn-scaling-it-down-without-lying-2" class="sn-ref">2</label><input type="checkbox" id="sn-scaling-it-down-without-lying-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> Our parameter counter is validated against K3 itself before it is used on anything smaller: run on the released config it reports 2,779.5B total and 105.4B active against Moonshot's published 2.8T and 104B, and reproduces the 1.1% embedding share exactly. The chapter on counting the parameters covers the counter and the control in full. A counter that gets K3 right can be believed about the mini.</span></p>
+<p>The same cost lands on every rung of the ladder, and it lands in absolute terms rather than proportional ones:</p>
+<div class="tbl-wrap"><table><thead><tr><th>hidden</th><th>tied embedding</th></tr></thead><tbody><tr><td>512 (r1)</td><td>83.9M</td></tr><tr><td>1024 (r3)</td><td>167.8M</td></tr><tr><td>1536 (flagship)</td><td>251.7M</td></tr></tbody></table></div>
+<p>The plan asked for a ladder at roughly 40M, 110M and 300M active parameters. At hidden 512 the embedding alone is <strong>83.9M</strong>, which is more than twice the first target. There is no configuration of layers, heads and experts that reaches 40M active parameters while carrying a 163,840-token vocabulary, because the vocabulary is already double the budget before a single layer exists. The target was not missed. It was infeasible.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/scaling-it-down-without-lying-2.png" alt="What K3's tokenizer costs on each rung. The cost scales with vocabulary, not with model capacity, so it dominates at sma" loading="lazy"  data-fig="scaling-it-down-without-lying-2.png"><span class="fig-ph">figure rendering &middot; What K3's tokenizer costs on each rung. The cost scales with vocabular</span></div><figcaption>What K3's tokenizer costs on each rung. The cost scales with vocabulary, not with model capacity, so it dominates at small widths.</figcaption></figure>
+<h2 id="sizing-the-ladder-on-non-embedding-parameters">Sizing the ladder on non-embedding parameters</h2>
+<p>The fix is not to shrink the vocabulary. It is to stop measuring the rungs in a unit that the vocabulary contaminates.</p>
+<p>The ladder is therefore defined on <strong>non-embedding active parameters</strong>. r1's figure is <code>145M - 83.9M = 61M</code>. r2 is 176M and r3 is 395M against 307M and 562M of total active parameters respectively. Both numbers are reported for every rung, so nothing is hidden by the choice of unit.</p>
+<p>This is not a convenience we invented. Kaplan et al. and Chinchilla both fit their scaling laws on non-embedding parameters, and they do it for the same reason we do: embedding cost scales with the tokenizer, which is a decision about text encoding, while the rest of the parameter count scales with the model's capacity to compute.<label for="sn-scaling-it-down-without-lying-3" class="sn-ref">3</label><input type="checkbox" id="sn-scaling-it-down-without-lying-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> The distinction has teeth in exactly the regime we are in. At K3's width the choice changes the parameter count by 1.1% and can be ignored. At r1's width it changes it by 58% and decides which of two models looks bigger. A scaling fit that included embeddings would be measuring the constant cost of a frontier tokenizer and calling it capacity.</span></p>
+<p>Measured non-embedding active comes out at <strong>61M / 176M / 395M</strong> across r1, r2 and r3, against a plan that had asked for a 40M rung at the bottom. The smallest rung therefore lands above its stated target, and the three rungs span a factor of 6.5 in non-embedding parameters. We preferred structural fidelity to the flagship over hitting round numbers, and that range is wide enough to fit a trend against.</p>
+<h2 id="the-floor-underneath-the-flagship">The floor underneath the flagship</h2>
+<p>The embedding problem at r1's scale is one rung down from a larger version of the same finding, which was made first, on the flagship.</p>
+<p>The flagship's original design target was <strong>567M active parameters</strong>. Measured on the released modeling code instantiated on PyTorch's <code>meta</code> device, the configuration that was supposed to produce that figure came out well above it. The gap is not a tuning miss. It is a floor.</p>
+<p>Every K3 layer runs a set of components for every token before any routing decision is made. Adding them up at the flagship's width of 1,536 gives <strong>834M parameters that are always on</strong>:</p>
+<div class="tbl-wrap"><table><thead><tr><th>always-on component</th><th>parameters</th><th>share of the floor</th></tr></thead><tbody><tr><td>KDA (18 layers)</td><td>340.3M</td><td>40.8%</td></tr><tr><td>tied embedding</td><td>251.7M</td><td>30.2%</td></tr><tr><td>shared experts (2)</td><td>135.7M</td><td>16.3%</td></tr><tr><td>latent down/up projections</td><td>54.3M</td><td>6.5%</td></tr><tr><td>dense MLP (layer 0)</td><td>33.0M</td><td>4.0%</td></tr><tr><td>router</td><td>13.6M</td><td>1.6%</td></tr><tr><td>MLA (6 layers)</td><td>5.3M</td><td>0.6%</td></tr><tr><td><strong>total</strong></td><td><strong>834M</strong></td><td></td></tr></tbody></table></div>
+<p>834M is a hard lower bound. Top-1 routing to infinitely small experts would still cost 834M active parameters per token, because none of the rows above are routed. A target of 567M active was therefore unreachable under the approved architecture, and the correct response was to restate the target rather than to search for a configuration that meets it.</p>
+<p>Two of the rows deserve a note, because they are the ones a shrink factor handles badly. KDA is the largest single item at 340.3M, and it is large because K3 puts a linear-attention layer everywhere it does not put a full-attention one: 69 KDA layers against 24 MLA layers in the released model, full attention on every fourth layer. Preserving that ratio at 24 layers gives 18 KDA layers and 6 MLA layers, and KDA's per-layer cost does not fall as fast as the layer count does. The tied embedding is the second largest at 251.7M, which is the same tax the ladder pays, arriving one scale up. Together those two rows are 71% of the floor, and neither of them is routed.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/scaling-it-down-without-lying-3.png" alt="Everything that runs for every token at flagship scale. Measured by instantiating the released modeling code on the meta" loading="lazy"  data-fig="scaling-it-down-without-lying-3.png"><span class="fig-ph">figure rendering &middot; Everything that runs for every token at flagship scale. Measured by in</span></div><figcaption>Everything that runs for every token at flagship scale. Measured by instantiating the released modeling code on the meta device.</figcaption></figure>
+<h2 id="the-fidelity-test-that-mattered">The fidelity test that mattered</h2>
+<p>The floor was the arithmetic problem. The second correction was a fidelity problem, and it is the one that would have invalidated the project without producing any visible symptom.</p>
+<p>The design that sat above the floor had a defensible-sounding justification behind it: a small <code>top_k</code> out of a large pool preserves K3's total-to-active <em>ratio</em>, so the model is as sparse as K3 is. That claim is true, and it measures the wrong thing.</p>
+<p>Sparsity is the ratio of total parameters to active parameters. It says how much of the model sits idle. It says nothing about <strong>which</strong> parts of the model are the active ones. The quantity that answers that question is the routed share of active parameters: of everything that fires for a token, how much of it is a routed expert rather than a component that fires for every token regardless.</p>
+<p>Under the first design, the always-on floor accounted for nearly all of the per-token compute, and the routed experts for a small remainder. A model in that state is a dense 834M model with a small mixture of experts attached to the side. Routing exists, the balancer runs, load moves around, and none of it touches enough of the model's compute to behave the way the same machinery behaves in K3. The later stage that compares our trained <code>e_score_correction_bias</code> against the real checkpoint's would have been comparing a barely-routed model against a heavily-routed one, which is weak evidence about the thing we set out to study.</p>
+<p>The corrected configurations are the ones the ladder reports: <strong>34% of non-embedding active parameters routed at r1, 35% at r2, 37% at r3, and 41% at the flagship.</strong></p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/scaling-it-down-without-lying-4.png" alt="The fidelity test. Preserving the total-to-active ratio does not preserve which parts of the model are active." loading="lazy"  data-fig="scaling-it-down-without-lying-4.png"><span class="fig-ph">figure rendering &middot; The fidelity test. Preserving the total-to-active ratio does not prese</span></div><figcaption>The fidelity test. Preserving the total-to-active ratio does not preserve which parts of the model are active.</figcaption></figure>
+<h2 id="two-levers-and-which-one-to-pull">Two levers, and which one to pull</h2>
+<p>The correction follows from one identity, written down once.</p>
+<p>Routed active parameters per token are <code>per-expert size x top_k x layers</code>. The size of the pool does not appear in that expression. Total parameters, on the other hand, scale linearly with the pool, because every expert has to be stored whether or not it is selected.</p>
+<p>So the two properties are separately steerable. <strong>Expert count sets sparsity. Expert size and <code>top_k</code> set routed share.</strong> The measurement that confirms it was taken at ladder width, sweeping the pool across 256, 384 and 512 experts with everything else held: <strong>routed share moved from 14.6% to 14.4%</strong>, a fifth of a percentage point across a doubling of the pool. Total parameters, over the same sweep, roughly doubled.</p>
+<p>That identity turns a stuck design into two independent dials. If the model is not sparse enough, add experts, which costs storage and optimizer state and almost nothing per token. If the routing is not carrying enough of the compute, make each expert wider or select more of them, which costs FLOPs on every token and re-prices the entire token budget.</p>
+<p>The flagship's final configuration is where both dials came to rest: 1,536 hidden, 24 layers, <strong>512 experts with <code>top_k</code> 6</strong>, giving <strong>35.56B total and 1,237M active parameters</strong> and the 41% routed share quoted above.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/scaling-it-down-without-lying-5.png" alt="The identity that separates the two levers, and the ladder-scale sweep that confirms it." loading="lazy"  data-fig="scaling-it-down-without-lying-5.png"><span class="fig-ph">figure rendering &middot; The identity that separates the two levers, and the ladder-scale sweep</span></div><figcaption>The identity that separates the two levers, and the ladder-scale sweep that confirms it.</figcaption></figure>
+<h2 id="the-price-of-fidelity">The price of fidelity</h2>
+<p>Fixing the routed share is not free, and the cost lands somewhere unexpected. Active parameters set FLOPs per token through <code>MFU = 6 x active_parameters x tokens_per_second / peak_FLOPs</code>, so raising the routed share raises the cost of every token, which shortens the token budget a fixed amount of money buys. The more faithful the mixture of experts, the fewer tokens the budget buys, and the less over-trained the resulting model. Over-training a small model well past its compute-optimal point is the standard route to a small model that is good rather than merely compute-efficient, so the two goals pull against each other directly. The resolution was to accept the shorter token budget and to state the trade rather than to present the chosen configuration as the only available one.</p>
+<p>The same correction settled the hardware question. At the flagship's 35.56B parameters, optimizer state at 14 bytes per parameter comes to <strong>498 GB</strong>, which is <strong>86% of a two-card B300 budget</strong> at 288 GB per card, leaving roughly 39 GB per card for activations and gradients. The chapter on sharding picks that number up and shows what it means in practice; here it is enough to say that the architecture decision and the hardware decision turned out to be the same decision. Note that this constraint belongs to the flagship alone. r1 fits on a single H200 at $4.54 an hour and was never sharded, and the whole 5.00-billion-token run cost <strong>$252.35</strong>.</p>
+<h2 id="r1-as-it-was-actually-configured">r1, as it was actually configured</h2>
+<p>With both corrections applied, the ladder was defined by fixing the ratios that make a K3 a K3 and varying only scale.</p>
+<div class="tbl-wrap"><table><thead><tr><th>field</th><th>r1</th></tr></thead><tbody><tr><td>hidden</td><td>512</td></tr><tr><td>layers</td><td>12</td></tr><tr><td>attention heads</td><td>8</td></tr><tr><td>KDA heads</td><td>4</td></tr><tr><td>full-attention (MLA) layers</td><td>3 — layers 4, 8, 12</td></tr><tr><td>KDA layers</td><td>9</td></tr><tr><td>dense prefix</td><td>layer 0</td></tr><tr><td>head_dim</td><td>128</td></tr><tr><td>MLA split</td><td>128 / 64 / 128</td></tr><tr><td>experts</td><td>256, top-6, 2 shared</td></tr><tr><td><code>moe_intermediate_size</code></td><td>416</td></tr><tr><td>latent width</td><td>256 (hidden / 2)</td></tr><tr><td>AttnRes blocks</td><td>8 (block size 1)</td></tr><tr><td>router</td><td>sigmoid + <code>noaux_tc</code></td></tr><tr><td>activation</td><td><code>situ</code> 4.0 / 25.0</td></tr><tr><td>vocab</td><td>163,840</td></tr><tr><td>context</td><td>4,096</td></tr><tr><td>total parameters</td><td><strong>1.02B</strong></td></tr><tr><td>active parameters</td><td><strong>145M</strong></td></tr><tr><td>non-embedding active</td><td><strong>61M</strong></td></tr></tbody></table></div>
+<p>The rule set held constant across all three rungs is short: full attention on every fourth layer, layer 0 dense, <code>head_dim</code> 128, MLA split 128/64/128, latent MoE width at half the hidden size, 8 AttnRes blocks regardless of depth, <code>situ</code> at 4.0 and 25.0, a sigmoid router with <code>noaux_tc</code>, two shared experts, 256 experts with <code>top_k</code> 6, and <code>moe_intermediate_size</code> set as a fixed fraction of hidden — 416 at r1's width of 512. Only hidden size, depth and head counts move between rungs.</p>
+<pre class="code" data-lang="python"><code>RUNGS = [
+    {"name": "r1", "hidden": 512,  "layers": 12, "experts": 256, "top_k": 6},
+    {"name": "r2", "hidden": 768,  "layers": 16, "experts": 256, "top_k": 6},
+    {"name": "r3", "hidden": 1024, "layers": 20, "experts": 256, "top_k": 6},
+]</code></pre>
+<p>Instantiated, those three rows measure <strong>1.02B total / 145M active</strong> for r1, <strong>2.93B / 307M</strong> for r2 and <strong>6.63B / 562M</strong> for r3. Only r1 completed a full run; r2 and r3 were stopped part-way, at 75% and 50%, when the Modal workspace was disabled. Learning rates follow the same held-ratio discipline: one sweep of four rates at r1's width, 600 steps each and no loss spikes, gave <strong>6.00e-4</strong>, and every other rung takes <code>6e-4 * sqrt(512 / width)</code> — 4.90e-4 for r2, 4.24e-4 for r3, 3.46e-4 for the flagship. That is standard-parameterisation transfer rather than muP, and it is the weakest assumption in the recipe.<label for="sn-scaling-it-down-without-lying-4" class="sn-ref">4</label><input type="checkbox" id="sn-scaling-it-down-without-lying-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> The one piece of evidence that the ladder is doing its job came from the evaluations, not the parameter counts. At equal token counts early in training, HellaSwag ordered the rungs 28.4% for r3, 27.6% for r2 and 27.0% for r1. The larger model was better at the same number of tokens, which is the ordering a ladder has to produce before any of its other measurements are worth extrapolating.</span></p>
+<p>r1's routed share of non-embedding active parameters is <strong>34%</strong>. The ladder reads 34%, 35% and 37% for r1, r2 and r3, against 41% for the flagship. That series rises monotonically toward the flagship, which is what a ladder needs: each rung is a slightly closer structural approximation of the model it is predicting, and the trend is in the right direction rather than wandering.</p>
+<p>The residual gap between 34% and 41% is the embedding tax again. At hidden 512 the embedding is 58% of active parameters, so even measured on non-embedding active the smallest rung carries proportionally more fixed machinery than the flagship does, and no MoE configuration reaches the flagship's ratio at that width.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/scaling-it-down-without-lying-6.png" alt="The fidelity trend across the ladder. The direction matters more than any single value." loading="lazy"  data-fig="scaling-it-down-without-lying-6.png"><span class="fig-ph">figure rendering &middot; The fidelity trend across the ladder. The direction matters more than </span></div><figcaption>The fidelity trend across the ladder. The direction matters more than any single value.</figcaption></figure>
+<h2 id="two-deviations-written-down">Two deviations, written down</h2>
+<p>Two places where r1 differs from K3 rather than merely being smaller than it, both deliberate.</p>
+<p><strong>Tied embeddings.</strong> K3 sets <code>tie_word_embeddings: false</code>, so its input and output matrices are separate. Untied at these widths is unaffordable, since the embedding is already 58% of r1's active parameters and untying doubles it. We tie them and report the consequence rather than quietly matching the field.<label for="sn-scaling-it-down-without-lying-5" class="sn-ref">5</label><input type="checkbox" id="sn-scaling-it-down-without-lying-5" class="sn-toggle"><span class="sidenote"><sup>5</sup> The tie also explains a detail in the opening chapter's loss numbers. Our step-0 loss was 12.100 against <code>ln(163,840) = 12.007</code> for a perfectly uniform distribution; the small excess is the logits carrying a little structure at initialisation, because the output projection is the same matrix as the input embedding.</span></p>
+<p><strong>256 experts on the ladder against the flagship's 512.</strong> This is the count lever pulled deliberately, and it is defensible precisely because of the identity above. Doubling the pool would double total parameters on every rung, taking r3 well past 6.63B and requiring multiple GPUs for what was budgeted as a cheap ladder, while leaving active parameters and therefore the routing dynamics essentially untouched. That is the sweep quoted earlier: across 256, 384 and 512 experts at ladder width, <strong>routed share moved from 14.6% to 14.4%</strong>. Expert count sets sparsity, not per-token behaviour, so the ladder's routing measurements transfer to the flagship even though the pools differ.</p>
+<h2 id="what-the-corrections-have-in-common">What the corrections have in common</h2>
+<p>Both corrections were found the same way: by instantiating the configuration and counting, rather than by reasoning about the configuration on paper.</p>
+<p>The 567M target survived several rounds of review because 567M is a plausible number next to 16.45B and nothing about the design announces that 834M of it is unroutable. The 7.5% routed share survived because the justification offered for it — preserving the sparsity ratio — is a correct statement about a quantity that does not answer the question being asked. Neither error is careless. Both are the kind that a parameter counter finds in a minute and a careful reading does not find at all.</p>
+<p>The pattern recurs throughout this project. The router collapse was caught by a metric that measures outcomes rather than intentions. The data manifest bug was caught by counting tokens per source rather than reading the file that built the names. Here the same discipline applies to a design document: state the target in a unit you can measure, then measure it before spending anything.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./04-reading-k3s-config.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 04</span>
+              <span class="vb-nav-title">Reading K3&#x27;s config, line by line</span>
+            </a>
+            <a href="./06-the-attention-stack.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 06 →</span>
+              <span class="vb-nav-title">The attention stack: nine KDA layers and three MLA</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

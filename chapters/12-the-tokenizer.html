@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The tokenizer we did not train · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="Keeping K3&#x27;s own tiktoken BPE, the byte-for-byte round-trip gate, the literal [EOS] trap that would have injected document breaks mid-page, and why shards are uint32.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 12 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 02 · The Data</div>
+      <h1 class="vb-chapter-title">The tokenizer we did not train</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 12 of 30</span>
+        <span class="vb-pill">⏱ 10 min read</span>
+        <span class="vb-pill">📊 5 figures</span>
+        <span class="vb-pill cost">163,840</span>
+      </div>
+
+      <p class="vb-chapter-blurb">Keeping K3&#x27;s own tiktoken BPE, the byte-for-byte round-trip gate, the literal [EOS] trap that would have injected document breaks mid-page, and why shards are uint32.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>Most pretraining projects at this scale train their own tokenizer. It is cheap, it takes an afternoon, and a vocabulary fitted to the corpus gives a smaller embedding table and better compression on the text that matters. For a 1.02-billion-parameter model, a much smaller vocabulary would have been the obvious choice.</p>
+<p>We used K3's, unchanged, all 163,840 entries of it. This chapter is about the door that decision keeps open, what it cost in parameters, and the two checks that stand between a tokenizer you believe and a corpus that is quietly wrong.</p>
+<h2 id="the-reason-is-a-stage-that-has-not-happened-yet">The reason is a stage that has not happened yet</h2>
+<p>Reasoning distillation from a large teacher to a small student operates on token distributions. The teacher produces a probability over its vocabulary at each position, the student is trained to match it, and the two vocabularies have to be the same object for that loss to be defined. With a smaller vocabulary of our own there would be no correspondence between the teacher's index 47,203 and anything in the student's table, and the remaining option would be distilling on text rather than on distributions, which discards most of the teacher's signal.</p>
+<p>No distillation was performed in this project. r1 is a base model that has only ever done next-token prediction, and we say so wherever the subject comes up. The decision was made anyway, because a vocabulary cannot be revisited later. Changing it invalidates every checkpoint and the whole 104.80-billion-token tokenized corpus.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-tokenizer-1.png" alt="The decision, and what each branch costs. One branch can be reversed and the other cannot." loading="lazy"  data-fig="the-tokenizer-1.png"><span class="fig-ph">figure rendering &middot; The decision, and what each branch costs. One branch can be reversed a</span></div><figcaption>The decision, and what each branch costs. One branch can be reversed and the other cannot.</figcaption></figure>
+<h2 id="the-bill-in-full">The bill, in full</h2>
+<p>A tied embedding costs <code>vocab x hidden</code> parameters and runs on every token in both directions, as the input lookup and as the output projection. At r1's hidden size of 512, that is <code>163,840 x 512 = 83.9M</code> parameters against a total active count of <strong>145M</strong>. The vocabulary is <strong>58% of everything r1 computes per token</strong>.</p>
+<p>The chapter on scaling down works through what that does to the ladder's design. The comparison worth repeating here is that the same parameter counter, run on K3's released configuration, puts embeddings at <strong>1.1% of K3's active parameters</strong>. The same tokenizer, on the model it was built for, is a rounding error; on ours it is the majority of the model.</p>
+<p>That is not an argument against the decision; it is the price of it, and it is why the rungs of this ladder are defined on non-embedding active parameters (<strong>61M</strong> for r1) rather than on the headline figure.</p>
+<h2 id="rebuilding-the-encoding-rather-than-calling-the-wrapper">Rebuilding the encoding rather than calling the wrapper</h2>
+<p>Stage 1 tokenizes on the order of a hundred billion tokens. Moonshot ships a <code>PreTrainedTokenizer</code> subclass, <code>tokenization_kimi.TikTokenTokenizer</code>, which pays Python overhead per document, while the <code>tiktoken.Encoding</code> underneath it releases the GIL and batches across Rust threads. So <code>data/k3_tokenizer.py</code> rebuilds the same <code>Encoding</code> from the same files:</p>
+<pre class="code" data-lang="python"><code>mergeable_ranks = load_tiktoken_bpe(str(d / "tiktoken.model"))
+num_base = len(mergeable_ranks)
+
+cfg = json.loads((d / "tokenizer_config.json").read_text())
+named = {int(k): v["content"] for k, v in cfg.get("added_tokens_decoder", {}).items()}
+
+special_tokens = {
+    named.get(i, f"&lt;|reserved_token_{i}|&gt;"): i
+    for i in range(num_base, num_base + NUM_RESERVED_SPECIAL_TOKENS)
+}
+
+enc = tiktoken.Encoding(name="tiktoken.model", pat_str=PAT_STR,
+                        mergeable_ranks=mergeable_ranks,
+                        special_tokens=special_tokens)
+if enc.n_vocab != VOCAB_SIZE:
+    raise ValueError(f"expected vocab {VOCAB_SIZE}, got {enc.n_vocab}")</code></pre>
+<p>The vocabulary is 163,584 base merges plus 256 reserved special ids, which is where 163,840 comes from. <code>[BOS]</code> is 163584 and <code>[EOS]</code> is <strong>163585</strong>, the first two of the reserved block.</p>
+<p>Rebuilding rather than wrapping means the pre-tokenization regex has to be copied verbatim, including parts of it that do not do what they appear to do.<label for="sn-the-tokenizer-1" class="sn-ref">1</label><input type="checkbox" id="sn-the-tokenizer-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> <code>PAT_STR</code> contains character-class intersections written in Java syntax, a class of letter and mark categories intersected with <code>&amp;&amp;</code> against a negated <code>\p{Han}</code> class. tiktoken's regex engine does not implement <code>&amp;&amp;</code> as intersection, so the class does not mean what its author intended. It must still be passed through unchanged, because the released tokenizer was trained and shipped against this literal pattern. A "corrected" pattern would produce a different segmentation and a different model.</span></p>
+<p>Anything rebuilt from parts has to be checked against the thing it replaces, which is what the rest of this chapter is.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-tokenizer-2.png" alt="The vocabulary layout. The reserved block at the top is where the document separator lives." loading="lazy"  data-fig="the-tokenizer-2.png"><span class="fig-ph">figure rendering &middot; The vocabulary layout. The reserved block at the top is where the docu</span></div><figcaption>The vocabulary layout. The reserved block at the top is where the document separator lives.</figcaption></figure>
+<h2 id="the-gate">The gate</h2>
+<p>PLAN.md sets one requirement for the tokenizer: the decode round-trip matches. <code>data/verify_tokenizer.py</code> implements that as a short list of checks, ordered by how badly each failure would damage the run.</p>
+<p>The first is round-trip equality, <code>decode(encode(x)) == x</code>, byte for byte, across <strong>10 samples</strong> covering the ways text differs: English prose, Chinese, code, LaTeX, whitespace, marker text, and one unbroken run of <strong>60,000 non-whitespace characters</strong>.</p>
+<p>That last sample is a stress probe rather than a piece of text. tiktoken's Rust extension raises a <code>PanicException</code> on very long inputs and on long runs of consecutive non-whitespace characters, and a web crawl and a code corpus both contain exactly that shape: a minified bundle, a base64 blob, a long hash. The shipped wrapper guards against it by splitting a document into encode-safe pieces before handing it to the Rust extension, and <code>k3_tokenizer.py</code> ports the same guard, with the short-document case returning the text unsplit so that the common path allocates nothing.</p>
+<p>Without the guard, one pathological document takes down an ingest worker, and a worker that dies halfway leaves a partial shard behind. The check sits in the gate rather than in a comment because the failure appears at ingest time, on real crawled data, where finding out costs hours of CPU.</p>
+<p>The remaining checks are quieter. Every id must be below 163,840, so that a <code>uint32</code> shard is lossless and the embedding table is the size we budgeted. <code>[EOS]</code> must appear exactly once per document and never inside a document body. Bytes per token, aggregated across the content samples, must land inside a plausible range for well-trained BPE; the 60,000-character run is excluded, because letting a synthetic probe move a content statistic would make the check meaningless.<label for="sn-the-tokenizer-2" class="sn-ref">2</label><input type="checkbox" id="sn-the-tokenizer-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> The exclusion list is one entry long and lives in the source as <code>FERTILITY_EXCLUDE = {"long_run"}</code>. It is a small thing that generalises: a test corpus usually contains both representative samples and adversarial ones, and any statistic computed over the union of the two describes neither.</span></p>
+<p>The last check is agreement with the shipped wrapper, and it is the one worth the rest of the chapter.</p>
+<h2 id="the-literal-eos-trap">The literal <code>[EOS]</code> trap</h2>
+<p>Our rebuilt encoder must produce the same ids as Moonshot's wrapper, or we are training on a different tokenization than the model was designed for. The check is a straight comparison across the samples, and it passes: <strong>all 10 identical</strong>, called as <code>hf.encode(t, allow_special_tokens=False)</code>. The argument in that call is the interesting part.</p>
+<p><code>TikTokenTokenizer.encode</code> defaults to <code>allow_special_tokens=True</code>. Under that default, a document containing the five characters <code>[EOS]</code> does not tokenize to those characters. It tokenizes to token 163585, the control token our shard format uses to mark where one document ends and the next begins.</p>
+<p>For a chat model that is correct: markers in a chat template are supposed to become control tokens. For a pretraining crawl it is a corruption. One web page discussing tokenizer markers is enough for the ingest to write a document separator into the middle of a training sequence. The model then learns that documents sometimes end mid-sentence and resume on the same topic, and every downstream number stays plausible.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-tokenizer-3.png" alt="The same document through the two encoders. The divergence is deliberate, so the gate asserts it rather than tolerating " loading="lazy"  data-fig="the-tokenizer-3.png"><span class="fig-ph">figure rendering &middot; The same document through the two encoders. The divergence is delibera</span></div><figcaption>The same document through the two encoders. The divergence is deliberate, so the gate asserts it rather than tolerating it.</figcaption></figure>
+<p><code>encode_ordinary_batch</code> never emits a special token at all, so our encoder cannot produce this failure. We append <code>[EOS]</code> ourselves, once, after each document.</p>
+<p>What the gate should then assert took some thought. A test that only checked agreement would fail as soon as we adopted the behaviour a crawl needs, because the two encoders are supposed to differ under the wrapper's default. A test that only checked our own behaviour would not notice if we had drifted away from K3's tokenization. So <code>verify_tokenizer.py</code> asserts both:</p>
+<pre class="code" data-lang="python"><code># like-for-like: the wrapper called the way we call ours
+mismatched = []
+for n, t, ids in zip(names, texts, encoded):
+    if hf.encode(t, allow_special_tokens=False) != ids[:-1]:
+        mismatched.append(n)
+
+# and the divergence we chose, asserted rather than assumed
+wrapper_default = hf.encode("[EOS]")
+ours = encode_documents(["[EOS]"], num_threads=1)[0][:-1]
+if sp["eos"] not in wrapper_default:
+    fails.append("wrapper default no longer promotes literal '[EOS]' — "
+                 "re-check whether our divergence is still needed")
+if sp["eos"] in ours:
+    fails.append("our encoder promoted literal '[EOS]' to a control token")</code></pre>
+<p>The second half of that is a test that fails when the <em>upstream</em> behaviour changes. If a future release of the wrapper stops promoting marker text, our divergence is no longer needed and the extra code is a liability, and the gate says so rather than continuing to pass silently.<label for="sn-the-tokenizer-3" class="sn-ref">3</label><input type="checkbox" id="sn-the-tokenizer-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> There is a further trap in the same method, recorded in a comment beside the call. <code>TikTokenTokenizer.encode</code> routes to <code>super().encode</code> the moment any additional keyword argument is passed, and the parent implementation has never heard of <code>allow_special_tokens</code>. The argument is then silently ignored and literal marker text becomes a control token again. The like-for-like comparison therefore passes <code>allow_special_tokens=False</code> and no other kwargs at all, which is a constraint on the call site that no signature communicates.</span></p>
+<h2 id="the-shard-format-and-one-byte-width-that-matters">The shard format, and one byte width that matters</h2>
+<p>Tokenized output lands at <code>/data/tokens/&lt;source&gt;/&lt;source&gt;-w&lt;worker&gt;-s&lt;seq&gt;.bin</code> as raw little-endian <code>uint32</code> with no header. Document boundaries are marked by EOS, token <strong>163585</strong>, and a <code>.json</code> sidecar carries the token count.</p>
+<p>Each of those choices exists for a reason, and the reasons are about what the dataloader has to do when it resumes from a checkpoint deep into a run.</p>
+<p><strong>No header</strong> means an offset into the file is an offset into the token stream, with no arithmetic. The dataloader's cursor is part of the checkpoint, and restoring it is a seek.</p>
+<p><strong>A sidecar rather than a header</strong> means the token count can be read without opening the data file, which is what makes the mix planner cheap: <code>mixes.py</code> sizes each source from measured tokens per file across the <strong>1,063 shards</strong> by reading only the small JSON files.</p>
+<p><strong>EOS as the boundary</strong> carries document structure in-band, in the same array as the text, so a shard is a single flat object with no second file that can go out of sync with it.</p>
+<p><strong><code>uint32</code> rather than <code>uint16</code></strong> is the choice with teeth. <code>uint16</code> holds values up to 65,535 and our vocabulary is 163,840, so every id above 65,535 would wrap silently on write, producing a file that opens correctly, has the right length, contains only valid ids, decodes to text and trains without error. No exception, no assertion, no shape mismatch anywhere downstream. The corruption is in the data, and it looks exactly like data.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-tokenizer-4.png" alt="The shard format. The width is not a performance decision; it is the difference between a corruption that fails loudly a" loading="lazy"  data-fig="the-tokenizer-4.png"><span class="fig-ph">figure rendering &middot; The shard format. The width is not a performance decision; it is the d</span></div><figcaption>The shard format. The width is not a performance decision; it is the difference between a corruption that fails loudly and one that does not fail at all.</figcaption></figure>
+<p>The cost of that width is recurring. Four bytes per token across a 104.80-billion-token corpus makes storage, not compute, the line item that keeps arriving at <strong>$0.09 per GiB per month</strong>. The full ingest pass cost about <strong>$17 of CPU</strong>; the storage has been billed ever since.</p>
+<h2 id="the-histogram-with-thresholds-fixed-first">The histogram, with thresholds fixed first</h2>
+<p>The last part of the Stage 1 gate is a token histogram over a sample of the finished shards, reporting three numbers:</p>
+<div class="tbl-wrap"><table><thead><tr><th>statistic</th><th>measured</th><th>gated in <code>report.SANITY</code></th></tr></thead><tbody><tr><td>vocabulary coverage</td><td><strong>61.7%</strong></td><td>a floor</td></tr><tr><td>unigram entropy</td><td><strong>11.74 bits</strong></td><td>reported, not gated</td></tr><tr><td>most frequent token's share</td><td><strong>3.54%</strong></td><td>a ceiling</td></tr></tbody></table></div>
+<p>The most frequent token is a comma.</p>
+<p>The floor and the ceiling were written into <code>report.SANITY</code> before any of the numbers existed, which is the only arrangement under which a threshold means anything. A coverage floor chosen after seeing 61.7% describes the result rather than testing it.</p>
+<p>Each number checks a specific failure. <strong>Coverage</strong> asks whether the corpus is as broad as the tokenizer assumes. A frontier multilingual vocabulary applied to a mostly-English corpus will not use all of itself, and 61.7% describes that mismatch fairly. Had it come back very low, the embedding tax would be buying almost nothing.</p>
+<p><strong>Top-token share</strong> is the check for a stuck separator. If the ingest were writing EOS after every line rather than every document, or if a boilerplate page were repeated across a source, one id would take an implausible fraction of the corpus. At 3.54% for a comma, the distribution has the shape English text has.</p>
+<p><strong>Unigram entropy</strong> at 11.74 bits is a summary of the distribution rather than a pass/fail gate, and it is worth reading against the loss curve. A uniform distribution over 163,840 tokens carries <code>log2(163,840) = 17.32</code> bits. The corpus, measured on unigram frequencies with no context at all, carries 11.74. Our run finished at a cross-entropy of <strong>2.623</strong> nats, about 3.78 bits per token. The gap between 11.74 and 3.78 is what 5.00 billion tokens of training bought, and it shows how much of a language model's work is done by context rather than by frequency.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-tokenizer-5.png" alt="The histogram gate. Thresholds are written down first, so the measurement is a test rather than a description." loading="lazy"  data-fig="the-tokenizer-5.png"><span class="fig-ph">figure rendering &middot; The histogram gate. Thresholds are written down first, so the measurem</span></div><figcaption>The histogram gate. Thresholds are written down first, so the measurement is a test rather than a description.</figcaption></figure>
+<p>One limitation belongs in the prose rather than only in the code. The histogram is computed over a sample of shards, not the whole corpus, so 61.7% is a sampled figure. Coverage across all 104.80 billion tokens would be a defensible thing to measure and we did not measure it.<label for="sn-the-tokenizer-4" class="sn-ref">4</label><input type="checkbox" id="sn-the-tokenizer-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> The sampler takes shards at a stride across the sorted shard list and reads a bounded number of tokens from each, which spreads the sample across sources rather than concentrating it in whichever source sorts first. Coverage measured this way can only under-report, since a token appearing in an unsampled shard and nowhere else counts as unused. The reported 61.7% is a lower bound, which is the direction a gate should err in.</span></p>
+<h2 id="what-this-chapter-is-really-about">What this chapter is really about</h2>
+<p>The tokenizer decision itself took one line in the plan and produced no numbers beyond the 83.9M-parameter bill. The two checks around it are the part worth carrying elsewhere.</p>
+<p>The first is that a deliberate divergence from a library's default has to be asserted rather than merely implemented. Our encoder differs from the shipped wrapper in one respect, that difference is correct for our use and wrong for the wrapper's, and both halves of that statement are now tested. If the upstream default changes, the gate fails.</p>
+<p>The second is the shape of the <code>uint16</code> failure. Most bugs in a pretraining pipeline announce themselves as a shape mismatch, a NaN or a crash. The dangerous ones produce output that passes every structural check and is wrong in its values. We met three in this project: this one, the manifest bug that would have trained the stable phase on 100% finemath, and the router balancer computed on per-rank load rather than global expert load. That third one belongs to the flagship on 2x B300 rather than to our run; r1 trained on one H200 and was never sharded, so it could not have hit it. None of the three would have raised an error. Each was prevented by a check written for it in advance, by someone asking what a silent version of the failure would look like.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 11</span>
+              <span class="vb-nav-title">When a filter fires on nothing</span>
+            </a>
+            <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 13 →</span>
+              <span class="vb-nav-title">The mix, and the bug that would have trained on one source</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pretraining a Mini Kimi K3 · Complete Worklog & Engineering Guide</title>
+  <meta name="description" content="A worklog of a pretraining run that finished. A 1.02-billion-parameter Kimi K3 replica trained on 5.00 billion decontaminated tokens for $252.35: the architecture and the arithmetic of shrinking it, the corpus and its 13-gram decontamination, four undocumented reasons the released code cannot train, a router that killed 94.5% of its experts by step 20, sixteen numbered attempts to raise MFU of which three worked, three distributed bugs that never crash, and twenty-four benchmark evaluations taken across the run.">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="assets/base.css">
+  <link rel="stylesheet" href="assets/reader.css">
+  <link rel="stylesheet" href="assets/reader-custom.css">
+  <style>
+    .book-portal {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 60px 24px 120px;
+    }
+    .hero-panel {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 48px;
+      align-items: start;
+      margin-bottom: 60px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid var(--rt-rule);
+    }
+    .hero-cover {
+      width: 100%;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--rt-rule);
+      background: var(--rt-surface-card);
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .hero-title {
+      font-family: var(--font-sans);
+      font-size: 40px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      color: var(--rt-ink);
+      margin-bottom: 14px;
+    }
+    .hero-subtitle {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      line-height: 1.55;
+      color: var(--rt-ink-soft);
+      margin-bottom: 20px;
+    }
+    .hero-desc {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--rt-ink-soft);
+      margin-bottom: 28px;
+    }
+    .hero-ctas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-sans);
+      font-size: 15px;
+      font-weight: 600;
+      color: #ffffff;
+      background: var(--accent);
+      padding: 12px 24px;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 12px rgba(212, 85, 31, 0.25);
+    }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(212, 85, 31, 0.35);
+    }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-sans);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--rt-ink);
+      background: var(--rt-surface-card);
+      border: 1px solid var(--rt-rule);
+      padding: 12px 22px;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+    
+    /* Stats Bar */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 16px;
+      margin-bottom: 50px;
+    }
+    .stat-card {
+      background: var(--rt-surface-card);
+      border: 1px solid var(--rt-rule);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-val {
+      font-family: var(--font-mono);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 2px;
+    }
+    .stat-lbl {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      color: var(--rt-ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* Search Bar */
+    .search-wrap {
+      margin-bottom: 40px;
+      position: relative;
+    }
+    .search-input {
+      width: 100%;
+      padding: 14px 20px 14px 44px;
+      font-family: var(--font-sans);
+      font-size: 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--rt-rule);
+      background: var(--rt-surface-card);
+      color: var(--rt-ink);
+      outline: none;
+      box-shadow: var(--shadow-sm);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: var(--rt-ink-muted);
+    }
+
+    /* Section & Cards */
+    .toc-section {
+      margin-bottom: 54px;
+    }
+    .toc-sec-header {
+      margin-bottom: 22px;
+    }
+    .toc-sec-num {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .toc-sec-title {
+      font-family: var(--font-sans);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--rt-ink);
+      margin-top: 2px;
+      margin-bottom: 6px;
+    }
+    .toc-sec-blurb {
+      font-family: var(--font-serif);
+      font-size: 15px;
+      color: var(--rt-ink-soft);
+      line-height: 1.5;
+    }
+    .toc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    .toc-card {
+      display: flex;
+      flex-direction: column;
+      background: var(--rt-surface-card);
+      border: 1px solid var(--rt-rule);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    .toc-card:hover {
+      border-color: var(--accent);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .toc-card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .toc-order {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+    .toc-title {
+      font-family: var(--font-sans);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--rt-ink);
+      line-height: 1.35;
+    }
+    .toc-card:hover .toc-title {
+      color: var(--accent);
+    }
+    .toc-blurb {
+      font-family: var(--font-serif);
+      font-size: 14px;
+      color: var(--rt-ink-soft);
+      line-height: 1.5;
+      margin-bottom: 16px;
+      flex-grow: 1;
+    }
+    .toc-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--rt-ink-muted);
+      border-top: 1px solid var(--rt-rule-subtle);
+      padding-top: 10px;
+    }
+    .sec-chip {
+      margin-left: auto;
+      font-weight: 700;
+      color: #10b981;
+      background: rgba(16, 185, 129, 0.08);
+      padding: 1px 8px;
+      border-radius: 999px;
+    }
+
+    @media (max-width: 820px) {
+      .hero-panel {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+      .hero-cover {
+        max-width: 240px;
+        margin: 0 auto;
+      }
+      .hero-title {
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+<body data-rtheme="paper">
+  <div class="vb-progress-bar"></div>
+
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <span style="font-family:var(--font-sans);font-weight:700;font-size:15px;color:var(--accent);">Vizuara Books</span>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      <div class="vb-header-actions">
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <div class="book-portal">
+    <!-- Hero Panel -->
+    <div class="hero-panel">
+      <img src="figures/cover.png" alt="Book Cover" class="hero-cover">
+      <div>
+        <div class="hero-badge">Deep Illustrated Technical Worklog · 30 Chapters</div>
+        <h1 class="hero-title">Pretraining a Mini Kimi K3</h1>
+        <p class="hero-subtitle">One H200, five billion tokens, $252.35 — the complete worklog of a Kimi K3 replica trained from scratch.</p>
+        <p class="hero-desc">A worklog of a pretraining run that finished. A 1.02-billion-parameter Kimi K3 replica trained on 5.00 billion decontaminated tokens for $252.35: the architecture and the arithmetic of shrinking it, the corpus and its 13-gram decontamination, four undocumented reasons the released code cannot train, a router that killed 94.5% of its experts by step 20, sixteen numbered attempts to raise MFU of which three worked, three distributed bugs that never crash, and twenty-four benchmark evaluations taken across the run.</p>
+        
+        <div class="hero-ctas">
+          <a href="chapters/01-what-we-actually-trained.html" class="btn-primary">
+            <span>Start Reading (Chapter 1)</span> <span>→</span>
+          </a>
+          <a href="full_book.html" class="btn-secondary">
+            <span>📖 Read Full Book (Single Page)</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-val">7</div>
+        <div class="stat-lbl">Sections</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">30</div>
+        <div class="stat-lbl">Chapters</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">179</div>
+        <div class="stat-lbl">Figures</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">1.02B</div>
+        <div class="stat-lbl">Params (145M Act)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">5.00B</div>
+        <div class="stat-lbl">Tokens</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">$252.35</div>
+        <div class="stat-lbl">Total Cost (1x H200)</div>
+      </div>
+    </div>
+
+    <!-- Search Input -->
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="chapter-search" class="search-input" placeholder="Search chapters, topics, figures, or keywords (e.g. MFU, FP8, Triton, MoE, attention, decontamination)...">
+    </div>
+
+    <!-- Table of Contents Sections -->
+    <div id="toc-container">
+      
+        <div class="toc-section" data-section="start here">
+          <div class="toc-sec-header">
+            <span class="toc-sec-num">Section 00</span>
+            <h2 class="toc-sec-title">Start Here</h2>
+            <p class="toc-sec-blurb">What we trained, what it cost, and the practices that separate a run you can publish from a run you cannot.</p>
+          </div>
+          <div class="toc-grid">
+            
+            <a href="chapters/01-what-we-actually-trained.html" class="toc-card" data-title="what we actually trained" data-blurb="a 1.02b-parameter kimi k3 replica, 5.00 billion tokens, 38,147 steps on one h200, final loss 2.62 — the run in one pass, with the claims and their limits stated up front.">
+              <div class="toc-card-header">
+                <span class="toc-order">01</span>
+                <span class="toc-title">What we actually trained</span>
+              </div>
+              <p class="toc-blurb">A 1.02B-parameter Kimi K3 replica, 5.00 billion tokens, 38,147 steps on one H200, final loss 2.62 — the run in one pass, with the claims and their limits stated up front.</p>
+              <div class="toc-meta">
+                <span>⏱ 9 min</span>
+                <span>📊 6 figs</span>
+                <span class="sec-chip">$252</span>
+              </div>
+            </a>
+            <a href="chapters/02-what-makes-a-run-lab-grade.html" class="toc-card" data-title="what makes a run lab-grade" data-blurb="decontamination, a scaling ladder, a wsd schedule, a decay anneal, continuous evaluation, real checkpointing, a spike protocol and mfu tracking — eight practices, and what each one changes about the outcome.">
+              <div class="toc-card-header">
+                <span class="toc-order">02</span>
+                <span class="toc-title">What makes a run lab-grade</span>
+              </div>
+              <p class="toc-blurb">Decontamination, a scaling ladder, a WSD schedule, a decay anneal, continuous evaluation, real checkpointing, a spike protocol and MFU tracking — eight practices, and what each one changes about the outcome.</p>
+              <div class="toc-meta">
+                <span>⏱ 11 min</span>
+                <span>📊 5 figs</span>
+                
+              </div>
+            </a>
+            <a href="chapters/03-how-to-read-this-book.html" class="toc-card" data-title="how to read this book" data-blurb="a worklog, not a tutorial: every number is measured, every failed idea is written up as fully as the successful ones, and the commands that produced each figure are included.">
+              <div class="toc-card-header">
+                <span class="toc-order">03</span>
+                <span class="toc-title">How to read this book</span>
+              </div>
+              <p class="toc-blurb">A worklog, not a tutorial: every number is measured, every failed idea is written up as fully as the successful ones, and the commands that produced each figure are included.</p>
+              <div class="toc-meta">
+                <span>⏱ 11 min</span>
+                <span>📊 6 figs</span>
+                
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="toc-section" data-section="the model">
+          <div class="toc-sec-header">
+            <span class="toc-sec-num">Section 01</span>
+            <h2 class="toc-sec-title">The Model</h2>
+            <p class="toc-sec-blurb">Kimi K3 as Moonshot released it, and the arithmetic of shrinking it to something one GPU can train without turning it into a different model.</p>
+          </div>
+          <div class="toc-grid">
+            
+            <a href="chapters/04-reading-k3s-config.html" class="toc-card" data-title="reading k3's config, line by line" data-blurb="93 layers, hidden 7,168, 896 experts with 16 active, 69 kda layers against 24 mla, situ, noaux_tc — the released configuration turned into a mental model of where every flop goes.">
+              <div class="toc-card-header">
+                <span class="toc-order">04</span>
+                <span class="toc-title">Reading K3&#x27;s config, line by line</span>
+              </div>
+              <p class="toc-blurb">93 layers, hidden 7,168, 896 experts with 16 active, 69 KDA layers against 24 MLA, situ, noaux_tc — the released configuration turned into a mental model of where every FLOP goes.</p>
+              <div class="toc-meta">
+                <span>⏱ 11 min</span>
+                <span>📊 5 figs</span>
+                <span class="sec-chip">2.8T</span>
+              </div>
+            </a>
+            <a href="chapters/05-scaling-it-down-without-lying.html" class="toc-card" data-title="scaling it down without lying about it" data-blurb="why a '40m active parameter' model is arithmetically impossible with a 163,840-token vocabulary, what the 834m always-on floor taught us, and how r1's 1.02b total / 145m active was actually chosen.">
+              <div class="toc-card-header">
+                <span class="toc-order">05</span>
+                <span class="toc-title">Scaling it down without lying about it</span>
+              </div>
+              <p class="toc-blurb">Why a &#x27;40M active parameter&#x27; model is arithmetically impossible with a 163,840-token vocabulary, what the 834M always-on floor taught us, and how r1&#x27;s 1.02B total / 145M active was actually chosen.</p>
+              <div class="toc-meta">
+                <span>⏱ 12 min</span>
+                <span>📊 6 figs</span>
+                <span class="sec-chip">145M</span>
+              </div>
+            </a>
+            <a href="chapters/06-the-attention-stack.html" class="toc-card" data-title="the attention stack: nine kda layers and three mla" data-blurb="the delta rule with a per-channel forget gate, multi-head latent attention at a 128/64/128 split, and why exactly every fourth layer keeps exact global retrieval.">
+              <div class="toc-card-header">
+                <span class="toc-order">06</span>
+                <span class="toc-title">The attention stack: nine KDA layers and three MLA</span>
+              </div>
+              <p class="toc-blurb">The delta rule with a per-channel forget gate, multi-head latent attention at a 128/64/128 split, and why exactly every fourth layer keeps exact global retrieval.</p>
+              <div class="toc-meta">
+                <span>⏱ 11 min</span>
+                <span>📊 6 figs</span>
+                <span class="sec-chip">3:1</span>
+              </div>
+            </a>
+            <a href="chapters/07-the-moe-that-actually-routes.html" class="toc-card" data-title="the mixture of experts that actually routes" data-blurb="256 experts, 6 active, 2 shared, a latent bottleneck at half the hidden size, and a sigmoid router with the aux-loss-free balancer k3 inherits from deepseek-v3.">
+              <div class="toc-card-header">
+                <span class="toc-order">07</span>
+                <span class="toc-title">The mixture of experts that actually routes</span>
+              </div>
+              <p class="toc-blurb">256 experts, 6 active, 2 shared, a latent bottleneck at half the hidden size, and a sigmoid router with the aux-loss-free balancer K3 inherits from DeepSeek-V3.</p>
+              <div class="toc-meta">
+                <span>⏱ 11 min</span>
+                <span>📊 6 figs</span>
+                <span class="sec-chip">top-6</span>
+              </div>
+            </a>
+            <a href="chapters/08-counting-the-parameters.html" class="toc-card" data-title="counting the parameters, and checking the counter" data-blurb="a parameter counter you can only trust if it reproduces k3's own published 2.8t and 104b first, and what it says about where r1's capacity actually sits.">
+              <div class="toc-card-header">
+                <span class="toc-order">08</span>
+                <span class="toc-title">Counting the parameters, and checking the counter</span>
+              </div>
+              <p class="toc-blurb">A parameter counter you can only trust if it reproduces K3&#x27;s own published 2.8T and 104B first, and what it says about where r1&#x27;s capacity actually sits.</p>
+              <div class="toc-meta">
+                <span>⏱ 9 min</span>
+                <span>📊 6 figs</span>
+                <span class="sec-chip">1.02B</span>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="toc-section" data-section="the data">
+          <div class="toc-sec-header">
+            <span class="toc-sec-num">Section 02</span>
+            <h2 class="toc-sec-title">The Data</h2>
+            <p class="toc-sec-blurb">104.80 billion tokens from six sources, decontaminated against eight benchmarks before tokenization, in a shard format the loader can resume from mid-run.</p>
+          </div>
+          <div class="toc-grid">
+            
+            <a href="chapters/09-assembling-the-corpus.html" class="toc-card" data-title="assembling the corpus" data-blurb="fineweb-edu as the spine, five more sources around it, and the two gated repositories that shaped the mix more than any design decision did.">
+              <div class="toc-card-header">
+                <span class="toc-order">09</span>
+                <span class="toc-title">Assembling the corpus</span>
+              </div>
+              <p class="toc-blurb">FineWeb-Edu as the spine, five more sources around it, and the two gated repositories that shaped the mix more than any design decision did.</p>
+              <div class="toc-meta">
+                <span>⏱ 10 min</span>
+                <span>📊 6 figs</span>
+                <span class="sec-chip">104.8B</span>
+              </div>
+            </a>
+            <a href="chapters/10-decontamination.html" class="toc-card" data-title="decontamination, and the report that makes the numbers defensible" data-blurb="2,398,082 unique 13-grams over eight eval sets, 107,291,411 documents scanned, 138,064 removed, and why the maths corpora dropping ten times more than the web is the result that makes the filter believable.">
+              <div class="toc-card-header">
+                <span class="toc-order">10</span>
+                <span class="toc-title">Decontamination, and the report that makes the numbers defensible</span>
+              </div>
+              <p class="toc-blurb">2,398,082 unique 13-grams over eight eval sets, 107,291,411 documents scanned, 138,064 removed, and why the maths corpora dropping ten times more than the web is the result that makes the filter believable.</p>
+              <div class="toc-meta">
+                <span>⏱ 9 min</span>
+                <span>📊 6 figs</span>
+                <span class="sec-chip">13-gram</span>
+              </div>
+            </a>
+            <a href="chapters/11-when-a-filter-fires-on-nothing.html" class="toc-card" data-title="when a filter fires on nothing" data-blurb="humaneval matched 88.78 times per indexed n-gram against hellaswag's 0.02, and every removed document was generic python. what that measured, why it was not leakage, and the coverage limit we report rather than bury.">
+              <div class="toc-card-header">
+                <span class="toc-order">11</span>
+                <span class="toc-title">When a filter fires on nothing</span>
+              </div>
+              <p class="toc-blurb">HumanEval matched 88.78 times per indexed n-gram against HellaSwag&#x27;s 0.02, and every removed document was generic Python. What that measured, why it was not leakage, and the coverage limit we report rather than bury.</p>
+              <div class="toc-meta">
+                <span>⏱ 11 min</span>
+                <span>📊 5 figs</span>
+                <span class="sec-chip">88.78</span>
+              </div>
+            </a>
+            <a href="chapters/12-the-tokenizer.html" class="toc-card" data-title="the tokenizer we did not train" data-blurb="keeping k3's own tiktoken bpe, the byte-for-byte round-trip gate, the literal [eos] trap that would have injected document breaks mid-page, and why shards are uint32.">
+              <div class="toc-card-header">
+                <span class="toc-order">12</span>
+                <span class="toc-title">The tokenizer we did not train</span>
+              </div>
+              <p class="toc-blurb">Keeping K3&#x27;s own tiktoken BPE, the byte-for-byte round-trip gate, the literal [EOS] trap that would have injected document breaks mid-page, and why shards are uint32.</p>
+              <div class="toc-meta">
+                <span>⏱ 10 min</span>
+                <span>📊 5 figs</span>
+                <span class="sec-chip">163,840</span>
+              </div>
+            </a>
+            <a href="chapters/13-the-mix-and-the-manifest-bug.html" class="toc-card" data-title="the mix, and the bug that would have trained on one source" data-blurb="stable and decay mixes built from measured tokens-per-file, and a string-splitting bug that pointed four of six sources at files that did not exist while the loader silently renormalised onto the two that survived.">
+              <div class="toc-card-header">
+                <span class="toc-order">13</span>
+                <span class="toc-title">The mix, and the bug that would have trained on one source</span>
+              </div>
+              <p class="toc-blurb">Stable and decay mixes built from measured tokens-per-file, and a string-splitting bug that pointed four of six sources at files that did not exist while the loader silently renormalised onto the two that survived.</p>
+              <div class="toc-meta">
+                <span>⏱ 11 min</span>
+                <span>📊 6 figs</span>
+                
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="toc-section" data-section="making it train">
+          <div class="toc-sec-header">
+            <span class="toc-sec-num">Section 03</span>
+            <h2 class="toc-sec-title">Making It Train</h2>
+            <p class="toc-sec-blurb">The released modeling code cannot train. Four undocumented blockers, a training loop built around them, and the two failure modes that do not crash.</p>
+          </div>
+          <div class="toc-grid">
+            
+            <a href="chapters/14-the-released-code-cannot-train.html" class="toc-card" data-title="the released code cannot train" data-blurb="an assert against training mode, a notimplementederror in the moe forward, a balancer bias that is never initialised, and a timestep bias left as uninitialised memory that returned nan on one rung and trained fine on another.">
+              <div class="toc-card-header">
+                <span class="toc-order">14</span>
+                <span class="toc-title">The released code cannot train</span>
+              </div>
+              <p class="toc-blurb">An assert against training mode, a NotImplementedError in the MoE forward, a balancer bias that is never initialised, and a timestep bias left as uninitialised memory that returned NaN on one rung and trained fine on another.</p>
+              <div class="toc-meta">
+                <span>⏱ 11 min</span>
+                <span>📊 5 figs</span>
+                <span class="sec-chip">4 bugs</span>
+              </div>
+            </a>
+            <a href="chapters/15-the-training-loop.html" class="toc-card" data-title="the training loop" data-blurb="warmup, stable and decay instead of cosine; 131,072 tokens per step from 4,096 x 4 x 8; a learning rate transferred from one measured sweep; and the spike protocol written down before the run rather than at 3am.">
+              <div class="toc-card-header">
+                <span class="toc-order">15</span>
+                <span class="toc-title">The training loop</span>
+              </div>
+              <p class="toc-blurb">Warmup, stable and decay instead of cosine; 131,072 tokens per step from 4,096 x 4 x 8; a learning rate transferred from one measured sweep; and the spike protocol written down before the run rather than at 3am.</p>
+              <div class="toc-meta">
+                <span>⏱ 14 min</span>
+                <span>📊 7 figs</span>
+                <span class="sec-chip">WSD</span>
+              </div>
+            </a>
+            <a href="chapters/16-expert-collapse.html" class="toc-card" data-title="expert collapse, and the metric that missed it" data-blurb="twenty steps in, 94.5% of experts were receiving no tokens while router entropy read 0.99 out of 1.0. why entropy passes a collapsing run, and the four-value sweep that fixed it.">
+              <div class="toc-card-header">
+                <span class="toc-order">16</span>
+                <span class="toc-title">Expert collapse, and the metric that missed it</span>
+              </div>
+              <p class="toc-blurb">Twenty steps in, 94.5% of experts were receiving no tokens while router entropy read 0.99 out of 1.0. Why entropy passes a collapsing run, and the four-value sweep that fixed it.</p>
+              <div class="toc-meta">
+                <span>⏱ 9 min</span>
+                <span>📊 5 figs</span>
+                <span class="sec-chip">94.5%</span>
+              </div>
+            </a>
+            <a href="chapters/17-checkpointing.html" class="toc-card" data-title="checkpointing that survives losing the gpu" data-blurb="a checkpoint is the whole run, not the weights: optimizer moments, dataloader cursor, rng, the spike-guard ema. proven by resuming twice and comparing the losses bitwise.">
+              <div class="toc-card-header">
+                <span class="toc-order">17</span>
+                <span class="toc-title">Checkpointing that survives losing the GPU</span>
+              </div>
+              <p class="toc-blurb">A checkpoint is the whole run, not the weights: optimizer moments, dataloader cursor, RNG, the spike-guard EMA. Proven by resuming twice and comparing the losses bitwise.</p>
+              <div class="toc-meta">
+                <span>⏱ 12 min</span>
+                <span>📊 7 figs</span>
+                
+              </div>
+            </a>
+            <a href="chapters/18-watching-a-run-you-cannot-see.html" class="toc-card" data-title="watching a run you cannot see" data-blurb="liveness from heartbeat timestamps rather than log streams, twenty-four failure-injection tests, and two alert thresholds that would have killed healthy runs the moment the kill switch started working.">
+              <div class="toc-card-header">
+                <span class="toc-order">18</span>
+                <span class="toc-title">Watching a run you cannot see</span>
+              </div>
+              <p class="toc-blurb">Liveness from heartbeat timestamps rather than log streams, twenty-four failure-injection tests, and two alert thresholds that would have killed healthy runs the moment the kill switch started working.</p>
+              <div class="toc-meta">
+                <span>⏱ 11 min</span>
+                <span>📊 6 figs</span>
+                
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="toc-section" data-section="making it fast">
+          <div class="toc-sec-header">
+            <span class="toc-sec-num">Section 04</span>
+            <h2 class="toc-sec-title">Making It Fast</h2>
+            <p class="toc-sec-blurb">An MFU investigation with sixteen numbered attempts. Three worked. The rest are written up in as much detail, because the reasoning behind them looked sound.</p>
+          </div>
+          <div class="toc-grid">
+            
+            <a href="chapters/19-what-mfu-is.html" class="toc-card" data-title="what mfu is, and why it is the exchange rate" data-blurb="model flops utilization from first principles, the four ways a measurement fools you, and the arithmetic that turns a percentage into a training budget.">
+              <div class="toc-card-header">
+                <span class="toc-order">19</span>
+                <span class="toc-title">What MFU is, and why it is the exchange rate</span>
+              </div>
+              <p class="toc-blurb">Model FLOPs Utilization from first principles, the four ways a measurement fools you, and the arithmetic that turns a percentage into a training budget.</p>
+              <div class="toc-meta">
+                <span>⏱ 10 min</span>
+                <span>📊 7 figs</span>
+                <span class="sec-chip">6N</span>
+              </div>
+            </a>
+            <a href="chapters/20-the-expert-loop.html" class="toc-card" data-title="the expert loop: eight times the work, the same time" data-blurb="step time barely moved as tokens grew eightfold, which is the signature of fixed per-step overhead. 3,840 kernel launches, three batched matrix multiplies, and an equivalence check to 3.9e-08.">
+              <div class="toc-card-header">
+                <span class="toc-order">20</span>
+                <span class="toc-title">The expert loop: eight times the work, the same time</span>
+              </div>
+              <p class="toc-blurb">Step time barely moved as tokens grew eightfold, which is the signature of fixed per-step overhead. 3,840 kernel launches, three batched matrix multiplies, and an equivalence check to 3.9e-08.</p>
+              <div class="toc-meta">
+                <span>⏱ 9 min</span>
+                <span>📊 7 figs</span>
+                <span class="sec-chip">17.5x</span>
+              </div>
+            </a>
+            <a href="chapters/21-six-ideas-that-did-not-work.html" class="toc-card" data-title="six ideas that did not work" data-blurb="padding waste, model size, chunked buffers, float32 activations, attention kernels and torch.compile — each hypothesis, each measurement, and the single profile that explained why all six had to fail.">
+              <div class="toc-card-header">
+                <span class="toc-order">21</span>
+                <span class="toc-title">Six ideas that did not work</span>
+              </div>
+              <p class="toc-blurb">Padding waste, model size, chunked buffers, float32 activations, attention kernels and torch.compile — each hypothesis, each measurement, and the single profile that explained why all six had to fail.</p>
+              <div class="toc-meta">
+                <span>⏱ 12 min</span>
+                <span>📊 7 figs</span>
+                
+              </div>
+            </a>
+            <a href="chapters/22-the-profile.html" class="toc-card" data-title="the profile: only 12% of the time is arithmetic" data-blurb="grouping every cuda kernel by which part of the model it belongs to, the double-counting mistake in the first version of the table, and what memory-bandwidth-bound means for every lever available.">
+              <div class="toc-card-header">
+                <span class="toc-order">22</span>
+                <span class="toc-title">The profile: only 12% of the time is arithmetic</span>
+              </div>
+              <p class="toc-blurb">Grouping every CUDA kernel by which part of the model it belongs to, the double-counting mistake in the first version of the table, and what memory-bandwidth-bound means for every lever available.</p>
+              <div class="toc-meta">
+                <span>⏱ 10 min</span>
+                <span>📊 5 figs</span>
+                <span class="sec-chip">45.6%</span>
+              </div>
+            </a>
+            <a href="chapters/23-two-kernels-that-worked.html" class="toc-card" data-title="two kernels that worked, and one that did not" data-blurb="a fused situ activation that won by being smaller rather than faster, a dispatch cleanup worth 13% per step, and a numerically perfect rmsnorm kernel that ran out of memory on shapes the released module handles.">
+              <div class="toc-card-header">
+                <span class="toc-order">23</span>
+                <span class="toc-title">Two kernels that worked, and one that did not</span>
+              </div>
+              <p class="toc-blurb">A fused situ activation that won by being smaller rather than faster, a dispatch cleanup worth 13% per step, and a numerically perfect RMSNorm kernel that ran out of memory on shapes the released module handles.</p>
+              <div class="toc-meta">
+                <span>⏱ 10 min</span>
+                <span>📊 6 figs</span>
+                <span class="sec-chip">1.38x</span>
+              </div>
+            </a>
+            <a href="chapters/24-fp8-and-the-bigger-gpu.html" class="toc-card" data-title="fp8, and the bigger gpu that scored worse" data-blurb="two attempts at fp8, four to eleven times slower than the format it replaces, and a b200 that is 20% faster in absolute throughput at roughly half the mfu. both results are real, and both are about ratios.">
+              <div class="toc-card-header">
+                <span class="toc-order">24</span>
+                <span class="toc-title">FP8, and the bigger GPU that scored worse</span>
+              </div>
+              <p class="toc-blurb">Two attempts at FP8, four to eleven times slower than the format it replaces, and a B200 that is 20% faster in absolute throughput at roughly half the MFU. Both results are real, and both are about ratios.</p>
+              <div class="toc-meta">
+                <span>⏱ 10 min</span>
+                <span>📊 5 figs</span>
+                <span class="sec-chip">0.19x</span>
+              </div>
+            </a>
+            <a href="chapters/25-the-silent-fallback.html" class="toc-card" data-title="the silent fallback" data-blurb="a non-monotonic throughput curve and memory that did not move when the batch did — two shapes no scaling story can produce, and the capped buffer quietly reverting 23 layers to the loop it was written to replace.">
+              <div class="toc-card-header">
+                <span class="toc-order">25</span>
+                <span class="toc-title">The silent fallback</span>
+              </div>
+              <p class="toc-blurb">A non-monotonic throughput curve and memory that did not move when the batch did — two shapes no scaling story can produce, and the capped buffer quietly reverting 23 layers to the loop it was written to replace.</p>
+              <div class="toc-meta">
+                <span>⏱ 10 min</span>
+                <span>📊 6 figs</span>
+                <span class="sec-chip">3.2x</span>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="toc-section" data-section="more than one gpu">
+          <div class="toc-sec-header">
+            <span class="toc-sec-num">Section 05</span>
+            <h2 class="toc-sec-title">More Than One GPU</h2>
+            <p class="toc-sec-blurb">r1 fits on a single H200. Everything above it does not, and sharding a mixture of experts introduces bugs that produce a finished run that is quietly wrong.</p>
+          </div>
+          <div class="toc-grid">
+            
+            <a href="chapters/26-sharding-the-model.html" class="toc-card" data-title="sharding the model across gpus" data-blurb="zero-3 in practice: what lives on each rank, why 35.56b parameters means 498 gb of optimizer state, and the arithmetic that decides how many cards a model needs.">
+              <div class="toc-card-header">
+                <span class="toc-order">26</span>
+                <span class="toc-title">Sharding the model across GPUs</span>
+              </div>
+              <p class="toc-blurb">ZeRO-3 in practice: what lives on each rank, why 35.56B parameters means 498 GB of optimizer state, and the arithmetic that decides how many cards a model needs.</p>
+              <div class="toc-meta">
+                <span>⏱ 10 min</span>
+                <span>📊 6 figs</span>
+                <span class="sec-chip">FSDP2</span>
+              </div>
+            </a>
+            <a href="chapters/27-three-bugs-that-do-not-crash.html" class="toc-card" data-title="three distributed bugs that do not crash" data-blurb="every rank reading the same tokens, a load balancer computed on per-rank load, and a spike guard each rank decided independently. each one completes the run and returns a model that is wrong in a way no error reports.">
+              <div class="toc-card-header">
+                <span class="toc-order">27</span>
+                <span class="toc-title">Three distributed bugs that do not crash</span>
+              </div>
+              <p class="toc-blurb">Every rank reading the same tokens, a load balancer computed on per-rank load, and a spike guard each rank decided independently. Each one completes the run and returns a model that is wrong in a way no error reports.</p>
+              <div class="toc-meta">
+                <span>⏱ 10 min</span>
+                <span>📊 7 figs</span>
+                
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="toc-section" data-section="did it work">
+          <div class="toc-sec-header">
+            <span class="toc-sec-num">Section 06</span>
+            <h2 class="toc-sec-title">Did It Work</h2>
+            <p class="toc-sec-blurb">The loss curve, twenty-four benchmark evaluations across the run, and what five billion tokens buys a 145M-active model.</p>
+          </div>
+          <div class="toc-grid">
+            
+            <a href="chapters/28-the-loss-curve.html" class="toc-card" data-title="the loss curve, end to end" data-blurb="starting at ln(163,840), the stable phase, the switch to the decay mix at step 32,430, zero skipped spikes and zero dead experts across 38,147 steps.">
+              <div class="toc-card-header">
+                <span class="toc-order">28</span>
+                <span class="toc-title">The loss curve, end to end</span>
+              </div>
+              <p class="toc-blurb">Starting at ln(163,840), the stable phase, the switch to the decay mix at step 32,430, zero skipped spikes and zero dead experts across 38,147 steps.</p>
+              <div class="toc-meta">
+                <span>⏱ 11 min</span>
+                <span>📊 7 figs</span>
+                <span class="sec-chip">12.10 → 2.62</span>
+              </div>
+            </a>
+            <a href="chapters/29-benchmarks-across-tokens.html" class="toc-card" data-title="benchmarks across tokens, not at the end" data-blurb="hellaswag from 27.0% to 33.4% and held-out perplexity from 22.65 to 13.61, while mmlu, arc-challenge and winogrande never left chance. which capabilities arrive first at this scale, and why.">
+              <div class="toc-card-header">
+                <span class="toc-order">29</span>
+                <span class="toc-title">Benchmarks across tokens, not at the end</span>
+              </div>
+              <p class="toc-blurb">HellaSwag from 27.0% to 33.4% and held-out perplexity from 22.65 to 13.61, while MMLU, ARC-Challenge and WinoGrande never left chance. Which capabilities arrive first at this scale, and why.</p>
+              <div class="toc-meta">
+                <span>⏱ 11 min</span>
+                <span>📊 6 figs</span>
+                <span class="sec-chip">24 points</span>
+              </div>
+            </a>
+            <a href="chapters/30-what-252-dollars-buys.html" class="toc-card" data-title="what $252 buys" data-blurb="the full ledger, what we would do differently, what the rungs above r1 were for, and the difference between a small model that works and a small model that is merely finished.">
+              <div class="toc-card-header">
+                <span class="toc-order">30</span>
+                <span class="toc-title">What $252 buys</span>
+              </div>
+              <p class="toc-blurb">The full ledger, what we would do differently, what the rungs above r1 were for, and the difference between a small model that works and a small model that is merely finished.</p>
+              <div class="toc-meta">
+                <span>⏱ 12 min</span>
+                <span>📊 6 figs</span>
+                
+              </div>
+            </a>
+          </div>
+        </div>
+    </div>
+  </div>
+
+  <script src="assets/reader.js"></script>
+  <script>
+    // Live filter chapters
+    const searchInput = document.getElementById('chapter-search');
+    const cards = document.querySelectorAll('.toc-card');
+    const sections = document.querySelectorAll('.toc-section');
+
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      
+      sections.forEach(sec => {
+        let hasMatch = false;
+        const secCards = sec.querySelectorAll('.toc-card');
+        secCards.forEach(card => {
+          const title = card.getAttribute('data-title') || '';
+          const blurb = card.getAttribute('data-blurb') || '';
+          if (!query || title.includes(query) || blurb.includes(query)) {
+            card.style.display = 'flex';
+            hasMatch = true;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+        sec.style.display = hasMatch ? 'block' : 'none';
+      });
+    });
+  </script>
+</body>
+</html>

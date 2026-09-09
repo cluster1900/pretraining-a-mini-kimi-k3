@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Assembling the corpus · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="FineWeb-Edu as the spine, five more sources around it, and the two gated repositories that shaped the mix more than any design decision did.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 09 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 02 · The Data</div>
+      <h1 class="vb-chapter-title">Assembling the corpus</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 9 of 30</span>
+        <span class="vb-pill">⏱ 10 min read</span>
+        <span class="vb-pill">📊 6 figures</span>
+        <span class="vb-pill cost">104.8B</span>
+      </div>
+
+      <p class="vb-chapter-blurb">FineWeb-Edu as the spine, five more sources around it, and the two gated repositories that shaped the mix more than any design decision did.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>A pretraining corpus is usually described as a design decision. You choose sources, you choose weights, you write down a mix, and the model that comes out is the mix you chose. Ours ended up at <strong>104.80 billion tokens in 1,063 shards across six sources</strong>, and the design decisions in that sentence are real. However, the two things that moved the corpus furthest from its intended shape were not decisions at all. They were a gated repository that never cleared, and an access token belonging to the wrong account. This chapter is about both halves.</p>
+<h2 id="fineweb-edu-as-the-spine-and-the-hole-it-leaves">FineWeb-Edu as the spine, and the hole it leaves</h2>
+<p>The spine of the corpus is <strong>FineWeb-Edu</strong>, 62.12 billion tokens after decontamination, which is 59% of everything we ingested. It is Common Crawl web text filtered by a classifier trained to score how educational a page is, keeping the high scorers. For a small model on a small token budget this is the right default: a 145-million-active-parameter model at 5 billion tokens does not have the capacity to extract much from the average scraped page, and a filter that removes the average page raises the value of every token it keeps.</p>
+<p>The filter is also the problem. A classifier trained to recognise educational writing removes forum threads, product pages, news wire, transcripts, recipes, changelogs and most of the ordinary internet, because none of those are educational and all of those are how people write. A model trained only on the survivors sees a narrow slice of the distribution it will be asked to model, and the narrowness is systematic rather than random.</p>
+<p>So the corpus carries a second web source whose role is to be unfiltered by that classifier. In <code>sources.py</code> it is called <code>web-diverse</code>, its note reads "diversity against FineWeb-Edu's education filter", and it contributes 13.36 billion tokens. What actually filled that role is the subject of the second half of this chapter, and it is not what was planned.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/assembling-the-corpus-1.png" alt="FineWeb-Edu is the spine of the corpus. A second web source sits beside it because the classifier that makes FineWeb-Edu" loading="lazy"  data-fig="assembling-the-corpus-1.png"><span class="fig-ph">figure rendering &middot; FineWeb-Edu is the spine of the corpus. A second web source sits besid</span></div><figcaption>FineWeb-Edu is the spine of the corpus. A second web source sits beside it because the classifier that makes FineWeb-Edu good also makes it narrow.</figcaption></figure>
+<h2 id="the-six-sources">The six sources</h2>
+<p>Four more sources sit around those two. Each is chosen for a role rather than for itself, which matters later when one of them has to be swapped out.</p>
+<div class="tbl-wrap"><table><thead><tr><th>source</th><th>role</th><th>documents scanned</th><th>removed</th><th>tokens</th></tr></thead><tbody><tr><td>fineweb-edu</td><td>web</td><td>62,245,000</td><td>53,266</td><td><strong>62.12B</strong></td></tr><tr><td>web-diverse (FineWeb)</td><td>web</td><td>20,034,526</td><td>5,604</td><td><strong>13.36B</strong></td></tr><tr><td>code-python (StarCoder)</td><td>code</td><td>12,866,649</td><td>28,968</td><td><strong>14.90B</strong></td></tr><tr><td>finemath</td><td>math</td><td>4,605,913</td><td>33,342</td><td><strong>6.38B</strong></td></tr><tr><td>open-web-math</td><td>math</td><td>2,271,277</td><td>15,325</td><td><strong>4.39B</strong></td></tr><tr><td>cosmopedia</td><td>reasoning</td><td>5,268,046</td><td>1,559</td><td><strong>3.65B</strong></td></tr></tbody></table></div>
+<p>The removal column is the output of decontamination, which runs on raw text before tokenization and drops any document sharing a 13-gram with one of eight benchmark test sets. In total <strong>107,291,411 documents were scanned and 138,064 removed, a rate of 0.1287%</strong>. The next chapter is about that filter, and about why the maths corpora dropping roughly ten times more than the web is the result that makes it believable. Here it matters only because the token counts above are post-removal figures, and every mix weight in this chapter is computed from them.</p>
+<p>Two sources deserve a line each. <strong>Cosmopedia</strong> is synthetic textbook-style prose, and it is the only source that never appears during the stable phase. <strong>finemath</strong> and <strong>open-web-math</strong> are held separately rather than merged into one maths source because they are filtered differently, so a failure in one rebalances inside the maths role rather than changing how much maths the model sees.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/assembling-the-corpus-2.png" alt="The six sources with their measured post-decontamination token counts. Sizes are drawn to scale." loading="lazy"  data-fig="assembling-the-corpus-2.png"><span class="fig-ph">figure rendering &middot; The six sources with their measured post-decontamination token counts.</span></div><figcaption>The six sources with their measured post-decontamination token counts. Sizes are drawn to scale.</figcaption></figure>
+<h2 id="weights-over-roles-then-weights-over-sources">Weights over roles, then weights over sources</h2>
+<p>The mix is written in two levels rather than one. The first level assigns weight to a role; the second decides which sources fill that role. From <code>data/mixes.py</code>:</p>
+<pre class="code" data-lang="python"><code># Stage 3: ~2% warmup, long stable phase, final ~15% decay.
+DECAY_FRACTION = 0.15
+
+STABLE_ROLES = {"web": 0.85, "code": 0.10, "math": 0.05, "reasoning": 0.00}
+DECAY_ROLES  = {"web": 0.25, "code": 0.25, "math": 0.30, "reasoning": 0.20}
+
+SOURCE_WEIGHTS = {
+    "web":       {"fineweb-edu": 0.70, "web-diverse": 0.30},
+    "code":      {"code-python": 1.0},
+    "math":      {"finemath": 0.6, "open-web-math": 0.4},
+    "reasoning": {"cosmopedia": 1.0},
+}</code></pre>
+<p>The separation is what makes the corpus survivable. When a source turns out to be unreadable, its weight is redistributed among the other sources in its own role, and the role weights do not move. The model still sees 85% web during the stable phase whether that web comes from two sources or one. A single-level mix would have silently changed how much web data the model saw every time a repository failed to resolve, which is a change to the recipe disguised as an infrastructure problem.<label for="sn-assembling-the-corpus-1" class="sn-ref">1</label><input type="checkbox" id="sn-assembling-the-corpus-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> <code>plan()</code> records this rather than performing it quietly. Any role with no surviving source, and any source in a live role that did not resolve, appends a line to a <code>warnings</code> list printed with the plan and written into <code>mix_plan.json</code>. A redistribution nobody sees is indistinguishable from a mix that was designed that way.</span></p>
+<p>Multiplying the two levels together gives the stable weights: fineweb-edu 0.70 × 0.85 = 0.595, web-diverse 0.30 × 0.85 = 0.255, code-python the whole 0.10 of the code role, and the maths role splitting 0.05 into 0.03 and 0.02.</p>
+<h2 id="the-anneal-and-why-the-decay-mix-is-a-different-corpus">The anneal, and why the decay mix is a different corpus</h2>
+<p>The training schedule is warmup–stable–decay rather than cosine. A WSD schedule holds the learning rate flat through a long stable phase and decays it over a short tail, and in our run that tail <strong>began at step 32,430, 4.25 billion tokens in</strong>.</p>
+<p>The tail is trained on a different mix. Compare the two role vectors above: web falls from 85% to 25%, code rises from 10% to 25%, maths from 5% to 30%, and reasoning goes from nothing at all to 20%. The decay mix is not a slight reweighting of the stable mix. It is a maths-and-code corpus with some web left in it.</p>
+<p>The reason for the reweighting is that the stable phase is where the model learns language, and general web text is what teaches language. The decay phase is where the weights settle into their final configuration, and the data they settle on has an outsized influence on what the finished model is good at. Upweighting maths, code and structured reasoning at exactly the moment the learning rate is collapsing costs 15% of the token budget rather than a redesign.</p>
+<p>Web is not dropped to zero in the decay mix, and the comment in the code says why: a pure-anneal tail causes a general-capability regression. Keeping a quarter of the tail on web text is what stops the model trading its language modelling for its arithmetic.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/assembling-the-corpus-3.png" alt="The stable and decay mixes. The decay phase trains on what is effectively a different corpus." loading="lazy"  data-fig="assembling-the-corpus-3.png"><span class="fig-ph">figure rendering &middot; The stable and decay mixes. The decay phase trains on what is effectiv</span></div><figcaption>The stable and decay mixes. The decay phase trains on what is effectively a different corpus.</figcaption></figure>
+<h2 id="947-shards-and-94-with-no-shard-in-both">947 shards and 94, with no shard in both</h2>
+<p>A mix over percentages has to become a list of files before a dataloader can read it. The corpus is stored as shards, and <code>build_manifests</code> turns the token plan into two lists of shard names: <strong>947 stable shards and 94 decay shards</strong>.</p>
+<p>The order in which those lists are built is deliberate. The decay phase is reserved first, from the tail of each source's shard list, and the stable phase is built from whatever is left:</p>
+<pre class="code" data-lang="python"><code># Reserve the decay phase first: it is the smaller, more valuable claim.
+for src, shards in inventory.items():
+    want = p["phases"]["decay"]["source_tokens"].get(src, 0.0)
+    take, got = [], 0.0
+    for sh in reversed(shards):      # from the tail, so stable keeps the head
+        if got &gt;= want:
+            break
+        take.append(sh)
+        got += sh["tokens"]
+    reserved[src] = take</code></pre>
+<p>Then the two manifests are checked against each other, and the check is an assertion rather than a warning:</p>
+<pre class="code" data-lang="python"><code>overlap = stable_names &amp; decay_names
+if overlap:
+    raise AssertionError(
+        f"{len(overlap)} shards appear in both phases — the anneal would "
+        "re-show tokens from the stable phase")</code></pre>
+<p>If a shard appeared in both lists, the anneal would be a second epoch over tokens the model had already seen rather than fresh maths and code. The benchmark improvement attributed to the decay mix would then be partly a memorisation effect, and no measurement in the project could tell the two apart. That is an error that has to be prevented by construction, because it cannot be detected afterwards.</p>
+<p>Note that 947 and 94 sum to 1,041, not the 1,063 shards on the volume. The remaining twenty-two appear in neither manifest. The ingest was sized against a larger token budget than the ladder eventually used, so the corpus overshot and the surplus was left in place rather than deleted.<label for="sn-assembling-the-corpus-2" class="sn-ref">2</label><input type="checkbox" id="sn-assembling-the-corpus-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> The overshoot is larger than twenty-two shards suggests. r1 consumed 5.00 billion tokens against a corpus of 104.80 billion, so the run saw about one token in twenty-one of what was ingested. That is a margin rather than waste: discovering mid-run that a source is exhausted and the loader has silently begun a second epoch costs considerably more than storage.</span></p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/assembling-the-corpus-4.png" alt="The two mix manifests. The decay phase is reserved from the tail before the stable phase is built, and the disjointness " loading="lazy"  data-fig="assembling-the-corpus-4.png"><span class="fig-ph">figure rendering &middot; The two mix manifests. The decay phase is reserved from the tail befor</span></div><figcaption>The two mix manifests. The decay phase is reserved from the tail before the stable phase is built, and the disjointness check raises rather than warns.</figcaption></figure>
+<h2 id="what-the-run-actually-trained-on">What the run actually trained on</h2>
+<p>A plan and a realised mix are different objects, and the second is the one worth reporting. Over r1's stable phase the sampled proportions were, with the target in brackets: <strong>fineweb-edu 59.5% (59.5), web-diverse 25.5% (25.5), code-python 10.0% (10.0), finemath 3.0% (3.0), open-web-math 2.0% (2.0)</strong>. The realised mix tracks the target to three decimal places.</p>
+<p>This is a result about the dataloader rather than about the corpus, and it is reported here because it licenses every other statement in this chapter. Weights written into a manifest describe an intention; a mix measured from the tokens the model consumed describes the run. The gap between them is where a sampler bug lives, and the sibling chapter on the manifest bug covers a case where that gap was total: four of six sources pointed at filenames that did not exist and the loader renormalised onto the two that survived, so the stable phase would have trained on 100% finemath while reporting a healthy six-source mix. Agreement to three decimal places is the check that the corrected version works.</p>
+<h2 id="the-two-repositories-that-shaped-the-mix">The two repositories that shaped the mix</h2>
+<p>Everything above is design. What follows moved the corpus more.</p>
+<p>Sources in <code>sources.py</code> are written as candidate lists in preference order rather than as fixed identifiers, and <code>probe.py</code> resolves each list against the Hub before any money is spent. Dataset repositories get renamed, re-sharded, converted from loading scripts to parquet, and gated behind an access request, and each of those failures looks identical at three in the morning halfway through an ingest.<label for="sn-assembling-the-corpus-3" class="sn-ref">3</label><input type="checkbox" id="sn-assembling-the-corpus-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> <code>probe.py</code> also checks the parquet path prefix, which is a separate trap. A config called <code>sample-100BT</code> lives under <code>sample/100BT/</code>, and a prefix that matches nothing does not fail loudly. It falls through to some other subset of the repository, which for FineWeb means ingesting the full dataset instead of the sample the mix asked for. The probe counts matching parquet files and skips a candidate whose prefix matches zero.</span></p>
+<p>Two of those candidate lists mattered.</p>
+<p><strong><code>nvidia/Nemotron-CC-v2</code> was the intended diversity source.</strong> It is curated Common Crawl text, and its <code>High-Quality</code> subset is exactly the natural-web diversity that FineWeb-Edu's education classifier removes.<label for="sn-assembling-the-corpus-4" class="sn-ref">4</label><input type="checkbox" id="sn-assembling-the-corpus-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> The repository ships six subsets and only one of them fits the role. <code>High-Quality-Synthetic</code> is rephrased text and <code>Diverse-QA</code> is synthetic question-answer pairs; either would have added a second synthetic source next to Cosmopedia rather than the natural-web diversity the role calls for. The candidate names <code>High-Quality/</code> explicitly rather than taking the repository's default.</span> It is gated. Access was requested, NVIDIA reviews these requests manually, and it never cleared. On <strong>31 July the decision was to stop waiting</strong> and take the fallback: <code>HuggingFaceFW/fineweb</code>, sample-100BT, which is unfiltered FineWeb. It fills the same role less well than Nemotron-CC would have, and it fills it without blocking the whole of Stage 1 behind somebody else's review queue. If access ever lands, <code>web-diverse</code> can be re-ingested and the manifests rebuilt; nothing else in the project depends on the choice.</p>
+<p><strong><code>bigcode/starcoderdata</code> was gated too</strong>, and its fallback was worse than a quality downgrade. The ungated alternative, <code>codeparrot/github-code-clean</code>, keeps every programming language in one <code>data/</code> directory with the language as a row field, so extracting Python means downloading everything and discarding almost all of it: <strong>317 GB of the 611 GB total downloaded for 12% of the tokens, which is 94% of the download discarded.</strong> That would have roughly doubled the cost and duration of the whole ingest, for a corpus also lower in quality than the gated one.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/assembling-the-corpus-5.png" alt="The two gated repositories. One fallback was taken and one was avoided." loading="lazy"  data-fig="assembling-the-corpus-5.png"><span class="fig-ph">figure rendering &middot; The two gated repositories. One fallback was taken and one was avoided</span></div><figcaption>The two gated repositories. One fallback was taken and one was avoided.</figcaption></figure>
+<h2 id="the-trap-underneath-both">The trap underneath both</h2>
+<p>The reason both repositories reported as unreadable was not, in the end, entirely about gating.</p>
+<p>Terms on a gated Hub repository are accepted by an account, and access is granted to that account. The workers that perform the ingest do not use an account; they use a token, read from a Modal secret. Those two things have to refer to the same identity, and in our case they did not. The secret held a token belonging to one account while the terms had been accepted under another, so from the workers' point of view both repositories were locked regardless of what the browser showed when the grants were checked.</p>
+<p>Every observable signal was consistent with a different explanation. The Hub page showed access granted. The probe reported the repository gated and unreadable. Both statements were true, of different identities, and neither of them mentioned an identity at all.</p>
+<p>Pointing the workers at the right account resolved it for StarCoder. With the correct token in the secret, <code>bigcode/starcoderdata</code> reads normally, Python only, with no polyglot directory to filter, so <code>code-python</code>'s <strong>14.90 billion tokens</strong> came from StarCoder and the 94%-discard path was never taken. <code>nvidia/Nemotron-CC-v2</code> stayed closed, because its problem really was the review queue, and the fallback there was taken for good.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/assembling-the-corpus-6.png" alt="Why both repositories reported as locked. The grants and the token belonged to different accounts." loading="lazy"  data-fig="assembling-the-corpus-6.png"><span class="fig-ph">figure rendering &middot; Why both repositories reported as locked. The grants and the token bel</span></div><figcaption>Why both repositories reported as locked. The grants and the token belonged to different accounts.</figcaption></figure>
+<h2 id="what-the-pass-cost">What the pass cost</h2>
+<p>The full ingest — resolving every source, building the 13-gram index, decontaminating 107 million documents and tokenizing 104.80 billion tokens — cost <strong>about $17 of CPU</strong>. No GPU is involved in any part of it. Against the $252.35 the training run cost, data preparation is a rounding error.</p>
+<p>The recurring cost is storage, at <strong>$0.09 per GiB per month</strong>. Tokens are stored as <code>uint32</code>, four bytes each, because the vocabulary is 163,840 and <code>uint16</code> would silently truncate every token above 65,535. Four bytes times 104.80 billion tokens is why the volume, rather than the compute, is what this corpus keeps costing.</p>
+<p>That asymmetry is the practical finding of this chapter. The expensive part of assembling a corpus is not the compute; it is the decisions that cannot be undone cheaply. A wrong mix costs a re-ingest. A shard shared between the stable and decay manifests costs a benchmark result nobody can defend. A repository that will not resolve costs whatever the fallback is worth, and the two we hit cost a quality downgrade we accepted and a doubled download we avoided by fixing which account held the token.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./08-counting-the-parameters.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 08</span>
+              <span class="vb-nav-title">Counting the parameters, and checking the counter</span>
+            </a>
+            <a href="./10-decontamination.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 10 →</span>
+              <span class="vb-nav-title">Decontamination, and the report that makes the numbers defensible</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

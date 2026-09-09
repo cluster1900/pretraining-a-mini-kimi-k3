@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The silent fallback · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="A non-monotonic throughput curve and memory that did not move when the batch did — two shapes no scaling story can produce, and the capped buffer quietly reverting 23 layers to the loop it was written to replace.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 25 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 04 · Making It Fast</div>
+      <h1 class="vb-chapter-title">The silent fallback</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 25 of 30</span>
+        <span class="vb-pill">⏱ 10 min read</span>
+        <span class="vb-pill">📊 6 figures</span>
+        <span class="vb-pill cost">3.2x</span>
+      </div>
+
+      <p class="vb-chapter-blurb">A non-monotonic throughput curve and memory that did not move when the batch did — two shapes no scaling story can produce, and the capped buffer quietly reverting 23 layers to the loop it was written to replace.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>Everything in this chapter was measured on the flagship: the 35.56-billion-parameter top rung, running on <strong>2x B300</strong>. It is not r1. r1 trained on a single H200 and was never sharded, and the numbers below would not have appeared on it at all, which is part of what makes them worth writing down.</p>
+<p>With FSDP2 finally training the flagship end to end, we could measure its throughput for the first time. At 8,192 tokens per step it came out at <strong>1,211 tokens per second</strong>, an MFU of <strong>0.2%</strong>, against the <strong>3.6%</strong> r3 recorded on a B200.<label for="sn-the-silent-fallback-1" class="sn-ref">1</label><input type="checkbox" id="sn-the-silent-fallback-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> MFU here is computed against the B300's own peak, as it always is. Attempt 13 established that MFU numbers are only comparable across runs on the same hardware, because the denominator is a property of the card rather than of the model; normalising r3's 3.6% to the H200's peak gives about 8.2%. The comparison to r3 is therefore indicative rather than exact, and the shape of what follows does not depend on it.</span></p>
+<p>That is a bad number even by the standards of a project whose one completed run, r1 on a single H200, sustained 27,600 to 28,900 tokens per second at 2.4 to 2.5% MFU. It also arrived with an explanation already attached.</p>
+<h2 id="the-story-that-fit">The story that fit</h2>
+<p>At 8,192 tokens per step across two ranks, each card sees 4,096 tokens, which is a small fraction of the 131,072 tokens per step r1's real run used. Batch starvation is the obvious reading, and it was consistent with everything the MFU investigation had learned up to that point.</p>
+<p>Batch had been the strongest lever three times running, in every case measured on r2, the 307M-active rung, on one H200. Attempt 8's fused <code>situ</code> kernel was not faster at equal batch — 5.5% against 5.6% — and won entirely by freeing 40 GB, which allowed a 50% larger microbatch of 24,576 tokens and took MFU to 7.7% at 41,294 tokens per second. Attempt 5's float32 fix was worth 0.1 percentage points of MFU directly and 40 GB of memory indirectly. Attempt 4's chunking of the expert buffer was rejected because it saved about 5% of memory and MFU fell.</p>
+<p>Three attempts, one conclusion: on r2, memory buys batch and batch buys throughput. Two memory fixes had just landed on the flagship for exactly that reason. So we swept the batch and expected the curve to climb.</p>
+<h2 id="the-sweep">The sweep</h2>
+<div class="tbl-wrap"><table><thead><tr><th>tokens/step</th><th>step time</th><th>tokens/s</th><th>MFU</th><th>peak memory</th></tr></thead><tbody><tr><td>8,192</td><td>6.76 s</td><td>1,211</td><td>0.2%</td><td>177.9 GB</td></tr><tr><td>32,768</td><td>7.57 s</td><td>4,328</td><td>0.7%</td><td>177.9 GB</td></tr><tr><td>65,536</td><td>35.09 s</td><td>1,868</td><td>0.3%</td><td>191.4 GB</td></tr><tr><td>98,304</td><td>37.44 s</td><td>2,626</td><td>0.4%</td><td>231.9 GB</td></tr></tbody></table></div>
+<p>Throughput rises by a factor of 3.6, then falls by more than half, then partly recovers.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-silent-fallback-1.png" alt="The sweep that was expected to climb. Both panels are the flagship on 2x B300." loading="lazy"  data-fig="the-silent-fallback-1.png"><span class="fig-ph">figure rendering &middot; The sweep that was expected to climb. Both panels are the flagship on </span></div><figcaption>The sweep that was expected to climb. Both panels are the flagship on 2x B300.</figcaption></figure>
+<p>Both shapes are impossible for the story we were telling.</p>
+<p><strong>Scaling curves do not have cliffs.</strong> A batch-starved model given twice the batch does not become more than twice as slow, which is what 4,328 falling to 1,868 tokens per second amounts to. Smooth resource curves bend, saturate and plateau; they do not reverse. A reversal means something switched.</p>
+<p><strong>If memory were the constraint, memory would move.</strong> Peak memory at 8,192 and at 32,768 tokens per step is the same number to one decimal place, 177.9 GB, for four times the work.<label for="sn-the-silent-fallback-2" class="sn-ref">2</label><input type="checkbox" id="sn-the-silent-fallback-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> 177.9 GB of 287.4 available on the two cards, 62%, is also the figure recorded when FSDP2 was verified end to end on the flagship over four steps. The agreement is not a coincidence; it is the same configuration, and it means the activation memory the batch was supposed to consume was not being consumed.</span> Identical memory across a fourfold change in work is the same signature that exposed <code>gradient_checkpointing_enable()</code> as a no-op earlier in this project, where memory read 76.7 GB with it off and 76.8 GB with it on. A quantity that should have moved and did not is evidence about the code path, not about the resource.</p>
+<p>Neither of these was found by thinking harder about the batch. They were found by putting four rows in a table and looking at the columns.</p>
+<h2 id="what-it-actually-was">What it actually was</h2>
+<p>The fused expert dispatch, the change that produced the <strong>17.5x</strong> in attempt 1 on r2, taking MFU from 0.1% to 4.1%, packs tokens into a dense <code>[E, C, d]</code> buffer where <code>E</code> is the expert count and <code>C</code> is the busiest expert's token count. Padding is exact rather than lossy: unused slots hold zeros whose outputs are never gathered, so no token is dropped. The cost is that the buffer's size is <code>E x C x ffn</code>, and <code>C</code> grows with routing imbalance.</p>
+<p>That buffer carries a cap:</p>
+<pre class="code" data-lang="python"><code># Cap on the padded buffer, in elements. Beyond this the routing is imbalanced
+# enough that padding wastes more than the loop costs.
+MAX_PAD_ELEMS = 1 &lt;&lt; 28</code></pre>
+<p>The cap is a reasonable piece of engineering. Without it, a run whose routing goes lopsided at hour six allocates a buffer large enough to exhaust the card and dies. What it did above the cap was fall back to <code>_looped</code>, the per-expert Python loop the fused dispatch had been written to replace for a measured factor of 17.5.</p>
+<p>And the fallback printed nothing.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-silent-fallback-2.png" alt="The dispatch had two implementations with a large spread between them, and nothing reported which one a layer was using." loading="lazy"  data-fig="the-silent-fallback-2.png"><span class="fig-ph">figure rendering &middot; The dispatch had two implementations with a large spread between them,</span></div><figcaption>The dispatch had two implementations with a large spread between them, and nothing reported which one a layer was using.</figcaption></figure>
+<p>The run was correct throughout. Both paths compute the same function, verified against each other in value and in gradient. It simply cost an order of magnitude more, and no output distinguished the two cases.</p>
+<h2 id="the-ceiling-and-who-hits-it">The ceiling, and who hits it</h2>
+<p>Rearranging the cap gives the largest tolerable busiest-expert count directly:</p>
+<pre class="code" data-lang=""><code>C_max = 2^28 / (E x ffn)</code></pre>
+<p>Two rungs, two answers. For r3, with 256 experts, <code>C_max</code> is <strong>1,260</strong>. For the flagship, which has twice the experts and half again the expert width, <code>C_max</code> is <strong>409</strong>.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-silent-fallback-3.png" alt="The cap is a constant number of elements, so the models with the most experts and the widest experts get the least room " loading="lazy"  data-fig="the-silent-fallback-3.png"><span class="fig-ph">figure rendering &middot; The cap is a constant number of elements, so the models with the most </span></div><figcaption>The cap is a constant number of elements, so the models with the most experts and the widest experts get the least room for imbalance.</figcaption></figure>
+<p>The ordering runs the wrong way. A larger model needs a larger batch to be efficient, a larger batch pushes <code>C</code> up, and the larger model has the lower ceiling for <code>C</code>. The flagship's ceiling is a third of r3's while its appetite for batch is larger, which is why the cliff appeared on the flagship and had never appeared on any rung of the ladder.</p>
+<p>At 32,768 tokens per step, every one of the flagship's 23 MoE layers quietly switched to the Python loop.<label for="sn-the-silent-fallback-3" class="sn-ref">3</label><input type="checkbox" id="sn-the-silent-fallback-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> 23 rather than 24 because layer 0 is dense, following K3's own <code>first_k_dense_replace: 1</code>. Every layer switching together is what makes the effect so clean in the timing data: this is not a fraction of the model degrading, it is the whole expert stack changing implementation on the same step.</span></p>
+<p>That is the cliff. It also explains the partial recovery at 65,536 and 98,304 tokens: the loop's per-expert overhead is fixed per step, so spreading it over more tokens improves tokens per second while leaving the run firmly in the slow path.</p>
+<h2 id="the-fix-is-not-a-bigger-cap">The fix is not a bigger cap</h2>
+<p>Raising <code>MAX_PAD_ELEMS</code> removes the symptom and restores the failure the cap was written to prevent. The buffer would grow with imbalance until a run that had been training for hours ran out of memory.</p>
+<p>The alternative is to keep the fused structure and make the buffer smaller: process experts in groups small enough to stay under the cap, padding each group to <em>its own</em> busiest expert rather than to the global maximum. The three batched matrix multiplies remain; there are simply a few more of them.</p>
+<pre class="code" data-lang="python"><code>auto = None
+if chunk is None and E * C * self.ffn_dim &gt; MAX_PAD_ELEMS:
+    auto = max(1, MAX_PAD_ELEMS // max(1, C * self.ffn_dim))
+    if auto &gt;= E:
+        auto = None
+    else:
+        # Never silent again. `fused_moe.dispatch_stats(model)` reports
+        # this, and the training loop puts it in telemetry.
+        self._auto_chunks = getattr(self, "_auto_chunks", 0) + 1
+        self._last_chunk = auto
+        self._last_C = C
+chunk = chunk if chunk is not None else auto</code></pre>
+<p>The group size is derived from the same arithmetic as the ceiling, so the buffer lands just under the cap by construction rather than by a tuned constant. If the derived group size is at least <code>E</code> the chunking is unnecessary and the code takes the plain fused path.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-silent-fallback-4.png" alt="The single buffer pads every expert to the global busiest one. Chunking pads each group to its own." loading="lazy"  data-fig="the-silent-fallback-4.png"><span class="fig-ph">figure rendering &middot; The single buffer pads every expert to the global busiest one. Chunkin</span></div><figcaption>The single buffer pads every expert to the global busiest one. Chunking pads each group to its own.</figcaption></figure>
+<p>Chunking is not free, and we already knew its price. Attempt 4 had measured it on r2 and rejected it: about 5% of memory saved, and MFU fell. Against a factor of 17.5 for the loop, that is not a close decision.<label for="sn-the-silent-fallback-4" class="sn-ref">4</label><input type="checkbox" id="sn-the-silent-fallback-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> The batched dispatch had been checked against the looped reference when it was written in attempt 1, agreeing to <strong>3.9e-08</strong> in value and <strong>4.1e-08</strong> in gradient. A path taken automatically under load is exactly the path that most needs that kind of check, because nothing about a run will tell you when it was taken.</span></p>
+<h2 id="what-it-was-worth">What it was worth</h2>
+<p>Measured on the flagship at 32,768 tokens per step:</p>
+<div class="tbl-wrap"><table><thead><tr><th>dispatch</th><th>step time</th><th>tokens/s</th><th>MFU</th></tr></thead><tbody><tr><td>fallback to the Python loop</td><td>7.571 s</td><td>4,328</td><td>0.7%</td></tr><tr><td><strong>auto-chunked</strong></td><td><strong>2.368 s</strong></td><td><strong>13,840</strong></td><td><strong>2.3%</strong></td></tr></tbody></table></div>
+<p><strong>A factor of 3.2, from deleting a fallback.</strong> No kernel was written, no precision was traded, no hyperparameter moved. The change was to keep the code on the path it already had.</p>
+<p>The cost side moves with it. Two B300s cost $7.10 an hour each, so pricing 10 billion tokens at the two throughputs takes the bill from about <strong>$9,114 to $2,850</strong>, which is the difference between a training stage being unaffordable and being roughly what the plan had budgeted for it.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-silent-fallback-5.png" alt="The measured effect of removing the fallback. Both rows are the same model, the same batch and the same hardware." loading="lazy"  data-fig="the-silent-fallback-5.png"><span class="fig-ph">figure rendering &middot; The measured effect of removing the fallback. Both rows are the same m</span></div><figcaption>The measured effect of removing the fallback. Both rows are the same model, the same batch and the same hardware.</figcaption></figure>
+<h2 id="why-it-helped-below-the-cap">Why it helped below the cap</h2>
+<p>The arithmetic above says the flagship tolerates a busiest-expert count of 409. At 32,768 tokens per step across two ranks the average expert should sit comfortably under that. The fix helped anyway, and the reason is in the word "busiest".</p>
+<p>The cap is not on the mean load. It is on the maximum, and the maximum is a function of routing imbalance, which is not constant during training. As the chapter on expert collapse established, imbalance is at its worst in the opening steps of every run in this project: the router has no opinion, top-k selection concentrates on a handful of experts, and the aux-loss-free balancer takes roughly 30 steps to pull load back. Load imbalance on the flagship's own verified FSDP2 steps read 3.3, and on a healthy r1 it drifted from 2.36 to 4.0 across 38,147 steps. Early in a run it is far higher than either.</p>
+<p>So <code>C</code> sat above 409 exactly while the model was warming up, and the run spent that period in the slow path without saying so.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-silent-fallback-6.png" alt="The cap is on the busiest expert, and the busiest expert is at its busiest exactly when the run is starting." loading="lazy"  data-fig="the-silent-fallback-6.png"><span class="fig-ph">figure rendering &middot; The cap is on the busiest expert, and the busiest expert is at its bus</span></div><figcaption>The cap is on the busiest expert, and the busiest expert is at its busiest exactly when the run is starting.</figcaption></figure>
+<p>The general form of this is worth stating plainly. A threshold compares a fixed constant against a quantity that varies with the state of training. Whether the run is on the fast path or the slow one is then decided by routing statistics that change from step to step, and the decision can flip in either direction without any code change and without any output. A threshold on a moving quantity is not a threshold.</p>
+<h2 id="making-it-observable">Making it observable</h2>
+<p>The code change that matters most in this chapter is four lines long and does not affect throughput:</p>
+<pre class="code" data-lang="python"><code>def dispatch_stats(model) -&gt; dict:
+    """Did any MoE layer leave the single-buffer fused path, and how far?"""
+    layers = [m for m in model.modules() if isinstance(m, FusedExperts)]
+    auto = [m for m in layers if getattr(m, "_auto_chunks", 0)]
+    if not auto:
+        return {"moe_layers": len(layers), "auto_chunked_layers": 0,
+                "min_chunk": None, "max_C": None}
+    return {"moe_layers": len(layers),
+            "auto_chunked_layers": len(auto),
+            "min_chunk": min(getattr(m, "_last_chunk", 0) for m in auto),
+            "max_C": max(getattr(m, "_last_C", 0) for m in auto)}</code></pre>
+<p>It reports how many MoE layers left the single-buffer path, how finely they had to be chunked, and the largest busiest-expert count observed. Those go into the same telemetry stream as loss, dead-expert fraction and load imbalance, and they are read the same way. A run that starts chunking heavily is now visible from outside the container.<label for="sn-the-silent-fallback-5" class="sn-ref">5</label><input type="checkbox" id="sn-the-silent-fallback-5" class="sn-toggle"><span class="sidenote"><sup>5</sup> The 3.2x was measured but never spent. The flagship was launched on 6 August 2026 and failed with 69.5% dead experts and load imbalance of 74 to 85, stalling at step 890 of 76,294 having spent $48.33. The dispatch fix is a real result about a real model; it is not a result about a finished training run, and this book does not present it as one.</span></p>
+<h2 id="the-two-transferable-parts">The two transferable parts</h2>
+<p><strong>A fallback path that is slower by an order of magnitude has to be observable.</strong> Fallbacks are ordinary and often correct: this one existed to stop a padded buffer from exhausting a card mid-run, which is a real failure it really prevents. What made it expensive was that taking it produced no signal. Every check a training run performs — loss, gradient norm, dead experts, equivalence tests — passed the whole time, because all of them were true. A silent performance fallback is a correctness bug wearing a different hat: the run produces the right numbers, at a price nobody agreed to and nobody can see. The rule that follows is narrow enough to apply mechanically. If two code paths compute the same function with a large spread in cost, and something other than the programmer chooses between them at runtime, the choice belongs in telemetry.</p>
+<p><strong>When a measurement disagrees with a story, the shape of the disagreement usually names the cause.</strong> The batch-starvation explanation was not careless. It was consistent with four prior attempts, it matched the hardware configuration, and it survived because it was plausible. It did not die to an argument. It died to two shapes in a four-row table: a curve that reversed, and a memory column that failed to move. Neither of those requires knowing anything about mixtures of experts. A reversal in a resource curve says an implementation switched. A resource that does not respond to the thing that should consume it says the consumption is not happening. Both point at the code path rather than at the resource, which is where the answer was.</p>
+<p>Most of the sixteen MFU attempts describe measurements that killed a hypothesis and stopped there. This is the one where the measurement also said, in its shape, where to look next.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 24</span>
+              <span class="vb-nav-title">FP8, and the bigger GPU that scored worse</span>
+            </a>
+            <a href="./26-sharding-the-model.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 26 →</span>
+              <span class="vb-nav-title">Sharding the model across GPUs</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

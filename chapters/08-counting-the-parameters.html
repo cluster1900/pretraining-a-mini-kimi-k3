@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Counting the parameters, and checking the counter · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="A parameter counter you can only trust if it reproduces K3&#x27;s own published 2.8T and 104B first, and what it says about where r1&#x27;s capacity actually sits.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 08 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 01 · The Model</div>
+      <h1 class="vb-chapter-title">Counting the parameters, and checking the counter</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 8 of 30</span>
+        <span class="vb-pill">⏱ 9 min read</span>
+        <span class="vb-pill">📊 6 figures</span>
+        <span class="vb-pill cost">1.02B</span>
+      </div>
+
+      <p class="vb-chapter-blurb">A parameter counter you can only trust if it reproduces K3&#x27;s own published 2.8T and 104B first, and what it says about where r1&#x27;s capacity actually sits.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>Every project like this one produces a handful of headline figures, and a parameter count is usually the first of them. It is also the figure least likely to be checked by anyone. A loss curve invites disagreement, a benchmark score can be re-run by a stranger, and a throughput number can be reproduced by anybody holding the same card. A parameter count arrives as a single entry in a specification table, and it is read on the assumption that whoever wrote it added correctly.</p>
+<p>Our own plan carried such a figure. The largest model in the ladder, the flagship, was specified at <strong>567M active parameters</strong>, and that number had been derived on paper by adding up terms in a formula. When we finally built the configuration it described and measured it, the parameters that run for every single token, before a single routed expert is counted, already came to <strong>834M</strong>. The design target sat below the floor of the design. No setting of expert size, expert count or <code>top_k</code> could have reached it, because every one of those knobs only adds.</p>
+<p>Nothing in the project had gone wrong at that point. The arithmetic had simply never been confronted with the module tree it was describing. This chapter is about the tool that confronted it, and about the control that makes the tool's output worth reading at all.</p>
+<h2 id="counting-a-2-8-trillion-parameter-model-without-loading-it">Counting a 2.8-trillion-parameter model without loading it</h2>
+<p>The method is to build the model and then not use it. PyTorch's <code>meta</code> device allocates parameters with shapes, dtypes and names, but with no storage behind them. A tensor on <code>meta</code> knows it is <code>[163840, 512]</code>; it holds nothing. Constructing a 2.8-trillion-parameter model on <code>meta</code> therefore costs a few seconds of Python and no memory at all.<label for="sn-counting-the-parameters-1" class="sn-ref">1</label><input type="checkbox" id="sn-counting-the-parameters-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> The <strong>1.561 TB</strong> of released K3 weights, spread over <strong>96 safetensors shards</strong>, are never touched by the counter. Only <code>config.json</code> is read, and only its <code>text_config</code> block. The counter would run identically if the weights had never been downloaded.</span></p>
+<p>What we instantiate is not a re-implementation. It is Moonshot's own released <code>modeling_kimi_linear.py</code>, pulled off the weights volume, driven by <code>KimiLinearConfig</code>. That choice matters for the same reason a control matters: a counter built from our own reading of the architecture would test our reading, not the model. Counting the released module tree tests the model.</p>
+<pre class="code" data-lang="python"><code>with torch.device("meta"):
+    model = KimiLinearForCausalLM(cfg)
+
+total = expert = 0
+for name, p in model.named_parameters():
+    total += p.numel()
+    if ".experts." in name:        # routed experts only; shared_experts must not match
+        expert += p.numel()
+
+active = total - expert + expert * top_k / n_experts</code></pre>
+<p>The comment on the third-to-last line is load-bearing. The released code names the routed expert pool <code>mlp.experts.*</code> and the always-on experts <code>mlp.shared_experts.*</code>, and a substring test for <code>experts</code> matches both. Counting the two shared experts as sparse would have moved r1's active parameters down and its sparsity up, in the direction that flatters the model.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/counting-the-parameters-1.png" alt="The counter. The released modeling code is instantiated on the meta device, so shapes exist and storage does not." loading="lazy"  data-fig="counting-the-parameters-1.png"><span class="fig-ph">figure rendering &middot; The counter. The released modeling code is instantiated on the meta de</span></div><figcaption>The counter. The released modeling code is instantiated on the meta device, so shapes exist and storage does not.</figcaption></figure>
+<p>The counter takes a config path and prints one row per model: total, active, sparsity, embedding share of active, and the always-on breakdown. It runs on CPU in about a minute, which is cheap enough that we re-ran it after every edit to the ladder configuration rather than only when we suspected something.<label for="sn-counting-the-parameters-2" class="sn-ref">2</label><input type="checkbox" id="sn-counting-the-parameters-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> <code>transformers</code> is pinned to <strong>4.57.6</strong> here as everywhere else in the project. <code>&gt;=4.56</code> resolves to the 5.x line, which removed <code>transformers.utils.generic.OutputRecorder</code>, an import the released Kimi modeling code makes at module scope. The counter fails on that import, before a single parameter has been counted.</span></p>
+<h2 id="the-control">The control</h2>
+<p>The counter's first job is not to count our model. It is to count K3.</p>
+<p>Moonshot published two figures for the released model: <strong>2.8 trillion total parameters and 104 billion active per token</strong>. Those are the only numbers in this project we can check our tooling against, because they are the only ones somebody else measured independently. Running the counter on K3's own <code>config.json</code> gives:</p>
+<div class="tbl-wrap"><table><thead><tr><th></th><th>measured</th><th>published</th><th>error</th></tr></thead><tbody><tr><td>total</td><td><strong>2,779.5B</strong></td><td>2,800B</td><td>-0.7%</td></tr><tr><td>active</td><td><strong>105.4B</strong></td><td>104B</td><td>+1.3%</td></tr><tr><td>sparsity</td><td><strong>26.4x</strong></td><td>26.9x</td><td>-1.9%</td></tr><tr><td>embedding share of active</td><td><strong>1.1%</strong></td><td>1.1%</td><td>exact</td></tr></tbody></table></div>
+<p>Every row agrees to within 1.3%, and the residual is consistent with the published figures being rounded to two significant digits rather than with an error in the counter.<label for="sn-counting-the-parameters-3" class="sn-ref">3</label><input type="checkbox" id="sn-counting-the-parameters-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> 2.8T and 104B are the numbers in Moonshot's model card. A total of 2,779.5B rounds to 2.8T without difficulty, however 105.4B rounds to 105B rather than 104B, so the active row carries a real 1.4B of disagreement. We did not chase it, and it is stated here rather than smoothed over.</span></p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/counting-the-parameters-2.png" alt="The control. The counter is run on the released model first, against figures we did not produce." loading="lazy"  data-fig="counting-the-parameters-2.png"><span class="fig-ph">figure rendering &middot; The control. The counter is run on the released model first, against f</span></div><figcaption>The control. The counter is run on the released model first, against figures we did not produce.</figcaption></figure>
+<p>This agreement is the licence for the rest of the chapter. A counter validated only against the assumptions that built it is not evidence of anything; it will reproduce whatever formula was typed into it. A counter that reproduces a 2.8-trillion-parameter model it has never seen the weights of, to within 1.3%, is measuring the module tree.</p>
+<h2 id="what-active-means-when-the-model-is-sparse">What "active" means when the model is sparse</h2>
+<p>For a dense model, total and active parameters are the same number. For a mixture of experts they are not, and the gap is the reason the architecture exists at all.</p>
+<p>Each token entering an MoE layer is routed to <code>top_k</code> of the <code>n_experts</code> in the pool. The other experts hold parameters that sit in memory and contribute nothing to that token's forward pass. So the active count is everything outside the routed pool, in full, plus the fraction <code>top_k / n_experts</code> of what is inside it. In r1, <strong>6 of 256</strong> experts fire, so 2.3% of the routed pool is active per token. K3 itself routes <strong>top-16 of 896</strong>, with two shared experts always on, which is the same shape at a different scale.</p>
+<p>The part that is counted in full is what we came to call the <strong>always-on floor</strong>: the embedding, the KDA and MLA projections, the shared experts, the latent down- and up-projections, the dense layer-0 MLP, the router, and every norm. Nothing in that list can be skipped. It is a floor in the strict sense, because even routing a single infinitely small expert per token cannot get below it.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/counting-the-parameters-3.png" alt="The two quantities. Total counts what is stored; active counts what a single token touches." loading="lazy"  data-fig="counting-the-parameters-3.png"><span class="fig-ph">figure rendering &middot; The two quantities. Total counts what is stored; active counts what a </span></div><figcaption>The two quantities. Total counts what is stored; active counts what a single token touches.</figcaption></figure>
+<p>The separation in that last line is worth stating, because the counter is what established it. Routed active parameters are per-expert size times <code>top_k</code> times layers, which does not depend on how many experts sit in the pool, while total parameters scale linearly with the pool. Measured at fixed expert size and <code>top_k</code> across <strong>256, 384 and 512 experts</strong>, the routed share of active parameters moved from <strong>14.6% to 14.4%</strong>. Expert count sets sparsity almost for free; it does not change what a token does. That result is what let the ladder run 256 experts against the flagship's 512 without claiming the two behave differently per token, and the chapter on the mixture of experts uses it directly.</p>
+<h2 id="what-the-counter-says-about-r1">What the counter says about r1</h2>
+<p>Run on r1's configuration from <code>train/ladder.py</code>, the counter returns <strong>1.02B total, 145M active, 61M non-embedding active</strong>. The ratio of total to active is a little over 7, against K3's measured 26.4.</p>
+<p>The gap between 7x and 26.4x is not a design failure; it is a consequence of scale meeting a fixed vocabulary. K3's embedding is 1.1% of its active parameters. At hidden 512, K3's 163,840-token vocabulary costs 163,840 x 512 = <strong>83.9M parameters</strong>, which is <strong>58% of r1's active count</strong>.<label for="sn-counting-the-parameters-4" class="sn-ref">4</label><input type="checkbox" id="sn-counting-the-parameters-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> The embedding is tied to the output projection in r1, so those 83.9M parameters are counted once and used twice. K3 sets <code>tie_word_embeddings: false</code>; untying at these widths would have added another 83.9M to a model whose entire active budget is 145M. This is one of the two deliberate deviations from K3 in the ladder, the other being 256 experts on the rungs against the flagship's 512.</span> More than half of every token's compute goes into looking up a row of the embedding matrix and projecting back onto it, and none of it is architecture we are testing.</p>
+<p>This is why the rungs of the ladder are sized on non-embedding active parameters rather than active parameters, and why the plan's original request for a "40M active" rung was not answerable: the embedding alone is twice that. Kaplan et al. and Chinchilla both exclude embeddings from their parameter counts for the same reason. The chapter on scaling down works through how r1's shape was chosen once that constraint was made explicit.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/counting-the-parameters-4.png" alt="Where r1's parameters sit. The vocabulary is fixed by the tokenizer, so at hidden 512 it dominates." loading="lazy"  data-fig="counting-the-parameters-4.png"><span class="fig-ph">figure rendering &middot; Where r1's parameters sit. The vocabulary is fixed by the tokenizer, s</span></div><figcaption>Where r1's parameters sit. The vocabulary is fixed by the tokenizer, so at hidden 512 it dominates.</figcaption></figure>
+<p>The same counter, run across every rung, is what produced the ladder table the rest of the book quotes. Note that all four models hold the same ratios and differ only in scale.</p>
+<div class="tbl-wrap"><table><thead><tr><th>rung</th><th>hidden / layers</th><th>total</th><th>active</th><th>non-embedding active</th><th>routed share of non-emb. active</th></tr></thead><tbody><tr><td><strong>r1</strong> (ours)</td><td>512 / 12</td><td><strong>1.02B</strong></td><td><strong>145M</strong></td><td><strong>61M</strong></td><td><strong>34%</strong></td></tr><tr><td>r2</td><td>768 / 16</td><td>2.93B</td><td>307M</td><td>176M</td><td>35%</td></tr><tr><td>r3</td><td>1024 / 20</td><td>6.63B</td><td>562M</td><td>395M</td><td>37%</td></tr><tr><td>flagship</td><td>1536 / 24</td><td>35.56B</td><td>1,237M</td><td>—</td><td>41%</td></tr></tbody></table></div>
+<p>The routed share climbing from 34% to 41% as the model widens is the embedding tax receding. At r1's width the fixed vocabulary swamps everything; by the flagship it is a minor term, and a larger fraction of each token's compute is doing the sparse work the architecture exists to do. Only r1 completed a full run, so the rest of the table is the shape of the ladder rather than a set of results.</p>
+<h2 id="the-834m-floor">The 834M floor</h2>
+<p>Pointed at the flagship configuration at hidden 1536 with 24 layers, the counter produced the number that reset the project's expectations. The always-on floor came to <strong>834M parameters</strong>, broken down as KDA 340.3M, tied embedding 251.7M, shared experts 135.7M, latent projections 54.3M, dense MLP 33.0M, router 13.6M and MLA 5.3M.</p>
+<p>The design target for that model was <strong>567M active</strong>. The floor alone was 834M, about 47% above it. The two largest terms make the reason plain. KDA, spread over 18 of the 24 layers, is the single biggest item at 340.3M, and the tied embedding at hidden 1536 is 251.7M on its own. Neither is optional, and neither shrinks by touching the mixture of experts.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/counting-the-parameters-5.png" alt="The always-on floor, measured on the flagship configuration. Every routed expert is additional." loading="lazy"  data-fig="counting-the-parameters-5.png"><span class="fig-ph">figure rendering &middot; The always-on floor, measured on the flagship configuration. Every rou</span></div><figcaption>The always-on floor, measured on the flagship configuration. Every routed expert is additional.</figcaption></figure>
+<p>A target below the floor is a different kind of error from a target that is merely hard to hit. There is no sweep that finds it, no learning rate that rescues it, and no amount of profiling that reveals it, because the model as specified cannot exist. The flagship that was eventually launched carries <strong>1,237M active parameters</strong>, and it was reshaped to that figure — expert count, expert width and KDA head count all moved — only after the floor had been measured. That redesign belongs to the chapter on scaling down. It is mentioned here because the same one-minute command produced the constraint, unasked, alongside the totals.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/counting-the-parameters-6.png" alt="What one command changed. The target was set on paper and the floor was measured from the module tree." loading="lazy"  data-fig="counting-the-parameters-6.png"><span class="fig-ph">figure rendering &middot; What one command changed. The target was set on paper and the floor wa</span></div><figcaption>What one command changed. The target was set on paper and the floor was measured from the module tree.</figcaption></figure>
+<h2 id="the-transferable-part">The transferable part</h2>
+<p>Two habits come out of this, and neither is specific to mixtures of experts.</p>
+<p><strong>Build the control before you build the measurement.</strong> The counter's value does not come from its arithmetic, which is a loop over <code>named_parameters()</code> and one division. It comes from being run first on a model whose answer was published by somebody else. That step took no extra engineering, because K3's config was already on the volume and the counter already accepted a config, and it converted a script that agreed with itself into evidence. Where a published reference exists, reproducing it is the cheapest credibility available.</p>
+<p><strong>A quantity nobody can independently check is where errors sit undisturbed.</strong> Nothing in the project would have failed loudly because of a wrong parameter count. The model would have trained, the loss would have fallen, and every downstream figure would have been quietly mis-scaled. Model FLOPs utilisation is defined as <code>6 x active_parameters x tokens_per_second / peak_FLOPs</code>, so an error in the active count propagates one-for-one into every MFU number in this book. The sustained <strong>2.4-2.5% MFU at 27,600-28,900 tok/s</strong> we report for r1's run rests on 145M being the right numerator, as does the 5.9% measured for r1 in the benchmark harness. The Chinchilla-optimal token budget would have been computed against the wrong model as well. The chapter on MFU depends on the 145M figure; this chapter is why we believe it.</p>
+<p>The counter has been re-run against <code>train/ladder.py</code> after every change to the ladder configuration since. It costs a minute. The failure it guards against is the kind that never announces itself.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./07-the-moe-that-actually-routes.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 07</span>
+              <span class="vb-nav-title">The mixture of experts that actually routes</span>
+            </a>
+            <a href="./09-assembling-the-corpus.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 09 →</span>
+              <span class="vb-nav-title">Assembling the corpus</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

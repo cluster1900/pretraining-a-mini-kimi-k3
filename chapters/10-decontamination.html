@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Decontamination, and the report that makes the numbers defensible · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="2,398,082 unique 13-grams over eight eval sets, 107,291,411 documents scanned, 138,064 removed, and why the maths corpora dropping ten times more than the web is the result that makes the filter believable.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 10 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 02 · The Data</div>
+      <h1 class="vb-chapter-title">Decontamination, and the report that makes the numbers defensible</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 10 of 30</span>
+        <span class="vb-pill">⏱ 9 min read</span>
+        <span class="vb-pill">📊 6 figures</span>
+        <span class="vb-pill cost">13-gram</span>
+      </div>
+
+      <p class="vb-chapter-blurb">2,398,082 unique 13-grams over eight eval sets, 107,291,411 documents scanned, 138,064 removed, and why the maths corpora dropping ten times more than the web is the result that makes the filter believable.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>Our model finishes at <strong>33.4%</strong> on HellaSwag, against a chance level of 25%. That number is a measurement of something only if the HellaSwag validation set was absent from the 104.80 billion tokens the model read. If any meaningful fraction of those questions and their endings were sitting in the crawl, the number measures recall of text the model has already seen, and it measures it in a way that no amount of careful evaluation methodology can detect afterwards. The evaluation harness cannot tell the difference between a model that has learned to complete sentences and a model that has memorised these particular sentences. Only the corpus can.</p>
+<p>So the corpus was filtered before a single token was written. <strong>107,291,411 documents were scanned and 138,064 were removed, a rate of 0.1287%.</strong> This chapter is about the machinery that produced those two numbers, and about the one result in the report that makes us believe the filter was doing what we asked rather than firing at random.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/decontamination-1.png" alt="The same score, from two corpora. Nothing downstream of training can separate these two cases, which is why the separati" loading="lazy"  data-fig="decontamination-1.png"><span class="fig-ph">figure rendering &middot; The same score, from two corpora. Nothing downstream of training can s</span></div><figcaption>The same score, from two corpora. Nothing downstream of training can separate these two cases, which is why the separation has to happen before training.</figcaption></figure>
+<h2 id="four-decisions-that-define-the-filter">Four decisions that define the filter</h2>
+<p>Before any code, four choices had to be made, and each one has a defensible alternative that we rejected for a stated reason.</p>
+<p><strong>The unit is the document, and a matching document is dropped whole.</strong> The alternative is to excise the matching span and keep the rest of the page. That is tempting because it preserves tokens, and it is wrong for a simple reason: a web page that contains thirteen consecutive words of a GSM8K problem is very unlikely to contain only those thirteen words of it. It is a page about GSM8K, or a scraped copy of the benchmark, or a tutorial that walks through several of its problems. Truncation removes the evidence of contamination and keeps the contamination. Dropping the document whole costs us a page and removes the question entirely.</p>
+<p><strong>The filter runs on raw text, before tokenization.</strong> n-grams here are defined over words, not over BPE pieces, so running the filter after tokenization would mean either decoding every document back to text or comparing sequences of subword ids. The second option is worse than it sounds: the same sentence tokenizes differently depending on the whitespace and capitalisation around it, so a BPE-level filter is sensitive to exactly the reformattings a scraped benchmark goes through. Running before tokenization also means a dropped document costs nothing to tokenize, which matters when the pass is CPU-bound and the whole thing was budgeted at about <strong>$17 of CPU</strong>.</p>
+<p><strong>n-grams are defined over normalised words.</strong> The normalisation is a byte translation table: <code>A-Z</code> lowercased, <code>a-z</code> and <code>0-9</code> kept, and every other byte, including all non-ASCII, replaced by a space, with runs of spaces collapsed to one.<label for="sn-decontamination-1" class="sn-ref">1</label><input type="checkbox" id="sn-decontamination-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> Because every byte at or above 128 becomes a space, CJK text contributes no n-grams at all. That is a real coverage hole and an acceptable one here, since all eight benchmarks in the eval suite are English or Python.</span> A copy of a benchmark that has been through a content management system, a PDF extractor and a blog theme differs from the original in case, punctuation and whitespace, and in almost nothing else. Normalising those three away is what makes the filter match the copies rather than only the original.</p>
+<p><strong>The window is thirteen words.</strong> Long enough that ordinary English does not reproduce a window by coincidence, short enough that a single reformatted question still contains several matching windows. It is also the reason the filter has a coverage limit rather than being total: a benchmark row shorter than thirteen words produces no n-gram at all and cannot be filtered against. The next chapter reports the coverage figure for each of the eight sets.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/decontamination-2.png" alt="The path a single document takes. Membership is a binary search into a sorted array of hashes, so the filter costs one p" loading="lazy"  data-fig="decontamination-2.png"><span class="fig-ph">figure rendering &middot; The path a single document takes. Membership is a binary search into a</span></div><figcaption>The path a single document takes. Membership is a binary search into a sorted array of hashes, so the filter costs one pass over the text and no per-document allocation beyond the buffer.</figcaption></figure>
+<h2 id="the-index">The index</h2>
+<p>The eval suite is eight benchmarks: MMLU, ARC-Challenge, HellaSwag, GSM8K, HumanEval, PIQA, WinoGrande and TriviaQA. For each one, the split that gets indexed is the split that gets reported on. Where the true test split is unlabelled, the validation split is what the field actually scores against, so the validation split is what has to be removed.<label for="sn-decontamination-2" class="sn-ref">2</label><input type="checkbox" id="sn-decontamination-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> This applies to HellaSwag, PIQA and WinoGrande. Indexing an unlabelled test split for these would produce a report that looks complete and protects nothing, because the numbers everyone quotes come from validation.</span></p>
+<p>What counts as "the benchmark text" is a judgement call, and it sets how aggressive the filter is. Questions and contexts always go in, because that is the part a contaminated page would contain. Answer options always go in as well, since HellaSwag and PIQA are essentially nothing but their options and a page quoting the endings would otherwise survive. Gold answers and worked rationales go in for GSM8K, because the worked solution is the leak. TriviaQA's answer aliases are excluded.<label for="sn-decontamination-3" class="sn-ref">3</label><input type="checkbox" id="sn-decontamination-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> The aliases are single entities such as a city name. A thirteen-word window over them either fails to form at all or matches ordinary prose that has nothing to do with the benchmark, so indexing them buys no protection and costs real documents.</span></p>
+<p>Extracted and hashed, the eight sets produce <strong>2,398,082 unique 13-grams</strong>, stored as a sorted <code>uint64</code> array with a per-hash benchmark id for attribution. On disk that is <strong>24 MB</strong>, which is small enough to load on every ingest worker and hold in RAM for the whole pass. That is why membership is a <code>searchsorted</code> rather than a Bloom filter: at this size there is no reason to accept a false-positive budget at all.</p>
+<h2 id="the-check-that-the-index-is-not-empty">The check that the index is not empty</h2>
+<p>The failure mode that worries us most is not a filter that misses a contaminated document. It is a filter that silently indexes nothing.</p>
+<p>Benchmark repositories rename columns. If <code>hellaswag</code> renames <code>endings</code>, the extractor still runs, still produces one row per example, and produces rows of empty strings. The index builds. The report prints. The ingest passes. Every downstream artefact looks exactly as it looks when the filter is working, and the corpus is undefended.</p>
+<p>Two guards address this. The first is a column check that compares the columns the registry expects against the columns the loaded split actually has, and raises on any difference. The second is the one that would catch a subtler version: after the index is built, it is asked to detect the very rows it was built from.</p>
+<pre class="code" data-lang="python"><code># The index must detect the very rows it was built from. This has caught a
+# column rename before, where extraction produced rows of empty strings.
+checked = failed = 0
+for name, texts in per_benchmark.items():
+    for t in texts[:200]:
+        if text_ngram_hashes(t).size == 0:
+            continue
+        checked += 1
+        hit, which = idx.check(t)
+        if not hit or name not in which:
+            failed += 1</code></pre>
+<p>Rows too short to produce a 13-gram are skipped rather than counted as failures, since a row with no n-grams cannot be detected by an n-gram index and calling that a failure would only train us to ignore the check. Everything else must come back with a hit attributed to its own benchmark. <strong>1,414 rows checked, 1,414 detected, zero missed.</strong></p>
+<p>That result proves nothing about the corpus. It proves that the extraction, the hashing, the sort, the deduplication and the lookup compose into something that identifies benchmark text as benchmark text, which is the necessary condition for the corpus numbers to mean anything at all. A self-check that passes trivially is worth writing anyway, because the day it fails is the day it saves an entire evaluation.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/decontamination-3.png" alt="The index build. The loop on the right is the guard against the failure that leaves every artefact looking correct." loading="lazy"  data-fig="decontamination-3.png"><span class="fig-ph">figure rendering &middot; The index build. The loop on the right is the guard against the failur</span></div><figcaption>The index build. The loop on the right is the guard against the failure that leaves every artefact looking correct.</figcaption></figure>
+<h2 id="the-pass">The pass</h2>
+<p>With the index on the volume, the full ingest ran across six sources. Every document was normalised, hashed, looked up, and either dropped or handed to the tokenizer.</p>
+<div class="tbl-wrap"><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td>documents scanned</td><td><strong>107,291,411</strong></td></tr><tr><td>documents removed</td><td><strong>138,064</strong></td></tr><tr><td>removal rate</td><td><strong>0.1287%</strong></td></tr><tr><td>corpus after filtering</td><td>104.80B tokens in 1,063 shards</td></tr><tr><td>cost of the full pass</td><td>~$17 of CPU</td></tr></tbody></table></div>
+<p>A rate of roughly one document in eight hundred is the sort of number that invites two opposite objections. One is that it is too small to matter, and the other is that it is too small to be real. Neither survives contact with what the filter is looking for. Benchmark test sets are a few thousand rows each; eight of them together are a small number of documents relative to a hundred million, and a filter that removed several percent of a web crawl on the grounds of benchmark overlap would be reporting a broken hash function rather than a contaminated corpus.</p>
+<p>What makes the rate believable is not its size. It is its shape across sources.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/decontamination-4.png" alt="The complete Stage 1 pass in one shape. The filter sits above the tokenizer, not beside it." loading="lazy"  data-fig="decontamination-4.png"><span class="fig-ph">figure rendering &middot; The complete Stage 1 pass in one shape. The filter sits above the toke</span></div><figcaption>The complete Stage 1 pass in one shape. The filter sits above the tokenizer, not beside it.</figcaption></figure>
+<h2 id="the-per-source-table-and-the-argument-it-supports">The per-source table, and the argument it supports</h2>
+<div class="tbl-wrap"><table><thead><tr><th>source</th><th>documents scanned</th><th>removed</th><th>rate</th></tr></thead><tbody><tr><td>fineweb-edu</td><td>62,245,000</td><td>53,266</td><td>0.0856%</td></tr><tr><td>web-diverse (FineWeb)</td><td>20,034,526</td><td>5,604</td><td>0.0280%</td></tr><tr><td>code-python (StarCoder)</td><td>12,866,649</td><td>28,968</td><td>0.2251%</td></tr><tr><td>finemath</td><td>4,605,913</td><td>33,342</td><td><strong>0.7239%</strong></td></tr><tr><td>open-web-math</td><td>2,271,277</td><td>15,325</td><td><strong>0.6747%</strong></td></tr><tr><td>cosmopedia</td><td>5,268,046</td><td>1,559</td><td>0.0296%</td></tr></tbody></table></div>
+<p>The two maths corpora are the result worth reading. <strong>finemath dropped 0.7239% of its documents and open-web-math dropped 0.6747%, against fineweb-edu's 0.0856%.</strong> That is roughly eight and a half times the rate of the web spine, and more than twenty times the rate of plain FineWeb.</p>
+<p>That is the shape the eval suite predicts. Two of the eight indexed benchmarks are mathematics: GSM8K in its entirety, and the mathematics subjects within MMLU.<label for="sn-decontamination-4" class="sn-ref">4</label><input type="checkbox" id="sn-decontamination-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> GSM8K is not one of the benchmarks r1 was evaluated on; it is a post-training benchmark and was deliberately not run. It is indexed anyway, because the corpus is shared across the whole ladder and a corpus is decontaminated once, for every evaluation anyone might later want to run on anything trained from it.</span> Grade-school word problems and multiple-choice maths questions circulate on maths sites. They are quoted in forum threads, reproduced in worked-solution blog posts, packaged into worksheets, and scraped back into web crawls. A corpus curated specifically for mathematical content is precisely where copies of a mathematics benchmark should concentrate, and a filter built to find them should fire there hardest.</p>
+<p>The inverse statement is the one that carries the weight. <strong>If the removal rate had been flat across all six sources, the filter would have been suspect.</strong> A uniform rate would mean the filter was responding to something the six corpora share, which is ordinary English, rather than to the specific text of eight benchmarks. Contamination is not uniformly distributed, because benchmarks are not uniformly distributed; a measurement of contamination that comes out uniform is measuring its own hash collisions. We did not decide in advance what per-source rates would count as convincing, which weakens this as evidence. What we can say is that the ordering the eval suite implies before the pass — maths corpora highest, general web lowest — is the ordering that came back.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/decontamination-5.png" alt="Removal rate per source. The spread is the evidence; a flat bar chart here would have meant the filter was matching ordi" loading="lazy"  data-fig="decontamination-5.png"><span class="fig-ph">figure rendering &middot; Removal rate per source. The spread is the evidence; a flat bar chart </span></div><figcaption>Removal rate per source. The spread is the evidence; a flat bar chart here would have meant the filter was matching ordinary English.</figcaption></figure>
+<p>The third-highest rate belongs to code-python at 0.2251%, and it is not contamination. It is an artefact of what normalisation does to punctuation-heavy text, and it is the subject of the next chapter, which is about a filter that fired hard and found nothing.</p>
+<h2 id="why-the-ingest-refuses-to-run">Why the ingest refuses to run</h2>
+<p>There is one line in the ingest worker that matters more than its length suggests.</p>
+<pre class="code" data-lang="python"><code>if not Path(INDEX_PATH).exists():
+    raise RuntimeError("no decontamination index — run build_index first")
+idx = NgramIndex.load(INDEX_PATH)</code></pre>
+<p>The ingest will not start without the index on the volume. Not a warning, not a default to an empty index, not a flag to proceed anyway.</p>
+<p>The reasoning is about which failures are recoverable. Nearly every mistake in Stage 1 announces itself: a wrong parquet prefix ingests the wrong dataset and the token counts come out impossible, a mangled shard name makes the loader raise, a tokenizer regression fails the round-trip gate. Those cost time and are found. An ingest that runs with no index is different. It produces shard files of exactly the right format, in exactly the right count, with a plausible token histogram, and a decontamination report showing zero documents removed, which is indistinguishable from a clean corpus if nobody thinks to ask why the number is zero. Every artefact downstream of it looks correct. The model trains normally. The benchmark numbers come out, and they are not measurements.</p>
+<p><strong>It is the one Stage 1 failure mode that cannot be detected after the fact.</strong> The only place to catch it is before the pass starts, which is where the check lives.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/decontamination-6.png" alt="The pipeline, and the one gate that is a hard stop rather than a warning." loading="lazy"  data-fig="decontamination-6.png"><span class="fig-ph">figure rendering &middot; The pipeline, and the one gate that is a hard stop rather than a warni</span></div><figcaption>The pipeline, and the one gate that is a hard stop rather than a warning.</figcaption></figure>
+<h2 id="what-the-report-is-for">What the report is for</h2>
+<p>The deliverable of Stage 1 is not only a tokenized corpus. It is the corpus together with a removal report that a reader can disagree with.</p>
+<p>The report carries per-benchmark match counts, per-source removal rates, and a sample of the documents that were removed, so that "the decontamination report was reviewed" describes an activity rather than a checkbox. The sample is the part that repaid the effort. Reading what a filter actually removed is how we found that one of the six sources was firing for a reason that had nothing to do with contamination, which is a finding we would have missed entirely from the rates alone.</p>
+<p>That is the next chapter. <strong>HumanEval matched 88.78 times per indexed n-gram, against 0.02 for HellaSwag</strong>, and every removed document we read was ordinary Python.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./09-assembling-the-corpus.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 09</span>
+              <span class="vb-nav-title">Assembling the corpus</span>
+            </a>
+            <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 11 →</span>
+              <span class="vb-nav-title">When a filter fires on nothing</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

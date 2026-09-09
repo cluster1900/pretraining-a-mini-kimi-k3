@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reading K3&#x27;s config, line by line · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="93 layers, hidden 7,168, 896 experts with 16 active, 69 KDA layers against 24 MLA, situ, noaux_tc — the released configuration turned into a mental model of where every FLOP goes.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 04 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 01 · The Model</div>
+      <h1 class="vb-chapter-title">Reading K3&#x27;s config, line by line</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 4 of 30</span>
+        <span class="vb-pill">⏱ 11 min read</span>
+        <span class="vb-pill">📊 5 figures</span>
+        <span class="vb-pill cost">2.8T</span>
+      </div>
+
+      <p class="vb-chapter-blurb">93 layers, hidden 7,168, 896 experts with 16 active, 69 KDA layers against 24 MLA, situ, noaux_tc — the released configuration turned into a mental model of where every FLOP goes.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>Kimi K3 ships as 96 safetensors shards totalling 1.561 terabytes. The file that tells you what is inside them is a few dozen lines of JSON, and it is the most useful document in the release. Every decision in this book about what to keep, what to shrink and what to leave exactly as it is came from reading that file and working out what each field costs.</p>
+<p>This chapter reads it field by field. The goal is not a description of the architecture, which the companion book builds module by module in runnable code, but a mental model of where a token's compute goes, precise enough that when we start removing zeros from these numbers we know which ones can move and which cannot.</p>
+<p>We read the configuration by instantiating Moonshot's own released <code>modeling_kimi_linear.py</code> on PyTorch's <code>meta</code> device, where parameters have shapes but no storage, so a 2.8-trillion-parameter model costs nothing to count.<label for="sn-reading-k3s-config-1" class="sn-ref">1</label><input type="checkbox" id="sn-reading-k3s-config-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> <code>transformers</code> has to be pinned to <strong>4.57.6</strong> for this to work at all. A <code>&gt;=4.56</code> constraint resolves to the 5.x line, which removed <code>transformers.utils.generic.OutputRecorder</code>, an import the released Kimi modeling code makes at module scope. The failure happens before a single parameter is counted, and the traceback points at <code>transformers</code> rather than at Kimi.</span> Every number below either appears in that configuration or is arithmetic on fields that do.</p>
+<h2 id="the-skeleton">The skeleton</h2>
+<p>Six fields fix the overall shape of the model.</p>
+<div class="tbl-wrap"><table><thead><tr><th>field</th><th>value</th></tr></thead><tbody><tr><td><code>hidden_size</code></td><td>7,168</td></tr><tr><td><code>num_hidden_layers</code></td><td>93</td></tr><tr><td><code>num_attention_heads</code></td><td>96</td></tr><tr><td><code>head_dim</code></td><td>128</td></tr><tr><td><code>vocab_size</code></td><td>163,840</td></tr><tr><td><code>max_position_embeddings</code></td><td>1,048,576</td></tr></tbody></table></div>
+<p>Three are worth pausing on.</p>
+<p><strong>96 heads at head_dim 128 is 12,288 channels of attention against a residual stream of 7,168.</strong> Attention projects up by a factor of 1.71 rather than partitioning the hidden size the way a textbook multi-head layer does. The head dimension is a fixed quantity here rather than a derived one, which is why our replica keeps <code>head_dim</code> at 128 while shrinking <code>hidden_size</code> by a factor of fourteen.</p>
+<p><strong>The vocabulary is 163,840 tokens, and at hidden 7,168 that embedding table is 163,840 × 7,168 = 1.174 billion parameters.</strong> Against 104 billion active parameters per token, one copy of it is 1.13% of the model's active parameters. Our parameter counter measures <strong>1.1%</strong>, which agrees. Hold that number; it is the subject of the last section of this chapter and most of the next one.</p>
+<p><strong>The context is 1,048,576 tokens</strong>, which is 2^20. Almost everything unusual in the attention stack follows from that field, because at a million tokens the key-value cache, not the arithmetic, decides whether the model can run.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/reading-k3s-config-1.png" alt="The six fields that fix K3's shape, and the one ratio that is not what a textbook transformer would produce." loading="lazy"  data-fig="reading-k3s-config-1.png"><span class="fig-ph">figure rendering &middot; The six fields that fix K3's shape, and the one ratio that is not what</span></div><figcaption>The six fields that fix K3's shape, and the one ratio that is not what a textbook transformer would produce.</figcaption></figure>
+<h2 id="the-attention-schedule-and-why-93">The attention schedule, and why 93</h2>
+<p>The single most informative line in the file is the list of full-attention layers: <code>[4, 8, 12, ... 88, 92, 93]</code>. Twenty-four entries. The other 69 layers are Kimi Delta Attention, a linear-attention variant that carries a fixed-size recurrent state rather than a growing cache.</p>
+<p>Count the schedule carefully and something falls out. Every fourth layer from 4 to 92 gives 23 layers. The twenty-fourth entry is 93, the last layer in the stack, which is off that rhythm. The rule is "every fourth layer, plus the final layer regardless", and 93 is what you get when you want 23 clean four-layer blocks and then one more full-attention layer at the top.<label for="sn-reading-k3s-config-2" class="sn-ref">2</label><input type="checkbox" id="sn-reading-k3s-config-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> The config exposes this through a helper that is one-indexed: <code>is_kda_layer</code> tests whether <code>layer_idx + 1</code> is in <code>kda_layers</code>. Reading the list as zero-indexed shifts the entire schedule by one layer, which changes which layers are quadratic and produces a model that trains without complaint and is not K3. We hit this when writing the replica config and caught it by counting the resulting layer types rather than by reading more carefully.</span></p>
+<p>The compute consequence is direct. Full attention costs work proportional to the square of the sequence length; KDA layers cost work proportional to the sequence length, because their state does not grow. At a context of 1,048,576 tokens, <strong>24 of 93 layers carry the quadratic term instead of all 93</strong>. Roughly one layer in four is where long-range exact retrieval happens, and the other three quarters approximate it cheaply.</p>
+<p>The 3:1 ratio is the piece of K3 our replica preserves most exactly. r1 has 12 layers, 3 of them full attention at indices 4, 8 and 12. The rule is identical; only the count changed.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/reading-k3s-config-2.png" alt="The attention schedule. Our replica keeps the rule exactly and changes only the count: 9 KDA and 3 MLA over 12 layers." loading="lazy"  data-fig="reading-k3s-config-2.png"><span class="fig-ph">figure rendering &middot; The attention schedule. Our replica keeps the rule exactly and changes</span></div><figcaption>The attention schedule. Our replica keeps the rule exactly and changes only the count: 9 KDA and 3 MLA over 12 layers.</figcaption></figure>
+<h2 id="what-mla-s-five-numbers-buy">What MLA's five numbers buy</h2>
+<p>The full-attention layers are Multi-head Latent Attention, and the configuration describes them with five fields: <code>qk_nope_head_dim</code> 128, <code>qk_rope_head_dim</code> 64, <code>v_head_dim</code> 128, <code>kv_lora_rank</code> 512 and <code>q_lora_rank</code> 1536.</p>
+<p>The first three split each head. A query and key carry 128 channels with no positional rotation and 64 channels with it, for 192 per head; a value carries 128. That asymmetry between query width and value width forces the padding branch in the released attention implementation, and it is the reason our MLA runs on an sdpa shim registered under the <code>flash_attention_2</code> key: the model hard-forces that string, and the asymmetric-head-dim padding only runs on that branch. Numerically identical, slower, and any MFU measured this way understates what flash attention would give.</p>
+<p>The last two fields are the ones that make a million-token context tractable. Rather than caching keys and values per head, MLA caches a single compressed latent of width <code>kv_lora_rank</code> = 512 plus the shared rotary key of width 64, and reconstructs the per-head keys and values from it. The arithmetic on those two fields:</p>
+<pre class="code" data-lang=""><code>cached per token per layer, MLA:   512 + 64                    =    576 values
+cached per token per layer, naive: 96 heads x (192 + 128)      = 30,720 values</code></pre>
+<p>A factor of <strong>53</strong>. Carried across the 24 full-attention layers at the full 1,048,576-token context in bf16, the MLA cache is 576 × 24 × 1,048,576 × 2 bytes, or about <strong>29 GB</strong>; the naive arrangement would be roughly 1.5 TB, which is more than the weights. This is arithmetic on the configuration rather than something we measured — r1 trains at a 4,096-token context and never came close to either figure — but it explains why the fields have the values they do.</p>
+<p><code>q_lora_rank</code> 1536 does the same thing on the query side, compressing the residual stream to 1,536 before expanding to 96 × 192 = 18,432 query channels. It saves parameters rather than cache, since queries are not cached.</p>
+<p>r1 keeps the 128/64/128 split unchanged, because it is a ratio between head components rather than a function of model width. It does not keep 512 and 1536, which are widths.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/reading-k3s-config-3.png" alt="Multi-head Latent Attention. The cache holds a compressed latent and rebuilds the heads from it." loading="lazy"  data-fig="reading-k3s-config-3.png"><span class="fig-ph">figure rendering &middot; Multi-head Latent Attention. The cache holds a compressed latent and r</span></div><figcaption>Multi-head Latent Attention. The cache holds a compressed latent and rebuilds the heads from it.</figcaption></figure>
+<h2 id="kda-s-four-numbers">KDA's four numbers</h2>
+<p>The 69 linear-attention layers are described by four fields inside <code>linear_attn_config</code>: <code>head_dim</code> 128, <code>short_conv_kernel_size</code> 4, <code>gate_lower_bound</code> −5.0 and <code>use_full_rank_gate</code>.</p>
+<p><code>short_conv_kernel_size</code> 4 places a depthwise causal convolution of width 4 in front of the recurrence. The released parameter names make the placement explicit: each KDA layer carries <code>q_conv1d</code>, <code>k_conv1d</code> and <code>v_conv1d</code> tensors, so all three projections are convolved before the state update. A linear recurrence mixes information across time through its state and not otherwise, so a short convolution is where immediately local structure gets handled.</p>
+<p><code>use_full_rank_gate</code> means the forget gate is per channel rather than per head. Each of the 128 channels in a head decays at its own learned rate, so one head can hold some channels almost indefinitely while flushing others every token. That is the difference between a gate that is a scalar knob on a head and a gate that is a shaped filter over the state.</p>
+<p><code>gate_lower_bound</code> −5.0 floors that gate before it is exponentiated, which bounds how fast any channel can discard its state.<label for="sn-reading-k3s-config-3" class="sn-ref">3</label><input type="checkbox" id="sn-reading-k3s-config-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> We kept −5.0 unchanged and never measured what happens without it, so this chapter states what the field does and not what it is worth. The one KDA field that did cost us a run is not in the config at all: <code>KimiDeltaAttention.dt_bias</code> is allocated with <code>torch.empty</code> and the released <code>_init_weights</code> covers only <code>nn.Linear</code> and <code>nn.Embedding</code>, so the timestep bias is uninitialised memory. It fails non-deterministically. Rung r2 trained normally from it while r1 returned NaN from step 0.</span></p>
+<p>r1 keeps <code>head_dim</code> 128, the convolution width, the gate bound and the full-rank gate, and reduces the head count to 4. The mechanism itself is covered in the chapter on the attention stack.</p>
+<h2 id="attention-residuals-eight-blocks-over-93-layers">Attention residuals: eight blocks over 93 layers</h2>
+<p><code>attn_res_block_size</code> is 12, and 93 divided by 12 is 7.75, so the stack carries about <strong>8 blocks</strong>. This is the least familiar part of K3, and the released code describes it best:</p>
+<pre class="code" data-lang="python"><code>def _apply_attn_res(prefix_sum, block_residual, proj, norm):
+    # prefix_sum:     (num_tokens, hidden_size)
+    # block_residual: (num_tokens, num_blocks, hidden_size)
+    v = torch.cat((block_residual, prefix_sum.unsqueeze(1)), dim=1)
+    v_float = v.float()
+    variance = v_float.pow(2).mean(-1, keepdim=True)
+    k = v_float * torch.rsqrt(variance + norm.variance_epsilon)
+    score_weight = norm.weight.float() * proj.weight.squeeze(0).float()
+    scores = (k * score_weight).sum(-1)
+    probs = scores.softmax(-1).unsqueeze(1)
+    hidden_states = torch.matmul(probs, v_float).squeeze(1)</code></pre>
+<p>At each block boundary the model takes the residuals saved at every earlier boundary, appends the current running stream, normalises them, scores each one against a learned vector, and takes a softmax-weighted average. A layer 60 deep in the stack can therefore read a mixture of the stream as it looked at layers 12, 24, 36 and 48, with weights the model chose, rather than only the stream as it looks now.</p>
+<p>The cost is memory rather than arithmetic. The softmax runs over about nine candidates and is negligible; keeping <code>num_blocks</code> copies of a 7,168-wide hidden state alive for every token, through the whole forward pass, is not. r1 sets <code>attn_res_block_size</code> to 1 over 12 layers, which gives the same 8 blocks at a twelfth of the depth.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/reading-k3s-config-4.png" alt="Attention residuals. Cheap in arithmetic, expensive in activation memory." loading="lazy"  data-fig="reading-k3s-config-4.png"><span class="fig-ph">figure rendering &middot; Attention residuals. Cheap in arithmetic, expensive in activation memo</span></div><figcaption>Attention residuals. Cheap in arithmetic, expensive in activation memory.</figcaption></figure>
+<h2 id="the-mixture-of-experts-and-where-the-parameters-actually-live">The mixture of experts, and where the parameters actually live</h2>
+<p><code>first_k_dense_replace</code> is 1, so layer 0 is an ordinary dense MLP with <code>intermediate_size</code> 33,792, which is 4.71 times the hidden size. Every layer after it is a mixture of experts.</p>
+<p>The MoE fields are <code>num_experts</code> 896, <code>num_experts_per_token</code> 16, <code>num_shared_experts</code> 2 and <code>moe_intermediate_size</code> 3072. A token entering an MoE layer is processed by the two shared experts always and by 16 of the 896 routed experts. Eighteen expert MLPs of width 3,072 per token per layer, out of 898 available.</p>
+<p>The field that changes the arithmetic is <code>routed_expert_hidden_size</code> 3584, which is exactly half of 7,168. The experts do not operate on the residual stream at its full width. The token is projected down to 3,584, run through the expert bank, and projected back up. Every matrix in every expert is therefore half as tall as it would otherwise be, which halves both the parameter count and the FLOPs of the routed path.</p>
+<p>That field is what makes the total parameter count land where it does. A gated expert MLP holds three matrices, so each expert is 3 × 3,584 × 3,072 ≈ <strong>33.0 million parameters</strong>. There are 896 of them in each of 92 MoE layers:</p>
+<pre class="code" data-lang=""><code>896 experts x 92 MoE layers x 33.0M = 2.72T parameters</code></pre>
+<p>Against a published total of 2.8 trillion. <strong>The expert bank is essentially the entire model.</strong> Everything else in K3 — 93 layers of attention, the embedding table, the dense layer 0, the routers, the attention residuals — is the remaining few percent. That is what a sparsity of 26.9× looks like from the inside, and it is the reason the chapter on scaling down spends its time on expert count and expert width rather than on layers and hidden size.</p>
+<p>Three more fields specify the router: <code>moe_router_activation_func</code> sigmoid, <code>topk_method</code> <code>noaux_tc</code>, and <code>moe_renormalize</code>. Sigmoid rather than softmax means the 896 scores are computed independently, with nothing forcing them to compete; <code>moe_renormalize</code> then rescales the 16 selected weights so they sum to one.<label for="sn-reading-k3s-config-4" class="sn-ref">4</label><input type="checkbox" id="sn-reading-k3s-config-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> The router is where the configuration and the code disagree. The released model carries <code>e_score_correction_bias</code>, the tensor the <code>noaux_tc</code> balancer writes into, and nothing ever initialises or updates it. The field names an algorithm the release does not contain.</span> <code>noaux_tc</code> is the aux-loss-free load balancer, and it is the field that cost us the most engineering, because it is the one the released training code does not implement at all. The chapter on expert collapse is entirely about that.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/reading-k3s-config-5.png" alt="An MoE layer. The latent bottleneck at half the hidden size halves the cost of every expert matrix." loading="lazy"  data-fig="reading-k3s-config-5.png"><span class="fig-ph">figure rendering &middot; An MoE layer. The latent bottleneck at half the hidden size halves the</span></div><figcaption>An MoE layer. The latent bottleneck at half the hidden size halves the cost of every expert matrix.</figcaption></figure>
+<h2 id="situ-and-why-it-shows-up-again-in-the-mfu-chapters">situ, and why it shows up again in the MFU chapters</h2>
+<p><code>hidden_act</code> is <code>situ</code>, with <code>activation_situ_beta</code> 4.0 and <code>activation_situ_linear_beta</code> 25.0. The released implementation is short:</p>
+<pre class="code" data-lang="python"><code>def forward(self, x):
+    d = x.shape[-1] // 2
+    gate = x[..., :d].to(torch.float32)
+    up   = x[..., d:].to(torch.float32)
+    situ_a = self.beta * torch.tanh(gate / self.beta) * torch.sigmoid(gate)
+    if self.linear_beta is not None:
+        up = self.linear_beta * torch.tanh(up / self.linear_beta)
+    return (situ_a * up).to(x.dtype)</code></pre>
+<p>Both halves of the gated MLP pass through a <code>tanh</code> scaled by a constant, so the gate branch saturates near ±4.0 and the linear branch near ±25.0. It is a bounded activation, and the two betas are where the bound sits.</p>
+<p>Note the two <code>.to(torch.float32)</code> calls. Every activation entering this function is upcast, and the intermediates are held in float32 at the widest point in the network. That detail is invisible when reading the architecture and expensive when running it. Two of our sixteen MFU attempts landed on it: stopping <code>situ</code> from holding float32 freed <strong>40 GB</strong> of memory for <strong>+0.1 percentage points</strong> of MFU, and fusing the whole function into a single Triton kernel gave <strong>1.38×</strong>, moving MFU from <strong>5.6% to 7.7%</strong>. Both were measured on r2, the rung above ours, on one H200. The fused kernel was not faster at equal batch size; it won entirely by freeing memory that bought a 50% larger microbatch.</p>
+<p>r1 keeps <code>situ</code> with both constants unchanged, because an activation function is a shape rather than a size and there is no defensible way to scale it.</p>
+<h2 id="the-arithmetic-at-the-bottom-of-the-file">The arithmetic at the bottom of the file</h2>
+<p>The published figures are <strong>2.8 trillion total parameters and 104 billion active per token</strong>, a sparsity of 26.9×. Before trusting any count of our own replica, we ran our parameter counter on K3's own configuration:</p>
+<div class="tbl-wrap"><table><thead><tr><th></th><th>our counter</th><th>published</th><th>error</th></tr></thead><tbody><tr><td>total</td><td>2,779.5B</td><td>2,800B</td><td>−0.7%</td></tr><tr><td>active</td><td>105.4B</td><td>104B</td><td>+1.3%</td></tr><tr><td>sparsity</td><td>26.4×</td><td>26.9×</td><td>−1.9%</td></tr><tr><td>embedding share of active</td><td>1.1%</td><td>1.1%</td><td>exact</td></tr></tbody></table></div>
+<p>Agreement within 1.3% on a model we did not design, from a configuration we did not write, is the control that licenses every parameter count in the rest of this book. A counter validated only against its own assumptions is not evidence of anything. The chapter on counting the parameters covers how it works and what it says about r1.</p>
+<p>The row that matters most is the last one. <strong>At hidden 7,168, K3's 163,840-token embedding table is 1.1% of the model's active parameters.</strong> It is a rounding error. Moonshot can afford <code>tie_word_embeddings: false</code> and carry two separate copies of it, and the decision costs them nothing worth discussing.</p>
+<p>Take that same tokenizer, unchanged, down to a hidden size of 512, and the embedding table is 83.9 million parameters against 145 million active. <strong>58%.</strong> The same field, the same vocabulary, the same tokenizer we deliberately refuse to retrain, moves from a rounding error to the majority of the model.</p>
+<p>Nothing else in this configuration behaves that way under scaling. Layers scale, hidden size scales, expert count scales, and the ratios between them can be preserved. The vocabulary is a fixed cost, and at small scale it dominates. That is the finding the next chapter is built around, and it is the reason a plan asking for a 40-million-active-parameter replica was arithmetically impossible before anyone wrote a line of training code.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./03-how-to-read-this-book.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 03</span>
+              <span class="vb-nav-title">How to read this book</span>
+            </a>
+            <a href="./05-scaling-it-down-without-lying.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 05 →</span>
+              <span class="vb-nav-title">Scaling it down without lying about it</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

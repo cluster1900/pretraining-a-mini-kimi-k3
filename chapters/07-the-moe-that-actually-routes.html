@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The mixture of experts that actually routes · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="256 experts, 6 active, 2 shared, a latent bottleneck at half the hidden size, and a sigmoid router with the aux-loss-free balancer K3 inherits from DeepSeek-V3.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 07 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 01 · The Model</div>
+      <h1 class="vb-chapter-title">The mixture of experts that actually routes</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 7 of 30</span>
+        <span class="vb-pill">⏱ 11 min read</span>
+        <span class="vb-pill">📊 6 figures</span>
+        <span class="vb-pill cost">top-6</span>
+      </div>
+
+      <p class="vb-chapter-blurb">256 experts, 6 active, 2 shared, a latent bottleneck at half the hidden size, and a sigmoid router with the aux-loss-free balancer K3 inherits from DeepSeek-V3.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>r1 holds 1.02 billion parameters and spends 145 million of them on any given token. Almost the whole of that reduction happens in one block, repeated once per layer, and this chapter follows a single token through it in the order the token meets the parts.</p>
+<p>The configuration is four numbers and two structural choices. <strong>256 experts, 6 of them selected per token, 2 more applied to every token unconditionally, and each expert 416 units wide.</strong> The structural choices are that all of this happens in a latent space of 256 units rather than the model's 512-unit hidden space, and that selection is decided by a sigmoid router with the aux-loss-free correction bias K3 inherits from DeepSeek-V3. Every one of those settings is K3's own, scaled down by the ratios held fixed across the ladder.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-moe-that-actually-routes-1.png" alt="The path a single token takes through one mixture-of-experts layer in r1. The numbering is the order of operations, and " loading="lazy"  data-fig="the-moe-that-actually-routes-1.png"><span class="fig-ph">figure rendering &middot; The path a single token takes through one mixture-of-experts layer in </span></div><figcaption>The path a single token takes through one mixture-of-experts layer in r1. The numbering is the order of operations, and the order of this chapter.</figcaption></figure>
+<h2 id="the-latent-bottleneck-comes-first">The latent bottleneck comes first</h2>
+<p>Before the router sees anything, the token is projected down. K3 calls the field <code>routed_expert_hidden_size</code>, and it sets the width the entire expert subsystem operates at. In K3 that value is 3,584 against a hidden size of 7,168. The ladder holds the same ratio, so r1 routes through <strong>256</strong> against its hidden size of 512.</p>
+<pre class="code" data-lang="python"><code>"routed_expert_hidden_size": h // 2,</code></pre>
+<p>That one line changes the cost of everything downstream. Each expert's input projection is 256 wide instead of 512, so every expert holds roughly half the parameters it would otherwise, for the same <code>moe_intermediate_size</code>. The token vectors that have to be sorted, gathered, packed into a dispatch buffer and gathered back are also half the size, which halves the bytes moved by the dispatch machinery. On a model this shape that second effect is the larger one: the profile taken on r2 shows copy and index operations at <strong>24.7%</strong> of GPU time against matrix multiplication's 11.6%, so the traffic is not a rounding error against the arithmetic. It is roughly twice the arithmetic.</p>
+<p>The cost is that the expert matmuls become narrow. A matmul 256 units wide moves a great many bytes per unit of arithmetic, which is precisely the regime the profile says the model is already stuck in.<label for="sn-the-moe-that-actually-routes-1" class="sn-ref">1</label><input type="checkbox" id="sn-the-moe-that-actually-routes-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> The block also carries an optional RMSNorm on the latent output, <code>latent_moe_use_norm</code>, enabled in our configuration and applied after recombination and before the up-projection. It never appeared as its own line in any profile we took.</span> We paid for that choice with interest later. When FP8 was attempted on r2, the expert matmuls there are 384 wide, because r2's hidden size is 768 and the latent width is half of it, and they complete in tens of microseconds. Quantising the activations requires three passes over the input before the matmul begins, and three passes cannot be made cheaper than a matmul that finishes that fast. Naive FP8 measured <strong>0.19x to 0.09x</strong> of bf16, and the properly amortised version was still 2.8x slower. The FP8 chapter is about that measurement, and the reason it went the way it did is written into the config line above.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-moe-that-actually-routes-2.png" alt="The latent bottleneck cuts the data the dispatch has to move, and makes the matmuls that remain too small for the accele" loading="lazy"  data-fig="the-moe-that-actually-routes-2.png"><span class="fig-ph">figure rendering &middot; The latent bottleneck cuts the data the dispatch has to move, and make</span></div><figcaption>The latent bottleneck cuts the data the dispatch has to move, and makes the matmuls that remain too small for the accelerations that assume large ones. Both effects were measured on r2, the rung above ours.</figcaption></figure>
+<h2 id="the-router-scores-every-expert">The router scores every expert</h2>
+<p>The router is a single bias-free linear layer from the model's hidden size to the number of experts, run in float32, followed by a sigmoid. It reads the token at full width, not at the latent width, so it is scoring the token rather than the compressed representation the experts will see.</p>
+<p>Sigmoid rather than softmax is K3's choice and we kept it. A softmax router produces scores that compete, since raising one expert's score lowers every other by construction. A sigmoid router produces 256 independent scores in <code>(0, 1)</code>, and selection is a separate operation applied afterwards.</p>
+<pre class="code" data-lang="python"><code>logits = F.linear(hidden_states.type(torch.float32),
+                  self.weight.type(torch.float32), None)
+scores = logits.sigmoid()                       # [tokens, 256]
+scores_for_choice = scores + self.e_score_correction_bias.unsqueeze(0)
+_, topk_idx = torch.topk(scores_for_choice, k=self.top_k, dim=-1, sorted=False)
+topk_weight = scores.gather(1, topk_idx)        # the UNBIASED scores</code></pre>
+<p>Three things in those five lines decide how the layer behaves.</p>
+<p>The scores are computed in float32 regardless of the model's training dtype. Routing is a discrete decision made by comparing numbers that can sit very close together, and a tie broken by bf16 rounding is a token sent to a different expert.</p>
+<p>Selection reads <code>scores_for_choice</code>, which is the score plus a per-expert scalar. That scalar is the <code>noaux_tc</code> correction bias, and it is the entire load-balancing mechanism. It is updated by rule after each optimizer step rather than by gradient, it is held out of the optimizer, and it steers which experts are chosen without ever changing how much a chosen expert contributes. It gets a chapter of its own, because twenty steps into the first real run 94.5% of experts were receiving zero tokens while the metric watching for exactly that read 0.99 out of 1.0, and the constant that fixed it is not the one in the paper it came from.</p>
+<p>The weights are gathered from <code>scores</code> rather than from <code>scores_for_choice</code>, which is to say from the original, unbiased scores. This is the property that makes the balancer free. Load is steered by selection alone, and the objective is left alone.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-moe-that-actually-routes-3.png" alt="The routing decision. The scores are independent by construction, and selection is a separate step applied to them." loading="lazy"  data-fig="the-moe-that-actually-routes-3.png"><span class="fig-ph">figure rendering &middot; The routing decision. The scores are independent by construction, and </span></div><figcaption>The routing decision. The scores are independent by construction, and selection is a separate step applied to them.</figcaption></figure>
+<h2 id="dispatch-and-the-shape-it-creates">Dispatch, and the shape it creates</h2>
+<p>Six expert indices per token is a scattered access pattern, and running 256 separate small matrix multiplies per layer is the wrong way to execute it on a GPU. The measurement that established this is in the MFU section: on r2, 256 experts across its 15 mixture-of-experts layers gave 3,840 sequential kernel launches per step, a count that does not depend on batch size at all, and step time at 2,048 tokens fell from <strong>3.999 seconds to 0.228 seconds</strong> when the loop was replaced with three batched matrix multiplies.</p>
+<p>What matters here is the shape that replacement creates. Tokens are sorted by expert and packed into a dense buffer of shape <code>[experts, capacity, width]</code>, where capacity is the token count of the busiest expert. Padding is exact rather than lossy: unused slots hold zeros whose outputs are never gathered, so no token is dropped, unlike capacity-factor schemes that discard overflow. r1 has 12 layers of which layer 0 is dense, so 11 of them build this buffer on every forward pass.<label for="sn-the-moe-that-actually-routes-2" class="sn-ref">2</label><input type="checkbox" id="sn-the-moe-that-actually-routes-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> <code>first_k_dense_replace: 1</code> makes layer 0 a conventional dense MLP at <code>intermediate_size</code> rather than a mixture-of-experts block. K3 does the same thing. The routed layers therefore see a representation that has already been through one non-routed transformation.</span></p>
+<p>The buffer is also where the model's memory goes, and the reason is the activation applied inside it.</p>
+<h2 id="situ-and-why-it-dominates-memory">situ, and why it dominates memory</h2>
+<p>K3's activation function is registered under the name <code>situ</code>. It is a gated feed-forward activation like SwiGLU, with two constants and a soft clamp:</p>
+<pre class="code" data-lang="python"><code>def forward(self, x):
+    d = x.shape[-1] // 2
+    gate = x[..., :d].to(torch.float32)
+    up = x[..., d:].to(torch.float32)
+    situ_a = self.beta * torch.tanh(gate / self.beta) * torch.sigmoid(gate)
+    if self.linear_beta is not None:
+        up = self.linear_beta * torch.tanh(up / self.linear_beta)
+    return (situ_a * up).to(x.dtype)</code></pre>
+<p>Read it left to right. <code>beta * tanh(gate / beta)</code> is the identity for small values and saturates at <code>±beta</code>, so it is a smooth clamp with a knob. Multiplying by <code>sigmoid(gate)</code> gives the swish-like shape that gated activations use. The <code>up</code> path is separately clamped at <code>±linear_beta</code>. Our constants are <strong>beta 4.0 and linear-beta 25.0</strong>, which are K3's published values, unchanged. We did not sweep them and we did not measure an alternative; the ladder's premise is that r1 differs from K3 in scale and not in kind, and an activation constant is exactly the sort of thing that quietly makes a replica into something else.</p>
+<p>The line that costs money is <code>.to(torch.float32)</code>. The released implementation upcasts both halves and materialises a chain of intermediates — the two inputs, the tanh, the sigmoid, the clamped <code>up</code>, the products — every one of them held for the backward pass. Inside the dispatch buffer those intermediates have shape <code>[experts, capacity, ffn]</code>, in float32, and they are the single largest memory consumer in the model.</p>
+<p>Two later chapters exist because of that shape. Removing the float32 hold entirely was attempt 5 of the MFU investigation and freed <strong>40 GB</strong> on r2 while moving MFU by 0.1 percentage points, which looked like a failure at the time. Fusing <code>situ</code> into one Triton kernel was attempt 8, and at equal batch size it was not faster either: 5.5% MFU against the released path's 5.6%. It won anyway, because the 40 GB it freed allowed a 50% larger microbatch, and the larger microbatch took r2 from 5.6% to <strong>7.7% MFU</strong> at 41,294 tokens per second. The kernel won by being smaller rather than quicker, and the reason a small kernel could be worth 1.38x is that the tensor it eliminated was the one setting the batch size.<label for="sn-the-moe-that-actually-routes-3" class="sn-ref">3</label><input type="checkbox" id="sn-the-moe-that-actually-routes-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> Both figures were measured on r2, the rung above r1, on a single H200. r1 fits comfortably on one card at 92.5 GB in the benchmark harness, so the memory pressure that made these attempts worth running is real for the ladder rather than for the run this book reports.</span></p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-moe-that-actually-routes-4.png" alt="The activation's float32 intermediates, replicated across the padded expert buffer. Memory caps microbatch, and microbat" loading="lazy"  data-fig="the-moe-that-actually-routes-4.png"><span class="fig-ph">figure rendering &middot; The activation's float32 intermediates, replicated across the padded e</span></div><figcaption>The activation's float32 intermediates, replicated across the padded expert buffer. Memory caps microbatch, and microbatch was the strongest lever measured on r2.</figcaption></figure>
+<h2 id="recombination-and-back-up-to-hidden-width">Recombination, and back up to hidden width</h2>
+<p>The six expert outputs are combined by a weighted sum, the weights being the unbiased sigmoid scores, renormalised to sum to one.</p>
+<pre class="code" data-lang="python"><code>y = (y.view(n_tok, k, -1).type(topk_weight.dtype)
+     * topk_weight.unsqueeze(-1)).sum(dim=1).type(hidden_states.dtype)
+
+if self.use_latent_moe:
+    if self.latent_moe_use_norm:
+        y = self.routed_expert_norm(y)
+    y = self.routed_expert_up_proj(y)
+
+y = y.view(*orig_shape)
+if self.config.num_shared_experts is not None:
+    y = y + self.shared_experts(identity)
+return y</code></pre>
+<p>The renormalisation matters more with a sigmoid router than it would with a softmax one. Sigmoid scores do not sum to anything in particular, so without renormalisation the total magnitude of the block's output would depend on how confident the router happened to be about this token, and that confidence changes over training. Dividing by the sum of the six selected scores removes that dependence.<label for="sn-the-moe-that-actually-routes-4" class="sn-ref">4</label><input type="checkbox" id="sn-the-moe-that-actually-routes-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> <code>routed_scaling_factor</code> is 1.0 in our configuration, so the multiplication by it after renormalisation is inert. It exists in K3's gate as a knob for models that want the routed path scaled relative to the shared path. Our <code>num_expert_group</code> is also 1, which makes the group-limited routing branch of the released gate — the part that restricts each token to a subset of expert groups before top-k — unreachable code for every rung on the ladder.</span></p>
+<p>Then the latent up-projection returns the result to 512 units, and the shared experts are added. Note the argument: <code>self.shared_experts(identity)</code>, where <code>identity</code> is the block's input at full hidden width. The shared experts never enter the latent space at all. They are a conventional dense MLP running at the model's hidden size, applied to every token, in parallel with the routed path.</p>
+<h2 id="the-two-experts-every-token-gets">The two experts every token gets</h2>
+<p>Two shared experts run unconditionally, and their width is the routed expert width multiplied by the shared count, so they are a single MLP twice the width of one routed expert.</p>
+<p>The argument for them is about what a routed expert should be asked to learn. Language has structure that every token needs, and if that work is left to the routed pool then all 256 experts must learn it independently, which duplicates the same parameters 256 times and leaves each expert less capacity for whatever it is uniquely good at. A shared expert holds it once.</p>
+<p>There is a second effect that matters more during training than at convergence. The shared path is always active, so gradient always flows through it. When the router collapses early in training, and it does in every run we measured, the shared experts continue to receive the full gradient signal for every token, so the block is never producing nothing useful while the balancer pulls the routed pool back. The healthy trajectory reaches somewhere between 69% and 95% dead experts in the first thirty or so steps and then recovers; our completed run read <strong>0.0% dead experts</strong> and imbalance 2.36 at step 0, and ended at step 38,140 with <strong>0.0% dead experts</strong> and load imbalance 4.0. We did not run an ablation without shared experts, so this reasoning is an argument for the design rather than a measurement of it.</p>
+<p>At flagship scale the shared experts are 135.7M parameters of the 834M always-on floor, the third-largest always-on cost in the model after KDA and the tied embedding. They are not a small addition.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-moe-that-actually-routes-5.png" alt="The routed and shared paths run in parallel and are summed. Only the routed path passes through the latent bottleneck." loading="lazy"  data-fig="the-moe-that-actually-routes-5.png"><span class="fig-ph">figure rendering &middot; The routed and shared paths run in parallel and are summed. Only the r</span></div><figcaption>The routed and shared paths run in parallel and are summed. Only the routed path passes through the latent bottleneck.</figcaption></figure>
+<h2 id="the-deviation-256-experts-not-512">The deviation: 256 experts, not 512</h2>
+<p>r1, r2 and r3 all use 256 experts. The flagship the ladder was built to price uses 512. This is a deliberate deviation and it is worth stating why it does not compromise what the ladder measures.</p>
+<p>Routed active parameters are per-expert size multiplied by top-k multiplied by layers. That product does not contain the expert count. Total parameters, however, scale linearly with the pool. So halving the pool halves total parameters, and therefore halves optimizer state and memory, while leaving the number of parameters a token actually touches essentially unchanged.</p>
+<p>We measured it rather than asserting it. Holding everything else fixed and varying the pool across 256, 384 and 512 experts moved the routed share of active parameters from <strong>14.6% to 14.4%</strong>. That is the entire effect. Expert count sets sparsity; expert size and top-k set routed share.</p>
+<p>The practical consequence is that halving the pool kept each rung on a single card. r1 and r2 both ran on one H200; r3 needed a B200, since it went out of memory on an H200 in the benchmark harness. A ladder that needs several GPUs per rung to measure single-GPU throughput is not a ladder.</p>
+<p>What the deviation does change is sparsity, the ratio of total to active parameters, and we report it rather than hiding it. The routed share of non-embedding active parameters rises monotonically along the ladder — <strong>34% at r1, 35% at r2, 37% at r3, 41% at the flagship</strong> — which is the shape a ladder needs, but it does not reach the flagship's value at the bottom rung. The gap is the embedding tax rather than the expert count: at hidden 512 the 163,840-token embedding is 58% of active parameters, and no arrangement of experts can move that.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/the-moe-that-actually-routes-6.png" alt="The measurement that licensed running the ladder at 256 experts against the flagship's 512." loading="lazy"  data-fig="the-moe-that-actually-routes-6.png"><span class="fig-ph">figure rendering &middot; The measurement that licensed running the ladder at 256 experts agains</span></div><figcaption>The measurement that licensed running the ladder at 256 experts against the flagship's 512.</figcaption></figure>
+<h2 id="what-the-block-is-summarised">What the block is, summarised</h2>
+<p>For every token, in every one of r1's eleven mixture-of-experts layers: project 512 down to 256, score all 256 experts with a sigmoid in float32, add the correction bias and take the top 6, pack the tokens into a padded <code>[256, capacity, 416]</code> buffer, apply three batched matrix multiplies with <code>situ</code> between them in float32, gather back, weight by the six unbiased renormalised scores, project 256 back up to 512, and add the output of two shared experts that never left full width.</p>
+<p>The parts that were K3's and stayed K3's are the sigmoid router, <code>noaux_tc</code>, the half-hidden latent width, the two shared experts, top-6, and both <code>situ</code> constants. The part that is ours is the pool size, and the measurement above is why that was allowed. The parts that cost us the most engineering are not the ones that look expensive: the dispatch loop and the activation's float32 intermediates account for more of this book's MFU section than the expert matmuls they surround.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./06-the-attention-stack.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 06</span>
+              <span class="vb-nav-title">The attention stack: nine KDA layers and three MLA</span>
+            </a>
+            <a href="./08-counting-the-parameters.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 08 →</span>
+              <span class="vb-nav-title">Counting the parameters, and checking the counter</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

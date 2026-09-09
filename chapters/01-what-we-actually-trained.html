@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>What we actually trained · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="A 1.02B-parameter Kimi K3 replica, 5.00 billion tokens, 38,147 steps on one H200, final loss 2.62 — the run in one pass, with the claims and their limits stated up front.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 01 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 00 · Start Here</div>
+      <h1 class="vb-chapter-title">What we actually trained</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 1 of 30</span>
+        <span class="vb-pill">⏱ 9 min read</span>
+        <span class="vb-pill">📊 6 figures</span>
+        <span class="vb-pill cost">$252</span>
+      </div>
+
+      <p class="vb-chapter-blurb">A 1.02B-parameter Kimi K3 replica, 5.00 billion tokens, 38,147 steps on one H200, final loss 2.62 — the run in one pass, with the claims and their limits stated up front.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>On 27 July 2026, Moonshot AI released Kimi K3: 2.8 trillion parameters, 104 billion of them active for any given token, shipped as 96 safetensors shards totalling 1.561 terabytes. Nine days later we finished pretraining a replica of it on one GPU for $252.35.</p>
+<p>Those two sentences need immediate qualification, and the qualification is most of what this book is about.</p>
+<p>Our model has 1.02 billion parameters, of which 145 million are active per token. It is roughly one two-thousandth of K3 by total size. It saw 5,000,003,584 tokens, which is a rounding error against the corpora frontier models are trained on. It has never been instruction-tuned, and it has only ever done one thing: predict the next token. What it does have is K3's architecture — the same attention stack in the same 3:1 ratio, the same mixture-of-experts routing with the same aux-loss-free balancer, the same activation function with the same two constants, and K3's own 163,840-token tokenizer, unmodified. When we say "a mini Kimi K3", that is the claim, and this book is the evidence for it.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/what-we-actually-trained-1.png" alt="The released model and our replica. The structure is preserved; the scale is not." loading="lazy"  data-fig="what-we-actually-trained-1.png"><span class="fig-ph">figure rendering &middot; The released model and our replica. The structure is preserved; the sc</span></div><figcaption>The released model and our replica. The structure is preserved; the scale is not.</figcaption></figure>
+<h2 id="the-run-in-one-table">The run, in one table</h2>
+<p>Everything below is read from the run's own telemetry, not from a plan.</p>
+<div class="tbl-wrap"><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td>model</td><td>1.02B total, 145M active, 61M non-embedding</td></tr><tr><td>hardware</td><td>one H200, $4.54 per hour</td></tr><tr><td>tokens per step</td><td>131,072 (4,096 sequence length × 4 × 8 accumulation)</td></tr><tr><td>steps</td><td>38,147</td></tr><tr><td>tokens</td><td>5,000,003,584</td></tr><tr><td>peak learning rate</td><td>6.00e-4</td></tr><tr><td>schedule</td><td>warmup–stable–decay, decay from step 32,430</td></tr><tr><td>loss</td><td>12.100 at step 0, 2.62 at the end</td></tr><tr><td>dead experts at the end</td><td>0.0%</td></tr><tr><td>loss spikes skipped</td><td>0</td></tr><tr><td>cost</td><td>$252.35</td></tr></tbody></table></div>
+<p>The loss figures are worth reading twice. A model that has learned nothing assigns equal probability to every token in the vocabulary, and the cross-entropy of a uniform distribution over 163,840 tokens is <code>ln(163,840) = 12.007</code>. Our step-0 loss was 12.100. That agreement is not a result; it is a check that the model was initialised correctly and that the loss function is measuring what we think it is.<label for="sn-what-we-actually-trained-1" class="sn-ref">1</label><input type="checkbox" id="sn-what-we-actually-trained-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> The small excess over 12.007 comes from the model not being exactly uniform at initialisation — the embedding and output projections are tied, so the logits carry a little structure before any gradient has been applied.</span> Every number after it is a result.</p>
+<h2 id="the-corpus-behind-those-tokens">The corpus behind those tokens</h2>
+<p>Five billion tokens were drawn from a corpus of 104.80 billion, built across six sources and decontaminated before any of it was tokenized. That decontamination is the reason the evaluation chapter is allowed to quote a benchmark score at all.</p>
+<p>A 13-gram index was built over the test splits of eight benchmarks — 2,398,082 unique n-grams — and every document in the corpus was checked against it. Any document sharing a single 13-gram with an eval set was dropped whole. Across <strong>107,291,411 documents scanned, 138,064 were removed</strong>, a rate of 0.1287%.</p>
+<p>The number that makes the filter believable is not the total but its distribution. The maths corpora dropped roughly ten times more than the web: finemath at 0.7239% and open-web-math at 0.6747%, against fineweb-edu at 0.0856%.<label for="sn-what-we-actually-trained-2" class="sn-ref">2</label><input type="checkbox" id="sn-what-we-actually-trained-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> That shape is what you should expect, because GSM8K and MMLU maths content circulates on maths sites. A filter that removed a uniform fraction of every source would have been evidence that it was matching noise rather than benchmarks, which is exactly what one benchmark in our suite turned out to do — the chapter on HumanEval is about that.</span> The mix itself is split in two, general web through the stable phase and maths, code and reasoning upweighted through the decay, and the anneal switches at the same step the learning rate begins to fall.</p>
+<p>The whole data pass cost about $17 of CPU time. It is the cheapest stage of the project and the one without which none of the rest would be worth reporting.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/what-we-actually-trained-2.png" alt="The corpus, its decontamination, and the two mixes the schedule switches between." loading="lazy"  data-fig="what-we-actually-trained-2.png"><span class="fig-ph">figure rendering &middot; The corpus, its decontamination, and the two mixes the schedule switch</span></div><figcaption>The corpus, its decontamination, and the two mixes the schedule switches between.</figcaption></figure>
+<h2 id="what-the-money-bought">What the money bought</h2>
+<p>$252.35 is roughly 55 hours of a single H200. Priced per token, that is about five cents per million training tokens, which is the sort of figure that makes the whole exercise look easy. It was not, and the reason is a number we will spend an entire section of this book on.</p>
+<p>Model FLOPs Utilization, or MFU, is the fraction of a GPU's arithmetic capability that a training run actually uses. Our run sustained <strong>2.4 to 2.5%</strong>. Well-tuned dense training reaches 40 to 55%. Put plainly, roughly 97% of the GPU we rented was doing something other than the arithmetic we were paying for.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/what-we-actually-trained-3.png" alt="Model FLOPs Utilization for our run against what well-tuned dense training reaches. The gap is the subject of six chapte" loading="lazy"  data-fig="what-we-actually-trained-3.png"><span class="fig-ph">figure rendering &middot; Model FLOPs Utilization for our run against what well-tuned dense trai</span></div><figcaption>Model FLOPs Utilization for our run against what well-tuned dense training reaches. The gap is the subject of six chapters.</figcaption></figure>
+<p>That number was not accepted quietly. It was investigated across sixteen numbered attempts, of which three worked and thirteen did not, and the thirteen are written up in this book at the same length as the three.<label for="sn-what-we-actually-trained-3" class="sn-ref">3</label><input type="checkbox" id="sn-what-we-actually-trained-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> Most of that investigation was measured on r2, the rung above this one, because r2 was the largest model that fit comfortably on a single H200 at several batch sizes. Two attempts were measured elsewhere and are labelled where they appear: a size fit that spans all three rungs, and the dispatch fallback, which was found on the flagship. Attributing a measurement to the wrong model is the easiest mistake to make in a project with four of them, and one of our own attempts failed exactly that way.</span> The investigation ended with a profile showing that only about 12% of GPU time was spent in matrix multiplication and 41.9% in elementwise operations that move data without computing much. A model in that state cannot be rescued by a bigger batch, more memory, or faster attention kernels, and we tried all three before we measured.</p>
+<p>The three that worked are worth naming here, because they set the shape of that section. Batching the expert dispatch removed 3,840 sequential kernel launches per step and gave <strong>17.5×</strong>. Fusing the <code>situ</code> activation into a single Triton kernel gave <strong>1.38×</strong>, and did so by freeing 40 GB rather than by running faster. Deleting a silent fallback in that same dispatch gave <strong>3.2×</strong> on the flagship. Every one of them came from a measurement rather than from reading the code, and every idea that came from reading the code failed.</p>
+<h2 id="what-this-book-is-and-what-it-is-not">What this book is, and what it is not</h2>
+<p>This is a worklog. It follows the order the work actually happened in, which means it includes the parts where the work was wrong.</p>
+<p>There is a chapter about the four undocumented reasons Moonshot's released modeling code cannot be used for training at all, one of which fails non-deterministically — rung r2 trained normally while r1 returned NaN from step 0, from the same bug. There is a chapter about the load balancer, where 94.5% of experts stopped receiving tokens by step 20 while the metric we had chosen to detect exactly that condition read 0.99 out of 1.0. There is a chapter about a data manifest bug that would have trained the entire stable phase on a single maths corpus while reporting a healthy six-source mix. Each of these was caught. Each of them was caught by a measurement rather than by reading the code more carefully, and that pattern is the most transferable thing in the book.</p>
+<p>What it is not is a from-scratch PyTorch tutorial for K3's components. That book already exists in this library and builds every module — Kimi Delta Attention, Gated MLA, Attention Residuals, LatentMoE — as small runnable code you can follow on a laptop.<label for="sn-what-we-actually-trained-4" class="sn-ref">4</label><input type="checkbox" id="sn-what-we-actually-trained-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> <em>Build Kimi K3 from Scratch</em>, in the same library. This book assumes those components exist and asks what happens when you try to train them for two days on real data.</span> This book assumes the architecture and asks a different question: what does it take to actually run one, on real data, without wasting the money.</p>
+<p>It is also not a claim to have matched K3. We report a 33.4% HellaSwag score against K3's 97.6% on GSM8K, which are not comparable numbers on comparable models, and the chapter on evaluation says so before it says anything else.</p>
+<h2 id="where-r1-sits">Where r1 sits</h2>
+<p>r1 is the first rung of a three-rung scaling ladder. The point of a ladder is to fix hyperparameters and measure throughput on small models before committing money to a large one, which is what labs do and what distinguishes this from picking a learning rate and hoping.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/what-we-actually-trained-4.png" alt="The three-rung ladder and the flagship it was built to price. Only the first rung completed." loading="lazy"  data-fig="what-we-actually-trained-4.png"><span class="fig-ph">figure rendering &middot; The three-rung ladder and the flagship it was built to price. Only the</span></div><figcaption>The three-rung ladder and the flagship it was built to price. Only the first rung completed.</figcaption></figure>
+<p>The four models were all trained on the same data, at the same 131,072 tokens per step, on the same recipe, so that differences between them are differences of scale and nothing else. Of the four, only r1 finished. r2 and r3 were stopped at 75% and 50% of their token budgets when the compute account was disabled. The flagship — the 35.56-billion-parameter model the entire ladder was built to price — was launched, collapsed with 69.5% of its experts receiving no tokens, and stalled at step 890 of 76,294 having spent $48.33.</p>
+<p>We say this here, in the opening chapter, because a book that describes a ladder and quietly declines to mention that two of its three rungs are unfinished, and that the model they were measuring for never trained, would be a different kind of document. The engineering in this book was built for all four models. The completed run it reports is one.</p>
+<p>That has one consequence worth setting expectations about now. A scaling ladder produces a fit: three losses at three sizes on identical data, extrapolated to predict the fourth. <strong>We never got that fit</strong>, because two of the three rungs stopped mid-run and a partial loss is not a point on a curve. What survives from the ladder is narrower and still useful — it fixed the learning rate, it measured throughput so a budget could be priced from data rather than from hope, and it caught an initialisation bug that returned NaN on one rung and trained normally on another. Those are the things a ladder buys before it buys a scaling law, and they are why building one is worth it even when it does not finish.</p>
+<h2 id="the-two-claims-we-will-defend">The two claims we will defend</h2>
+<p><strong>First: this is architecturally a Kimi K3, not a generic small transformer with K3's name attached.</strong> The check that makes this claim measurable is the fraction of a token's compute that flows through routed experts. In K3, 46.1% of active parameters are routed experts. An early version of our design preserved the total-to-active <em>ratio</em> and scored 7.5%, which is a dense model with a small mixture of experts bolted on, and it would have told us nothing about how routing and load balancing behave in the real thing. Fixing that changed the expert count, the expert width and the number of KDA heads, and it is the subject of the chapter on scaling down.</p>
+<p><strong>Second: every number in this book is measured, and the ones that are not are labelled.</strong> The flagship's 12.5% MFU is an extrapolation from two points, and appears as one. The peer comparisons against SmolLM2 and Qwen3 were planned and never run, so they do not appear at all. The r1 throughput measured in our benchmark harness was 66,877 tokens per second, and the throughput the actual run sustained was 27,600 to 28,900 — both figures are reported, in that order, because the gap between a benchmark and a run is itself a finding.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/what-we-actually-trained-5.png" alt="Our own benchmark and our own run disagree by a factor of two on the same model and the same GPU. Both numbers are repor" loading="lazy"  data-fig="what-we-actually-trained-5.png"><span class="fig-ph">figure rendering &middot; Our own benchmark and our own run disagree by a factor of two on the s</span></div><figcaption>Our own benchmark and our own run disagree by a factor of two on the same model and the same GPU. Both numbers are reported throughout.</figcaption></figure>
+<h2 id="how-the-rest-of-the-book-runs">How the rest of the book runs</h2>
+<p>The order is the order the work happened in. <strong>The Model</strong> covers K3's released configuration and the arithmetic of shrinking it, including the finding that a "40 million active parameter" model is impossible when the vocabulary alone costs 83.9 million parameters at that width. <strong>The Data</strong> covers 104.80 billion tokens across six sources, decontaminated against eight benchmark test sets before tokenization, and the report that makes the evaluation numbers defensible. <strong>Making It Train</strong> covers the four blockers in the released code, the training loop, the router collapse, and checkpointing that survives losing the GPU mid-run. <strong>Making It Fast</strong> is the MFU investigation. <strong>More Than One GPU</strong> covers sharding and three distributed bugs that produce a finished run that is quietly wrong. <strong>Did It Work</strong> is the loss curve, twenty-four benchmark evaluations taken across the run rather than at the end, and the ledger.</p>
+<p>If you read one section, read <em>Making It Fast</em>. If you read one chapter, read the profile, because it is the chapter where six plausible hypotheses die to a single measurement, and because the habit it teaches — measure the thing before optimising it — is worth more than any specific number in this book.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/what-we-actually-trained-6.png" alt="The structure of the book." loading="lazy"  data-fig="what-we-actually-trained-6.png"><span class="fig-ph">figure rendering &middot; The structure of the book.</span></div><figcaption>The structure of the book.</figcaption></figure>
+<h2 id="one-number-to-carry-forward">One number to carry forward</h2>
+<p>Of everything measured across two weeks of this project, the number that changed the most decisions is this one: <strong>only about 12% of GPU time was spent on matrix multiplication.</strong></p>
+<p>Before that profile existed, six separate optimisation ideas had been formed by reading the code and reasoning about it. Every one of them was about making the arithmetic cheaper or fitting more work into memory. All six failed, and they failed for the same reason, which no amount of further reading would have revealed: the arithmetic was never the cost. The GPU was spending its time moving data.</p>
+<p>The profile took one run to produce. It should have been the first thing we did.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="../index.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Overview</span>
+              <span class="vb-nav-title">Book Table of Contents</span>
+            </a>
+            <a href="./02-what-makes-a-run-lab-grade.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 02 →</span>
+              <span class="vb-nav-title">What makes a run lab-grade</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

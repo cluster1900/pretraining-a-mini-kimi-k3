@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en" data-rtheme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>What makes a run lab-grade · Pretraining a Mini Kimi K3</title>
+  <meta name="description" content="Decontamination, a scaling ladder, a WSD schedule, a decay anneal, continuous evaluation, real checkpointing, a spike protocol and MFU tracking — eight practices, and what each one changes about the outcome.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="../assets/reader.css">
+  <link rel="stylesheet" href="../assets/reader-custom.css">
+</head>
+<body data-rtheme="paper" data-font-size="medium">
+  <!-- Top Reading Progress Indicator -->
+  <div class="vb-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="vb-header">
+    <div class="vb-header-inner">
+      <div class="vb-header-left">
+        <a href="../index.html" class="vb-back-btn" title="Back to Book Index">
+          <span>‹</span> <span>Table of Contents</span>
+        </a>
+        <span class="vb-book-title-crumb">Pretraining a Mini Kimi K3</span>
+      </div>
+      
+      <div class="vb-header-center">
+        Chapter 02 / 30
+      </div>
+
+      <div class="vb-header-actions">
+        <button id="toc-toggle" class="vb-tool-btn" title="Open Table of Contents (t)">
+          <span>☰</span> <span>Contents</span>
+        </button>
+        <button id="font-smaller" class="vb-tool-btn" title="Smaller font">A-</button>
+        <button id="font-larger" class="vb-tool-btn" title="Larger font">A+</button>
+        <select id="theme-select" class="vb-theme-select" title="Switch Theme">
+          <option value="paper">📄 Paper</option>
+          <option value="sepia">📜 Sepia</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Container -->
+  <main class="vb-reader-container">
+    <header class="vb-chapter-hero">
+      <div class="vb-section-badge">Section 00 · Start Here</div>
+      <h1 class="vb-chapter-title">What makes a run lab-grade</h1>
+      
+      <div class="vb-meta-pills">
+        <span class="vb-pill">Chapter 2 of 30</span>
+        <span class="vb-pill">⏱ 11 min read</span>
+        <span class="vb-pill">📊 5 figures</span>
+        
+      </div>
+
+      <p class="vb-chapter-blurb">Decontamination, a scaling ladder, a WSD schedule, a decay anneal, continuous evaluation, real checkpointing, a spike protocol and MFU tracking — eight practices, and what each one changes about the outcome.</p>
+    </header>
+
+    <!-- Chapter Content -->
+    <div class="art-body"><p>A pretraining run either produces numbers that survive being questioned, or it does not. The difference is not the model, the data or the size of the GPU. It is a short list of practices, each of which costs money or time up front, and each of which changes what you are allowed to claim at the end.</p>
+<p>The plan named eight of them before any compute was bought: benchmark decontamination, a scaling ladder with hyperparameter transfer, a warmup–stable–decay schedule instead of cosine, a data curriculum with a decay-phase anneal, continuous downstream evaluation against tokens, checkpointing with optimizer state, a written loss-spike protocol, and MFU tracking. All eight were implemented. For each, this chapter records what it cost us and what would have gone wrong without it. Three of the eight nearly failed anyway, and the chapter ends by naming them.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/what-makes-a-run-lab-grade-1.png" alt="The eight practices adopted before any compute was bought, with the cost of each and the failure it prevents." loading="lazy"  data-fig="what-makes-a-run-lab-grade-1.png"><span class="fig-ph">figure rendering &middot; The eight practices adopted before any compute was bought, with the co</span></div><figcaption>The eight practices adopted before any compute was bought, with the cost of each and the failure it prevents.</figcaption></figure>
+<h2 id="1-benchmark-decontamination">1. Benchmark decontamination</h2>
+<p>Decontamination means removing, from the training corpus, any passage that overlaps the test set of a benchmark you intend to report. We built a 13-gram index over the test splits of eight evaluation sets and applied it before tokenization, with a written removal report. The index held <strong>2,398,082 unique 13-grams</strong> in 24 MB and its self-check recovered 1,414 of 1,414 planted strings. The pass scanned <strong>107,291,411 documents and removed 138,064</strong>, or <strong>0.1287%</strong> of the corpus, for roughly <strong>$17 of CPU</strong> against a run cost of $252.35.</p>
+<p>What makes the filter believable is not the total but the shape of the per-source rates.</p>
+<div class="tbl-wrap"><table><thead><tr><th>source</th><th>removal rate</th></tr></thead><tbody><tr><td>finemath</td><td><strong>0.7239%</strong></td></tr><tr><td>open-web-math</td><td><strong>0.6747%</strong></td></tr><tr><td>code-python (StarCoder)</td><td>0.2251%</td></tr><tr><td>fineweb-edu</td><td>0.0856%</td></tr><tr><td>cosmopedia</td><td>0.0296%</td></tr><tr><td>web-diverse (FineWeb)</td><td>0.0280%</td></tr></tbody></table></div>
+<p>Maths corpora shed about ten times as much as the web, which is what you would expect if the filter is matching real benchmark material rather than firing at random. A uniform rate across six very different sources would have suggested it was matching common English instead.</p>
+<p>The practice also has to report its own limits. A benchmark row shorter than 13 words produces no 13-gram and cannot be filtered against, so <strong>TriviaQA is only 49% covered</strong>, 9,163 of its 17,944 rows being too short; PIQA is next lowest at 92% and five of the eight sets sit at 99 to 100%. Separately, HumanEval matched 88.78 times per indexed n-gram against HellaSwag's 0.02, and every document removed on that account was generic Python rather than leakage.<label for="sn-what-makes-a-run-lab-grade-1" class="sn-ref">1</label><input type="checkbox" id="sn-what-makes-a-run-lab-grade-1" class="sn-toggle"><span class="sidenote"><sup>1</sup> The cause is normalisation. Stripping punctuation is right for prose and destructive for code: <code>for i, a in enumerate(numbers):</code> becomes <code>for i a in enumerate numbers</code>, and 13-word windows of de-punctuated Python are common idiom. Compounded by indexing HumanEval's <code>test</code> column, near-identical scaffolding across all 164 problems. Corpus damage was 0.225% of the code corpus, so no re-ingest was warranted, and the match count is not a contamination finding.</span></p>
+<p>Without this, the 24-point evaluation series later in the book would be a set of numbers nobody has a reason to believe, including us.</p>
+<h2 id="2-a-scaling-ladder-with-hyperparameter-transfer">2. A scaling ladder with hyperparameter transfer</h2>
+<p>A scaling ladder is a set of small models with identical architecture ratios and identical data, trained at increasing width, so that hyperparameters and throughput are measured cheaply before a large run commits money. Ours had three rungs, r1 at hidden 512, r2 at 768 and r3 at 1024, beneath a 35.56-billion-parameter flagship at hidden 1536.</p>
+<p>The learning rate came from one sweep at r1's width: four rates, 600 steps each, zero loss spikes, giving <strong>6.00e-4</strong>. Every other rung was set by <code>6e-4 * sqrt(512 / width)</code>: 4.90e-4 for r2, 4.24e-4 for r3, 3.46e-4 for the flagship.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/what-makes-a-run-lab-grade-2.png" alt="The ladder. One learning rate was measured and three were derived from it, which is standard practice and also the least" loading="lazy"  data-fig="what-makes-a-run-lab-grade-2.png"><span class="fig-ph">figure rendering &middot; The ladder. One learning rate was measured and three were derived from</span></div><figcaption>The ladder. One learning rate was measured and three were derived from it, which is standard practice and also the least defensible step in the recipe.</figcaption></figure>
+<p>That is standard-parameterisation transfer rather than muP, and it is the weakest assumption in the recipe. We call it an assumption because we did not verify it: no rung above r1 completed a run against which the transferred rate could be checked.<label for="sn-what-makes-a-run-lab-grade-2" class="sn-ref">2</label><input type="checkbox" id="sn-what-makes-a-run-lab-grade-2" class="sn-toggle"><span class="sidenote"><sup>2</sup> muP would reparameterise initialisation, learning rate and output scaling so that the optimal rate is invariant across width. Several components here — a latent MoE bottleneck, an aux-loss-free selection bias, a delta-rule attention with its own gate — have no published muP treatment, so the square-root rule was used and labelled.</span></p>
+<p>What the ladder did pay for is everything else. Almost all of the MFU work in this book, attempts 1 through 15, was measured on <strong>r2, the rung above ours</strong>, at 307M active parameters on one H200, and the conclusions were then carried across to r1's run. The remaining attempt, the fused-dispatch cliff, was measured on the flagship, which never completed. The ladder also caught the fourth blocker in the released modeling code, an uninitialised timestep bias that fails non-deterministically: <strong>rung r2 trained normally while r1 returned NaN from step 0</strong>, from the same defect. A bug with that behaviour, met on a flagship rather than a ladder, costs a great deal more than it did here. And at equal token counts early in training, HellaSwag ordered as r3 28.4% &gt; r2 27.6% &gt; r1 27.0%, which is the ordering a ladder exists to confirm.</p>
+<h2 id="3-wsd-instead-of-cosine">3. WSD instead of cosine</h2>
+<p>A cosine schedule decays the learning rate smoothly from its peak to near zero across a step count fixed in advance. <strong>Warmup–stable–decay</strong> replaces the middle of that curve with a flat stretch at the peak rate and compresses the decay into the final fraction of the run. Ours used <strong>2% warmup, a stable phase at 6.00e-4, and a 15% decay</strong> beginning at <strong>step 32,430</strong> of 38,147, at 4.25 billion tokens of 5.00 billion, ending at <strong>6.07e-5</strong>.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/what-makes-a-run-lab-grade-3.png" alt="The schedule we ran. The flat stable phase means the total token budget does not have to be decided before the run start" loading="lazy"  data-fig="what-makes-a-run-lab-grade-3.png"><span class="fig-ph">figure rendering &middot; The schedule we ran. The flat stable phase means the total token budge</span></div><figcaption>The schedule we ran. The flat stable phase means the total token budget does not have to be decided before the run starts.</figcaption></figure>
+<p>What WSD costs is nothing measurable. What it buys is that the total step count does not have to be chosen before the run begins, because any checkpoint on the plateau is a legitimate starting point for a decay.</p>
+<p>That property mattered more than we expected. <strong>r2 and r3 were stopped part-way</strong>, at 75% and 50% of their token budgets, when the compute account was disabled. Under cosine, a run stopped at 50% leaves a model frozen mid-descent at a high learning rate. Under WSD the stable-phase checkpoints are ordinary and a decay could be run from them at any time. We did not run those decays, so this is a property of the schedule rather than a result we can show.</p>
+<h2 id="4-a-data-curriculum-with-a-decay-phase-anneal">4. A data curriculum with a decay-phase anneal</h2>
+<p>The corpus was built as two disjoint mixes rather than one. The stable phase draws from <strong>947 shards</strong> of general web-heavy data, the decay phase from <strong>94 shards</strong> with maths, code and reasoning upweighted, and the disjointness is asserted rather than assumed. The switch happens at the step the learning-rate decay begins, 32,430. The realised stable-phase mix tracked its target to three decimal places: fineweb-edu 59.5%, web-diverse 25.5%, code-python 10.0%, finemath 3.0%, open-web-math 2.0%.</p>
+<p>The visible effect of the anneal is in held-out perplexity, which fell across the run from 22.65 at 1.691 billion tokens to <strong>13.61</strong> at the end, a <strong>40% reduction</strong>, with the steepest part of that fall after step 32,430: 15.84 at 4.273B, then 14.27, 13.74 and 13.61. Final perplexity by source runs from 5.42 on code-python to 37.74 on web-diverse.</p>
+<p>The cost of this practice is the bookkeeping, and the bookkeeping is where it nearly went wrong. A string-splitting bug in <code>build_mixes</code> rebuilt shard names as <code>source + "-" + stem.split("-",1)[1]</code>, which mangles any hyphenated source name: <code>fineweb-edu-w000-s0000</code> became <code>fineweb-edu-edu-w000-s0000</code>. Four of six sources pointed at files that did not exist, and the loader silently renormalised onto the two that survived, so <strong>the entire stable phase would have trained on 100% finemath</strong> while the telemetry reported a healthy six-source mix.</p>
+<h2 id="5-continuous-downstream-evaluation">5. Continuous downstream evaluation</h2>
+<p>Evaluating once, at the end, tells you what you got. Evaluating continuously tells you whether the run was ever working. We ran the suite every roughly 1,000 steps on a separate A100 at about <strong>$0.13 per evaluation</strong>, which across the <strong>24 points</strong> of r1's series comes to a little over three dollars against a $252.35 run: HellaSwag, PIQA, ARC-Challenge, WinoGrande and MMLU from the decontaminated set, plus held-out perplexity from tail shards, on frozen seed-0 500-example subsets.<label for="sn-what-makes-a-run-lab-grade-3" class="sn-ref">3</label><input type="checkbox" id="sn-what-makes-a-run-lab-grade-3" class="sn-toggle"><span class="sidenote"><sup>3</sup> Scoring is length-normalised multiple choice with RIGHT padding. The model is causal, so left-padding would make it condition on pad tokens before reaching the question. The <code>datasets</code> library is pinned to 2.21.0 because 3.x removed script datasets. GSM8K and HumanEval are post-training benchmarks and were deliberately not run on a base model.</span></p>
+<p>Across those 24 points, HellaSwag moved from 0.270 to <strong>0.334</strong> and PIQA from 0.608 to 0.634, while WinoGrande, MMLU and ARC-Challenge stayed near 0.51, 0.29 and 0.26 throughout.</p>
+<p>Those curves are the reason we can say something specific about the flat benchmarks. A single end-of-run measurement of MMLU at 0.290 is indistinguishable from a run that broke on day two. Twenty-four points flat from 1.691 billion tokens onwards say something different: at 145M active parameters and 5 billion tokens, these capabilities are below the boundary of what the scale reaches. That is a statement about the model's size, available only because the evaluation ran against tokens rather than at the end.</p>
+<h2 id="6-checkpointing-with-optimizer-state">6. Checkpointing with optimizer state</h2>
+<p>A checkpoint that holds only the weights is not a resume point. Ours holds the model, the optimizer moments, the dataloader cursor, the RNG state, the spike-guard EMA, the tokens seen and the spend to date, with a <code>COMPLETE</code> marker written last so a half-written directory is skipped rather than loaded.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/what-makes-a-run-lab-grade-4.png" alt="The contents of a checkpoint, and the defect that meant none of them were durable." loading="lazy"  data-fig="what-makes-a-run-lab-grade-4.png"><span class="fig-ph">figure rendering &middot; The contents of a checkpoint, and the defect that meant none of them w</span></div><figcaption>The contents of a checkpoint, and the defect that meant none of them were durable.</figcaption></figure>
+<p>Two things here are worth carrying. The first is that the durability hole was invisible from the training logs. <code>ckpt_vol.commit()</code> was called only after <code>train()</code> returned, so every checkpoint lived in the dying container's view of the volume, and the run would have reported saving them correctly right up to the moment it lost them. The interval was also tightened from 250 steps to <strong>100</strong>, putting about 15 minutes of work at risk instead of about 32.</p>
+<p>The second is that resume correctness was tested rather than assumed. <code>resume_equivalence</code> trains past a checkpoint twice and compares per-step losses, and it found a real off-by-one: the checkpoint was written after <code>opt.step()</code> but labelled with the step just finished, so a resume re-ran that step and reproduced the original trace <strong>shifted by one</strong>. After the fix, the first resumed step is bitwise identical at <strong>0.00e+00</strong> and drift over 20 steps stays at <strong>5e-3</strong>, which is bf16 non-determinism. r1 kept 15 checkpoints under a retention rule of the last three plus every 5,000th.<label for="sn-what-makes-a-run-lab-grade-4" class="sn-ref">4</label><input type="checkbox" id="sn-what-makes-a-run-lab-grade-4" class="sn-toggle"><span class="sidenote"><sup>4</sup> Retention is not optional at scale. The flagship's checkpoints are about 213 GB each, and at the original 250-step interval, keeping every one of them would have come to 128 PB.</span></p>
+<h2 id="7-a-written-loss-spike-protocol">7. A written loss-spike protocol</h2>
+<p>The protocol specifies in advance what counts as a spike, what happens when one is detected — skip the batch, or roll back to the last good checkpoint — and what state the decision depends on. The spike-guard EMA is part of the checkpoint so that a resumed run does not restart the detector.</p>
+<p>Our run <strong>skipped zero spikes across all 38,147 steps</strong>. The protocol was never exercised, which is the correct thing to report about insurance: we paid for it, we did not need it, and we cannot claim it saved the run.</p>
+<p>What it did surface is that the protocol's assumptions change when the model is sharded. On the flagship's two-card FSDP2 setup, each rank decided independently whether to skip a step. One rank calling <code>opt.step()</code> while another does not diverges the weights, and the next all-gather mixes two models into one. The fix is to all-reduce the loss before the guard sees it. That bug produces a completed run and a model that is quietly wrong, with no error anywhere.</p>
+<p>The related lesson is about the gates alongside the protocol. Two thresholds were dangerous once the watchdog could stop a run. <code>MFU_FLOOR = 0.20</code> fired on every step of every healthy run, because measured MFU here is 5 to 8%. <code>EXPERT_COLLAPSE</code> was fatal on a single snapshot of a metric whose healthy trajectory passes through 69 to 95% dead experts in the first thirty steps, as we saw when the router collapsed. Collapse now requires five consecutive reports and the floor is 3%. Half of the 24 failure-injection tests assert that gates stay <strong>silent</strong> on healthy training, which is the harder half to write.</p>
+<h2 id="8-mfu-tracking">8. MFU tracking</h2>
+<p><strong>Model FLOPs Utilization</strong> is <code>6 x active_parameters x tokens_per_second / peak_FLOPs</code>, the fraction of a GPU's arithmetic capability a run consumes. An H200 does roughly 989 TFLOP/s in bf16, well-tuned dense training reaches 40 to 55%, and our run sustained <strong>2.4 to 2.5%</strong> at 27,600 to 28,900 tokens per second.</p>
+<p>Tracked as one end-of-run number, that is a disappointment. Tracked continuously, it is a diagnostic, because MFU has shapes that only certain defects produce.</p>
+<figure class="fig"><div class="fig-frame"><img src="../figures/what-makes-a-run-lab-grade-5.png" alt="Three defects located by the shape of a throughput or memory curve rather than by reading the code." loading="lazy"  data-fig="what-makes-a-run-lab-grade-5.png"><span class="fig-ph">figure rendering &middot; Three defects located by the shape of a throughput or memory curve rat</span></div><figcaption>Three defects located by the shape of a throughput or memory curve rather than by reading the code.</figcaption></figure>
+<p>All three are defects that reading the source did not reveal. A <code>gradient_checkpointing_enable()</code> call that declares support, sets the flag, and is never invoked by the decoder loop looks correct in the code and shows up in the data as <strong>76.7 GB against 76.8 GB</strong> with the feature off and on. The expert loop looked like an implementation detail and was 3,840 sequential kernel launches per step; batching it took step time from <strong>3.999 s to 0.228 s</strong> at 2,048 tokens, a 17.5x improvement that moved r2's MFU from 0.1% to 4.1%. The fused dispatch on the flagship silently reverted to that same loop above a hard-coded buffer cap, and announced itself only as a non-monotonic throughput curve and a peak memory that did not move when the batch grew fourfold.</p>
+<p>The discipline that makes any of this readable is comparability. MFU is measured against each card's own peak, so it is only comparable across runs on the same hardware. One of our own fits mixed two H200 measurements with a B200 one and produced <code>active^-0.32</code>, an exponent implying that larger models are less efficient, which is an artefact rather than a finding.<label for="sn-what-makes-a-run-lab-grade-5" class="sn-ref">5</label><input type="checkbox" id="sn-what-makes-a-run-lab-grade-5" class="sn-toggle"><span class="sidenote"><sup>5</sup> Normalising r3's 3.6% to the H200's peak gives about 8.2%, above r2, which restores positive scaling. The corrected two-point fit on matched hardware is <code>active^0.35</code>, and the flagship figure derived from it, 12.5%, is an extrapolation rather than a measurement.</span></p>
+<h2 id="which-three-nearly-failed">Which three nearly failed</h2>
+<p>Of the eight, five worked as designed. Three did not.</p>
+<p><strong>Checkpointing</strong> was the closest. Every save reported success, none were durable, and the failure would have arrived as an ordinary crash forty hours in with nothing to resume from.</p>
+<p><strong>The data curriculum</strong> was next. The manifest bug would have produced a completed 5-billion-token run on a single maths corpus, with a mix report showing all six sources on target.</p>
+<p><strong>The gates around the spike protocol and MFU tracking</strong> were third, and the most instructive, because the danger came from the safeguards themselves. A floor set at 0.20 for a metric whose healthy value is 0.025, and a fatal collapse check on a metric whose healthy trajectory passes through 94.5% dead experts, would have terminated every correct run in this project the moment the watchdog gained the ability to act.</p>
+<p>None of the three announce themselves. They do not crash, they do not log an error, and they do not change the loss curve in a way anyone would notice. Each was found by a measurement taken for a different reason: a resume test, a shard-count assertion, a dry run of the watchdog against healthy telemetry. That is the argument for all eight practices. They are not there to make the run better. They are there so that when the run is wrong, something says so.</p></div>
+
+    <!-- Bottom Navigation -->
+    <div class="vb-chapter-nav">
+            <a href="./01-what-we-actually-trained.html" class="vb-nav-card prev">
+              <span class="vb-nav-label">← Chapter 01</span>
+              <span class="vb-nav-title">What we actually trained</span>
+            </a>
+            <a href="./03-how-to-read-this-book.html" class="vb-nav-card next">
+              <span class="vb-nav-label">Chapter 03 →</span>
+              <span class="vb-nav-title">How to read this book</span>
+            </a></div>
+  </main>
+
+  <!-- Slide-out TOC Drawer -->
+  <div id="toc-overlay" class="vb-drawer-overlay">
+  <div class="vb-drawer">
+    <div class="vb-drawer-head">
+      <div class="vb-drawer-title">Table of Contents</div>
+      <button id="toc-close" class="vb-drawer-close" aria-label="Close">✕</button>
+    </div>
+    <div class="vb-drawer-body">
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 00 · Start Here</div>
+        <a href="./01-what-we-actually-trained.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">01</span>
+          <span class="vb-drawer-item-title">What we actually trained</span>
+        </a>
+        <a href="./02-what-makes-a-run-lab-grade.html" class="vb-drawer-item active">
+          <span class="vb-drawer-order">02</span>
+          <span class="vb-drawer-item-title">What makes a run lab-grade</span>
+        </a>
+        <a href="./03-how-to-read-this-book.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">03</span>
+          <span class="vb-drawer-item-title">How to read this book</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 01 · The Model</div>
+        <a href="./04-reading-k3s-config.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">04</span>
+          <span class="vb-drawer-item-title">Reading K3&#x27;s config, line by line</span>
+        </a>
+        <a href="./05-scaling-it-down-without-lying.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">05</span>
+          <span class="vb-drawer-item-title">Scaling it down without lying about it</span>
+        </a>
+        <a href="./06-the-attention-stack.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">06</span>
+          <span class="vb-drawer-item-title">The attention stack: nine KDA layers and three MLA</span>
+        </a>
+        <a href="./07-the-moe-that-actually-routes.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">07</span>
+          <span class="vb-drawer-item-title">The mixture of experts that actually routes</span>
+        </a>
+        <a href="./08-counting-the-parameters.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">08</span>
+          <span class="vb-drawer-item-title">Counting the parameters, and checking the counter</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 02 · The Data</div>
+        <a href="./09-assembling-the-corpus.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">09</span>
+          <span class="vb-drawer-item-title">Assembling the corpus</span>
+        </a>
+        <a href="./10-decontamination.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">10</span>
+          <span class="vb-drawer-item-title">Decontamination, and the report that makes the numbers defensible</span>
+        </a>
+        <a href="./11-when-a-filter-fires-on-nothing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">11</span>
+          <span class="vb-drawer-item-title">When a filter fires on nothing</span>
+        </a>
+        <a href="./12-the-tokenizer.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">12</span>
+          <span class="vb-drawer-item-title">The tokenizer we did not train</span>
+        </a>
+        <a href="./13-the-mix-and-the-manifest-bug.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">13</span>
+          <span class="vb-drawer-item-title">The mix, and the bug that would have trained on one source</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 03 · Making It Train</div>
+        <a href="./14-the-released-code-cannot-train.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">14</span>
+          <span class="vb-drawer-item-title">The released code cannot train</span>
+        </a>
+        <a href="./15-the-training-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">15</span>
+          <span class="vb-drawer-item-title">The training loop</span>
+        </a>
+        <a href="./16-expert-collapse.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">16</span>
+          <span class="vb-drawer-item-title">Expert collapse, and the metric that missed it</span>
+        </a>
+        <a href="./17-checkpointing.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">17</span>
+          <span class="vb-drawer-item-title">Checkpointing that survives losing the GPU</span>
+        </a>
+        <a href="./18-watching-a-run-you-cannot-see.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">18</span>
+          <span class="vb-drawer-item-title">Watching a run you cannot see</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 04 · Making It Fast</div>
+        <a href="./19-what-mfu-is.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">19</span>
+          <span class="vb-drawer-item-title">What MFU is, and why it is the exchange rate</span>
+        </a>
+        <a href="./20-the-expert-loop.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">20</span>
+          <span class="vb-drawer-item-title">The expert loop: eight times the work, the same time</span>
+        </a>
+        <a href="./21-six-ideas-that-did-not-work.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">21</span>
+          <span class="vb-drawer-item-title">Six ideas that did not work</span>
+        </a>
+        <a href="./22-the-profile.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">22</span>
+          <span class="vb-drawer-item-title">The profile: only 12% of the time is arithmetic</span>
+        </a>
+        <a href="./23-two-kernels-that-worked.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">23</span>
+          <span class="vb-drawer-item-title">Two kernels that worked, and one that did not</span>
+        </a>
+        <a href="./24-fp8-and-the-bigger-gpu.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">24</span>
+          <span class="vb-drawer-item-title">FP8, and the bigger GPU that scored worse</span>
+        </a>
+        <a href="./25-the-silent-fallback.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">25</span>
+          <span class="vb-drawer-item-title">The silent fallback</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 05 · More Than One GPU</div>
+        <a href="./26-sharding-the-model.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">26</span>
+          <span class="vb-drawer-item-title">Sharding the model across GPUs</span>
+        </a>
+        <a href="./27-three-bugs-that-do-not-crash.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">27</span>
+          <span class="vb-drawer-item-title">Three distributed bugs that do not crash</span>
+        </a>
+      </div>
+      <div class="vb-drawer-sec">
+        <div class="vb-drawer-sec-title">Section 06 · Did It Work</div>
+        <a href="./28-the-loss-curve.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">28</span>
+          <span class="vb-drawer-item-title">The loss curve, end to end</span>
+        </a>
+        <a href="./29-benchmarks-across-tokens.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">29</span>
+          <span class="vb-drawer-item-title">Benchmarks across tokens, not at the end</span>
+        </a>
+        <a href="./30-what-252-dollars-buys.html" class="vb-drawer-item">
+          <span class="vb-drawer-order">30</span>
+          <span class="vb-drawer-item-title">What $252 buys</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="../assets/reader.js"></script>
+</body>
+</html>
