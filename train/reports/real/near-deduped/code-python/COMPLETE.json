@@ -1,0 +1,73 @@
+{
+  "status": "complete",
+  "source": "code-python",
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/code-python/part-00000.jsonl",
+      "bytes": 6472217,
+      "documents": 289,
+      "sha256": "4edc84363a396b8c94d3f31f219f831ff40fe8cbbc6107880d9b03b34f721621",
+      "counts": {
+        "input": 289,
+        "kept": 289
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/code-python/part-00001.jsonl",
+      "bytes": 1448992,
+      "documents": 266,
+      "sha256": "d981f8aea367938e055f8b86512c160a354226880b577264ed43013225a2aa46",
+      "counts": {
+        "input": 266,
+        "kept": 266
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/code-python/part-00002.jsonl",
+      "bytes": 982802,
+      "documents": 214,
+      "sha256": "339909a2fb375d56f0aa6f6b2916aa9a4c30637d652b8b45bddb416e4267269b",
+      "counts": {
+        "input": 214,
+        "kept": 214
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/code-python/part-00003.jsonl",
+      "bytes": 2137153,
+      "documents": 327,
+      "sha256": "6a24ec7b5046a9bb934ebdc9a654973a7448a130a0f42e72e64aaf90b2ba95a4",
+      "counts": {
+        "input": 327,
+        "kept": 327
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/code-python/part-00004.jsonl",
+      "bytes": 5102428,
+      "documents": 1118,
+      "sha256": "8593ca87ab7610cb698bb0bde5056b520710e0771a208433c80a8816761884a8",
+      "counts": {
+        "input": 1118,
+        "kept": 1118
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/code-python/part-00005.jsonl",
+      "bytes": 356390,
+      "documents": 88,
+      "sha256": "60e6588d4ac2c62fb4f4326e66d9e665ea353213b745185af611e69c58df74d3",
+      "counts": {
+        "input": 88,
+        "kept": 88
+      }
+    }
+  ],
+  "counts": {
+    "input": 2302,
+    "kept": 2302
+  },
+  "upstream_report_sha256": "38e9f51e7ec25069ad66fbed3fe6bf05a84418592ee63685e503be72c7c9c91d",
+  "script_sha256": "f7a5ba73ce3248c68efe9b3ee39d5421af0eeb3d8dde05a62d5fc216c861de9a",
+  "method": "5-unit shingles, 64 MinHash permutations, 8x8 LSH, feature Jaccard>=0.9; SFT/preference exact dedup only"
+}

@@ -1,0 +1,144 @@
+{
+  "source": "openr1",
+  "repo": "open-r1/OpenR1-Math-220k",
+  "role": "sft",
+  "status": "complete",
+  "schema_version": 2,
+  "script_sha256": "3fa30a1ec632dda0db690cf11d8788d78af99c895370170f0768348e8a5c5ce5",
+  "inputs": [
+    {
+      "file": "all/default-00000-of-00010.parquet",
+      "sha256": "ccc3a95e4875dc4cff9bec2f0fb1c93e4c9cbb24fb24853fd0b96c416e1a263c",
+      "bytes": 213636225
+    },
+    {
+      "file": "all/default-00001-of-00010.parquet",
+      "sha256": "a7d3eb54d97f7e1237a872947f2246de54a104be224646f62f588abdf6c7db60",
+      "bytes": 214580713
+    },
+    {
+      "file": "all/default-00002-of-00010.parquet",
+      "sha256": "a44a2354bfa752541ab768b62edf01f3df4b9b2a7660774ab1eb6e7f19f0a86b",
+      "bytes": 214585972
+    },
+    {
+      "file": "all/default-00003-of-00010.parquet",
+      "sha256": "dd7d2f0f04d80b3ae08484b706c4f7fd9dd29eeff4038c36257a307c77b877e9",
+      "bytes": 216773329
+    },
+    {
+      "file": "all/default-00004-of-00010.parquet",
+      "sha256": "e358157990d7744643e25f1e692556ac5fd4a2212c008cf67475b14e040861ea",
+      "bytes": 214835490
+    },
+    {
+      "file": "all/default-00005-of-00010.parquet",
+      "sha256": "30254d14d17b63d1f7963488d53a2d26aa22070f71baa2fe601201b081e38060",
+      "bytes": 214488314
+    },
+    {
+      "file": "all/default-00006-of-00010.parquet",
+      "sha256": "b3bce93c06d4dc22788c04d0a1da5cbadb5b3db31046809c59a4ec26e96ebb52",
+      "bytes": 215593265
+    },
+    {
+      "file": "all/default-00007-of-00010.parquet",
+      "sha256": "7def8029cf6d40f7493e9aa4be4b49c251ae7e0cb23b0b117c485e09ff5d5021",
+      "bytes": 216310260
+    },
+    {
+      "file": "all/default-00008-of-00010.parquet",
+      "sha256": "29cf75a663e91039fc92bffd86a9ad845f992302da52d1fb1563b6c41ae777ed",
+      "bytes": 213801211
+    },
+    {
+      "file": "all/default-00009-of-00010.parquet",
+      "sha256": "14df2775196a701b97a71cf0285fa75d97980fbda4db9ec9af9c2a07658ca256",
+      "bytes": 215293135
+    }
+  ],
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openr1/part-00000.jsonl",
+      "documents": 7469,
+      "bytes": 134208504,
+      "sha256": "e026e7860feac0c5d0196231903cacbd49537975d2a52dd4b4b2786aff3ebb16"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openr1/part-00001.jsonl",
+      "documents": 7414,
+      "bytes": 134196958,
+      "sha256": "c56d10275e2eca9b296d6b644439a8d39f4199aad17f47ab85383ac485dae4be"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openr1/part-00002.jsonl",
+      "documents": 7408,
+      "bytes": 134196287,
+      "sha256": "726d59bc271375bacbdd01cb4e6404d7d6acd8e98aab0e2cbe63b17ed3993220"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openr1/part-00003.jsonl",
+      "documents": 7366,
+      "bytes": 134213099,
+      "sha256": "d36a9fba3f30f6d145fc259fe97065b1c27a86de9f2c3dc2223aac0df6e6578f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openr1/part-00004.jsonl",
+      "documents": 7346,
+      "bytes": 134213218,
+      "sha256": "b20690f065fbcc8ee3bea1cbb5800e7a7e0a3fcba7e99189d89ea88ca4c1d980"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openr1/part-00005.jsonl",
+      "documents": 7401,
+      "bytes": 134198737,
+      "sha256": "71e34e9ada8875b4dde0c692739452295eb7b80afacf2ad9479a102788df76df"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openr1/part-00006.jsonl",
+      "documents": 7402,
+      "bytes": 134213970,
+      "sha256": "8bafda809e5bc23337e904d2d9822c96983a18d599c04e82f7b5a3ccafad5f34"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openr1/part-00007.jsonl",
+      "documents": 7407,
+      "bytes": 134200190,
+      "sha256": "7810b30e5ba94814f84834bc5fb99854e4d1cd7f38daab211aec4c53778d28e4"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openr1/part-00008.jsonl",
+      "documents": 7335,
+      "bytes": 134211734,
+      "sha256": "956b00c57d4dd27ec1d71300378ab99209fed622f685d4fd62cf3dda8351c1a9"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openr1/part-00009.jsonl",
+      "documents": 7362,
+      "bytes": 134206534,
+      "sha256": "de6a01bf5509836c79db5ecffc78859eadae697adadba9b91a205d603b58af31"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openr1/part-00010.jsonl",
+      "documents": 7442,
+      "bytes": 134213397,
+      "sha256": "2081e20d0a3196efaf275b754cc4f240f667e8a3e4dc66f1f83bdab60720b957"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openr1/part-00011.jsonl",
+      "documents": 7382,
+      "bytes": 134211215,
+      "sha256": "b77cdf21b6ea1075c1abc7d7956b675b58eccf93318a0cbac65a8afeb6609352"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openr1/part-00012.jsonl",
+      "documents": 4999,
+      "bytes": 90935743,
+      "sha256": "7ca15d4c284159c5e7eb7de15e70be4612e78ee8d8e567492c764d22512b91d2"
+    }
+  ],
+  "counts": {
+    "input_rows": 93733,
+    "output_records": 93733
+  }
+}

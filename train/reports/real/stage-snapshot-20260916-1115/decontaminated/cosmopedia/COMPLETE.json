@@ -1,0 +1,462 @@
+{
+  "source": "cosmopedia",
+  "status": "complete",
+  "counts": {
+    "input": 1077863,
+    "kept": 1075892,
+    "removed": 1971
+  },
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00000.jsonl",
+      "documents": 14589,
+      "bytes": 136503814,
+      "sha256": "12d809e8a718529aa2676fc1584dd9284d8a232a407070a7b356e4c5d32b3740"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00001.jsonl",
+      "documents": 14611,
+      "bytes": 136602535,
+      "sha256": "9a819c34897206981d4f7de648d43d0c6a9f60d0b0db73913e41a958b0a5a914"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00002.jsonl",
+      "documents": 14687,
+      "bytes": 136590589,
+      "sha256": "daf3c6d1af3526a813c936a80d4df8ad95e0874f3378f80a51db1361eca44b3a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00003.jsonl",
+      "documents": 14688,
+      "bytes": 136731359,
+      "sha256": "9e14b906f3b7e600c36488aa74f7d98a2ddd93bcbecf618ac10b5404992885c3"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00004.jsonl",
+      "documents": 14665,
+      "bytes": 136535657,
+      "sha256": "4af8ded4f64c9e524a4973cf612de643c4b5d8afd1f513751e4cf126ec02c4a3"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00005.jsonl",
+      "documents": 14675,
+      "bytes": 136668332,
+      "sha256": "3a514694ea5416908cbd8e1051ce72baed08a3f0dfa123c6432e8dab73a81f78"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00006.jsonl",
+      "documents": 14742,
+      "bytes": 136681696,
+      "sha256": "9e32eee557fbab69204c24b9388154d141f23c4b2a9cfe13a0edfbad40d14e45"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00007.jsonl",
+      "documents": 14673,
+      "bytes": 136648480,
+      "sha256": "1a5f8514490126fba8698937b05516f2e26e4275f0849bd1762459ff2270c7c5"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00008.jsonl",
+      "documents": 14645,
+      "bytes": 136450151,
+      "sha256": "84123e1217d352b84bb173c532a2d7555f4652465092846e7f2904826dc82bf8"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00009.jsonl",
+      "documents": 14684,
+      "bytes": 136556243,
+      "sha256": "cc9d5c6bea729eb3649063281a4573b63ef741e39b2fcb0a04b1f8650e687621"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00010.jsonl",
+      "documents": 14785,
+      "bytes": 136522019,
+      "sha256": "0ca2d64684ab6cf7fb6acb921c9d308b0f6b7b4b46eff43debe66a9d29c8a4f6"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00011.jsonl",
+      "documents": 14572,
+      "bytes": 136627560,
+      "sha256": "b0de0eff84feb53b6f77dbd34c1763c6b2784544c9d23be8dd2a587cd8e1d87c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00012.jsonl",
+      "documents": 14705,
+      "bytes": 136566611,
+      "sha256": "3b8dfbcb9caae031b52bac6a80ef881e40a4e1cc94432e3d44db3d8590b60504"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00013.jsonl",
+      "documents": 14696,
+      "bytes": 136596313,
+      "sha256": "e5e5ac50cd240f7038c3c3bb8cfd0ef292cc0a4d7af4163fbe5be74b5f836037"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00014.jsonl",
+      "documents": 14558,
+      "bytes": 136521817,
+      "sha256": "257487891c02a2c52fadc08dec5d7b0e86483d4ffeb1cd4a4b90b86eedb355e0"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00015.jsonl",
+      "documents": 14725,
+      "bytes": 136463400,
+      "sha256": "c6bc6daebc4d564240e65b7e26be535311f04586962a7aac84efe751d475bb85"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00016.jsonl",
+      "documents": 14486,
+      "bytes": 136523786,
+      "sha256": "fde99573edf5d774e332b45cfd39d927678b517b584aa3ce9378c9fc455d1a65"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00017.jsonl",
+      "documents": 14808,
+      "bytes": 136731214,
+      "sha256": "5b81d51d8cd93285fe9cdd6fcbf211501db23ef810e0690ca8bfb08017915d62"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00018.jsonl",
+      "documents": 14655,
+      "bytes": 136569280,
+      "sha256": "00ae8c73996776c6066291086dcbbd9096ad6dbf14cb53c55d045c2deb21e3dc"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00019.jsonl",
+      "documents": 14630,
+      "bytes": 136534626,
+      "sha256": "99493d708d1bbb64b81fd6bd178d7fef222e71827bc9492e5f0a53eec34b2cc6"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00020.jsonl",
+      "documents": 14700,
+      "bytes": 136465428,
+      "sha256": "251bb460a53f683a6fd4573bde8c8af920723a3280af918f2fbe60b3a1c82695"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00021.jsonl",
+      "documents": 14424,
+      "bytes": 136576874,
+      "sha256": "f960b1fb7367de2b14a776530c53f8203690130dcd8ae4d8a43951328c4b5b45"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00022.jsonl",
+      "documents": 14611,
+      "bytes": 136607881,
+      "sha256": "148bd18b5f3c018a4449a98924269ae4cdb715c109d0028ea1651f1dddef409f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00023.jsonl",
+      "documents": 14667,
+      "bytes": 136614336,
+      "sha256": "fe1d6fe9a39702029b7837ac35d78b4b5ea5f6c020d13554954311cce4439572"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00024.jsonl",
+      "documents": 14606,
+      "bytes": 136578252,
+      "sha256": "0cc2dc4ab3020b3aa95ddc4e40e87af1ab3ff3a470dd46c61624b3a948d75593"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00025.jsonl",
+      "documents": 14811,
+      "bytes": 136711541,
+      "sha256": "cace46be3377ccb346fee45fe63ef9eb5954989452c5241445264448aad82be4"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00026.jsonl",
+      "documents": 14522,
+      "bytes": 136450489,
+      "sha256": "f9a1c39e014a1ec885e7933f3d75c4d39bb33fa3cabf2b3d78dcd4d8681c634d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00027.jsonl",
+      "documents": 14791,
+      "bytes": 136668017,
+      "sha256": "ebf15b09434be038413e6736f6b391413e591e54b22a45bc7db7861eb7593365"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00028.jsonl",
+      "documents": 14713,
+      "bytes": 136574131,
+      "sha256": "64826a2fbaa7aac83b8391d5ca60e5fd40c0e61d085ac2178df0e80f2524b334"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00029.jsonl",
+      "documents": 14780,
+      "bytes": 136646445,
+      "sha256": "ff5cca8fbe32b22e14620e809bad4db923281f4b7ffdfea2cac151bee5050028"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00030.jsonl",
+      "documents": 14607,
+      "bytes": 136648001,
+      "sha256": "595c901e5b6f8bbe60f55f1222a4f04e4dc9226d217e24a7588120071b26dde3"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00031.jsonl",
+      "documents": 14596,
+      "bytes": 136479928,
+      "sha256": "521be4189009196c8b68e6ea044c2517b5734c38b4be4338f344e865415f5b44"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00032.jsonl",
+      "documents": 14650,
+      "bytes": 136576233,
+      "sha256": "01aa643fb8f2c4c2891a578644c643cd58359754cebff989897bc59717c26dce"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00033.jsonl",
+      "documents": 14696,
+      "bytes": 136698958,
+      "sha256": "bac91a97ff527ac6114091c0a36da3437b519ae001f74131327652553109d0a0"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00034.jsonl",
+      "documents": 14664,
+      "bytes": 136618571,
+      "sha256": "d5ea74a9feafbcf1ea8b501e9edd0e87d05bc983a1006d0b72af634bc8370eb0"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00035.jsonl",
+      "documents": 14654,
+      "bytes": 136551416,
+      "sha256": "662a571f19a360e6c53aa8f26fec96babec823ebd17ff00faf497e319dcc451f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00036.jsonl",
+      "documents": 14699,
+      "bytes": 136650826,
+      "sha256": "a3890cd53f74ea1b3d7ef2316dfb2d1c840b577d9f1092c69a873429a5632c7c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00037.jsonl",
+      "documents": 14569,
+      "bytes": 136554077,
+      "sha256": "60091feb968fca217a21a1232b6eca01b5871b9f91a8842c0457785a7039068a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00038.jsonl",
+      "documents": 14762,
+      "bytes": 136781194,
+      "sha256": "5b00d5ee8abaff5a1e44a61fbb43615391cca4c1cc3bbb5879315829980b0e1b"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00039.jsonl",
+      "documents": 14725,
+      "bytes": 136630511,
+      "sha256": "3e92b622256065d4607f2fb2fe1194cfdc71534813d74fa6ae9ecc9cdf628f32"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00040.jsonl",
+      "documents": 14529,
+      "bytes": 136499231,
+      "sha256": "e1d40e8665e463596d63f5352db6e448f00452cdf174885319dd95b7c638d09c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00041.jsonl",
+      "documents": 14734,
+      "bytes": 136543467,
+      "sha256": "f9077f47efc24901322ff58513f035e9854bcbe861e61d4fee3bcaee7204fa33"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00042.jsonl",
+      "documents": 14737,
+      "bytes": 136580561,
+      "sha256": "ec0edbebea7281701b7fd394e3c7ae9352284fec047de1a408b1705d04eb58f4"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00043.jsonl",
+      "documents": 14772,
+      "bytes": 136446653,
+      "sha256": "016b9dde9157e2a521d4ad9c3eaa8ab8ced204d8d1d14179c4e29f69c6a65e1a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00044.jsonl",
+      "documents": 14773,
+      "bytes": 136583458,
+      "sha256": "b5b7cd8fc2922c7d2b0141027ee93f385e16b433530619382d2d1506b925ce6f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00045.jsonl",
+      "documents": 14764,
+      "bytes": 136584553,
+      "sha256": "4f1a884372694d97a133dbee0f4684d55ce1659c1a95fb31ac96a260b4a6ffa2"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00046.jsonl",
+      "documents": 14577,
+      "bytes": 136706480,
+      "sha256": "1e411e99ca89e590e865b279bb9403159cb6d81b0934bec7a996c07d59b401b5"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00047.jsonl",
+      "documents": 14824,
+      "bytes": 136608088,
+      "sha256": "532f151d3a2433857a3ab8d02fb5d39f78b9589cb5d5c50fc211b6d7080008df"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00048.jsonl",
+      "documents": 14670,
+      "bytes": 136594537,
+      "sha256": "15dd899acf9b8dca9a4e94b2984e57a46a42d2875c822e2eccbb7ace59fd4b65"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00049.jsonl",
+      "documents": 14734,
+      "bytes": 136664499,
+      "sha256": "da965c82f2d92f4f9a16aab0e4b479e67a9036a13a3413daa4f3e60d258cb3f5"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00050.jsonl",
+      "documents": 14692,
+      "bytes": 136613736,
+      "sha256": "9c639796081b203edb3b85caa5ddfc837c032ac0967f5f7442c7cfd5c6afad18"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00051.jsonl",
+      "documents": 14708,
+      "bytes": 136568230,
+      "sha256": "2bb219c472399d8f0057a6d9a0c2128af02ace3acf90bbde24d06a6f87bfbd02"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00052.jsonl",
+      "documents": 14628,
+      "bytes": 136555618,
+      "sha256": "7a47e67001f9418ffea4f632da1e298ca20bcc29431e943bc39544234ee370d4"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00053.jsonl",
+      "documents": 14758,
+      "bytes": 136673166,
+      "sha256": "d0ab762d6858983925784d09b87788f9d3f504cbcb041fa5bc0ec93fb1b0d954"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00054.jsonl",
+      "documents": 14628,
+      "bytes": 136572004,
+      "sha256": "0a70e40253d0d35cc1b4c27612452e5eebc66ba9c632ed92cce901a02c6c1acd"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00055.jsonl",
+      "documents": 14696,
+      "bytes": 136489534,
+      "sha256": "fe06947faa05a7edca7f63d924d86221637cda056ceda49b831d784b2354315a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00056.jsonl",
+      "documents": 14578,
+      "bytes": 136561210,
+      "sha256": "bf44a36fc8584ee97a6fb9c331b018fc8a38d28501f96b30c4d1ba595280e78d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00057.jsonl",
+      "documents": 14567,
+      "bytes": 136567182,
+      "sha256": "fb2b2692fd7e20da44192d4944b2f446a705c15d6b0749875c8d42c7bb76dccd"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00058.jsonl",
+      "documents": 14673,
+      "bytes": 136541738,
+      "sha256": "9cce032184ca6c1ea6b9cd2cfc67b48f72561b33987ce1ed9e152d4bd2aee712"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00059.jsonl",
+      "documents": 14518,
+      "bytes": 136562964,
+      "sha256": "d25a19974ee7c42b51b6a450571c49d61d65c891662c00a475e69722a9cfb816"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00060.jsonl",
+      "documents": 14698,
+      "bytes": 136713152,
+      "sha256": "ae83b05abae610b716abe391b9f11511442507a467ae7bd7ddb76505f03762c3"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00061.jsonl",
+      "documents": 14652,
+      "bytes": 136688139,
+      "sha256": "de8f9210931a20d3515469707ee0ed6a71018bffb1463d342ea5409361c795e7"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00062.jsonl",
+      "documents": 14626,
+      "bytes": 136568675,
+      "sha256": "90d5896f09f416f637b8ec31f5bf47f104a130a4903c2179fd933a25e89bc304"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00063.jsonl",
+      "documents": 14657,
+      "bytes": 136627429,
+      "sha256": "f75b81360b4283e9954c24d4911d2232890f8c2f7163f8bfaf0df9366460d4f3"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00064.jsonl",
+      "documents": 14675,
+      "bytes": 136640670,
+      "sha256": "b78430cba9477e3280c5fd4868a1cb587b00fb85e98bf09f9ee5d08189332d68"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00065.jsonl",
+      "documents": 14627,
+      "bytes": 136475276,
+      "sha256": "2090a42d66d014f1a93e80b50b0bc3826d72b447a70d5b48a4ba63a2a136300c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00066.jsonl",
+      "documents": 14606,
+      "bytes": 136501941,
+      "sha256": "466a8ae390e1f39a735fb4faa07c4e6e2730d5a4b6fb06af67cac8db734de034"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00067.jsonl",
+      "documents": 14810,
+      "bytes": 136696462,
+      "sha256": "dfc74a1f50aeb3a597f59c8b8f2455f574cbf83748b18587bdfeb79b022637d8"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00068.jsonl",
+      "documents": 14771,
+      "bytes": 136605018,
+      "sha256": "b09104104b984aac8ce124ec9b82c2f65a0ae139aed92da50b0f16f323d04378"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00069.jsonl",
+      "documents": 14721,
+      "bytes": 136586919,
+      "sha256": "c6ac984ea247f446f6cdde1a34aa37e43252bb821c8e860c7a4ddd11d584c258"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00070.jsonl",
+      "documents": 14755,
+      "bytes": 136617377,
+      "sha256": "64d85037a16a6747a54d4146ba677e63f0acae392b312f77ef2d27c2d1242978"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00071.jsonl",
+      "documents": 14710,
+      "bytes": 136588901,
+      "sha256": "1e3a8bcf5f37073904a30ee4ba66b8c37b75336500f65dc76e5b29c9b0f9752c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00072.jsonl",
+      "documents": 14624,
+      "bytes": 136495670,
+      "sha256": "b42c4e1a6e9ddc8937aab6a2460cb4d484d98f91def530f6393de977cc8b9e7e"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/cosmopedia/part-00073.jsonl",
+      "documents": 4874,
+      "bytes": 45953728,
+      "sha256": "5bb65049b7cd240cc728927579af4062d2fe6a1728702ff8c93179cb05251246"
+    }
+  ],
+  "index_sha256": "8e1b0426827e05b0c2867098b59d4fba366057b40d74460e328e588ebaf15168",
+  "index_ngrams": {
+    "prose": 1507360,
+    "code": 23611
+  },
+  "upstream_report_sha256": "0b7c5d62f9dff087024a3ce9a9437fd98f958e91651247925cf6b515c5f5d0f6",
+  "script_sha256": "62ceec91b2725e759e678bd7355dda66483aa43ba3727e5c27a254e137c3dac1"
+}

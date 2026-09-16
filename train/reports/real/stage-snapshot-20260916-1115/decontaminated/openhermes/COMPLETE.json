@@ -1,0 +1,108 @@
+{
+  "source": "openhermes",
+  "status": "complete",
+  "counts": {
+    "input": 1001298,
+    "kept": 993454,
+    "removed": 7844
+  },
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/openhermes/part-00000.jsonl",
+      "documents": 67286,
+      "bytes": 146421338,
+      "sha256": "49eb15f2a3cf7febdc70ba0dbf1d2685ebb41664e754e7e5667039ab65594414"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/openhermes/part-00001.jsonl",
+      "documents": 66951,
+      "bytes": 146040256,
+      "sha256": "1b2dfef6885c5b6849e666d39cdad7b7a320607bfe11e466fb291186ea975425"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/openhermes/part-00002.jsonl",
+      "documents": 73412,
+      "bytes": 146650616,
+      "sha256": "a39410c23753a110927cfd29edbebece89825a845cf0969e9806228b59985811"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/openhermes/part-00003.jsonl",
+      "documents": 63631,
+      "bytes": 142375016,
+      "sha256": "78e9ed99a3490cba68f1eeac861f480c205ad0560f05bad4dd1716cc5ed77d71"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/openhermes/part-00004.jsonl",
+      "documents": 69902,
+      "bytes": 142377233,
+      "sha256": "40bc28f90afec9e46cc32f1c176eabd51ff0fce175603a9ea457693b0d2bbe4f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/openhermes/part-00005.jsonl",
+      "documents": 55857,
+      "bytes": 143097805,
+      "sha256": "5e0077da3343f2b7730584e590b300d084750ffa0d881a3465f736a777732d05"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/openhermes/part-00006.jsonl",
+      "documents": 113014,
+      "bytes": 155109751,
+      "sha256": "514ba4a93c1c10aeda19935b8498088adddb296e415faa964c89b1df1fb0d29e"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/openhermes/part-00007.jsonl",
+      "documents": 67437,
+      "bytes": 146714574,
+      "sha256": "28634d3e83a30759455634b35b0ec16c907f91ac770ee5ce6ec4a4616dbb1727"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/openhermes/part-00008.jsonl",
+      "documents": 67379,
+      "bytes": 146703988,
+      "sha256": "c8dc29e15460585427e367861d6f86f72f03466caa27cfd7ede6710ea31fb69f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/openhermes/part-00009.jsonl",
+      "documents": 67822,
+      "bytes": 146783106,
+      "sha256": "2db2fce04b2d0b7fe2e10cbfc2a59f1d7b465bd0d3a3bf196d8b0919966b14b9"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/openhermes/part-00010.jsonl",
+      "documents": 68144,
+      "bytes": 146849429,
+      "sha256": "2414c21fb23231a13906b9e9db9e1375da8fbbdf46e1e6ccaec952ceb56a7945"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/openhermes/part-00011.jsonl",
+      "documents": 67954,
+      "bytes": 146803622,
+      "sha256": "e2884ee802393b382ec35406a93e2cbb671443a4ab7476f5aa55a3ea6720e1bd"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/openhermes/part-00012.jsonl",
+      "documents": 62708,
+      "bytes": 145715372,
+      "sha256": "f406d9ed9d1cc9a7693d34fbaeeb6e881018d07b32afde8cd176ea793955a230"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/openhermes/part-00013.jsonl",
+      "documents": 57078,
+      "bytes": 143349211,
+      "sha256": "f4846ddfd01383472b9d505a30046dcf979a857d61f6aaa158f268c4b72189c7"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/openhermes/part-00014.jsonl",
+      "documents": 24879,
+      "bytes": 81595194,
+      "sha256": "891846418c5517fda2b9c6e212852760c1a01dbc9bdf3556c9cfce81f51914ba"
+    }
+  ],
+  "index_sha256": "8e1b0426827e05b0c2867098b59d4fba366057b40d74460e328e588ebaf15168",
+  "index_ngrams": {
+    "prose": 1507360,
+    "code": 23611
+  },
+  "upstream_report_sha256": "8b4a54a913636d147ee47ad9272172e5dba0b08d352ab81802dc01acaa8bbf67",
+  "script_sha256": "62ceec91b2725e759e678bd7355dda66483aa43ba3727e5c27a254e137c3dac1"
+}

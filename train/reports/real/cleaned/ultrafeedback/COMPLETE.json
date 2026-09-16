@@ -1,0 +1,32 @@
+{
+  "source": "ultrafeedback",
+  "status": "complete",
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2/cleaned/ultrafeedback/part-00000.jsonl",
+      "documents": 41369,
+      "bytes": 137327237,
+      "sha256": "03fb4632bd57a0c055f49c4ab485b3eabe7bb1ff7af88c9ae5644d8e63b4fc1d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/cleaned/ultrafeedback/part-00001.jsonl",
+      "documents": 19377,
+      "bytes": 91442095,
+      "sha256": "f21871844b904b03e36f40648c93d97859c58749d5384474e63cc9684fa93ef5"
+    }
+  ],
+  "counts": {
+    "input": 60917,
+    "kept": 60746,
+    "reject_encoding_damage": 93,
+    "reject_identical_completions": 62,
+    "reject_empty_completion": 9,
+    "reject_secret_pattern": 6,
+    "reject_nul_byte": 1
+  },
+  "script_sha256": "2f8fc9d9624315558a9a9998d7c6084c62e74b460899e81b0d8efbc53380e8a2",
+  "upstream_report_sha256": "0d3fca4aa9f6cbf26fcfd3ddc982218cfb3b0aaf5c3ad307f65f564fe60bc866",
+  "limits": [
+    "PII filtering covers email in prose and explicit secret-key patterns; not a guarantee of total PII removal"
+  ]
+}

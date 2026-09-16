@@ -1,0 +1,1309 @@
+{
+  "source": "open-web-math",
+  "repo": "open-web-math/open-web-math",
+  "role": "pretrain",
+  "status": "complete",
+  "schema_version": 2,
+  "script_sha256": "3fa30a1ec632dda0db690cf11d8788d78af99c895370170f0768348e8a5c5ce5",
+  "inputs": [
+    {
+      "file": "data/train-00000-of-00114-5a023365406cb9c4.parquet",
+      "sha256": "18d7ef70a6ef61f09c020950626d7e6e61d1300f3f85beddbd3b3c6801071a41",
+      "bytes": 236268485
+    },
+    {
+      "file": "data/train-00001-of-00114-e32fc2813a15f61c.parquet",
+      "sha256": "d51cde7eeceb64d1814df384a0a05340422e40543db095200de38da41044dda1",
+      "bytes": 238479393
+    },
+    {
+      "file": "data/train-00002-of-00114-1429d96b99aec578.parquet",
+      "sha256": "4be3d8421bbbdd687d49810e8a024d5ec6eaf6febd7b21c8308c92741356331f",
+      "bytes": 238135043
+    },
+    {
+      "file": "data/train-00003-of-00114-e7fc257ef044bc03.parquet",
+      "sha256": "b0298ffe842ee4fadb52a6d193dc755568f1c5f200822ca22473c5b281b13c56",
+      "bytes": 241967659
+    },
+    {
+      "file": "data/train-00004-of-00114-3158c787ea8296d3.parquet",
+      "sha256": "46630335189a45afb163641c5644605d21dbd1768faf27185ec80c4c92f008f2",
+      "bytes": 237136773
+    },
+    {
+      "file": "data/train-00005-of-00114-c525c7efee442287.parquet",
+      "sha256": "067ffed72fffee814a0bf7b57628dbbdf23584012031ccae33193d17dc6e2237",
+      "bytes": 244802651
+    },
+    {
+      "file": "data/train-00006-of-00114-c82ec070af45d226.parquet",
+      "sha256": "4efde2737534a901103f5250f5ff796f07c2b86c215e507921c5f46da51019fd",
+      "bytes": 239558828
+    },
+    {
+      "file": "data/train-00007-of-00114-36c74b525c9694d4.parquet",
+      "sha256": "dab1dd7389d116f6c910e06dbdd942e05adc1f103561d44d761d74668073d41d",
+      "bytes": 241747803
+    },
+    {
+      "file": "data/train-00008-of-00114-bf41cf8843148a70.parquet",
+      "sha256": "ace0619be7224cb512b841ead1077e0781aa2fae8a81309178d38e595b382bae",
+      "bytes": 244941382
+    },
+    {
+      "file": "data/train-00009-of-00114-691ac94b115fea46.parquet",
+      "sha256": "e6d396fdd6e6642e80c563586410fcc671335bef88252062a34717e8df4740c1",
+      "bytes": 244307011
+    },
+    {
+      "file": "data/train-00010-of-00114-5805e25b4884966e.parquet",
+      "sha256": "0c9266284eca0615a83db6c3f70716c63fa3639694ac9ce63a84732fa4d8472c",
+      "bytes": 236033353
+    },
+    {
+      "file": "data/train-00011-of-00114-da8ee2fcf07be148.parquet",
+      "sha256": "4a690a0b3b5db4a10d04ae526c5856d83f859d4a8f4b3fea379ecff1342005c2",
+      "bytes": 242888281
+    },
+    {
+      "file": "data/train-00012-of-00114-7252b11ca4b39acd.parquet",
+      "sha256": "c0341ae8a5b4b7d26b560fb803a032dd297ff504459f702ad5508249262bc8f6",
+      "bytes": 236534649
+    },
+    {
+      "file": "data/train-00013-of-00114-a189dcaf5ac68c7e.parquet",
+      "sha256": "5ce6eef4742dacd142bf0db6946e3ca54695bbb151d18fda0e9747a3b410972d",
+      "bytes": 240961907
+    },
+    {
+      "file": "data/train-00014-of-00114-23a118ee3aaea5c3.parquet",
+      "sha256": "556f8b9763dc348211703e991249f4b87c8114337c12ff3da1cdb0e694d86d3b",
+      "bytes": 242176448
+    },
+    {
+      "file": "data/train-00015-of-00114-e65817847eac684c.parquet",
+      "sha256": "7648bf7b0909461f881a693bac6c60fbcd3bb8f64a7ba13d765597ad23ff087f",
+      "bytes": 235284183
+    },
+    {
+      "file": "data/train-00016-of-00114-7b0ca70e75bb60ee.parquet",
+      "sha256": "3d671ec17054d50d2e18fcd2b5c43e318c1c3af59add9c7d161c072c1d8d251b",
+      "bytes": 242542350
+    },
+    {
+      "file": "data/train-00017-of-00114-7680a1785b342d09.parquet",
+      "sha256": "c62fdea5a21b49ea960cc0bd365872c250d42bc5537ca9d2eaf07075e6752efd",
+      "bytes": 236478932
+    },
+    {
+      "file": "data/train-00018-of-00114-f187dd9c797b315c.parquet",
+      "sha256": "baa33f445e6a2a9ab9cc9884feaf22a94ab655eabc8241b720d8a01087b79b47",
+      "bytes": 244678162
+    },
+    {
+      "file": "data/train-00019-of-00114-95e7ebe4402c9bfb.parquet",
+      "sha256": "c5d3a81d09b95be0fe994371d8903b77c04f6e76c2c2e6b6ce192de828d9125b",
+      "bytes": 243054498
+    },
+    {
+      "file": "data/train-00020-of-00114-49f2b2f31d348847.parquet",
+      "sha256": "1f5dfbf8c353822ec261dde49665763b6a8c85ed94b8cff4eae8a239d7d6901b",
+      "bytes": 240749399
+    },
+    {
+      "file": "data/train-00021-of-00114-64c103f9fbdf2cf4.parquet",
+      "sha256": "7edf003c283efb5b773921b7ba24f382a92966ec6a554ea24b166f2608b9b592",
+      "bytes": 238496346
+    },
+    {
+      "file": "data/train-00022-of-00114-4d18242ef5fd3198.parquet",
+      "sha256": "b290c4d80eb4f140a9bd5928fc0b02af4feab54cd312d617f8ee7d8911c80749",
+      "bytes": 241266672
+    },
+    {
+      "file": "data/train-00023-of-00114-9ec2a6a02bf1d9d0.parquet",
+      "sha256": "ea5a812e82c7cef1fb46c9c99c675c612d636df6226395980f2a5aee5a7a8f94",
+      "bytes": 236884637
+    },
+    {
+      "file": "data/train-00024-of-00114-92f9f033a294f332.parquet",
+      "sha256": "63dd331f5bb456d623f86cce3e806e791c0d00e97e8c62d830d6bba3dd43806f",
+      "bytes": 242633881
+    },
+    {
+      "file": "data/train-00025-of-00114-f8488d391fad9074.parquet",
+      "sha256": "4cb9e167992ce5c7e03d08ce2f57097a16fe11bfd70c1e69983f269ae667827b",
+      "bytes": 236589543
+    },
+    {
+      "file": "data/train-00026-of-00114-895ba22c761501e9.parquet",
+      "sha256": "2cdf9291f710a1d7f525e8a40cabba7bc4c8e314a7bc62a193c7d1e2f3d4af4f",
+      "bytes": 243252811
+    },
+    {
+      "file": "data/train-00027-of-00114-97a6e351f6fc32df.parquet",
+      "sha256": "739b967c8fda10884996115275548359b640bf97d75e142ce7a5ff355b9cfe87",
+      "bytes": 242365151
+    },
+    {
+      "file": "data/train-00028-of-00114-0d11fc4f464d6d6e.parquet",
+      "sha256": "dc2530c4cb0c80391d399ad9534c776a604ebdaadd3413f93c4e3578c818c773",
+      "bytes": 241828479
+    },
+    {
+      "file": "data/train-00029-of-00114-5c297df81e0ef9b5.parquet",
+      "sha256": "e2954ba16060c8983b799693d809358d9ccfcbd99fe410fff5ccc31df9c4294f",
+      "bytes": 240232050
+    },
+    {
+      "file": "data/train-00030-of-00114-890f9615f1b85726.parquet",
+      "sha256": "ec7d034819d75fc51e3a2935d201dd03dc8c3ef04ecc634ad5f9ea2ee67c2602",
+      "bytes": 236487498
+    },
+    {
+      "file": "data/train-00031-of-00114-d06b98184be0a920.parquet",
+      "sha256": "c7e3d8ae03483f163262756be699afde3b2382f38dd8c7b9be3cc413065900f2",
+      "bytes": 244700084
+    },
+    {
+      "file": "data/train-00032-of-00114-4fee32b54661f280.parquet",
+      "sha256": "d5880b4daf97e9ba122d4a4a5ffcbe51c0ffc940693549ac422614ed450bade9",
+      "bytes": 241175958
+    },
+    {
+      "file": "data/train-00033-of-00114-d20028bef60057cc.parquet",
+      "sha256": "67e25bef8c823bb31a5aab3bcabf6d7efc47a8cc568fe0e8013e25c2a37afefc",
+      "bytes": 238372543
+    },
+    {
+      "file": "data/train-00034-of-00114-627b0a1638e867d2.parquet",
+      "sha256": "52dc8a70fea37dbcc83a697c0a55d57e24fd385075dc56168c7d07428e8e6f7c",
+      "bytes": 242431912
+    },
+    {
+      "file": "data/train-00035-of-00114-5c1b8e81c0be03c6.parquet",
+      "sha256": "14f3b788ebe9b84fa78f0aff3d3f36d13815fb50519abb4e24fa355fee61cac7",
+      "bytes": 239154425
+    },
+    {
+      "file": "data/train-00036-of-00114-b346e68b971d3476.parquet",
+      "sha256": "e921c49ab4cc6c1a342c6b8e22ab1f520a51a63af74ae45b7dc8de1a122b27ff",
+      "bytes": 244501264
+    },
+    {
+      "file": "data/train-00037-of-00114-18f228cb81d4f382.parquet",
+      "sha256": "069da19c756680e5f0d19bdb55c7cc8634c99a3157e9ca905c12d909d5953cd2",
+      "bytes": 243048765
+    },
+    {
+      "file": "data/train-00038-of-00114-59d446a886db42d5.parquet",
+      "sha256": "54922a38ebe8715b652da672c7f80abd442f4cf2ca89083271eda789ed1665d8",
+      "bytes": 240580791
+    },
+    {
+      "file": "data/train-00039-of-00114-7eb5d8ce001f3504.parquet",
+      "sha256": "10163789cbdf5e29ca263d9a785792fdf9a7cd470af59334be2ac7397257023d",
+      "bytes": 236781684
+    },
+    {
+      "file": "data/train-00040-of-00114-67f9d4881b81ae18.parquet",
+      "sha256": "7fbdd87cacfd2a29ccf8ba054d8d2a6800fb3899c8b1baf131235027996b2f8b",
+      "bytes": 240176901
+    },
+    {
+      "file": "data/train-00041-of-00114-c6d5c710a54b7159.parquet",
+      "sha256": "95349cbdd673ab94a83db2686718e08f3f28e362c6dda7a4400cbc33d6c34f0a",
+      "bytes": 244046762
+    },
+    {
+      "file": "data/train-00042-of-00114-ae04fe2a9c830269.parquet",
+      "sha256": "025dde0780001b5ed8872860d9b86a3bb13bd5eae330d5c32ffb3b40adc40441",
+      "bytes": 243418996
+    },
+    {
+      "file": "data/train-00043-of-00114-2313cb610d98e99d.parquet",
+      "sha256": "6ca03f273348f7ae652ae742b519dce24d87dbaea2d376a3bee808863dd05f3b",
+      "bytes": 238491574
+    },
+    {
+      "file": "data/train-00044-of-00114-45624487e9a41275.parquet",
+      "sha256": "97d41e218db3c74a6017f378e60ae7ad6b4f7db6454bdc82524ce492fbd2ebf8",
+      "bytes": 237452584
+    }
+  ],
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00000.jsonl",
+      "documents": 14741,
+      "bytes": 134217151,
+      "sha256": "f5182357848c83e0641e13776a3680d90d8d4cd67958f83e8e48a42c54106024"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00001.jsonl",
+      "documents": 14217,
+      "bytes": 134210725,
+      "sha256": "6437a67af089b3312796cd005bf59b1c8b6cc52a459f1e6f82f26e0e09dbb0c8"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00002.jsonl",
+      "documents": 14455,
+      "bytes": 134217086,
+      "sha256": "d2418e5186b33c163ca8fd6a8a98f256ab23ae6a729a4f5ef983343a957daa2e"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00003.jsonl",
+      "documents": 13726,
+      "bytes": 134216629,
+      "sha256": "c54ad0220ebc6f6c6609dc78241397ec094d61a4259480729cd357b7db67afae"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00004.jsonl",
+      "documents": 14252,
+      "bytes": 134204238,
+      "sha256": "2aa2492a47c6a02251fef708b59d17677004ffe64b65696f0100e54b0cf9be07"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00005.jsonl",
+      "documents": 14212,
+      "bytes": 134186974,
+      "sha256": "2c8fd32e98336769924cf2dfac453a0f0bcb3e56f6e9d5adcefe40a9a4a418d6"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00006.jsonl",
+      "documents": 13845,
+      "bytes": 134157110,
+      "sha256": "bf4bb66656bfd28bd2a6ca115174525a733d6b3ed87aff6fd41b7f16064a8f9f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00007.jsonl",
+      "documents": 14298,
+      "bytes": 134200180,
+      "sha256": "8bf0ac12b2b696c5eb9228bcae8d2e2e1d4917aa17d33b0f05f19ac8d6ccef02"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00008.jsonl",
+      "documents": 14032,
+      "bytes": 134217695,
+      "sha256": "18847652f9117d919c77a72a07712ae9898235a99d11cd043a7895cdf0df186f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00009.jsonl",
+      "documents": 14160,
+      "bytes": 133981652,
+      "sha256": "ebd4594be6c57e448aebf49a61c741232c5c649b60a09b26740b2ea3d99d3534"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00010.jsonl",
+      "documents": 14642,
+      "bytes": 134213647,
+      "sha256": "db0a6817a366055bb08667661af99f71dbc2d6a3bc2244694f111159ed5dad6f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00011.jsonl",
+      "documents": 14063,
+      "bytes": 134139493,
+      "sha256": "c8af11901073382d8bf796a1ba5e90fa90661c6a921b4c7950879fbf53616e46"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00012.jsonl",
+      "documents": 13597,
+      "bytes": 134213406,
+      "sha256": "a57b80caf3c46cd97012c071d1a425dde14238e18ec592669ff9366ca172c381"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00013.jsonl",
+      "documents": 14460,
+      "bytes": 134212342,
+      "sha256": "1831e10430c59de4ccffb03ae030083432953d883006b9eb1a751152d4ceec82"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00014.jsonl",
+      "documents": 13996,
+      "bytes": 134213413,
+      "sha256": "e9070cc06472f332f46ad2148fd5eea7eea61e7d662988adb8fce42dc9e74350"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00015.jsonl",
+      "documents": 13947,
+      "bytes": 134217180,
+      "sha256": "79a9f7f8d391d5cde38115e628f3503fdfeedcc1ff98b7d53643ead222fbbd56"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00016.jsonl",
+      "documents": 14303,
+      "bytes": 134217429,
+      "sha256": "1bcf11799b83410b06ec0867135e989d0845b5e06dc984caeb107ce6aebd0150"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00017.jsonl",
+      "documents": 14009,
+      "bytes": 134212762,
+      "sha256": "aae4d93abf265b6451ea5d74d7dbe9c580e8f274b5846c661af443931add0151"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00018.jsonl",
+      "documents": 14410,
+      "bytes": 134215469,
+      "sha256": "0ef7729430f28833612145cf88f20033ad9fba39e01a414b4224633b956172b6"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00019.jsonl",
+      "documents": 14169,
+      "bytes": 134212201,
+      "sha256": "80fc947cb9e54b592130ce24d872a9e3ed3686b575dd0f31351eb906d0bf6259"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00020.jsonl",
+      "documents": 13508,
+      "bytes": 134213412,
+      "sha256": "e1d78f283c2beaed66163c2e23ad2c91ea03b612dc221125fbaf329e544f2c82"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00021.jsonl",
+      "documents": 13881,
+      "bytes": 134067980,
+      "sha256": "200a34948a564a2fb518d5110f23a9864c77cd7b33429f4e76b68fd931383c5b"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00022.jsonl",
+      "documents": 13968,
+      "bytes": 134206809,
+      "sha256": "ada33db97111deade09b1cd7df93424ae9226af389636e1ebb676525c7c847f1"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00023.jsonl",
+      "documents": 14170,
+      "bytes": 134204080,
+      "sha256": "7e41063e0877f93386d04aaed60d560ca964b53dc2c0a613d46103649d7f8a48"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00024.jsonl",
+      "documents": 14177,
+      "bytes": 134195082,
+      "sha256": "364fe52193c5b84fc202988431cb8b08e163080afa9c17b7323921cecef5858d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00025.jsonl",
+      "documents": 14176,
+      "bytes": 134150623,
+      "sha256": "f642ae4b23501b44dbee72d1cec60bb02b7766e91572732a47d8c148b85090fd"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00026.jsonl",
+      "documents": 13634,
+      "bytes": 134205353,
+      "sha256": "42bcdda07edd396c89f9a20ad2f3645c3d48a83870d0391902f03594e099db22"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00027.jsonl",
+      "documents": 14380,
+      "bytes": 134135203,
+      "sha256": "9d7be8caea44d3ed72cb38a823316b798b21fa963a3c19fa683bc9ea6d62aeea"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00028.jsonl",
+      "documents": 13727,
+      "bytes": 134212495,
+      "sha256": "98542574b9e75395abc2e0496365dbf4983490974a55914aad2beadac6984336"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00029.jsonl",
+      "documents": 14425,
+      "bytes": 134215451,
+      "sha256": "1082e1a4f0f4a244ab7b14dac50b599425078f893db3fd5f3609793ad190b563"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00030.jsonl",
+      "documents": 13904,
+      "bytes": 134195898,
+      "sha256": "f721568dbbb2805ebfd4af5dffe026b3a43325283b742f69103abe491c3f1f9a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00031.jsonl",
+      "documents": 13914,
+      "bytes": 134203072,
+      "sha256": "b032969a4e4ede389f344c19da8b9b59bfe6e435200257702807ecf260b51625"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00032.jsonl",
+      "documents": 13873,
+      "bytes": 134210429,
+      "sha256": "abea238aca71610111a2138bb3e40cb9d6d273b4f5d7a60de6670d3c8d9925b8"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00033.jsonl",
+      "documents": 13779,
+      "bytes": 134189727,
+      "sha256": "98f6153f4194ece3ef3ba923b8e504470365752f20d23fbcb33990e24554fd06"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00034.jsonl",
+      "documents": 13750,
+      "bytes": 134212506,
+      "sha256": "6dd99e47b4e814db1fc610940fdcded99a02e102bf58dc6c22c0c788d7764108"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00035.jsonl",
+      "documents": 13615,
+      "bytes": 134213824,
+      "sha256": "8a558bd64b9a6cdab109dc2dddbade4a2ad65946d4ea6b40130b14d8842d0765"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00036.jsonl",
+      "documents": 14117,
+      "bytes": 134206344,
+      "sha256": "15a3640f4225db7f79543f1bfcc0eed4d1cc68ab6e0390bca5d0401703d64b14"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00037.jsonl",
+      "documents": 13780,
+      "bytes": 134045334,
+      "sha256": "50112974f29e2cd1e834949871f50025b3fd3dcd001350c1be33fa432c154ba0"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00038.jsonl",
+      "documents": 13518,
+      "bytes": 134214065,
+      "sha256": "1f98f8b30e41d6bdb8bd2b3f3b697b44ca4b02f8c4ac961edef41e84ddd4da12"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00039.jsonl",
+      "documents": 14592,
+      "bytes": 134209418,
+      "sha256": "ac0449df1b1f99e192be1ea930c2b83cb5397f9bbf9039d0d1f47e1889a0395b"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00040.jsonl",
+      "documents": 14203,
+      "bytes": 134197800,
+      "sha256": "f8243265845e2f9f05249fb7ca679f033f1a27c0bccba577e0c7c62917b8de01"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00041.jsonl",
+      "documents": 14412,
+      "bytes": 134209111,
+      "sha256": "8593a46bac05fca9d0526232ddcc636e70f93a8f449bf275f197ec1b1f478c1c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00042.jsonl",
+      "documents": 14094,
+      "bytes": 134207637,
+      "sha256": "94cc42b2bf2fb2c5442f585d04fe0e0a26e4735c2384464cfd383a60ff5e2ac9"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00043.jsonl",
+      "documents": 14123,
+      "bytes": 134217390,
+      "sha256": "5db4fad2f1b6939405b6d45c34a88da2095f2cdb19c7b8833c4e4b102b1a21f6"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00044.jsonl",
+      "documents": 13767,
+      "bytes": 134217353,
+      "sha256": "d434f3c3dd23db9ea118165ec7cbe6a715079d1053320f90d4ae8a41d7703b60"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00045.jsonl",
+      "documents": 14457,
+      "bytes": 134150649,
+      "sha256": "a8af8cd1e3cdd8e9df24aecebb4571a185642ee7634f3702523df3915e5cfdc7"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00046.jsonl",
+      "documents": 13649,
+      "bytes": 134208742,
+      "sha256": "06bfc7454cc51400a92bbd3ae32bdf062e2360233853ea0a3b09ba29ac17f33e"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00047.jsonl",
+      "documents": 13591,
+      "bytes": 134214673,
+      "sha256": "c24b21a6f383988b159145b2992757b52da2209ae270d1e56af4d6a80bed7b96"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00048.jsonl",
+      "documents": 14354,
+      "bytes": 134194521,
+      "sha256": "b48b0bf01e1754ddfcf26ff25ee7765fb031a99a452af88128d6f7da5f46aae9"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00049.jsonl",
+      "documents": 14309,
+      "bytes": 134212756,
+      "sha256": "d6d418c7702d4345d703b1c0eaf8208314c308ab47a07fbccf1a590266689680"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00050.jsonl",
+      "documents": 14288,
+      "bytes": 134196213,
+      "sha256": "a77de74369aa059cc7fdd313fcd56262bfde0b728bac23bdddcff726fe1eb526"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00051.jsonl",
+      "documents": 13740,
+      "bytes": 134207413,
+      "sha256": "f9083d0c7a3bc8da9b3140c990672d6fc6cf94f30cb03b653cf49dac52ea6a11"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00052.jsonl",
+      "documents": 14278,
+      "bytes": 134186617,
+      "sha256": "d91a3ce7c45ec5be1b2dfb6566b557f6e47d7f57797fafabde0bb9fa9c177d18"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00053.jsonl",
+      "documents": 14402,
+      "bytes": 134196571,
+      "sha256": "113baf039d3f9409fea0a9bec32ad7989c7cfb934bf57e14a9de080913ba805b"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00054.jsonl",
+      "documents": 13842,
+      "bytes": 134213881,
+      "sha256": "24fb2013da5d15992756112bc414364537eb445842fed2685b7e5fa61d957089"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00055.jsonl",
+      "documents": 13842,
+      "bytes": 133835239,
+      "sha256": "b18a23970429df5a0ed5ba50ffacd237c9f51bd51a85334b5225da0d7dcf36a7"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00056.jsonl",
+      "documents": 13869,
+      "bytes": 134213186,
+      "sha256": "5a47c28ef1488804862ecfc2b43d5e0e9411aa319c60e0c004211d28f53e02f5"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00057.jsonl",
+      "documents": 14004,
+      "bytes": 134215677,
+      "sha256": "0b20c66e9cfd2ec625a4eaed5d6aeb05ba5541aeabc3cf63ffa729d803174ebb"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00058.jsonl",
+      "documents": 13925,
+      "bytes": 134213468,
+      "sha256": "7f15940413f2154bee15937c7a8f9e6a868ca0088df3727980d1c1bd48a9ea3e"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00059.jsonl",
+      "documents": 14573,
+      "bytes": 134209921,
+      "sha256": "3362ceb9d33e7338b6218eda7b3c6e15ccb5d7aebb860fc32fb5d048e1c6ac79"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00060.jsonl",
+      "documents": 14069,
+      "bytes": 134215121,
+      "sha256": "dee687c8e34b7df83ef1b689a3552ccfee4b88a413764b63f06c4ce259ab695f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00061.jsonl",
+      "documents": 14383,
+      "bytes": 134195628,
+      "sha256": "95e06225bdcbfeb60ef4512999e8174a8afc7cb7c2296f2bf1867a14f70f1b2b"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00062.jsonl",
+      "documents": 14402,
+      "bytes": 134044637,
+      "sha256": "e69137493518ec9115fef55fb80be9c1789e612e654dd49db35cfc23056f294d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00063.jsonl",
+      "documents": 14104,
+      "bytes": 134215736,
+      "sha256": "e605c6b4d8dc0d8a26191b20c1d8cc8419a6b833d48af216a85848656ff3998a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00064.jsonl",
+      "documents": 13704,
+      "bytes": 134179213,
+      "sha256": "15c37c63a91baee421afed97004f2930d2569d25fc1960e94b15b077a59ca3d4"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00065.jsonl",
+      "documents": 14164,
+      "bytes": 134215485,
+      "sha256": "82ece0843de8f428039ef2995afbcce1ce341c3d4f84c4bfe0ac89de3d5a16a5"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00066.jsonl",
+      "documents": 13919,
+      "bytes": 134215852,
+      "sha256": "a9e114c85fcefef9af7632c5ebe51ae863dad7d202d59669306fc071d6e931c2"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00067.jsonl",
+      "documents": 14160,
+      "bytes": 134148475,
+      "sha256": "df636707ea10340290ab31487b7b377de82f3cb8d395307228d014d58c7732fc"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00068.jsonl",
+      "documents": 14191,
+      "bytes": 134215979,
+      "sha256": "ebed4004479bef5a86163fa9a5185b33d541b2812dc71a7032f476dab7a9f31d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00069.jsonl",
+      "documents": 14574,
+      "bytes": 134204917,
+      "sha256": "54ba154db85a87c19ce906c9481a89989eb453862bbc4acb3ca74cb495add1c6"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00070.jsonl",
+      "documents": 14244,
+      "bytes": 134206598,
+      "sha256": "9e188529ab1f21ecb093dc073d426635214e193baf0f4e451cb97516ead5e9db"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00071.jsonl",
+      "documents": 13491,
+      "bytes": 134215287,
+      "sha256": "cc09bc216092c4d469aeebf4af4661747895067ae614b1709a361720a4c1c369"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00072.jsonl",
+      "documents": 13712,
+      "bytes": 134153016,
+      "sha256": "7dbfff9d7a1b8af83b264033b7a8ae7cf093c596e8b531da30b801733ab14666"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00073.jsonl",
+      "documents": 13946,
+      "bytes": 134215651,
+      "sha256": "985ff32b44b125f2f9e125f4840563d04be585e4a7796d10d8c1236c14cf4ecf"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00074.jsonl",
+      "documents": 14085,
+      "bytes": 134164225,
+      "sha256": "70e4f4b3527850da66a45b03bc1200cb8ee2f82403de480840318ff7c174af0b"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00075.jsonl",
+      "documents": 13945,
+      "bytes": 134214312,
+      "sha256": "d2a82026f83520627b01b41fca0f3aeb4cefceee68b9e3daaecf42c76ca608f8"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00076.jsonl",
+      "documents": 14377,
+      "bytes": 134210604,
+      "sha256": "0a58110e4b4c49350b39a7cac9137175eddee03ff4a2bccffd0aa866cf88a6ec"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00077.jsonl",
+      "documents": 13586,
+      "bytes": 134217568,
+      "sha256": "077e0207692ee1eb3727d4fe86f24ac684bbdc8aa08a56c126bba77f7ac12941"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00078.jsonl",
+      "documents": 13936,
+      "bytes": 134210857,
+      "sha256": "6c9055d1f389479ccff4cdd83a1bb6a47cbf94f312addb2b039dc148cf99460a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00079.jsonl",
+      "documents": 14244,
+      "bytes": 134099049,
+      "sha256": "4e42e0786bfeaa1ff90b83e88fe66b358b8c9c051cfcc967e2895c732ede2569"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00080.jsonl",
+      "documents": 13662,
+      "bytes": 134196931,
+      "sha256": "6efa11a3cd7b96aa6706aca80f1cf6a0ebbcd589cfe2a67461e563dc48e8094e"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00081.jsonl",
+      "documents": 14275,
+      "bytes": 134215373,
+      "sha256": "a99a0ea115710d84d5301cb7ab157cb553c822a0435c6f10c3ce973035d54a1a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00082.jsonl",
+      "documents": 14000,
+      "bytes": 134113490,
+      "sha256": "a1a54e7da62290dd305711844eaf9019caa97a97b22ea6a5dcdbbe19603a5a58"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00083.jsonl",
+      "documents": 13820,
+      "bytes": 134214942,
+      "sha256": "ba8fcbd1473fd25af045f6e63a4149396fa7cec646c0ecd85cef3a988b24322e"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00084.jsonl",
+      "documents": 14501,
+      "bytes": 134034089,
+      "sha256": "2191db4e26e2a249bf7d1186a0307cab71e8dd5b18fc578af6f93e6641a1a279"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00085.jsonl",
+      "documents": 13987,
+      "bytes": 134211273,
+      "sha256": "6696dccb9a506d906d7da0240c6869442f1e596f68117902679290b990c76d74"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00086.jsonl",
+      "documents": 14242,
+      "bytes": 134215847,
+      "sha256": "fc07c8f312d04cff472856274cc211eb2d0708beca94e2a54269aee19d609638"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00087.jsonl",
+      "documents": 13722,
+      "bytes": 134217473,
+      "sha256": "07e669ecf97c9c3bca59e5098ab540d2bf38dfc7df47293d2a44e79a6d6acb71"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00088.jsonl",
+      "documents": 14200,
+      "bytes": 134202707,
+      "sha256": "5f35d6b514ab4092cdfe02abc75ad1448ff6f42d1d0b64209a9f1db7dfa5e6d2"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00089.jsonl",
+      "documents": 14165,
+      "bytes": 134212824,
+      "sha256": "ef3f4ac247544ab5b698e4fefa6284fa2b66bd99ed4f6a54c24ee8a31bc3c7f2"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00090.jsonl",
+      "documents": 14008,
+      "bytes": 134200663,
+      "sha256": "09c8cc513ae9bbb9124238ffba6b58df874b3b2fd87492f0724c667edda87e8f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00091.jsonl",
+      "documents": 14423,
+      "bytes": 133638342,
+      "sha256": "0fa66ae0aef27e6fd75a97f16ca54bfb00e2bad1b711f5280d61755eecabd4d2"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00092.jsonl",
+      "documents": 13922,
+      "bytes": 134170816,
+      "sha256": "551614904554a3fd27eef0a1f2c432d016c6acae9ccda6bb0d5284ac817951d6"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00093.jsonl",
+      "documents": 14291,
+      "bytes": 134211901,
+      "sha256": "c1611dfa5d6e50e67288d815ca2261c5f9fcc314b1ecfeeac8720fbac55f89e2"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00094.jsonl",
+      "documents": 14210,
+      "bytes": 134217330,
+      "sha256": "35a7bc38702eaba7572c701e37dadfcfff1ab925c4763584e6d6c70ba275e184"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00095.jsonl",
+      "documents": 13384,
+      "bytes": 134196080,
+      "sha256": "1f45d7ca710cee52d8cba976af4313301b30488fb09f9e4fee802c9ccd36c4cd"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00096.jsonl",
+      "documents": 14263,
+      "bytes": 134214099,
+      "sha256": "3575dd7860cf769cef95592a330769525adf1399aa7b6337f6444b85245fbe07"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00097.jsonl",
+      "documents": 14112,
+      "bytes": 134214496,
+      "sha256": "b1eeb1227723263dc09eb22be26be34939dfe963237e31e19b77cf7c9347349c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00098.jsonl",
+      "documents": 14335,
+      "bytes": 134195452,
+      "sha256": "4f6d787c187d8beff115606f9005941f585321da5a2cd8f0b289a1e37ec0b9db"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00099.jsonl",
+      "documents": 14306,
+      "bytes": 134214858,
+      "sha256": "5ceca18fd78b0249c7f10d7a8396d3eb5956a1f66d5166747f20f6bb2122ac60"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00100.jsonl",
+      "documents": 14258,
+      "bytes": 133669412,
+      "sha256": "7019a3a5c23c728ff66f63bf9d7b341572ebdbaabf5c7556c79c93ff5851aff4"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00101.jsonl",
+      "documents": 13881,
+      "bytes": 134216443,
+      "sha256": "baa293578c4d6af024aa5b570717244a6432c794f44a0b23762dd4588371f6c0"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00102.jsonl",
+      "documents": 14428,
+      "bytes": 134215509,
+      "sha256": "a94efe6dbadb6f1c9756a3a5a1e5c23dfdac12b2581700da9e1bf9251b639a6c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00103.jsonl",
+      "documents": 13084,
+      "bytes": 134205503,
+      "sha256": "db879bfecbe3b578fcb0228977a12cce7aa94da7204866cece65552805dcb5ac"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00104.jsonl",
+      "documents": 14260,
+      "bytes": 134214888,
+      "sha256": "3272934a9d888ad3999496eeac407f43719ca859bf32440fa00d07b6bec00604"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00105.jsonl",
+      "documents": 14268,
+      "bytes": 134213113,
+      "sha256": "ea9ce85a3de5874c3eb9e9e3540d0a7a13b9ba6714c0641951c62ef7c77f10f5"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00106.jsonl",
+      "documents": 13912,
+      "bytes": 134211412,
+      "sha256": "ef63cc2865eb36d1b03db5e8b6a94154b6596e83bec144c743a5051f65940cef"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00107.jsonl",
+      "documents": 14001,
+      "bytes": 133961089,
+      "sha256": "2fbeffacdddd967f0510e2253a5bc9f8c83ce3f5000a661592c72ae02891eb45"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00108.jsonl",
+      "documents": 13716,
+      "bytes": 134195277,
+      "sha256": "6b4e6dc1311f434e0307a9bce34628ee7f8c203ea56c337bc8aaaff7603cf693"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00109.jsonl",
+      "documents": 14237,
+      "bytes": 134213457,
+      "sha256": "e19e0584bac67a37779d7e4e921e6b4c23c2ed6ed963e04779618524cc6e3054"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00110.jsonl",
+      "documents": 13952,
+      "bytes": 134211573,
+      "sha256": "ace6a45dd8d0dabfdfd6c87798a6467f1965d0d891101b6ae5aa93f710390afc"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00111.jsonl",
+      "documents": 14385,
+      "bytes": 133814109,
+      "sha256": "b112fae27c65bb21d81d6323511026b8384cf98d1f2428b3de47619d90ba5a05"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00112.jsonl",
+      "documents": 14024,
+      "bytes": 134202984,
+      "sha256": "15f69df6248c43ce1c95deb54e4e8eaf6f4926e9c1478d0beee09414c156dd9c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00113.jsonl",
+      "documents": 13817,
+      "bytes": 134215633,
+      "sha256": "a66602c5b95156903c4cea560de03d0f7f2c07e468e63a238a36fa1d1bab0ecc"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00114.jsonl",
+      "documents": 13911,
+      "bytes": 134215326,
+      "sha256": "227b1524c746ea18375f3aa21fb768331d98f5482a4415f1bb8decab4844be97"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00115.jsonl",
+      "documents": 13596,
+      "bytes": 134215132,
+      "sha256": "023f3fcf53bede5b050d26443d4fa67bf16b838fc0d3e09189c7f89683d56811"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00116.jsonl",
+      "documents": 14698,
+      "bytes": 134210427,
+      "sha256": "665c07390081a3e9aa74c0c8d1da0a1b92953c12ea2ac600f18438735544343a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00117.jsonl",
+      "documents": 13990,
+      "bytes": 133888497,
+      "sha256": "1e6c6171e5631bf3d366558b1fceed8c82c6d88ae42bd0f8a5a84abc80e9ae91"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00118.jsonl",
+      "documents": 14203,
+      "bytes": 134207485,
+      "sha256": "1f78b5fdc9dd8b6037a7e84d1c36684df9313965a6887e30c5345fb5f0244152"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00119.jsonl",
+      "documents": 14171,
+      "bytes": 134164141,
+      "sha256": "d26b4968c23d690ec744cc6542082e73c53eda04603799ea6c589a9b1cc57987"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00120.jsonl",
+      "documents": 14520,
+      "bytes": 134214783,
+      "sha256": "7db595c4effbee6ac5f828a1132ba41aa3fef5eeace841eba2c4d24b68ac537e"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00121.jsonl",
+      "documents": 14191,
+      "bytes": 134202120,
+      "sha256": "53546ffaa2af241e744e872efa5b8648acac1fef6f40a383e7efacf2652640eb"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00122.jsonl",
+      "documents": 13564,
+      "bytes": 134175319,
+      "sha256": "f317a646cb5250977d8fca6064755c6f8f6c00abc821b3cc53b25703dc8e16dd"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00123.jsonl",
+      "documents": 14242,
+      "bytes": 134209159,
+      "sha256": "63486f7bad547639804a96f9beda27716bb4b2a8b855e02ad51d9769b4bba8fe"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00124.jsonl",
+      "documents": 13859,
+      "bytes": 134152435,
+      "sha256": "cb9e51fa0901ca1bdf4f3c64625305aa797a4b0d0dddc982998f16b04d7f9418"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00125.jsonl",
+      "documents": 13606,
+      "bytes": 134215488,
+      "sha256": "86ed49b1cd68487dab5052d745aa55e5b9259fbf286e864796651e5e6856b439"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00126.jsonl",
+      "documents": 13594,
+      "bytes": 134115109,
+      "sha256": "474554af9df26cebae79f6509c59465eed566d61d0d14def18db092a13a8cb46"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00127.jsonl",
+      "documents": 14587,
+      "bytes": 134091115,
+      "sha256": "dd63a80e82c4e33b30289e28346dc056f7824ab24c348b3d2b72c0f4c4ec3873"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00128.jsonl",
+      "documents": 13814,
+      "bytes": 134213146,
+      "sha256": "11de3c775ae5e20558816e8662e39a3017ffcccf477a0a1aaa45212840b8aba9"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00129.jsonl",
+      "documents": 14110,
+      "bytes": 134055436,
+      "sha256": "a51f792bdb2321ffb6c778c4e94e7758f0bc89149c2d9dc052f2228482c9c001"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00130.jsonl",
+      "documents": 14109,
+      "bytes": 134207917,
+      "sha256": "3ce749e0e2a36eabd0f4ada556e07e2cbe71c4a161432b8a4dc7da1c25ed3585"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00131.jsonl",
+      "documents": 14044,
+      "bytes": 134216868,
+      "sha256": "55ffc3fd7396eb8371fa25806b38bfc165986220a7b9942c0836ceeed8ae2f63"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00132.jsonl",
+      "documents": 14324,
+      "bytes": 134214619,
+      "sha256": "be563bca8fe52699d3645719f2daab0df7416f2212ed5c6f4af09d244750bc7a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00133.jsonl",
+      "documents": 14159,
+      "bytes": 134007465,
+      "sha256": "b9b816f843d96b5a374af72b1bf896bea3293c8075800f3bd40cecb6ed68c21b"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00134.jsonl",
+      "documents": 13957,
+      "bytes": 134167396,
+      "sha256": "f9f3eac363f1567232b9f88e637f96cfb988cb0339b8327d3bc7e1d588e4cf1b"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00135.jsonl",
+      "documents": 14406,
+      "bytes": 134188026,
+      "sha256": "8be707437251e402e18df7f93d3efba60251d699b738f02ee20ca97ac4c1860d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00136.jsonl",
+      "documents": 14060,
+      "bytes": 134216352,
+      "sha256": "3c064869b60d628f215a2fa9149fb42a2d647ab90694247ccc6eb75150b3f0d9"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00137.jsonl",
+      "documents": 13695,
+      "bytes": 134178273,
+      "sha256": "10e857a1f2d72c95a8dcd7c644aaa589e3c5a0d5cfa660ca87965d720cb14c51"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00138.jsonl",
+      "documents": 14036,
+      "bytes": 134213426,
+      "sha256": "cb5a748597143bc1f5bebcf42bb08ec052fb4894df616c1cf5b1917d8cb67aeb"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00139.jsonl",
+      "documents": 13829,
+      "bytes": 134212932,
+      "sha256": "132e536b57f18bbc1d470d872f50526e6ebc0aab283480b884475abea9916368"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00140.jsonl",
+      "documents": 14006,
+      "bytes": 134211305,
+      "sha256": "e246bea67a4c5a7797aaed759d2811093962f487f54a7e7ef99c1c1cd807498d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00141.jsonl",
+      "documents": 14350,
+      "bytes": 134206796,
+      "sha256": "b1cdd4823df114ff83b8a5cea218f4513bc2241192743b1d214a7ef70b1c2a96"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00142.jsonl",
+      "documents": 13759,
+      "bytes": 134216280,
+      "sha256": "91a39a629784054eba69ad413be386ebe576df2199ca9a5d6865a9eae1a5e712"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00143.jsonl",
+      "documents": 13544,
+      "bytes": 134184238,
+      "sha256": "a1f19fc82b3a5c51e215f922d0b65f52e049e2b00fb44b70e3c90fdfb934350d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00144.jsonl",
+      "documents": 13903,
+      "bytes": 134141289,
+      "sha256": "045d9872ea20ee25afd2652a35f8d6bbf1bdafd79b05412298640fdfbb9d0384"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00145.jsonl",
+      "documents": 14396,
+      "bytes": 134196929,
+      "sha256": "3762cde8d4899504d7e97805595367e8b4f42908e6b4afa64a381fc8bd5c15b9"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00146.jsonl",
+      "documents": 13801,
+      "bytes": 134200533,
+      "sha256": "9d89bd8d70afdff1250bb864ed7af74e95ebd7b12fa6e311ef78fcff1e7a7b5e"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00147.jsonl",
+      "documents": 13805,
+      "bytes": 134213789,
+      "sha256": "f84528bed2a6325ab68b05cf5f05641e9cdc2cccb898be939526a789e051e10f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00148.jsonl",
+      "documents": 13950,
+      "bytes": 134210271,
+      "sha256": "889f6e47f39114d349e778dbc63fb6a56f3d04570345dda03a2d9b072631f020"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00149.jsonl",
+      "documents": 14035,
+      "bytes": 134214625,
+      "sha256": "aa0f5484f26a22f58d2da809c703c5e31e5f322895e5b239936cd31afd706db1"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00150.jsonl",
+      "documents": 13707,
+      "bytes": 134202938,
+      "sha256": "e8e9a51c863531e6e10cff2c71fdb6de08c1cafea49b3741a573a04054023905"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00151.jsonl",
+      "documents": 13829,
+      "bytes": 134158888,
+      "sha256": "56eb73bd0bdfc9848ce44c76a0fd85a632ff7a6deadff70735bcf74ff682e061"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00152.jsonl",
+      "documents": 14052,
+      "bytes": 134205354,
+      "sha256": "69bd66f2114324ae79520050d43d36fb513385ee32e864fdefe35c3417427634"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00153.jsonl",
+      "documents": 14665,
+      "bytes": 134206700,
+      "sha256": "6bf92bd85b0a5f14656f479fd6bd335ff5c90a65a5d9aa31ed9e578c74c63de7"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00154.jsonl",
+      "documents": 13866,
+      "bytes": 134208827,
+      "sha256": "bb7a687e69ee3c0ceaee79644e857094ed35e0e189d1f0a2b39d8b7c9da5b8db"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00155.jsonl",
+      "documents": 14455,
+      "bytes": 134215756,
+      "sha256": "a713f9da29bb7361d0794f9ca08419cf45c658f5817f5a45aeefb908d7e6b071"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00156.jsonl",
+      "documents": 14308,
+      "bytes": 134210407,
+      "sha256": "3b158a12c9ef8898ed80cc5792f56fb331252fddc318afb8811857f376f2afc3"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00157.jsonl",
+      "documents": 14042,
+      "bytes": 134215588,
+      "sha256": "b4303eaa266725aeabbab30901b31038f7075e6ed5b95a7886ae446eefe3d5fd"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00158.jsonl",
+      "documents": 14087,
+      "bytes": 134212748,
+      "sha256": "882374c6744c92d6da313bfe974439a9f78b60af3cd1207a85554edc15eb1270"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00159.jsonl",
+      "documents": 13794,
+      "bytes": 133999522,
+      "sha256": "003efe960f2aec8719697dff0f5f69ebff61667d94a66320031578e890282056"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00160.jsonl",
+      "documents": 14564,
+      "bytes": 134211150,
+      "sha256": "d027cdea540cf56d7c6a6a2e4e0195743ec7655c66c478d7651e81036c97226d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00161.jsonl",
+      "documents": 13738,
+      "bytes": 133952524,
+      "sha256": "436d064e454c7a3f58b8c61f3b4a7b2f29fdd9b2a7da906c82acf255db30abba"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00162.jsonl",
+      "documents": 13850,
+      "bytes": 134215680,
+      "sha256": "690944859bf97de13af1e5f9eccc297125e1ec55c5edc30a5591f3f993f11a5e"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00163.jsonl",
+      "documents": 14067,
+      "bytes": 134206408,
+      "sha256": "6265e85bc865b4f4601933b1dd4dfe34168e7f9d5f85c9636340b5f742a6cbcf"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00164.jsonl",
+      "documents": 13883,
+      "bytes": 134215097,
+      "sha256": "9ef93a16e22cf7d71cd67a4861a8b459d0f99b0ace0c9b16b97bda6c12f21960"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00165.jsonl",
+      "documents": 14312,
+      "bytes": 134217524,
+      "sha256": "7332fa87315a55ea0b57779ac0e8cd6b1a1d2db4a9f8d9971c1fc1ea801da13d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00166.jsonl",
+      "documents": 13207,
+      "bytes": 134217639,
+      "sha256": "4e890d04cb19a82b59756ca6ff109390e46ddfa967ab3a004b8af8d8e1a0438a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00167.jsonl",
+      "documents": 14156,
+      "bytes": 134199241,
+      "sha256": "e4fcb0f35f7de982f6c7ae5efd529cd080e6c90a05df7dd852f7c97673c72204"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00168.jsonl",
+      "documents": 13823,
+      "bytes": 134148680,
+      "sha256": "395ac8743461145e888a643d95e37f4a82ef880c971b555fdc50a3c85348da9d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00169.jsonl",
+      "documents": 13917,
+      "bytes": 134215837,
+      "sha256": "739037bffe434c74c43252121c59c28f00e98302334653efb07bddeee38236b2"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00170.jsonl",
+      "documents": 13983,
+      "bytes": 134190233,
+      "sha256": "2e618195d464719e1f1f9875bda9488700a8eeb25e3cff4420170c1f95cd7472"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00171.jsonl",
+      "documents": 14116,
+      "bytes": 134201767,
+      "sha256": "4b3715ad21676802494b44d5696c6f8a080a2d1300e8d1ccbc1c589132dd9b87"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00172.jsonl",
+      "documents": 14459,
+      "bytes": 134177499,
+      "sha256": "318a63796822f13b6075f30a65c936bacce84273c0f66c86a83f394cd95e3a1d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00173.jsonl",
+      "documents": 14304,
+      "bytes": 134216282,
+      "sha256": "58b27d6d78632621f0913968aa9acd655c1f699dca6a83d2d232349d30093c24"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00174.jsonl",
+      "documents": 13970,
+      "bytes": 134208733,
+      "sha256": "238e3d0d0a4018a1433ff14c177783b5f84d2e747e83b5d4e4261ee128c66b02"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00175.jsonl",
+      "documents": 14308,
+      "bytes": 134216901,
+      "sha256": "bbc1f6b6969767ed664f7603fd1beed5aff23b25177e00b50069fb348a6cc9da"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00176.jsonl",
+      "documents": 14724,
+      "bytes": 134195164,
+      "sha256": "c2f39c638f7e455679248954de8abfb0c1f8d6b6a5f05b5083ed1febf3061555"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/open-web-math/part-00177.jsonl",
+      "documents": 4424,
+      "bytes": 43452144,
+      "sha256": "36bfce85440e4745366bfbbb8eb1caf371f7724509983f50722bbc32428c0435"
+    }
+  ],
+  "counts": {
+    "input_rows": 2492865,
+    "output_records": 2492865
+  }
+}

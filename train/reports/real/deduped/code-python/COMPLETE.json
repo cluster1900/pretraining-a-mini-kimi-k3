@@ -1,0 +1,91 @@
+{
+  "source": "code-python",
+  "status": "complete",
+  "algorithm": "global-exact",
+  "counts": {
+    "input": 5446,
+    "kept": 2302,
+    "train": 2298,
+    "duplicates": 3144,
+    "validation": 4
+  },
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/code-python/part-00000.jsonl",
+      "documents": 289,
+      "bytes": 6472217,
+      "sha256": "4edc84363a396b8c94d3f31f219f831ff40fe8cbbc6107880d9b03b34f721621",
+      "counts": {
+        "input": 371,
+        "kept": 289,
+        "train": 289,
+        "duplicates": 82
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/code-python/part-00001.jsonl",
+      "documents": 266,
+      "bytes": 1448992,
+      "sha256": "d981f8aea367938e055f8b86512c160a354226880b577264ed43013225a2aa46",
+      "counts": {
+        "input": 575,
+        "duplicates": 309,
+        "kept": 266,
+        "train": 266
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/code-python/part-00002.jsonl",
+      "documents": 214,
+      "bytes": 982802,
+      "sha256": "339909a2fb375d56f0aa6f6b2916aa9a4c30637d652b8b45bddb416e4267269b",
+      "counts": {
+        "input": 637,
+        "kept": 214,
+        "train": 211,
+        "duplicates": 423,
+        "validation": 3
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/code-python/part-00003.jsonl",
+      "documents": 327,
+      "bytes": 2137153,
+      "sha256": "6a24ec7b5046a9bb934ebdc9a654973a7448a130a0f42e72e64aaf90b2ba95a4",
+      "counts": {
+        "input": 802,
+        "kept": 327,
+        "train": 327,
+        "duplicates": 475
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/code-python/part-00004.jsonl",
+      "documents": 1118,
+      "bytes": 5102428,
+      "sha256": "8593ca87ab7610cb698bb0bde5056b520710e0771a208433c80a8816761884a8",
+      "counts": {
+        "input": 1589,
+        "duplicates": 471,
+        "kept": 1118,
+        "train": 1117,
+        "validation": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/code-python/part-00005.jsonl",
+      "documents": 88,
+      "bytes": 356390,
+      "sha256": "60e6588d4ac2c62fb4f4326e66d9e665ea353213b745185af611e69c58df74d3",
+      "counts": {
+        "input": 1472,
+        "kept": 88,
+        "train": 88,
+        "duplicates": 1384
+      }
+    }
+  ],
+  "upstream_report_sha256": "a314795383b93cf18288c2d69d73edf5bbba25192acf21f66f248b49aa408682",
+  "global_identity": "a50e4ff168e887caf30aa501d46d0041d2036bc59aa7318fe7dec4daa8b0e80f",
+  "script_sha256": "d05b7da57b834d6b18a30d57203534a5d62e91898e809de40f8b3c8fd9ee873f"
+}

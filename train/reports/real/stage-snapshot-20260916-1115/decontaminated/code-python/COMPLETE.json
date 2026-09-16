@@ -1,0 +1,54 @@
+{
+  "source": "code-python",
+  "status": "complete",
+  "counts": {
+    "input": 2302,
+    "kept": 2276,
+    "removed": 26
+  },
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/code-python/part-00000.jsonl",
+      "documents": 279,
+      "bytes": 5360820,
+      "sha256": "d36b596d70dcf0167e5778ebd8fb971c56a102bce3b61bf9ac5cf56edde16bf5"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/code-python/part-00001.jsonl",
+      "documents": 266,
+      "bytes": 1448992,
+      "sha256": "d981f8aea367938e055f8b86512c160a354226880b577264ed43013225a2aa46"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/code-python/part-00002.jsonl",
+      "documents": 212,
+      "bytes": 968955,
+      "sha256": "7f1affbe11f1d842886843dc7dfb899bf69e9f3628448f6c3183bbffe3ef8266"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/code-python/part-00003.jsonl",
+      "documents": 323,
+      "bytes": 2054538,
+      "sha256": "dba42ca3bb169721a0c97c283394efbcc88556f9fceced4479909ac5790ae9ee"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/code-python/part-00004.jsonl",
+      "documents": 1109,
+      "bytes": 4976363,
+      "sha256": "6dbaefe9382a29569f0eb1c3ba83db3cba0f933b9ecc6d96fb463619e5f4162c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/code-python/part-00005.jsonl",
+      "documents": 87,
+      "bytes": 337689,
+      "sha256": "6fe5722efc3f4fa8ee4524050f51b05ec00eb0a0661f918053d9490ed834dcf5"
+    }
+  ],
+  "index_sha256": "8e1b0426827e05b0c2867098b59d4fba366057b40d74460e328e588ebaf15168",
+  "index_ngrams": {
+    "prose": 1507360,
+    "code": 23611
+  },
+  "upstream_report_sha256": "15ccec77313696d4ddc00486c7903f57b1933517b9d0c4a8705beb28cef0a833",
+  "script_sha256": "62ceec91b2725e759e678bd7355dda66483aa43ba3727e5c27a254e137c3dac1"
+}

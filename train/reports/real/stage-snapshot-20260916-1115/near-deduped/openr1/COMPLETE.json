@@ -1,0 +1,143 @@
+{
+  "status": "complete",
+  "source": "openr1",
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/openr1/part-00000.jsonl",
+      "bytes": 135605165,
+      "documents": 7469,
+      "sha256": "9ddd45f7266bda6499ba3d2247da53795d6721fc634dbd4644683d36dcd2e311",
+      "counts": {
+        "input": 7469,
+        "kept": 7469
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/openr1/part-00001.jsonl",
+      "bytes": 135582953,
+      "documents": 7414,
+      "sha256": "1ba949c7824dfa91a172efaa6b9998a0cdd58b0d45009e082ca7fdd36aedd2fc",
+      "counts": {
+        "input": 7414,
+        "kept": 7414
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/openr1/part-00002.jsonl",
+      "bytes": 135581295,
+      "documents": 7408,
+      "sha256": "03a59b3c585b9a74ecba2db756057d2fe47faeae280481133e2f813f9b4b5f84",
+      "counts": {
+        "input": 7408,
+        "kept": 7408
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/openr1/part-00003.jsonl",
+      "bytes": 135589803,
+      "documents": 7366,
+      "sha256": "18df4f5ded54f3266daf56dcf6a1e443a0f8b89d61f928353835b390cfd433bd",
+      "counts": {
+        "input": 7366,
+        "kept": 7366
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/openr1/part-00004.jsonl",
+      "bytes": 135587060,
+      "documents": 7346,
+      "sha256": "0684f86e1e2e16ae85b4d5722ac34e18ea297925d2c4484de9c81dd0e70a7cf5",
+      "counts": {
+        "input": 7346,
+        "kept": 7346
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/openr1/part-00005.jsonl",
+      "bytes": 135582857,
+      "documents": 7401,
+      "sha256": "6fff037735e276705a704cd57ce5c386271dfad2c0b2746d358508c1a4b244d7",
+      "counts": {
+        "input": 7401,
+        "kept": 7401
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/openr1/part-00006.jsonl",
+      "bytes": 135598195,
+      "documents": 7402,
+      "sha256": "32c5e588c182187c8a187919768cf2031d7033c67844014fb89940b281d22f0a",
+      "counts": {
+        "input": 7402,
+        "kept": 7402
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/openr1/part-00007.jsonl",
+      "bytes": 135585314,
+      "documents": 7407,
+      "sha256": "d002d37eb7a25f125c090d55e873440e8a0818d89f5dafe5b03f8998e14701ce",
+      "counts": {
+        "input": 7407,
+        "kept": 7407
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/openr1/part-00008.jsonl",
+      "bytes": 135583279,
+      "documents": 7335,
+      "sha256": "fc47368b2a45ece899e28110b318a10a6b48c58b5025d594b72dee1e2871a830",
+      "counts": {
+        "input": 7335,
+        "kept": 7335
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/openr1/part-00009.jsonl",
+      "bytes": 135582832,
+      "documents": 7362,
+      "sha256": "8d6c1029a0ff9e25a5836e3790a63140916d1097fd38c30e5aaa22079f5da3bf",
+      "counts": {
+        "input": 7362,
+        "kept": 7362
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/openr1/part-00010.jsonl",
+      "bytes": 135604762,
+      "documents": 7442,
+      "sha256": "7d6ca78b9dba4e5a53a457cea3bb384557bd9aefe23134333653af32529dd2ee",
+      "counts": {
+        "input": 7442,
+        "kept": 7442
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/openr1/part-00011.jsonl",
+      "bytes": 135591701,
+      "documents": 7382,
+      "sha256": "62e40085e91006e599cf888a0ef5f82cf0f564a0303b546a71f154a4056ff29d",
+      "counts": {
+        "input": 7382,
+        "kept": 7382
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/openr1/part-00012.jsonl",
+      "bytes": 91870022,
+      "documents": 4999,
+      "sha256": "78d573853942e16e563adb150326ac37f56033c3049901d1baff4eb7cc5190a9",
+      "counts": {
+        "input": 4999,
+        "kept": 4999
+      }
+    }
+  ],
+  "counts": {
+    "input": 93733,
+    "kept": 93733
+  },
+  "upstream_report_sha256": "0e62bd9c5b052196514efc6f2186e961a37b05d38d979b9b48ab80eef9859598",
+  "script_sha256": "f7a5ba73ce3248c68efe9b3ee39d5421af0eeb3d8dde05a62d5fc216c861de9a",
+  "method": "5-unit shingles, 64 MinHash permutations, 8x8 LSH, feature Jaccard>=0.9; SFT/preference exact dedup only"
+}

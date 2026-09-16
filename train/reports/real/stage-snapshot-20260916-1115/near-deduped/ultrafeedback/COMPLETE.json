@@ -1,0 +1,33 @@
+{
+  "status": "complete",
+  "source": "ultrafeedback",
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/ultrafeedback/part-00000.jsonl",
+      "bytes": 141501760,
+      "documents": 41368,
+      "sha256": "cfede549ca8732e388d6c7d8acac8c5e8eec5605a747fd3e7dddf224538375e3",
+      "counts": {
+        "input": 41368,
+        "kept": 41368
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/ultrafeedback/part-00001.jsonl",
+      "bytes": 93400142,
+      "documents": 19377,
+      "sha256": "8dfcb2d7929b7e57889f598363f5932b6cc40e22b39e9a775fecf24b6690c36d",
+      "counts": {
+        "input": 19377,
+        "kept": 19377
+      }
+    }
+  ],
+  "counts": {
+    "input": 60745,
+    "kept": 60745
+  },
+  "upstream_report_sha256": "3f0e194b09e762193f4490f4098fdd3b89c0c4efabcef428024909b6221b3315",
+  "script_sha256": "f7a5ba73ce3248c68efe9b3ee39d5421af0eeb3d8dde05a62d5fc216c861de9a",
+  "method": "5-unit shingles, 64 MinHash permutations, 8x8 LSH, feature Jaccard>=0.9; SFT/preference exact dedup only"
+}

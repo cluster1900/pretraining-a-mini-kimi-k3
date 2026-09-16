@@ -1,0 +1,111 @@
+{
+  "source": "openhermes",
+  "repo": "teknium/OpenHermes-2.5",
+  "role": "sft",
+  "status": "complete",
+  "schema_version": 2,
+  "script_sha256": "3fa30a1ec632dda0db690cf11d8788d78af99c895370170f0768348e8a5c5ce5",
+  "inputs": [
+    {
+      "file": "openhermes2_5.json",
+      "sha256": "abe573d17eade4161aac321028027dd5ba614a6d9516d51bde9299d5353e1609",
+      "bytes": 1936276651
+    }
+  ],
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openhermes/part-00000.jsonl",
+      "documents": 67526,
+      "bytes": 134217439,
+      "sha256": "bcdfdde81073678e23ccf67cf33c237393fe2b3f4e2cd8b3db4a78b47fe57b15"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openhermes/part-00001.jsonl",
+      "documents": 67381,
+      "bytes": 134216744,
+      "sha256": "6c2a51cdd8a7d2cbbb58be50426466f359bed2c8ddd8cd6749252d2ebc93caab"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openhermes/part-00002.jsonl",
+      "documents": 73964,
+      "bytes": 134217581,
+      "sha256": "eaef358b68d57b3e2bcad254e6f904b22e030ed0208171c4c31e6f279e7ababc"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openhermes/part-00003.jsonl",
+      "documents": 65639,
+      "bytes": 134215781,
+      "sha256": "b6c07e3e7ad58bb6770a048ef5d532a80348d53dbcd4b69aa94e2a9a4e722694"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openhermes/part-00004.jsonl",
+      "documents": 72731,
+      "bytes": 134215818,
+      "sha256": "5fe16aafb5bb2783cf172febc10adada54b61c23812b1d527e2f6d2e1d2be351"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openhermes/part-00005.jsonl",
+      "documents": 56500,
+      "bytes": 134217249,
+      "sha256": "cca4cba8ea07a30b8f368bc9d8a7d3dc6916220e12b84c1f270ab1af72c66f12"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openhermes/part-00006.jsonl",
+      "documents": 113238,
+      "bytes": 134216489,
+      "sha256": "88a1fe5416cbeea788c3152a16380bc1e20c51222df250df4f9cdadae7252484"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openhermes/part-00007.jsonl",
+      "documents": 67484,
+      "bytes": 134217245,
+      "sha256": "a8f0e9fc9cf236562d8a5dd3d2991df3f4ed154bc2653470d121fca15f77bf12"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openhermes/part-00008.jsonl",
+      "documents": 67425,
+      "bytes": 134217311,
+      "sha256": "3b41fb0ed2ece67846ffa06647b8db3322a5440db95cd869391199cca3a3a4a7"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openhermes/part-00009.jsonl",
+      "documents": 67873,
+      "bytes": 134217017,
+      "sha256": "b969e2d80ec88e2920b4921ff4aebddb629ac655765a26203bb7d3f1353fc82c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openhermes/part-00010.jsonl",
+      "documents": 68186,
+      "bytes": 134217008,
+      "sha256": "89a3951607ec5e6252a637eb51db4d6d8d9d0ccdc27f5cd7be938c6a68751823"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openhermes/part-00011.jsonl",
+      "documents": 68006,
+      "bytes": 134216852,
+      "sha256": "ad82e8f42af9ff9b0b5f75658f8559c24dd34132b8591616f5d6d87f43aa7949"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openhermes/part-00012.jsonl",
+      "documents": 62800,
+      "bytes": 134216372,
+      "sha256": "4aa7daedf57d1dda0d641a74759318551ba4d2e583b5e2fda76a3a481dd79833"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openhermes/part-00013.jsonl",
+      "documents": 57770,
+      "bytes": 134216755,
+      "sha256": "9286b1dd1c0904ec6c0db0d17228cef24c2d778b844db774b6535541aa519cb5"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openhermes/part-00014.jsonl",
+      "documents": 25028,
+      "bytes": 77425228,
+      "sha256": "df14c3d3210b2127c75819cf6e0b164a426d1c4c8f8c83d5d14d1b7b53236ae9"
+    }
+  ],
+  "counts": {
+    "input_rows": 1001551,
+    "output_records": 1001551
+  }
+}

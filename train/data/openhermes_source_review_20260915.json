@@ -1,0 +1,44 @@
+{
+  "status": "pending",
+  "repo": "teknium/OpenHermes-2.5",
+  "revision": "b82037821055c377bed0d495e72e46de3bc72e84",
+  "raw_sha256": "abe573d17eade4161aac321028027dd5ba614a6d9516d51bde9299d5353e1609",
+  "records": 1001551,
+  "missing_source_label": 496743,
+  "source_counts": {
+    "CamelAI": 78390,
+    "CogStackMed": 4443,
+    "Econ_domain_expert": 660,
+    "EvolInstruct_70k": 51948,
+    "GPT-4 Comparison Data": 14928,
+    "LMSys Chatbot Arena": 3136,
+    "UnnaturalInstructions": 8610,
+    "airoboros2.2": 35380,
+    "caseus_custom": 2688,
+    "cot_alpaca_gpt4": 42026,
+    "glaive-code-assist": 182240,
+    "lmsys1m": 1631,
+    "metamath": 56448,
+    "platypus": 22280
+  },
+  "evidence": [
+    "/data/mini-k3/data/reports/openhermes-subsource-inventory.json",
+    "/data/mini-k3/data/raw/openhermes/INVENTORY.json",
+    "/data/mini-k3/data/raw/openhermes/README.md",
+    "https://huggingface.co/datasets/teknium/OpenHermes-2.5/discussions/9"
+  ],
+  "finding": "496743 records lack a source label; 414062 contain only conversations. No missing-label record has a nonempty string dataset/dataset_name/subset/origin/source_name field. Existing metadata cannot establish per-record upstream provenance; license review remains pending.",
+  "next_action": "Review identified subsets and resolve or exclude untraceable records with a documented filtering rule before training approval.",
+  "training_approved": false,
+  "metadata_recheck_date": "2026-09-16",
+  "metadata_recheck_report": "train/reports/verification/openhermes-metadata-inventory-20260916.json",
+  "metadata_recheck_sha256": "4e409ce0fd96c73359df6f117081cd4f40842693cb4cacdff832954f55053724",
+  "missing_source_schemas": {
+    "avatarUrl|conversations|hash|id|model|title|views": 38,
+    "avatarUrl|conversations|hash|id|model|views": 2681,
+    "conversations": 414062,
+    "conversations|custom_instruction|model_name|title": 58,
+    "conversations|id": 28811,
+    "conversations|idx": 51093
+  }
+}

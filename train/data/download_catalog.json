@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "root": "/data/mini-k3/data/raw",
+  "reserve_bytes": 500000000000,
+  "sources": [
+    {
+      "name": "openassistant",
+      "backend": "hf-mirror",
+      "repo": "OpenAssistant/oasst1",
+      "directory": "openassistant"
+    },
+    {
+      "name": "ultrafeedback",
+      "backend": "hf-mirror",
+      "repo": "argilla/ultrafeedback-binarized-preferences-cleaned",
+      "directory": "ultrafeedback"
+    },
+    {
+      "name": "openhermes",
+      "backend": "hf-mirror",
+      "repo": "teknium/OpenHermes-2.5",
+      "directory": "openhermes"
+    },
+    {
+      "name": "openr1",
+      "backend": "hf-mirror",
+      "repo": "open-r1/OpenR1-Math-220k",
+      "directory": "openr1"
+    },
+    {
+      "name": "open-web-math",
+      "backend": "hf-mirror",
+      "repo": "open-web-math/open-web-math",
+      "directory": "open-web-math"
+    },
+    {
+      "name": "mathr",
+      "backend": "modelscope",
+      "repo": "modelscope/MathR",
+      "directory": "mathr"
+    },
+    {
+      "name": "numinamath",
+      "backend": "modelscope",
+      "repo": "AI-MO/NuminaMath-CoT",
+      "directory": "numinamath"
+    },
+    {
+      "name": "finemath",
+      "backend": "modelscope",
+      "repo": "HuggingFaceTB/finemath",
+      "directory": "finemath"
+    },
+    {
+      "name": "cosmopedia-original",
+      "backend": "hf-mirror",
+      "repo": "HuggingFaceTB/cosmopedia",
+      "directory": "cosmopedia-original"
+    },
+    {
+      "name": "chinese-cosmopedia",
+      "backend": "modelscope",
+      "repo": "AI-ModelScope/chinese-cosmopedia",
+      "directory": "cosmopedia"
+    },
+    {
+      "name": "skypile",
+      "backend": "modelscope",
+      "repo": "AI-ModelScope/SkyPile-150B",
+      "directory": "skypile"
+    },
+    {
+      "name": "chinese-fineweb-edu",
+      "backend": "modelscope",
+      "repo": "opencsg/chinese-fineweb-edu",
+      "directory": "culturax"
+    },
+    {
+      "name": "culturax-original",
+      "backend": "hf-mirror",
+      "repo": "uonlp/CulturaX",
+      "directory": "culturax-original"
+    },
+    {
+      "name": "starcoderdata-original",
+      "backend": "hf-mirror",
+      "repo": "bigcode/starcoderdata",
+      "directory": "starcoderdata-original"
+    },
+    {
+      "name": "stack-v3",
+      "backend": "modelscope",
+      "repo": "HuggingFaceCode/stack-v3-train",
+      "directory": "code-python"
+    },
+    {
+      "name": "dolma-v1_7",
+      "backend": "modelscope",
+      "repo": "modelscope/dolma",
+      "directory": "dolma-body"
+    },
+    {
+      "name": "fineweb-edu",
+      "backend": "modelscope",
+      "repo": "HuggingFaceFW/fineweb-edu",
+      "directory": "fineweb-edu"
+    },
+    {
+      "name": "cci-base",
+      "backend": "modelscope",
+      "repo": "BAAI/CCI4.0-M2-Base-v1",
+      "directory": "cci-base"
+    },
+    {
+      "name": "cci-extra",
+      "backend": "modelscope",
+      "repo": "BAAI/CCI4.0-M2-Extra-v1",
+      "directory": "cci-extra"
+    },
+    {
+      "name": "cci-cot",
+      "backend": "modelscope",
+      "repo": "BAAI/CCI4.0-M2-CoT-v1",
+      "directory": "cci-cot"
+    }
+  ],
+  "download_scope": "usage_only",
+  "policy_note": "2026-09-14: user requires only files used by this training run. Full repository downloads are disabled. Existing files are retained; new downloads need an explicit file selection and actual token deficit."
+}

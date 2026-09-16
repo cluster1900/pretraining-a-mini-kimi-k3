@@ -1,0 +1,24 @@
+{
+  "source": "openassistant",
+  "status": "complete",
+  "counts": {
+    "input": 53615,
+    "kept": 53499,
+    "removed": 116
+  },
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/openassistant/part-00000.jsonl",
+      "documents": 53499,
+      "bytes": 111695465,
+      "sha256": "70a0dfb5994cd63f92f7c6d2dde486be5dd73e0489f4274b72f33956e2aa4b97"
+    }
+  ],
+  "index_sha256": "8e1b0426827e05b0c2867098b59d4fba366057b40d74460e328e588ebaf15168",
+  "index_ngrams": {
+    "prose": 1507360,
+    "code": 23611
+  },
+  "upstream_report_sha256": "83532dd6f99412758dfa5fda94d9cf130dfaa92fa898e7c746184a21c44c90b2",
+  "script_sha256": "62ceec91b2725e759e678bd7355dda66483aa43ba3727e5c27a254e137c3dac1"
+}

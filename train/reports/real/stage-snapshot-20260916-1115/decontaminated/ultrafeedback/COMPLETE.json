@@ -1,0 +1,30 @@
+{
+  "source": "ultrafeedback",
+  "status": "complete",
+  "counts": {
+    "input": 60745,
+    "kept": 60482,
+    "removed": 263
+  },
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/ultrafeedback/part-00000.jsonl",
+      "documents": 41166,
+      "bytes": 140714508,
+      "sha256": "43c19f924404dfea8c8a79727bd96b76a48eada3d33e181c08cfe54c114f7350"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/decontaminated/ultrafeedback/part-00001.jsonl",
+      "documents": 19316,
+      "bytes": 93137542,
+      "sha256": "86976a3bd185624b3587e6e218dded3d2ccdab26306ba61f21a81cf29d38582e"
+    }
+  ],
+  "index_sha256": "8e1b0426827e05b0c2867098b59d4fba366057b40d74460e328e588ebaf15168",
+  "index_ngrams": {
+    "prose": 1507360,
+    "code": 23611
+  },
+  "upstream_report_sha256": "772b9998ce073bedba06deaaa6ae6619c258f59ed1120b2df4aeb3cefc03f85a",
+  "script_sha256": "62ceec91b2725e759e678bd7355dda66483aa43ba3727e5c27a254e137c3dac1"
+}

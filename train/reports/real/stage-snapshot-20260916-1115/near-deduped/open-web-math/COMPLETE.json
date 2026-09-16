@@ -1,0 +1,1972 @@
+{
+  "status": "complete",
+  "source": "open-web-math",
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00000.jsonl",
+      "bytes": 128025641,
+      "documents": 13709,
+      "sha256": "f5cd28a7cd0b050d0639a140d78f45328bb28ad5869b8a2d0184a6ef119a5ef9",
+      "counts": {
+        "input": 14221,
+        "kept": 13709,
+        "near_duplicates": 512
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00001.jsonl",
+      "bytes": 129374498,
+      "documents": 13244,
+      "sha256": "d3cb6a329b922cb1647dc67c28abf54f888d37c7394b9c2cfa6672217da5604b",
+      "counts": {
+        "input": 13713,
+        "kept": 13244,
+        "near_duplicates": 469
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00002.jsonl",
+      "bytes": 129429783,
+      "documents": 13493,
+      "sha256": "20caa1281f19823564b009c62cc575f5400c43646ab0cc9d98b6b5723fac724f",
+      "counts": {
+        "input": 13919,
+        "kept": 13493,
+        "near_duplicates": 426
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00003.jsonl",
+      "bytes": 129351082,
+      "documents": 12835,
+      "sha256": "d7f8e8b6121a8454c5a79dce51210a93990b93f54fc88b98e85bba4327c304e8",
+      "counts": {
+        "input": 13230,
+        "kept": 12835,
+        "near_duplicates": 395
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00004.jsonl",
+      "bytes": 129211760,
+      "documents": 13310,
+      "sha256": "8e8844675ba8b869e4a0c6a002e76b0b0d5b678e0cf7afc85f343ba543c190e1",
+      "counts": {
+        "input": 13766,
+        "kept": 13310,
+        "near_duplicates": 456
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00005.jsonl",
+      "bytes": 129821038,
+      "documents": 13313,
+      "sha256": "36f20f6d81616b28516c2faf9eb6b1081108228f11a1f1f92ad6d81570d04be1",
+      "counts": {
+        "input": 13755,
+        "kept": 13313,
+        "near_duplicates": 442
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00006.jsonl",
+      "bytes": 127921285,
+      "documents": 12927,
+      "sha256": "70ccdcba29241c7b9c4ffc5f721ded118999565860514f7ba6b5c190946e8f52",
+      "counts": {
+        "input": 13383,
+        "kept": 12927,
+        "near_duplicates": 456
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00007.jsonl",
+      "bytes": 129602383,
+      "documents": 13369,
+      "sha256": "7cd94f7049d871dcac8098e85e2cb44f6328909de80108ec47931fe97a3fdb2c",
+      "counts": {
+        "input": 13855,
+        "kept": 13369,
+        "near_duplicates": 486
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00008.jsonl",
+      "bytes": 129694408,
+      "documents": 13149,
+      "sha256": "01e1b9b1338888a498c1d542faef338e57f58e9f54a92f7afa71f61b18cec83d",
+      "counts": {
+        "input": 13560,
+        "kept": 13149,
+        "near_duplicates": 411
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00009.jsonl",
+      "bytes": 129597528,
+      "documents": 13233,
+      "sha256": "bf9ef80a82b79e2b9c0b42f0ce766bb26d34614306bbea6eb85724f7eb6713d5",
+      "counts": {
+        "input": 13727,
+        "kept": 13233,
+        "near_duplicates": 494
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00010.jsonl",
+      "bytes": 129201525,
+      "documents": 13661,
+      "sha256": "054a063bf790f326dd0b722ce0cfab27efc1bcf9b45771bbe3473d5c7b3ccb42",
+      "counts": {
+        "input": 14153,
+        "kept": 13661,
+        "near_duplicates": 492
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00011.jsonl",
+      "bytes": 129480451,
+      "documents": 13090,
+      "sha256": "9eca43f97fe769812fb8f0e6ffdaad5af04115995f5d44e52ff8eb34c15ae9c9",
+      "counts": {
+        "input": 13575,
+        "kept": 13090,
+        "near_duplicates": 485
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00012.jsonl",
+      "bytes": 129626400,
+      "documents": 12681,
+      "sha256": "0ffbfb688dff22eaaea26b9636c1e4f985f5ecede5be988b45f5775ac9b39e6c",
+      "counts": {
+        "input": 13134,
+        "kept": 12681,
+        "near_duplicates": 453
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00013.jsonl",
+      "bytes": 129215052,
+      "documents": 13488,
+      "sha256": "796c5c7ffbe57e233c5061fd6835dd4c15ea24716788610425642def34171353",
+      "counts": {
+        "input": 13962,
+        "kept": 13488,
+        "near_duplicates": 474
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00014.jsonl",
+      "bytes": 129335025,
+      "documents": 13077,
+      "sha256": "62dcbc0546895ad738cd90acfb97d950068b4cb924e677c40656d71e6dd28467",
+      "counts": {
+        "input": 13483,
+        "kept": 13077,
+        "near_duplicates": 406
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00015.jsonl",
+      "bytes": 129893477,
+      "documents": 13049,
+      "sha256": "0d93868bd3efa1601752ce5e70421569c15483fb57db81d84bb0f4f7a8dfce47",
+      "counts": {
+        "input": 13459,
+        "kept": 13049,
+        "near_duplicates": 410
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00016.jsonl",
+      "bytes": 128963344,
+      "documents": 13348,
+      "sha256": "7cc053b4be1ba0e39d73320e79e251e1da9f1faeaecf4a2b4b12434fd7ff179b",
+      "counts": {
+        "input": 13835,
+        "kept": 13348,
+        "near_duplicates": 487
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00017.jsonl",
+      "bytes": 129062811,
+      "documents": 13070,
+      "sha256": "5fba6f80d3fd3aeaa35eff46c480e59fe7a79c8c1a1a7634036e21e85befc7bb",
+      "counts": {
+        "input": 13523,
+        "kept": 13070,
+        "near_duplicates": 453
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00018.jsonl",
+      "bytes": 129230691,
+      "documents": 13436,
+      "sha256": "350c7696b81af37cf341883b718f09cec217874d1a269b64107dcb84f65c22ac",
+      "counts": {
+        "input": 13924,
+        "kept": 13436,
+        "near_duplicates": 488
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00019.jsonl",
+      "bytes": 129470896,
+      "documents": 13250,
+      "sha256": "47ee8f45fa306349320bc624ddab46f15d4b2ccea11250414f4f7b778cb4f3fd",
+      "counts": {
+        "input": 13705,
+        "kept": 13250,
+        "near_duplicates": 455
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00020.jsonl",
+      "bytes": 129197551,
+      "documents": 12543,
+      "sha256": "0bc6d2f3a30aa418816238e9c9d5e015b4e8715936ba9ab6e6ebd04d96d11079",
+      "counts": {
+        "input": 13016,
+        "kept": 12543,
+        "near_duplicates": 473
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00021.jsonl",
+      "bytes": 129104019,
+      "documents": 12994,
+      "sha256": "a01b7672dfb1f27b8dba1acdffc20e53ea21fe9869fd03ce1a24ad1047882fc2",
+      "counts": {
+        "input": 13421,
+        "kept": 12994,
+        "near_duplicates": 427
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00022.jsonl",
+      "bytes": 129561424,
+      "documents": 12998,
+      "sha256": "854167850d232ea03ef88c16a12083b7237c400ca7e6a057d1d603cfbfc4795c",
+      "counts": {
+        "input": 13468,
+        "kept": 12998,
+        "near_duplicates": 470
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00023.jsonl",
+      "bytes": 129878781,
+      "documents": 13253,
+      "sha256": "f8e5318f6d32d360c6046502279b6a23ea5b82f7a05a0a16172d7199434b45ca",
+      "counts": {
+        "input": 13722,
+        "kept": 13253,
+        "near_duplicates": 469
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00024.jsonl",
+      "bytes": 129532620,
+      "documents": 13249,
+      "sha256": "200192b708002c0db107c5a152e98f9c360637e24a5a27fa3d9b5ee2c501202a",
+      "counts": {
+        "input": 13688,
+        "kept": 13249,
+        "near_duplicates": 439
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00025.jsonl",
+      "bytes": 129176481,
+      "documents": 13193,
+      "sha256": "7dea3bb9dd35ad6f15d8a0c962cda7d74dc076208229c2d4d23f2513409663e8",
+      "counts": {
+        "input": 13672,
+        "kept": 13193,
+        "near_duplicates": 479
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00026.jsonl",
+      "bytes": 129792148,
+      "documents": 12742,
+      "sha256": "142fd7d03f1496241c3cdab120c069569b4557a3400c071e00fc152894fd04f6",
+      "counts": {
+        "input": 13187,
+        "kept": 12742,
+        "near_duplicates": 445
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00027.jsonl",
+      "bytes": 129564128,
+      "documents": 13413,
+      "sha256": "8d9c20826758caf5feead0d0168351b258b07db2a23c07cb2690604cbadf4bc4",
+      "counts": {
+        "input": 13876,
+        "kept": 13413,
+        "near_duplicates": 463
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00028.jsonl",
+      "bytes": 129597648,
+      "documents": 12800,
+      "sha256": "de5326ad5ffbbb0643e71f0d8ea378ee4470898568d4b9af7e785193959587f9",
+      "counts": {
+        "input": 13250,
+        "kept": 12800,
+        "near_duplicates": 450
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00029.jsonl",
+      "bytes": 128929612,
+      "documents": 13404,
+      "sha256": "9c85273a9f5fbc8d403b5dbacd91f7a8f1ff168bdd0f1852660eafb4cfb10e37",
+      "counts": {
+        "input": 13914,
+        "kept": 13404,
+        "near_duplicates": 510
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00030.jsonl",
+      "bytes": 128980115,
+      "documents": 12923,
+      "sha256": "455aa025dd822f6c01d71a77e77be33f21c3deda2bbcdbaf74ff0a475a3cd352",
+      "counts": {
+        "input": 13406,
+        "kept": 12923,
+        "near_duplicates": 483
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00031.jsonl",
+      "bytes": 129444192,
+      "documents": 12909,
+      "sha256": "44a112364057ab17c58b79d61dbf6f773d8555b01e5c7a83c1aa434df7a24242",
+      "counts": {
+        "input": 13425,
+        "kept": 12909,
+        "near_duplicates": 516
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00032.jsonl",
+      "bytes": 129555115,
+      "documents": 12966,
+      "sha256": "ec25b964049fb4c5433dced4f75b520a895c999b52b995f50a5d83ab86ac49ee",
+      "counts": {
+        "input": 13443,
+        "kept": 12966,
+        "near_duplicates": 477
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00033.jsonl",
+      "bytes": 128692486,
+      "documents": 12832,
+      "sha256": "095568142834d316e06a8c02fb7b571e1c53c99232ebfd3452f4c2e05f722af8",
+      "counts": {
+        "input": 13299,
+        "kept": 12832,
+        "near_duplicates": 467
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00034.jsonl",
+      "bytes": 129879845,
+      "documents": 12841,
+      "sha256": "4475b4c5087fa1b22e4b3e92fa3901bef1f50e0fc13942dc1935c217b6fe3619",
+      "counts": {
+        "input": 13275,
+        "kept": 12841,
+        "near_duplicates": 434
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00035.jsonl",
+      "bytes": 129898395,
+      "documents": 12700,
+      "sha256": "c7fab764b9cb19dc73fdf5584121516c015bbb1c641c995765009115b741f536",
+      "counts": {
+        "input": 13140,
+        "kept": 12700,
+        "near_duplicates": 440
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00036.jsonl",
+      "bytes": 129036892,
+      "documents": 13145,
+      "sha256": "79b0cb65b473efa788c5b0d94f131854cae199a97174a0d8a3deb36706f76e9f",
+      "counts": {
+        "input": 13635,
+        "near_duplicates": 490,
+        "kept": 13145
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00037.jsonl",
+      "bytes": 129863389,
+      "documents": 12849,
+      "sha256": "eef91ee9af407043725a16e64c5058f94906d67d0dad283d8a2b06e0149044a6",
+      "counts": {
+        "input": 13310,
+        "kept": 12849,
+        "near_duplicates": 461
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00038.jsonl",
+      "bytes": 129547043,
+      "documents": 12640,
+      "sha256": "3ec85514ee6e9bcdbe7434edacf6ee837f26c63817981d7c35944e71bb3d8e20",
+      "counts": {
+        "input": 13062,
+        "kept": 12640,
+        "near_duplicates": 422
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00039.jsonl",
+      "bytes": 130212601,
+      "documents": 13640,
+      "sha256": "1d7b387914d6bd48bf22101af56ca5f14418202e5c86a36ea31d562e2b693512",
+      "counts": {
+        "input": 14104,
+        "kept": 13640,
+        "near_duplicates": 464
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00040.jsonl",
+      "bytes": 129736483,
+      "documents": 13243,
+      "sha256": "b6e42894daa8657829b530bbb474f81685288897b1b7e2a499279409f405ddf1",
+      "counts": {
+        "input": 13694,
+        "kept": 13243,
+        "near_duplicates": 451
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00041.jsonl",
+      "bytes": 128703200,
+      "documents": 13388,
+      "sha256": "cc1f5ef7305fbea04374410cb0354db1d73dd412a22cb04b2b05e62d704b8d0b",
+      "counts": {
+        "input": 13893,
+        "kept": 13388,
+        "near_duplicates": 505
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00042.jsonl",
+      "bytes": 129487948,
+      "documents": 13145,
+      "sha256": "35f3687892e0d6ce9f7baa6530bd1bde5beb8c4d09d0901126da33de3eb8ae86",
+      "counts": {
+        "input": 13618,
+        "kept": 13145,
+        "near_duplicates": 473
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00043.jsonl",
+      "bytes": 128795317,
+      "documents": 13147,
+      "sha256": "5369d32ecd5d65652e59071717941432910d1062e661704751f00f15d6dd7f1b",
+      "counts": {
+        "input": 13611,
+        "kept": 13147,
+        "near_duplicates": 464
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00044.jsonl",
+      "bytes": 129733849,
+      "documents": 12815,
+      "sha256": "db927980dbb08c2166ab79fe8000259f694434a896221d8bf8d1cca526a565d7",
+      "counts": {
+        "input": 13284,
+        "kept": 12815,
+        "near_duplicates": 469
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00045.jsonl",
+      "bytes": 129318716,
+      "documents": 13493,
+      "sha256": "de4e7979059a5d973d2a4462e5ab6d9ed6ef67552988b4b6769c891f38e5da70",
+      "counts": {
+        "input": 13978,
+        "kept": 13493,
+        "near_duplicates": 485
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00046.jsonl",
+      "bytes": 129687437,
+      "documents": 12747,
+      "sha256": "c0387b50e9f17e8866ebf972fc2725f4f3a86cc8b774ec12685cffae1513ad14",
+      "counts": {
+        "input": 13206,
+        "kept": 12747,
+        "near_duplicates": 459
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00047.jsonl",
+      "bytes": 129308393,
+      "documents": 12676,
+      "sha256": "b4d4b9bebff14c8371fd82018773121cf554b6dd520a794aacf536528783bac8",
+      "counts": {
+        "input": 13127,
+        "kept": 12676,
+        "near_duplicates": 451
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00048.jsonl",
+      "bytes": 129690279,
+      "documents": 13391,
+      "sha256": "aabe67d7d9b5454a785074aa5f0a201b016d0cf8235927a8f7b7d6cdf41d9db1",
+      "counts": {
+        "input": 13841,
+        "near_duplicates": 450,
+        "kept": 13391
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00049.jsonl",
+      "bytes": 129177625,
+      "documents": 13344,
+      "sha256": "498ddc33b5ceeed8e4ca6e0da3388eb051556a274c9dcf09f925e8494baafa21",
+      "counts": {
+        "input": 13812,
+        "kept": 13344,
+        "near_duplicates": 468
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00050.jsonl",
+      "bytes": 129104991,
+      "documents": 13293,
+      "sha256": "3125087849700fc1bb197f0163792d6751de92675577c88b9dd2f1e596180d20",
+      "counts": {
+        "input": 13772,
+        "kept": 13293,
+        "near_duplicates": 479
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00051.jsonl",
+      "bytes": 128731603,
+      "documents": 12783,
+      "sha256": "0a789ea6a082cdae4b57da83236ef8fb93b5472f6892652f18fbba272fb7bc50",
+      "counts": {
+        "input": 13238,
+        "kept": 12783,
+        "near_duplicates": 455
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00052.jsonl",
+      "bytes": 128561855,
+      "documents": 13295,
+      "sha256": "16135f51c1f3dfd9af0cb193fda9e9523ea26d79c71cee4b4440bd369baadd12",
+      "counts": {
+        "input": 13776,
+        "kept": 13295,
+        "near_duplicates": 481
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00053.jsonl",
+      "bytes": 128894955,
+      "documents": 13414,
+      "sha256": "db0809a7fc2863a79320f91868f5d8115b4709b25dcb86387c03891f8e96b835",
+      "counts": {
+        "input": 13904,
+        "kept": 13414,
+        "near_duplicates": 490
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00054.jsonl",
+      "bytes": 129573773,
+      "documents": 12902,
+      "sha256": "654cce22bba18ce1de4c2da78950d9446179a9fba32092c0be48d5ca37297d9f",
+      "counts": {
+        "input": 13364,
+        "kept": 12902,
+        "near_duplicates": 462
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00055.jsonl",
+      "bytes": 128819399,
+      "documents": 12892,
+      "sha256": "656a39f9e06c451073c42719d7d1dfdbd784622ac07e9bdc3370504a06969133",
+      "counts": {
+        "input": 13350,
+        "kept": 12892,
+        "near_duplicates": 458
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00056.jsonl",
+      "bytes": 129337411,
+      "documents": 12921,
+      "sha256": "6eabaaff63bf138e645e66893705d1a13bda085d836813e402951daac1ec98bd",
+      "counts": {
+        "input": 13428,
+        "kept": 12921,
+        "near_duplicates": 507
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00057.jsonl",
+      "bytes": 129580213,
+      "documents": 13070,
+      "sha256": "7ef3dd76db797ab63e6af94ffb7d96d8254e81287c2da5c91fa1223e720d2b9b",
+      "counts": {
+        "input": 13514,
+        "kept": 13070,
+        "near_duplicates": 444
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00058.jsonl",
+      "bytes": 129631990,
+      "documents": 12996,
+      "sha256": "35e77350d0f0428f9864f6df7f56f6106891a61598a4f8f3df76c33dc2e95a4d",
+      "counts": {
+        "input": 13453,
+        "kept": 12996,
+        "near_duplicates": 457
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00059.jsonl",
+      "bytes": 128758328,
+      "documents": 13554,
+      "sha256": "f488517670424286de432dbb7133a740173aa266ed9a42884775629eddbb5431",
+      "counts": {
+        "input": 14068,
+        "kept": 13554,
+        "near_duplicates": 514
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00060.jsonl",
+      "bytes": 129018332,
+      "documents": 13081,
+      "sha256": "d44e7e61723b7067e1f9bc6963d77918b2ac559c59f624bca1a68d9ec9159d22",
+      "counts": {
+        "input": 13574,
+        "kept": 13081,
+        "near_duplicates": 493
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00061.jsonl",
+      "bytes": 129435643,
+      "documents": 13421,
+      "sha256": "53fbc6df3edc91096bbafed3016a65eb23d406aacdb5445318dd3136a3654bbd",
+      "counts": {
+        "input": 13892,
+        "kept": 13421,
+        "near_duplicates": 471
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00062.jsonl",
+      "bytes": 129036131,
+      "documents": 13410,
+      "sha256": "766ef34fa18dec3246141375f92be0b382cb21b5320efea7414f1e28c830f231",
+      "counts": {
+        "input": 13903,
+        "kept": 13410,
+        "near_duplicates": 493
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00063.jsonl",
+      "bytes": 129565300,
+      "documents": 13122,
+      "sha256": "8b5a481efc358e24db891328166d8476ef5e2066afa71d9f3304ba0bfb78a8b4",
+      "counts": {
+        "input": 13605,
+        "kept": 13122,
+        "near_duplicates": 483
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00064.jsonl",
+      "bytes": 129176617,
+      "documents": 12746,
+      "sha256": "3b97a9599eea9afd9ea2b5066d523d8546ceb76b391c5a4df2657e5c4d506a8c",
+      "counts": {
+        "input": 13222,
+        "kept": 12746,
+        "near_duplicates": 476
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00065.jsonl",
+      "bytes": 129861760,
+      "documents": 13220,
+      "sha256": "3344ddafca95f0461f314c09d03d87fbaa647c7a8ead57a3422299aabc008889",
+      "counts": {
+        "input": 13674,
+        "kept": 13220,
+        "near_duplicates": 454
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00066.jsonl",
+      "bytes": 128710876,
+      "documents": 12928,
+      "sha256": "e9ee8ef65155706128d43e36311f8e38d72a3209ccba098aec8a5763b7b9dde9",
+      "counts": {
+        "input": 13400,
+        "kept": 12928,
+        "near_duplicates": 472
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00067.jsonl",
+      "bytes": 129244721,
+      "documents": 13210,
+      "sha256": "e60bb400cc503fe6a5b34cda8e6c79796159ad531908bd405d62cb0ce7f822ea",
+      "counts": {
+        "input": 13665,
+        "kept": 13210,
+        "near_duplicates": 455
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00068.jsonl",
+      "bytes": 129429041,
+      "documents": 13184,
+      "sha256": "9b061273328872fcb4c8b29d34cba54f1d47634f1d4dcc6294a72208a7158003",
+      "counts": {
+        "input": 13650,
+        "kept": 13184,
+        "near_duplicates": 466
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00069.jsonl",
+      "bytes": 128573228,
+      "documents": 13515,
+      "sha256": "13177969bb0c55dc0ae1d3e1325bebb952267c1166cc4f967038ccdc33d314f8",
+      "counts": {
+        "input": 14019,
+        "kept": 13515,
+        "near_duplicates": 504
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00070.jsonl",
+      "bytes": 129045052,
+      "documents": 13213,
+      "sha256": "a794637497d8980c4b82dae378955ee534cf821ad6455d1b87acecc38da68858",
+      "counts": {
+        "input": 13733,
+        "kept": 13213,
+        "near_duplicates": 520
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00071.jsonl",
+      "bytes": 129010103,
+      "documents": 12595,
+      "sha256": "3f7dbbe9b7d98c80cc3ae536ff197bedca6bee24058fe7b52788bb2d08f632ea",
+      "counts": {
+        "input": 13046,
+        "kept": 12595,
+        "near_duplicates": 451
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00072.jsonl",
+      "bytes": 128967759,
+      "documents": 12732,
+      "sha256": "8ce68c3b4acfcb886426bef7bf51b189b1df31e4cc1714387244264d51530065",
+      "counts": {
+        "input": 13196,
+        "kept": 12732,
+        "near_duplicates": 464
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00073.jsonl",
+      "bytes": 129942756,
+      "documents": 13014,
+      "sha256": "2fb3abc09a32787c105cd05e2d49304aa417f71f4d56f3bcbfb207adb01199e0",
+      "counts": {
+        "input": 13481,
+        "kept": 13014,
+        "near_duplicates": 467
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00074.jsonl",
+      "bytes": 128875427,
+      "documents": 13086,
+      "sha256": "32fb42062c2a263b5360cff322e3574993aecfd82c53a89be748ac1f8d83d3b5",
+      "counts": {
+        "input": 13583,
+        "kept": 13086,
+        "near_duplicates": 497
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00075.jsonl",
+      "bytes": 129058291,
+      "documents": 12971,
+      "sha256": "08aae9eb45eb4d4060538a8374bafc4b4701a6f3bcfe611778f5b6e00f446e82",
+      "counts": {
+        "input": 13439,
+        "kept": 12971,
+        "near_duplicates": 468
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00076.jsonl",
+      "bytes": 129672568,
+      "documents": 13403,
+      "sha256": "420a406493faddc73e9cf00496d17e5330e2c67e6e9cb44881869343535956ee",
+      "counts": {
+        "input": 13898,
+        "kept": 13403,
+        "near_duplicates": 495
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00077.jsonl",
+      "bytes": 129309234,
+      "documents": 12656,
+      "sha256": "6b4d271ff360c422bc047e762fa977a6a572e8ab83b0be37d29a4f1f31e1653c",
+      "counts": {
+        "input": 13112,
+        "kept": 12656,
+        "near_duplicates": 456
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00078.jsonl",
+      "bytes": 129487190,
+      "documents": 12992,
+      "sha256": "569e516cc88aef973508d3b793d854ff199568b51563501e69db918e62b15156",
+      "counts": {
+        "input": 13455,
+        "kept": 12992,
+        "near_duplicates": 463
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00079.jsonl",
+      "bytes": 129097032,
+      "documents": 13246,
+      "sha256": "8e028cc577a429b0ef74d47847fe993615ccf148928f92de393c16ac286d0fd6",
+      "counts": {
+        "input": 13747,
+        "kept": 13246,
+        "near_duplicates": 501
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00080.jsonl",
+      "bytes": 129452346,
+      "documents": 12719,
+      "sha256": "2825d01a1cae5487a8fa0625f8f19f80286aa74af03af3937a99a25168fe4acf",
+      "counts": {
+        "input": 13231,
+        "kept": 12719,
+        "near_duplicates": 512
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00081.jsonl",
+      "bytes": 129141044,
+      "documents": 13254,
+      "sha256": "fc26e68aa0bbd6c11f96e92af42b410263b4e804ba4746de77cf14bde89ef1a3",
+      "counts": {
+        "input": 13751,
+        "kept": 13254,
+        "near_duplicates": 497
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00082.jsonl",
+      "bytes": 128863552,
+      "documents": 13036,
+      "sha256": "6fa9b72052377ef2210d37e888a90d64ba9ffb281c834ff5336d7bd0c4729490",
+      "counts": {
+        "input": 13485,
+        "kept": 13036,
+        "near_duplicates": 449
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00083.jsonl",
+      "bytes": 129372137,
+      "documents": 12851,
+      "sha256": "5a93de488b6fa7f0ee9a152511de483be666b5d87883ed71e68d38369d1a73ee",
+      "counts": {
+        "input": 13322,
+        "kept": 12851,
+        "near_duplicates": 471
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00084.jsonl",
+      "bytes": 129320405,
+      "documents": 13514,
+      "sha256": "b2ca17b6af76d60cd74952e3acf9e9976790929ff30e36a1c200de3363f0d048",
+      "counts": {
+        "input": 14001,
+        "kept": 13514,
+        "near_duplicates": 487
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00085.jsonl",
+      "bytes": 128873048,
+      "documents": 13052,
+      "sha256": "5d553eb419bb47f5c562614e64e9edf087af2b8eb484885336046c67de3458f0",
+      "counts": {
+        "input": 13520,
+        "kept": 13052,
+        "near_duplicates": 468
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00086.jsonl",
+      "bytes": 128935223,
+      "documents": 13221,
+      "sha256": "66f468561ece063dc97471cb00f5c9a80f63674f3b47b04795cabe8be5d962fb",
+      "counts": {
+        "input": 13740,
+        "kept": 13221,
+        "near_duplicates": 519
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00087.jsonl",
+      "bytes": 129030804,
+      "documents": 12789,
+      "sha256": "bc85402920bf8a06b8828fbf36bc0a4b7e7870fc386a7a6e9e8b6f1bfbbe4244",
+      "counts": {
+        "input": 13239,
+        "kept": 12789,
+        "near_duplicates": 450
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00088.jsonl",
+      "bytes": 129187926,
+      "documents": 13227,
+      "sha256": "89007578c3b9ca05a66a472c6d123f4178867abeeb096778fb72a515278cf08d",
+      "counts": {
+        "input": 13707,
+        "kept": 13227,
+        "near_duplicates": 480
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00089.jsonl",
+      "bytes": 128844628,
+      "documents": 13171,
+      "sha256": "1caea33134e968cb383fc20a5d755babb62e2cccd455fc7242c629265bef7d55",
+      "counts": {
+        "input": 13679,
+        "kept": 13171,
+        "near_duplicates": 508
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00090.jsonl",
+      "bytes": 128078549,
+      "documents": 12989,
+      "sha256": "e940786b8010ae92bde58345b372c548a6df82c4fd193cc6315b6ad7a9a0445f",
+      "counts": {
+        "input": 13492,
+        "kept": 12989,
+        "near_duplicates": 503
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00091.jsonl",
+      "bytes": 128948134,
+      "documents": 13461,
+      "sha256": "6d77d692f3d91daef78d9819e418410b548e979cc66f9b3a7e8b814c878d4a45",
+      "counts": {
+        "input": 13917,
+        "kept": 13461,
+        "near_duplicates": 456
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00092.jsonl",
+      "bytes": 129242464,
+      "documents": 12997,
+      "sha256": "65f88e8cd5248abdd04c9273ae41588aaa13186251f89b8355754a58c6eb26c0",
+      "counts": {
+        "input": 13455,
+        "kept": 12997,
+        "near_duplicates": 458
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00093.jsonl",
+      "bytes": 128998953,
+      "documents": 13292,
+      "sha256": "1d6d0db2e914c68ab01e29c4fdb1f65c21402d95a7b5977db8f0e42cb81b747e",
+      "counts": {
+        "input": 13811,
+        "kept": 13292,
+        "near_duplicates": 519
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00094.jsonl",
+      "bytes": 128905374,
+      "documents": 13247,
+      "sha256": "1d2436461eb398aa2c5f59a99e146c943be1952e69608b6fc596008662b539ac",
+      "counts": {
+        "input": 13736,
+        "kept": 13247,
+        "near_duplicates": 489
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00095.jsonl",
+      "bytes": 128944761,
+      "documents": 12438,
+      "sha256": "4a7a05085036a79131a1787d3207a6353d6b1c7b1c184afed561c256dd6d5776",
+      "counts": {
+        "input": 12965,
+        "kept": 12438,
+        "near_duplicates": 527
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00096.jsonl",
+      "bytes": 129528210,
+      "documents": 13314,
+      "sha256": "56a332c310944763b9feaa8e123f7923295fdc27ed64ecc77416322293bcbab7",
+      "counts": {
+        "input": 13820,
+        "kept": 13314,
+        "near_duplicates": 506
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00097.jsonl",
+      "bytes": 127866540,
+      "documents": 13107,
+      "sha256": "a2cfc4199229f934367e946dfa04104b47da49645591fbc362fe63138f8c119e",
+      "counts": {
+        "input": 13602,
+        "kept": 13107,
+        "near_duplicates": 495
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00098.jsonl",
+      "bytes": 129331854,
+      "documents": 13298,
+      "sha256": "024978b1bc77136984f2f0af39c6e0c766fcb72834ceae8c0ca04a332c9b249b",
+      "counts": {
+        "input": 13803,
+        "kept": 13298,
+        "near_duplicates": 505
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00099.jsonl",
+      "bytes": 128955270,
+      "documents": 13300,
+      "sha256": "03e73758e986f16b918d487d5ff8fdae4a5cd97b873622e79f5be69b09977675",
+      "counts": {
+        "input": 13802,
+        "kept": 13300,
+        "near_duplicates": 502
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00100.jsonl",
+      "bytes": 128970813,
+      "documents": 13330,
+      "sha256": "b81d7b02742b42703a60521298a3e4476cf2eeefd33f2317bd08ab909463a4e9",
+      "counts": {
+        "input": 13794,
+        "kept": 13330,
+        "near_duplicates": 464
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00101.jsonl",
+      "bytes": 129427459,
+      "documents": 12932,
+      "sha256": "4725d3d44d21ea9be48e7e5e64036b8230fb79ba68d19e7adec81b0cd26bbe16",
+      "counts": {
+        "input": 13414,
+        "kept": 12932,
+        "near_duplicates": 482
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00102.jsonl",
+      "bytes": 129263165,
+      "documents": 13442,
+      "sha256": "6f5e31b7226dd1c4e89b51549cec9a1ebb028d486278e70ec7abec00c1b90c38",
+      "counts": {
+        "input": 13923,
+        "near_duplicates": 481,
+        "kept": 13442
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00103.jsonl",
+      "bytes": 129790550,
+      "documents": 12247,
+      "sha256": "7c507f80e4bc3549a6d30a9a753381ac60ea2adaeac89f46ccaae6a19fef342a",
+      "counts": {
+        "input": 12664,
+        "kept": 12247,
+        "near_duplicates": 417
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00104.jsonl",
+      "bytes": 128976283,
+      "documents": 13309,
+      "sha256": "fed47c1ae76630e6c6d5374c214933dfad4fb28c73eb4cfbd03fc0f383ddd3ec",
+      "counts": {
+        "input": 13783,
+        "kept": 13309,
+        "near_duplicates": 474
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00105.jsonl",
+      "bytes": 129024037,
+      "documents": 13320,
+      "sha256": "f975b35dbc9783e6db6b231165c05f221f707eb957a16f7cac370a1f62940a7e",
+      "counts": {
+        "input": 13779,
+        "kept": 13320,
+        "near_duplicates": 459
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00106.jsonl",
+      "bytes": 129532134,
+      "documents": 12918,
+      "sha256": "837b1d11feda0ce308bd5f66195d3fb51789561dd3fa0c01a77f6ec6f10b20d2",
+      "counts": {
+        "input": 13407,
+        "kept": 12918,
+        "near_duplicates": 489
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00107.jsonl",
+      "bytes": 128649706,
+      "documents": 13076,
+      "sha256": "c78229a4c5f547d6a44b8fc2e5733ed77dfeef500dfeb127a25331c2ee83e178",
+      "counts": {
+        "input": 13546,
+        "kept": 13076,
+        "near_duplicates": 470
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00108.jsonl",
+      "bytes": 128707972,
+      "documents": 12743,
+      "sha256": "977aabf88646abbaebdf5c9d9c22bb8a4c38129880cbfb27c46bd254bf7de061",
+      "counts": {
+        "input": 13243,
+        "kept": 12743,
+        "near_duplicates": 500
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00109.jsonl",
+      "bytes": 129114195,
+      "documents": 13256,
+      "sha256": "033786b64743e80a70498f66cbe59360a85c171c7980c0fb33cecc3ccc270de6",
+      "counts": {
+        "input": 13727,
+        "kept": 13256,
+        "near_duplicates": 471
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00110.jsonl",
+      "bytes": 128848156,
+      "documents": 12986,
+      "sha256": "6563a231b64f34494581e935179b36caa8e9bb6f2fd63af628be1bdf6206882f",
+      "counts": {
+        "input": 13450,
+        "kept": 12986,
+        "near_duplicates": 464
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00111.jsonl",
+      "bytes": 127732266,
+      "documents": 13369,
+      "sha256": "2636b848f0a664897b0294c2acf5ac3900b331bf9e64b9497ce8a7b55e86efc6",
+      "counts": {
+        "input": 13915,
+        "kept": 13369,
+        "near_duplicates": 546
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00112.jsonl",
+      "bytes": 128339488,
+      "documents": 13009,
+      "sha256": "e7b1749a0ebc4de1055d5ee55021d41944193ae6beaf98bfb1e9a71a685876a1",
+      "counts": {
+        "input": 13532,
+        "kept": 13009,
+        "near_duplicates": 523
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00113.jsonl",
+      "bytes": 127176666,
+      "documents": 12803,
+      "sha256": "37831062a2d5f706375b8e6ae91dbb8dbbf5a8387dbff8e24c3e0ed0103eed38",
+      "counts": {
+        "input": 13314,
+        "kept": 12803,
+        "near_duplicates": 511
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00114.jsonl",
+      "bytes": 129473145,
+      "documents": 12917,
+      "sha256": "9fc040f97d82c2d33c1665ddada843e4b95a38b4774056c49b5dd751bf42e12e",
+      "counts": {
+        "input": 13418,
+        "kept": 12917,
+        "near_duplicates": 501
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00115.jsonl",
+      "bytes": 128467503,
+      "documents": 12623,
+      "sha256": "f59276ca5cf47251316e27b9865c4e7d98da0c460ae74f9ef486633398cdcfe7",
+      "counts": {
+        "input": 13130,
+        "kept": 12623,
+        "near_duplicates": 507
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00116.jsonl",
+      "bytes": 128802939,
+      "documents": 13647,
+      "sha256": "035b4e14254680d60d6c64c8141c9491a57a38b4eb24b1ebc78d407dc89ac676",
+      "counts": {
+        "input": 14176,
+        "near_duplicates": 529,
+        "kept": 13647
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00117.jsonl",
+      "bytes": 128610383,
+      "documents": 13012,
+      "sha256": "57f09831ffe3f148281c265e63c533e2026ef58a1243c7cb13e07765a4a8553c",
+      "counts": {
+        "input": 13501,
+        "kept": 13012,
+        "near_duplicates": 489
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00118.jsonl",
+      "bytes": 129480011,
+      "documents": 13218,
+      "sha256": "f0c5cb05e1f90a36976437343bf1b63019275c33e8e0dd12ac1015bf82be6271",
+      "counts": {
+        "input": 13704,
+        "kept": 13218,
+        "near_duplicates": 486
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00119.jsonl",
+      "bytes": 129030751,
+      "documents": 13174,
+      "sha256": "5cfddf3964cc2e5178f048a481b655587cf7c761e5f18c36d9d88597e9977ecd",
+      "counts": {
+        "input": 13666,
+        "kept": 13174,
+        "near_duplicates": 492
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00120.jsonl",
+      "bytes": 128236309,
+      "documents": 13480,
+      "sha256": "28ed124b2d0994f0f64ed17747601677423ff9cb1aa24c8cb256b411fc77ae56",
+      "counts": {
+        "input": 13990,
+        "kept": 13480,
+        "near_duplicates": 510
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00121.jsonl",
+      "bytes": 129234514,
+      "documents": 13191,
+      "sha256": "40c4b42edbfd19b4adebc7f8b5053e6229b4c391c75a41fe74074ef7e592f0c4",
+      "counts": {
+        "input": 13687,
+        "kept": 13191,
+        "near_duplicates": 496
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00122.jsonl",
+      "bytes": 128847227,
+      "documents": 12620,
+      "sha256": "35ad81f4aca1dfc13e617445dd740b01ed7f7385c9a6cc2e58fcc9c654cd5df1",
+      "counts": {
+        "input": 13085,
+        "kept": 12620,
+        "near_duplicates": 465
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00123.jsonl",
+      "bytes": 128571150,
+      "documents": 13202,
+      "sha256": "76af72a31347c9bec43d2f779f9d6b70749c5c0149b0f24bbf042bb6266c21bd",
+      "counts": {
+        "input": 13695,
+        "kept": 13202,
+        "near_duplicates": 493
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00124.jsonl",
+      "bytes": 128945960,
+      "documents": 12884,
+      "sha256": "f502519bb8ad4fff34e2b63d97af459abbf5495ac216e5ec1a33b81791d745b0",
+      "counts": {
+        "input": 13388,
+        "kept": 12884,
+        "near_duplicates": 504
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00125.jsonl",
+      "bytes": 128339314,
+      "documents": 12608,
+      "sha256": "9f274dbf4db4b6a5259e91df2acbc939663cd49d34366f894f788a8ba61f3e35",
+      "counts": {
+        "input": 13102,
+        "kept": 12608,
+        "near_duplicates": 494
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00126.jsonl",
+      "bytes": 129022687,
+      "documents": 12677,
+      "sha256": "c3bb3d2ef95109fe865bb74c3441d2abed1e0e80d3ac185fde25fd37aab7a896",
+      "counts": {
+        "input": 13148,
+        "kept": 12677,
+        "near_duplicates": 471
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00127.jsonl",
+      "bytes": 129248046,
+      "documents": 13598,
+      "sha256": "e4a0f1c2dc1c1978318d81fb04ba8c0f7226725cc57635c24441976cbba88a01",
+      "counts": {
+        "input": 14102,
+        "kept": 13598,
+        "near_duplicates": 504
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00128.jsonl",
+      "bytes": 130003796,
+      "documents": 12901,
+      "sha256": "fc1574029e9c74463f32a373f852b471aaaf9f466003f161fa9cad9b1fef2bd7",
+      "counts": {
+        "input": 13356,
+        "kept": 12901,
+        "near_duplicates": 455
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00129.jsonl",
+      "bytes": 129208330,
+      "documents": 13127,
+      "sha256": "6d3045be1b12eab4b19c35ac64a7cd6762105017dadbcbbde2ee907141d028c3",
+      "counts": {
+        "input": 13610,
+        "kept": 13127,
+        "near_duplicates": 483
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00130.jsonl",
+      "bytes": 129297874,
+      "documents": 13110,
+      "sha256": "fbaf31053ab79f084e6819b355cb01d8ac57d44a2021ecc6e63927cefec88fc3",
+      "counts": {
+        "input": 13614,
+        "kept": 13110,
+        "near_duplicates": 504
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00131.jsonl",
+      "bytes": 128803654,
+      "documents": 13079,
+      "sha256": "b663031418ae7c50de43fc42c03fa54f75a2ad479d379a9127e3b884ab2ca2d6",
+      "counts": {
+        "input": 13533,
+        "kept": 13079,
+        "near_duplicates": 454
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00132.jsonl",
+      "bytes": 129149437,
+      "documents": 13350,
+      "sha256": "c6ad2676bf0efca5b9ab03e78cbd61bf2972b002796920688586d24fb91710db",
+      "counts": {
+        "input": 13804,
+        "kept": 13350,
+        "near_duplicates": 454
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00133.jsonl",
+      "bytes": 128454550,
+      "documents": 13190,
+      "sha256": "1fdb746b4d22dc4047ef87fd84922d2a99ba7b3bf29b17e3256446b11e3258b8",
+      "counts": {
+        "input": 13651,
+        "kept": 13190,
+        "near_duplicates": 461
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00134.jsonl",
+      "bytes": 129454341,
+      "documents": 13057,
+      "sha256": "f55c831f3db36b12772cb8b49b2fb86b14a89e080438e7894e1b36558870350e",
+      "counts": {
+        "input": 13521,
+        "kept": 13057,
+        "near_duplicates": 464
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00135.jsonl",
+      "bytes": 129009843,
+      "documents": 13425,
+      "sha256": "239b482586fec2c2b339a0447e3c68ecfcb7944d2bbe2eaf022e556bbf72a4c8",
+      "counts": {
+        "input": 13902,
+        "kept": 13425,
+        "near_duplicates": 477
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00136.jsonl",
+      "bytes": 129156109,
+      "documents": 13065,
+      "sha256": "33020702846a116175e99e27c5efb6475cc70a3521fb23489a1b42dbc1e82c00",
+      "counts": {
+        "input": 13555,
+        "kept": 13065,
+        "near_duplicates": 490
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00137.jsonl",
+      "bytes": 128779499,
+      "documents": 12702,
+      "sha256": "ba73111f7625acf9c3c6d27a8e811f4402aca86f7f4a7733c20096b88b63a3df",
+      "counts": {
+        "input": 13190,
+        "kept": 12702,
+        "near_duplicates": 488
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00138.jsonl",
+      "bytes": 129264077,
+      "documents": 13031,
+      "sha256": "0a4a131ac5f7c79feaf80b64dbcd0a7d4b8e26bf24ec3565dc227a3ade572e4e",
+      "counts": {
+        "input": 13534,
+        "kept": 13031,
+        "near_duplicates": 503
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00139.jsonl",
+      "bytes": 128169704,
+      "documents": 12866,
+      "sha256": "25bb33f7a499d5e29d63da7d680cc2ec16d683d57a6f5343fc099e147f08b08c",
+      "counts": {
+        "input": 13349,
+        "kept": 12866,
+        "near_duplicates": 483
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00140.jsonl",
+      "bytes": 127323396,
+      "documents": 13004,
+      "sha256": "bc2d802241aa4aa6f459150b602136e1af60360212fcdc89427914e2334f82f2",
+      "counts": {
+        "input": 13495,
+        "kept": 13004,
+        "near_duplicates": 491
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00141.jsonl",
+      "bytes": 129175795,
+      "documents": 13374,
+      "sha256": "cba3d77a63fa7ce20c3729e8770b2eb6bcb91140c92a040a77a6c5ecfb34a36f",
+      "counts": {
+        "input": 13875,
+        "kept": 13374,
+        "near_duplicates": 501
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00142.jsonl",
+      "bytes": 128751547,
+      "documents": 12817,
+      "sha256": "0496f95ab7ac8f592b25391dccd8027120edb0ec7978bd737f3daa1842fbd5f9",
+      "counts": {
+        "input": 13259,
+        "kept": 12817,
+        "near_duplicates": 442
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00143.jsonl",
+      "bytes": 129756647,
+      "documents": 12620,
+      "sha256": "585f5f307ede5f4b9780f5adf8dffc4f3b6f26fba7486a388df7cdb5e9c0b410",
+      "counts": {
+        "input": 13083,
+        "kept": 12620,
+        "near_duplicates": 463
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00144.jsonl",
+      "bytes": 128235406,
+      "documents": 12929,
+      "sha256": "0f6c6f75cbf15df2f89595191a7e5a0da2970ef0158b4f6ab53d482a45cda9e0",
+      "counts": {
+        "input": 13400,
+        "kept": 12929,
+        "near_duplicates": 471
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00145.jsonl",
+      "bytes": 128958482,
+      "documents": 13385,
+      "sha256": "a89ef24b8e3919741bb0475d93b052925c1004f8d73d7267b000efb5db61b53e",
+      "counts": {
+        "input": 13899,
+        "kept": 13385,
+        "near_duplicates": 514
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00146.jsonl",
+      "bytes": 127602797,
+      "documents": 12830,
+      "sha256": "0cc0c7c6cee654c3e73fe19bfb5cbf473a5e05245669a7f5764a54e7c14025b0",
+      "counts": {
+        "input": 13323,
+        "kept": 12830,
+        "near_duplicates": 493
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00147.jsonl",
+      "bytes": 129571380,
+      "documents": 12864,
+      "sha256": "2db93b378893114653cda78af15a6ccff56ce77359d589a9a625a025a2339043",
+      "counts": {
+        "input": 13344,
+        "kept": 12864,
+        "near_duplicates": 480
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00148.jsonl",
+      "bytes": 129247048,
+      "documents": 12948,
+      "sha256": "d6516094a0b249f70e4ea55ffe2737c2529ed6516d504cb16794551854cffa88",
+      "counts": {
+        "input": 13483,
+        "kept": 12948,
+        "near_duplicates": 535
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00149.jsonl",
+      "bytes": 129574451,
+      "documents": 13034,
+      "sha256": "26a18fbeb2cda2d5a06818a81d89b1fbdcef9bc48d29a787c27a1ce7a49bbaff",
+      "counts": {
+        "input": 13524,
+        "kept": 13034,
+        "near_duplicates": 490
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00150.jsonl",
+      "bytes": 129393072,
+      "documents": 12785,
+      "sha256": "5348764821ef222fdc4bd0ca50c1455338a594e4a60124b672aff8ccfbe6653c",
+      "counts": {
+        "input": 13253,
+        "kept": 12785,
+        "near_duplicates": 468
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00151.jsonl",
+      "bytes": 128921282,
+      "documents": 12865,
+      "sha256": "8b1d48362ae8e89d14f41acd66fc9c5403c06bc6ddfc92547a522e396f26ed6e",
+      "counts": {
+        "input": 13340,
+        "kept": 12865,
+        "near_duplicates": 475
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00152.jsonl",
+      "bytes": 129038408,
+      "documents": 13099,
+      "sha256": "a10ef816ae002af143888829dabdc6c312158b6ac088029ad289b12a61e69500",
+      "counts": {
+        "input": 13589,
+        "kept": 13099,
+        "near_duplicates": 490
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00153.jsonl",
+      "bytes": 128760849,
+      "documents": 13581,
+      "sha256": "a6b7e52870518251abac16ec7783c4e264106e1a9d61991c9162affe8ccf669b",
+      "counts": {
+        "input": 14131,
+        "kept": 13581,
+        "near_duplicates": 550
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00154.jsonl",
+      "bytes": 129488127,
+      "documents": 12905,
+      "sha256": "11a6bccf736a1083e81ba4b6fc1c4af5a9038897948760a9c713d9f3663f3727",
+      "counts": {
+        "input": 13390,
+        "kept": 12905,
+        "near_duplicates": 485
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00155.jsonl",
+      "bytes": 128422787,
+      "documents": 13474,
+      "sha256": "95e6326ae1c40460131ef18463c921436defde75085627d0dfb3d4b1fa7ebdaa",
+      "counts": {
+        "input": 13946,
+        "kept": 13474,
+        "near_duplicates": 472
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00156.jsonl",
+      "bytes": 128954277,
+      "documents": 13326,
+      "sha256": "504ed25f5c74c896a33ebc7d2547ae7bbe6f0137c702751cc81ed1bcb0ca343f",
+      "counts": {
+        "input": 13818,
+        "kept": 13326,
+        "near_duplicates": 492
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00157.jsonl",
+      "bytes": 128787050,
+      "documents": 13039,
+      "sha256": "36877e2386785141abeba42132547264da44453f71d7d93f0846fc1a1134cd5a",
+      "counts": {
+        "input": 13549,
+        "kept": 13039,
+        "near_duplicates": 510
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00158.jsonl",
+      "bytes": 128241904,
+      "documents": 13093,
+      "sha256": "70e18240102c045eac9e4ca44cfa9f550011d5c09cc6769e64f740d50ce2571a",
+      "counts": {
+        "input": 13595,
+        "kept": 13093,
+        "near_duplicates": 502
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00159.jsonl",
+      "bytes": 128249079,
+      "documents": 12789,
+      "sha256": "7e17501ac5cf8a2ac16419db13972799233c5fc3fba2088233ac71748a2e2410",
+      "counts": {
+        "input": 13263,
+        "kept": 12789,
+        "near_duplicates": 474
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00160.jsonl",
+      "bytes": 129057870,
+      "documents": 13533,
+      "sha256": "b6fb5ab2a6e7ef00c4a6863bb99aad727ec72d24ef51451d5786019ab014d4e0",
+      "counts": {
+        "input": 14075,
+        "kept": 13533,
+        "near_duplicates": 542
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00161.jsonl",
+      "bytes": 128196160,
+      "documents": 12742,
+      "sha256": "ecdfe3170d30f9c2a4c9259a391d5ce8b27e00d44565915ef6be4783d941161c",
+      "counts": {
+        "input": 13269,
+        "near_duplicates": 527,
+        "kept": 12742
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00162.jsonl",
+      "bytes": 128980941,
+      "documents": 12871,
+      "sha256": "70ab72a0b7764c59dcd2f2f8e06fd2a6edb2fe9bfe5cdf777daa7c8651a25caf",
+      "counts": {
+        "input": 13371,
+        "kept": 12871,
+        "near_duplicates": 500
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00163.jsonl",
+      "bytes": 128627697,
+      "documents": 13035,
+      "sha256": "df297d8f17556f7d1460bda1ec575b8a53ce8cc2ef6133b59f7e30a790b6ac0f",
+      "counts": {
+        "input": 13540,
+        "kept": 13035,
+        "near_duplicates": 505
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00164.jsonl",
+      "bytes": 128654788,
+      "documents": 12883,
+      "sha256": "44a5d187d5f8656cdfd9bf3912541001f8e1af7815f67c89c3f612155f41cec3",
+      "counts": {
+        "input": 13390,
+        "kept": 12883,
+        "near_duplicates": 507
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00165.jsonl",
+      "bytes": 128111321,
+      "documents": 13278,
+      "sha256": "e906e7238210a90e9eaa2cd74ff3d876463873382bf1255f070db103043c6be6",
+      "counts": {
+        "input": 13791,
+        "kept": 13278,
+        "near_duplicates": 513
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00166.jsonl",
+      "bytes": 129358688,
+      "documents": 12271,
+      "sha256": "b4f71a255b58b2507cca58ffe2c85971b39383c62d2c9cb1fca86f7f6e357de7",
+      "counts": {
+        "input": 12753,
+        "kept": 12271,
+        "near_duplicates": 482
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00167.jsonl",
+      "bytes": 129382100,
+      "documents": 13206,
+      "sha256": "8fa65be39fe02b102e5054b1612c4a7401bf50a1d401ca3a6fe3858375bd23bb",
+      "counts": {
+        "input": 13686,
+        "kept": 13206,
+        "near_duplicates": 480
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00168.jsonl",
+      "bytes": 129217854,
+      "documents": 12874,
+      "sha256": "6c7ef18e470cbd38156fee74f922c1e3e62bee9b5e2b98d2fe1237fc5a2ddc14",
+      "counts": {
+        "input": 13380,
+        "kept": 12874,
+        "near_duplicates": 506
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00169.jsonl",
+      "bytes": 129280953,
+      "documents": 12913,
+      "sha256": "cba14cc3bcec40e7d2fff6462d1a98a3000cb20991865a1aa559e818aa1fe2f4",
+      "counts": {
+        "input": 13410,
+        "kept": 12913,
+        "near_duplicates": 497
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00170.jsonl",
+      "bytes": 128250790,
+      "documents": 12979,
+      "sha256": "a692f982199763420b9c21f87ace49ef25e466e25549c6a4ed0b4be64800e76c",
+      "counts": {
+        "input": 13494,
+        "kept": 12979,
+        "near_duplicates": 515
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00171.jsonl",
+      "bytes": 128598433,
+      "documents": 13145,
+      "sha256": "ab9e6e121424949030152299e321e89d8b288c5f46e608627630b1800f3113ff",
+      "counts": {
+        "input": 13629,
+        "kept": 13145,
+        "near_duplicates": 484
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00172.jsonl",
+      "bytes": 128873833,
+      "documents": 13420,
+      "sha256": "f156969ea141a74412f279864bdfaa102dee8f2aca6fe3a25b627b7ea8233d21",
+      "counts": {
+        "input": 13925,
+        "kept": 13420,
+        "near_duplicates": 505
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00173.jsonl",
+      "bytes": 128405260,
+      "documents": 13230,
+      "sha256": "fc1fc0aff00326650f11b2c15108e4ba84e5cde2cc3f8f77ce9d8e282f8b4df2",
+      "counts": {
+        "input": 13772,
+        "kept": 13230,
+        "near_duplicates": 542
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00174.jsonl",
+      "bytes": 128896463,
+      "documents": 12980,
+      "sha256": "bfe185868940387e7dafce35a5ab9eeb3f48a4743d7cfbfb2040d044fe066bb7",
+      "counts": {
+        "input": 13471,
+        "kept": 12980,
+        "near_duplicates": 491
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00175.jsonl",
+      "bytes": 129193687,
+      "documents": 13292,
+      "sha256": "75eaf2c8e47c8648543de8d64c1598baadb1dd27c286b9f435af5b61f09a4e4f",
+      "counts": {
+        "input": 13814,
+        "kept": 13292,
+        "near_duplicates": 522
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00176.jsonl",
+      "bytes": 127838507,
+      "documents": 13579,
+      "sha256": "e6853aa91a5995a42dd94620d5abcee8991a31349d5adbb9cd71996e3ea8f324",
+      "counts": {
+        "input": 14150,
+        "kept": 13579,
+        "near_duplicates": 571
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/near-deduped/open-web-math/part-00177.jsonl",
+      "bytes": 41771556,
+      "documents": 4100,
+      "sha256": "46eb843ecbf81826ea2f511635675bdcf9033cd8c2c8048faa2bd7ba28713910",
+      "counts": {
+        "input": 4262,
+        "kept": 4100,
+        "near_duplicates": 162
+      }
+    }
+  ],
+  "counts": {
+    "input": 2406141,
+    "kept": 2320883,
+    "near_duplicates": 85258
+  },
+  "upstream_report_sha256": "9a5139e7ec27cdd6ad20bd8c6da2c133c56420195084bfdabcb1978127c870a2",
+  "script_sha256": "f7a5ba73ce3248c68efe9b3ee39d5421af0eeb3d8dde05a62d5fc216c861de9a",
+  "method": "5-unit shingles, 64 MinHash permutations, 8x8 LSH, feature Jaccard>=0.9; SFT/preference exact dedup only"
+}

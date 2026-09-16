@@ -1,0 +1,44 @@
+{
+  "status": "inventory_complete",
+  "license_review_status": "pending",
+  "input_path": "/data/mini-k3/data/raw/openhermes/openhermes2_5.json",
+  "input_sha256": "abe573d17eade4161aac321028027dd5ba614a6d9516d51bde9299d5353e1609",
+  "script_sha256": "92e8c3fc7a81d261159e6118f3aa9f23e113994250948dae1aab88098e9787da",
+  "records": 1001551,
+  "missing_source_label": 496743,
+  "source_counts": {
+    "CamelAI": 78390,
+    "CogStackMed": 4443,
+    "Econ_domain_expert": 660,
+    "EvolInstruct_70k": 51948,
+    "GPT-4 Comparison Data": 14928,
+    "LMSys Chatbot Arena": 3136,
+    "UnnaturalInstructions": 8610,
+    "airoboros2.2": 35380,
+    "caseus_custom": 2688,
+    "cot_alpaca_gpt4": 42026,
+    "glaive-code-assist": 182240,
+    "lmsys1m": 1631,
+    "metamath": 56448,
+    "platypus": 22280
+  },
+  "missing_source_schemas": {
+    "avatarUrl|conversations|hash|id|model|title|views": 38,
+    "avatarUrl|conversations|hash|id|model|views": 2681,
+    "conversations": 414062,
+    "conversations|custom_instruction|model_name|title": 58,
+    "conversations|id": 28811,
+    "conversations|idx": 51093
+  },
+  "missing_source_schema_first_row": {
+    "conversations|custom_instruction|model_name|title": 119594,
+    "conversations|id": 411454,
+    "conversations": 502787,
+    "avatarUrl|conversations|hash|id|model|views": 939129,
+    "avatarUrl|conversations|hash|id|model|title|views": 939197,
+    "conversations|idx": 950458
+  },
+  "missing_source_alternate_label_fields": {},
+  "scope": "Raw source label inventory only; does not approve any subset license",
+  "publisher_license_statement": "https://huggingface.co/datasets/teknium/OpenHermes-2.5/discussions/9"
+}

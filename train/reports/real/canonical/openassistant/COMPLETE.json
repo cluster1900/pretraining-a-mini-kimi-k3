@@ -1,0 +1,32 @@
+{
+  "source": "openassistant",
+  "repo": "OpenAssistant/oasst1",
+  "role": "sft",
+  "status": "complete",
+  "schema_version": 2,
+  "script_sha256": "3fa30a1ec632dda0db690cf11d8788d78af99c895370170f0768348e8a5c5ce5",
+  "inputs": [
+    {
+      "file": "data/train-00000-of-00001-b42a775f407cee45.parquet",
+      "sha256": "bbfadf5ed1278ba2208c837fdcad865adf65f5df55d80abadab2745db13fcb5e",
+      "bytes": 39516251
+    },
+    {
+      "file": "data/validation-00000-of-00001-134b8fd0c89408b6.parquet",
+      "sha256": "24002597bb13a7edd42d92f773762f25e285f72c31a70449393d0ded1dc7b416",
+      "bytes": 2080179
+    }
+  ],
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/openassistant/part-00000.jsonl",
+      "documents": 53705,
+      "bytes": 101980695,
+      "sha256": "41d55e00f5bed2e8083aea921c2f3a06f5a7ead1635a81228cbf45a3f9b92d97"
+    }
+  ],
+  "counts": {
+    "input_rows": 88838,
+    "output_records": 53705
+  }
+}

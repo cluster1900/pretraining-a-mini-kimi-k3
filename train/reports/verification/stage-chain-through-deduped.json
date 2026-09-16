@@ -1,0 +1,163 @@
+{
+  "status": "passed",
+  "through": "deduped",
+  "sources": {
+    "fineweb-edu": {
+      "canonical": {
+        "report_sha256": "b1eeef4ca639f97f9418a6f6e8be963c17ff3df8abd42cef4729d5bb8fdcb5b4",
+        "documents": 1526816
+      },
+      "cleaned": {
+        "report_sha256": "2d2507c83dbc514243b91e99cf93f571ee0fa9491031b3b6f0e49d43181b0641",
+        "documents": 1526801
+      },
+      "deduped": {
+        "report_sha256": "80d2e179b792737fe866354fd30fce14854fd6fe4a7af88ca8baf3a2d70808cf",
+        "documents": 1486459
+      }
+    },
+    "chinese-fineweb-edu": {
+      "canonical": {
+        "report_sha256": "99bc3b82880d715e87b80286a89e2d1c5676948edbd1d5c5cceb6f89323723e9",
+        "documents": 1800000
+      },
+      "cleaned": {
+        "report_sha256": "c0e26ad2b91817900fb528f70293327bfa2c45c7944da02dfd605684ed3d540c",
+        "documents": 1798889
+      },
+      "deduped": {
+        "report_sha256": "88e5867e59de5c7fc549359e03c19b8495a3b6e551edf21497af62952f000c87",
+        "documents": 1798889
+      }
+    },
+    "cosmopedia": {
+      "canonical": {
+        "report_sha256": "d7956f66a6bc077aeed4fc9be14125fe7e100bd248b6a6624f285443639989d6",
+        "documents": 1077909
+      },
+      "cleaned": {
+        "report_sha256": "d7df63823f4ca26c65d844d0863cb83788dbacb7498bd5c58cb7fb94336ef85c",
+        "documents": 1077863
+      },
+      "deduped": {
+        "report_sha256": "dc673900cd2f9bef0b8dbdadef096c6515d6442f3e139481345594767caff7de",
+        "documents": 1077863
+      }
+    },
+    "finemath": {
+      "canonical": {
+        "report_sha256": "e1d3395c6a621c41774ccbc157810a9c9b9c4421b56d1b3369373dfb50b5b283",
+        "documents": 3511872
+      },
+      "cleaned": {
+        "report_sha256": "3352101acc354c4c54270dd9c783cd58ac921535bd19132f7db761200a16305e",
+        "documents": 3510554
+      },
+      "deduped": {
+        "report_sha256": "58fa43e045ae3199c4a761f9cab59135440364de3b01aa911989f51e1128a8dd",
+        "documents": 3510553
+      }
+    },
+    "open-web-math": {
+      "canonical": {
+        "report_sha256": "72867d7d13e9a6aa4f4a6dd26bf650f183eea19b5d109274dae5f74094cc9a83",
+        "documents": 2492865
+      },
+      "cleaned": {
+        "report_sha256": "458979202b349369aa3c0b0ea09b1f90c90f68c04495d96fc4ab0356c6049457",
+        "documents": 2490627
+      },
+      "deduped": {
+        "report_sha256": "9a5139e7ec27cdd6ad20bd8c6da2c133c56420195084bfdabcb1978127c870a2",
+        "documents": 2406141
+      }
+    },
+    "dolma-body": {
+      "canonical": {
+        "report_sha256": "2cbac2843334f52ed7db4250049d0b2a587edcf21f4a30306e774be1380b899b",
+        "documents": 2756911
+      },
+      "cleaned": {
+        "report_sha256": "c50dc1021e741224bcc9dc0b1f86f7782155bdb1403a98c3b7ff423a182f19a5",
+        "documents": 2754175
+      },
+      "deduped": {
+        "report_sha256": "1d9a62e9f8398b82e2421dfdea48a0ffa5438f426cf41b9dfc7659a85a3be8ae",
+        "documents": 2331787
+      }
+    },
+    "code-python": {
+      "canonical": {
+        "report_sha256": "e63ea2ac3fb811f5948828f02e8cf438dfdb116260df5f5c58ec4328ffcf0ea6",
+        "documents": 166467
+      },
+      "cleaned": {
+        "report_sha256": "a314795383b93cf18288c2d69d73edf5bbba25192acf21f66f248b49aa408682",
+        "documents": 5446
+      },
+      "deduped": {
+        "report_sha256": "38e9f51e7ec25069ad66fbed3fe6bf05a84418592ee63685e503be72c7c9c91d",
+        "documents": 2302
+      }
+    },
+    "openassistant": {
+      "canonical": {
+        "report_sha256": "83d3081a8e4f1908f9adcaeda9cb93d63ecd017968d52534ffaaed55610bc196",
+        "documents": 53705
+      },
+      "cleaned": {
+        "report_sha256": "19c7dfac658b3e7cd24dbb0b3b27930c98c522d91d21d85bf99de25bec558fca",
+        "documents": 53705
+      },
+      "deduped": {
+        "report_sha256": "ce92ea932e25a87981b594706e9661cdef871f3d88b1269ba8a50304cb81a438",
+        "documents": 53615
+      }
+    },
+    "openhermes": {
+      "canonical": {
+        "report_sha256": "01dc4e46a6f3bf8847e7e4b8c546541f679ee0a0fc0b8a8f844afe3f13030c06",
+        "documents": 1001551
+      },
+      "cleaned": {
+        "report_sha256": "04e2a12421f710e0c6b6bbdbb252f8e1d0b85c27bab9f7df696ef69b3e23ee99",
+        "documents": 1001529
+      },
+      "deduped": {
+        "report_sha256": "68ab297a21fdc8e0d2609577d2db12b47f6c4877c85ebc69da3e9cef35e45259",
+        "documents": 1001298
+      }
+    },
+    "openr1": {
+      "canonical": {
+        "report_sha256": "da99bb801c35020bd633145eb7a1ba1dff4a3b64e6fe96cacc7fef4435df83da",
+        "documents": 93733
+      },
+      "cleaned": {
+        "report_sha256": "4fef54a345603b621af93bf4b8ac5047099e7990961d4c910864723e6ad8307f",
+        "documents": 93733
+      },
+      "deduped": {
+        "report_sha256": "0e62bd9c5b052196514efc6f2186e961a37b05d38d979b9b48ab80eef9859598",
+        "documents": 93733
+      }
+    },
+    "ultrafeedback": {
+      "canonical": {
+        "report_sha256": "0d3fca4aa9f6cbf26fcfd3ddc982218cfb3b0aaf5c3ad307f65f564fe60bc866",
+        "documents": 60917
+      },
+      "cleaned": {
+        "report_sha256": "0b2f11ad7306003212fbee1876fa1b9f9d51aab7376c4a80aa4b7d3b0f144751",
+        "documents": 60746
+      },
+      "deduped": {
+        "report_sha256": "3f0e194b09e762193f4490f4098fdd3b89c0c4efabcef428024909b6221b3315",
+        "documents": 60745
+      }
+    }
+  },
+  "errors": {},
+  "scope": "Report hash chain, script identity, counts and part sizes; not a full corpus re-scan",
+  "script_sha256": "45aba5510a1c4d0de3282dc58d1c8d33592e87533dc330b4c4f104eb0acc1587"
+}

@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "scope": "synthetic regression with real tokenizer",
+  "sources": 11,
+  "stages": [
+    "canonical fixture",
+    "clean",
+    "global exact",
+    "MinHash LSH",
+    "13gram",
+    "encode",
+    "shards",
+    "manifest audit"
+  ],
+  "tokenizer_fingerprint": "1732cd666e532d83bf2e6ff13888950eb517b6d2c8c2ffc542804907dd9026e8"
+}

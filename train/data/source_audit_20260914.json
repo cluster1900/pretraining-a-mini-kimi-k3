@@ -1,0 +1,194 @@
+{
+  "date": "2026-09-14",
+  "total_bytes": 48544330775643,
+  "free_bytes": 7725880819712,
+  "reserve_bytes": 500000000000,
+  "sources": [
+    {
+      "name": "cci-base",
+      "repo": "BAAI/CCI4.0-M2-Base-v1",
+      "backend": "modelscope",
+      "files": 10864,
+      "bytes": 5721724343185,
+      "gated": false,
+      "license": "Apache License 2.0"
+    },
+    {
+      "name": "cci-cot",
+      "repo": "BAAI/CCI4.0-M2-CoT-v1",
+      "backend": "modelscope",
+      "files": 1347,
+      "bytes": 2566687413017,
+      "gated": false,
+      "license": "Apache License 2.0"
+    },
+    {
+      "name": "cci-extra",
+      "repo": "BAAI/CCI4.0-M2-Extra-v1",
+      "backend": "modelscope",
+      "files": 1285,
+      "bytes": 1970989536729,
+      "gated": false,
+      "license": "Apache License 2.0"
+    },
+    {
+      "name": "stack-v3",
+      "repo": "HuggingFaceCode/stack-v3-train",
+      "backend": "modelscope",
+      "files": 16508,
+      "bytes": 9412155363726,
+      "gated": false,
+      "license": "[odc-by]"
+    },
+    {
+      "name": "chinese-cosmopedia",
+      "repo": "AI-ModelScope/chinese-cosmopedia",
+      "backend": "modelscope",
+      "files": 65,
+      "bytes": 69901654764,
+      "gated": false,
+      "license": "apache-2.0"
+    },
+    {
+      "name": "cosmopedia-original",
+      "repo": "HuggingFaceTB/cosmopedia",
+      "backend": "hf-mirror",
+      "files": 338,
+      "bytes": 92200797209,
+      "gated": false,
+      "license": "apache-2.0"
+    },
+    {
+      "name": "chinese-fineweb-edu",
+      "repo": "opencsg/chinese-fineweb-edu",
+      "backend": "modelscope",
+      "files": 310,
+      "bytes": 311443540482,
+      "gated": false,
+      "license": "apache-2.0"
+    },
+    {
+      "name": "culturax-original",
+      "repo": "uonlp/CulturaX",
+      "backend": "hf-mirror",
+      "files": 9059,
+      "bytes": 17467188201970,
+      "gated": "auto",
+      "license": null
+    },
+    {
+      "name": "dolma-v1_7",
+      "repo": "modelscope/dolma",
+      "backend": "modelscope",
+      "files": 2425,
+      "bytes": 4487067430415,
+      "gated": false,
+      "license": "odc-by"
+    },
+    {
+      "name": "finemath",
+      "repo": "HuggingFaceTB/finemath",
+      "backend": "modelscope",
+      "files": 293,
+      "bytes": 149447642459,
+      "gated": false,
+      "license": "odc-by"
+    },
+    {
+      "name": "fineweb-edu",
+      "repo": "HuggingFaceFW/fineweb-edu",
+      "backend": "modelscope",
+      "files": 3038,
+      "bytes": 5835742541176,
+      "gated": false,
+      "license": "odc-by"
+    },
+    {
+      "name": "mathr",
+      "repo": "modelscope/MathR",
+      "backend": "modelscope",
+      "files": 7,
+      "bytes": 122234044,
+      "gated": false,
+      "license": "Apache License 2.0"
+    },
+    {
+      "name": "numinamath",
+      "repo": "AI-MO/NuminaMath-CoT",
+      "backend": "modelscope",
+      "files": 9,
+      "bytes": 1234356910,
+      "gated": false,
+      "license": "Apache License 2.0"
+    },
+    {
+      "name": "open-web-math",
+      "repo": "open-web-math/open-web-math",
+      "backend": "hf-mirror",
+      "files": 121,
+      "bytes": 27432202217,
+      "gated": false,
+      "license": null
+    },
+    {
+      "name": "openassistant",
+      "repo": "OpenAssistant/oasst1",
+      "backend": "hf-mirror",
+      "files": 11,
+      "bytes": 231507594,
+      "gated": false,
+      "license": "apache-2.0"
+    },
+    {
+      "name": "openhermes",
+      "repo": "teknium/OpenHermes-2.5",
+      "backend": "hf-mirror",
+      "files": 3,
+      "bytes": 1936283760,
+      "gated": false,
+      "license": null
+    },
+    {
+      "name": "openr1",
+      "repo": "open-r1/OpenR1-Math-220k",
+      "backend": "hf-mirror",
+      "files": 63,
+      "bytes": 12649350862,
+      "gated": false,
+      "license": "apache-2.0"
+    },
+    {
+      "name": "skypile",
+      "repo": "AI-ModelScope/SkyPile-150B",
+      "backend": "modelscope",
+      "files": 35,
+      "bytes": 105230737743,
+      "gated": false,
+      "license": "Apache License 2.0"
+    },
+    {
+      "name": "starcoderdata-original",
+      "repo": "bigcode/starcoderdata",
+      "backend": "hf-mirror",
+      "files": 865,
+      "bytes": 310802038700,
+      "gated": "auto",
+      "license": [
+        "other"
+      ]
+    },
+    {
+      "name": "ultrafeedback",
+      "repo": "argilla/ultrafeedback-binarized-preferences-cleaned",
+      "backend": "hf-mirror",
+      "files": 4,
+      "bytes": 143598681,
+      "gated": false,
+      "license": "mit"
+    }
+  ],
+  "access_probes": {
+    "starcoderdata-original": 403,
+    "culturax-original": 403
+  }
+}

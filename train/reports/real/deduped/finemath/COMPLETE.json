@@ -1,0 +1,2142 @@
+{
+  "source": "finemath",
+  "status": "complete",
+  "algorithm": "global-exact",
+  "counts": {
+    "input": 3510554,
+    "kept": 3510553,
+    "train": 3475549,
+    "validation": 35004,
+    "duplicates": 1
+  },
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00000.jsonl",
+      "documents": 19711,
+      "bytes": 137587157,
+      "sha256": "5c4a8370f82ad8ac5752ab11c6436c97ecbc408ff41baf34c74790e5091b6b80",
+      "counts": {
+        "input": 19711,
+        "kept": 19711,
+        "train": 19520,
+        "validation": 191
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00001.jsonl",
+      "documents": 20358,
+      "bytes": 137798624,
+      "sha256": "fc4d61f03c893aff3fbff40341a40535840210d091de047a209cfef8a145cbd0",
+      "counts": {
+        "input": 20358,
+        "kept": 20358,
+        "train": 20152,
+        "validation": 206
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00002.jsonl",
+      "documents": 19597,
+      "bytes": 137767205,
+      "sha256": "83f056c176af22c9ad04931f16976fdd09fdf118ab35cae5ff5c4b191519425c",
+      "counts": {
+        "input": 19597,
+        "kept": 19597,
+        "train": 19393,
+        "validation": 204
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00003.jsonl",
+      "documents": 20295,
+      "bytes": 137858401,
+      "sha256": "dfb7e5eaa641d892127003304f61202a0026cc832444155b07e2163c285282d7",
+      "counts": {
+        "input": 20295,
+        "kept": 20295,
+        "train": 20081,
+        "validation": 214
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00004.jsonl",
+      "documents": 20036,
+      "bytes": 137796221,
+      "sha256": "64fa6e711897cd4466b3050b9403e3276e7ecc0503d0c3f6d51f6ec4c03c3d58",
+      "counts": {
+        "input": 20036,
+        "kept": 20036,
+        "train": 19850,
+        "validation": 186
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00005.jsonl",
+      "documents": 20033,
+      "bytes": 137548928,
+      "sha256": "e85d912eb8b369c40e3ab9ce383528028c102861d0fe2a2cb136465c3b7ffeda",
+      "counts": {
+        "input": 20033,
+        "kept": 20033,
+        "train": 19838,
+        "validation": 195
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00006.jsonl",
+      "documents": 19838,
+      "bytes": 137841488,
+      "sha256": "f152eb1b14f541b45c21671f5c6d372f21dbc99aae553ec763b7d4f712ecb552",
+      "counts": {
+        "input": 19838,
+        "kept": 19838,
+        "validation": 210,
+        "train": 19628
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00007.jsonl",
+      "documents": 19900,
+      "bytes": 137633430,
+      "sha256": "6db495b4674a7f2582909b6ac40cdc18c05ddb5488446d9be87dacac7a4daa8c",
+      "counts": {
+        "input": 19900,
+        "kept": 19900,
+        "train": 19679,
+        "validation": 221
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00008.jsonl",
+      "documents": 19923,
+      "bytes": 137788567,
+      "sha256": "cf917ac5a72f47183fb89db43084e46fb6cebf084332e3709fa5650f9f95c16e",
+      "counts": {
+        "input": 19923,
+        "kept": 19923,
+        "train": 19744,
+        "validation": 179
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00009.jsonl",
+      "documents": 19843,
+      "bytes": 137592848,
+      "sha256": "5c0a42a304a2e4e9e277cf58ad2a607a9fc9891168d1edabdf99e09fb9a0f81d",
+      "counts": {
+        "input": 19843,
+        "kept": 19843,
+        "train": 19656,
+        "validation": 187
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00010.jsonl",
+      "documents": 19557,
+      "bytes": 137676767,
+      "sha256": "1c602f429dc9d582f1e0039466fd2307eaef9d46c5cfa4093f3c6a3caf66b74a",
+      "counts": {
+        "input": 19557,
+        "kept": 19557,
+        "train": 19346,
+        "validation": 211
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00011.jsonl",
+      "documents": 19651,
+      "bytes": 137649758,
+      "sha256": "4ff1abd07b554f219b459d46a026df2829a8804fc83a69bae9536e562fe79eb0",
+      "counts": {
+        "input": 19651,
+        "kept": 19651,
+        "train": 19455,
+        "validation": 196
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00012.jsonl",
+      "documents": 20464,
+      "bytes": 137728820,
+      "sha256": "c896459dc99e397d62298a1ec464992a4936ea96ca95e7cfc4fed3f9354cbf92",
+      "counts": {
+        "input": 20464,
+        "kept": 20464,
+        "train": 20260,
+        "validation": 204
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00013.jsonl",
+      "documents": 19599,
+      "bytes": 137748944,
+      "sha256": "f6720e76ce5152f49c5ca80b946cc0635784ef03e9feefcb021dc61b0b4586f0",
+      "counts": {
+        "input": 19599,
+        "kept": 19599,
+        "train": 19398,
+        "validation": 201
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00014.jsonl",
+      "documents": 20101,
+      "bytes": 137815989,
+      "sha256": "e62b470c4fd4043b19541304fc38e530d2e9bed0757d9c30c943e54c8b006bdb",
+      "counts": {
+        "input": 20101,
+        "kept": 20101,
+        "train": 19908,
+        "validation": 193
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00015.jsonl",
+      "documents": 20175,
+      "bytes": 137765785,
+      "sha256": "67a122d0382252b298dd646bc11238c950630bc71941a100c9803eeb6b21cf26",
+      "counts": {
+        "input": 20175,
+        "kept": 20175,
+        "train": 19950,
+        "validation": 225
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00016.jsonl",
+      "documents": 20114,
+      "bytes": 137797949,
+      "sha256": "d2090b3fe97ca8684fa1fd2a080c1bcd358fa9b9e661cfdbca5ce3cd8555780b",
+      "counts": {
+        "input": 20114,
+        "kept": 20114,
+        "train": 19898,
+        "validation": 216
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00017.jsonl",
+      "documents": 19423,
+      "bytes": 137757306,
+      "sha256": "0c9220d1a71c24b514177e327ab11279aeb5be716e1d735302ccae94d6dece7d",
+      "counts": {
+        "input": 19423,
+        "kept": 19423,
+        "train": 19243,
+        "validation": 180
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00018.jsonl",
+      "documents": 19225,
+      "bytes": 137707582,
+      "sha256": "44c75e1c79815e593e2b1b48964c8fe614f9d71145117ccc4c407842e50c24ac",
+      "counts": {
+        "input": 19225,
+        "kept": 19225,
+        "train": 19039,
+        "validation": 186
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00019.jsonl",
+      "documents": 19920,
+      "bytes": 137730814,
+      "sha256": "ff28b17b83252b7dc9aa7a94b3fd767dae6d3c052ec230cdc8f2e46815d14c9b",
+      "counts": {
+        "input": 19920,
+        "kept": 19920,
+        "train": 19718,
+        "validation": 202
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00020.jsonl",
+      "documents": 19727,
+      "bytes": 137798345,
+      "sha256": "94f5453464836fb797127be6a4636466e8a94595189c3a91ec21123e22e3fae8",
+      "counts": {
+        "input": 19727,
+        "kept": 19727,
+        "train": 19523,
+        "validation": 204
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00021.jsonl",
+      "documents": 19777,
+      "bytes": 137714025,
+      "sha256": "a355b536ca1d5547f04b2685f1e6c1a7afeb459032c627e05027b1d756e7d6fc",
+      "counts": {
+        "input": 19777,
+        "kept": 19777,
+        "train": 19578,
+        "validation": 199
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00022.jsonl",
+      "documents": 19841,
+      "bytes": 137716533,
+      "sha256": "de670c51e69c4527f59214aa752dd690ce6c51d8099a4fe6347d8a7171448ee2",
+      "counts": {
+        "input": 19841,
+        "kept": 19841,
+        "train": 19656,
+        "validation": 185
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00023.jsonl",
+      "documents": 20002,
+      "bytes": 137780294,
+      "sha256": "2d0cc35e18a199491336c0ea177e94656347666c724ed4e5a2164732c7739f9e",
+      "counts": {
+        "input": 20002,
+        "kept": 20002,
+        "train": 19796,
+        "validation": 206
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00024.jsonl",
+      "documents": 19876,
+      "bytes": 137178020,
+      "sha256": "4e64f575c9f685a0b84c842275daed8e66175413d54ec4ab5781feea3e3319ba",
+      "counts": {
+        "input": 19876,
+        "kept": 19876,
+        "train": 19679,
+        "validation": 197
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00025.jsonl",
+      "documents": 19362,
+      "bytes": 137762231,
+      "sha256": "3ec8839d8aa5ee1119341898defeb3e906f4a4a4f4b44c954f6170ecae2246fb",
+      "counts": {
+        "input": 19362,
+        "kept": 19362,
+        "train": 19166,
+        "validation": 196
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00026.jsonl",
+      "documents": 19606,
+      "bytes": 137629008,
+      "sha256": "fe1a52f706b8b1e4dc84890388582d435408ceae8a9d3ea0c4fc203215f73deb",
+      "counts": {
+        "input": 19606,
+        "kept": 19606,
+        "train": 19422,
+        "validation": 184
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00027.jsonl",
+      "documents": 19521,
+      "bytes": 137685124,
+      "sha256": "105dd8f4be910a563f18c451c0a5dfa462d83badf856e62fa0394a3211759de4",
+      "counts": {
+        "input": 19521,
+        "kept": 19521,
+        "train": 19334,
+        "validation": 187
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00028.jsonl",
+      "documents": 20322,
+      "bytes": 137831292,
+      "sha256": "82ef21f5ef11332b437c8b9b6562b774294bcf8ae1101360d3d4508a6da14125",
+      "counts": {
+        "input": 20322,
+        "kept": 20322,
+        "train": 20131,
+        "validation": 191
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00029.jsonl",
+      "documents": 19706,
+      "bytes": 137687036,
+      "sha256": "7315379625eaa6f1275f92d1da1007e1c6ea647f584321e93cefdaff8f8e4109",
+      "counts": {
+        "input": 19706,
+        "kept": 19706,
+        "train": 19499,
+        "validation": 207
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00030.jsonl",
+      "documents": 20480,
+      "bytes": 137721160,
+      "sha256": "087a2d4ae23b4c13c1af31fc795caca2ad4c4402d60085303eb37b78a2205703",
+      "counts": {
+        "input": 20480,
+        "kept": 20480,
+        "train": 20245,
+        "validation": 235
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00031.jsonl",
+      "documents": 19913,
+      "bytes": 137841972,
+      "sha256": "63eb80f279fcaf669234941a3744184274b7ace8dd02312248b47238b6807956",
+      "counts": {
+        "input": 19913,
+        "kept": 19913,
+        "train": 19705,
+        "validation": 208
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00032.jsonl",
+      "documents": 19689,
+      "bytes": 137041060,
+      "sha256": "a169a3b69c9a95e13e1191561e1f1ce521dcf8b25326790922b4731b88f55bd1",
+      "counts": {
+        "input": 19689,
+        "kept": 19689,
+        "train": 19492,
+        "validation": 197
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00033.jsonl",
+      "documents": 19788,
+      "bytes": 137262260,
+      "sha256": "ab41fd86a814b0e8eafb9cdc85398e9fb4981b15245a08ba4be9447df61e64aa",
+      "counts": {
+        "input": 19788,
+        "kept": 19788,
+        "train": 19597,
+        "validation": 191
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00034.jsonl",
+      "documents": 19929,
+      "bytes": 137821412,
+      "sha256": "f3807559944eea5124cf75def08960f47f025ffa246db25c21908f834e9601eb",
+      "counts": {
+        "input": 19929,
+        "kept": 19929,
+        "train": 19724,
+        "validation": 205
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00035.jsonl",
+      "documents": 20145,
+      "bytes": 137871763,
+      "sha256": "c8bdc901286ad14878ed2929347a9d41db8907777813b4601d71ec961a55c7cd",
+      "counts": {
+        "input": 20145,
+        "kept": 20145,
+        "train": 19939,
+        "validation": 206
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00036.jsonl",
+      "documents": 19510,
+      "bytes": 137765613,
+      "sha256": "42dfe37a7cbb0868c5db78047eb8738901bad2a8d6b559c3cb8194a455503f0b",
+      "counts": {
+        "input": 19510,
+        "kept": 19510,
+        "train": 19329,
+        "validation": 181
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00037.jsonl",
+      "documents": 19548,
+      "bytes": 137727879,
+      "sha256": "b47d4e8fd25fba55219f9e12a386b295ac80dbe9c82acd3e6bf500c2da9b64a1",
+      "counts": {
+        "input": 19548,
+        "kept": 19548,
+        "train": 19362,
+        "validation": 186
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00038.jsonl",
+      "documents": 20336,
+      "bytes": 137912217,
+      "sha256": "bf4950d9b9a923cc69a6866c56d7f4eb64d904d29caeccc83b094d3a5585bd36",
+      "counts": {
+        "input": 20336,
+        "kept": 20336,
+        "train": 20129,
+        "validation": 207
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00039.jsonl",
+      "documents": 19794,
+      "bytes": 137791356,
+      "sha256": "3b5d377e851fa613b7075be73fa17dc942f76654b93c5ae3fdb8eb9a36a4e633",
+      "counts": {
+        "input": 19794,
+        "kept": 19794,
+        "train": 19627,
+        "validation": 167
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00040.jsonl",
+      "documents": 20281,
+      "bytes": 137872186,
+      "sha256": "2cacb2fb6ffdfa7a8a88cc5f41b519a876d8e59087823774d3cb7dc8abaa88e0",
+      "counts": {
+        "input": 20281,
+        "kept": 20281,
+        "train": 20062,
+        "validation": 219
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00041.jsonl",
+      "documents": 19910,
+      "bytes": 137212563,
+      "sha256": "8da1d60642b4fe78b9db781fbf7509c7fb3af6933c9a9724b59cad9a158b2e2a",
+      "counts": {
+        "input": 19910,
+        "kept": 19910,
+        "train": 19714,
+        "validation": 196
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00042.jsonl",
+      "documents": 20243,
+      "bytes": 137242308,
+      "sha256": "3b84970872a488ce6deef01ba933491190845ffa5ee5c1c5622a25d9a760f526",
+      "counts": {
+        "input": 20243,
+        "kept": 20243,
+        "train": 20043,
+        "validation": 200
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00043.jsonl",
+      "documents": 19622,
+      "bytes": 137718952,
+      "sha256": "2dacaeb2059de1974b1bc12e033ad7170db838124a5b684c4c208f4c1d0c30ae",
+      "counts": {
+        "input": 19622,
+        "kept": 19622,
+        "train": 19443,
+        "validation": 179
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00044.jsonl",
+      "documents": 19645,
+      "bytes": 137666916,
+      "sha256": "bf84aacbeebc78857a5a23d7db6d6bb219910c6d8004870a3ca52f2d68290874",
+      "counts": {
+        "input": 19645,
+        "kept": 19645,
+        "train": 19443,
+        "validation": 202
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00045.jsonl",
+      "documents": 20192,
+      "bytes": 137862344,
+      "sha256": "41a16225b95ad71aa6fe65d11db37fdd34821be4309ac70f6fcb9806ddd5ef01",
+      "counts": {
+        "input": 20192,
+        "kept": 20192,
+        "train": 19991,
+        "validation": 201
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00046.jsonl",
+      "documents": 19994,
+      "bytes": 137839271,
+      "sha256": "4309b8ee1e90e12fa1c70592b51db88924d5cb8d39ba68480f74633950898516",
+      "counts": {
+        "input": 19994,
+        "kept": 19994,
+        "train": 19800,
+        "validation": 194
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00047.jsonl",
+      "documents": 19422,
+      "bytes": 137683621,
+      "sha256": "24a32a0fe75306862d6aa0955ed4f13c238aa29f39fa1281ddbfe104bf6df0f0",
+      "counts": {
+        "input": 19422,
+        "kept": 19422,
+        "train": 19269,
+        "validation": 153
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00048.jsonl",
+      "documents": 20145,
+      "bytes": 137788866,
+      "sha256": "a856a76b975475e2b65304f195215d529c4b72c658a624c219fb1c7be90e1ed8",
+      "counts": {
+        "input": 20145,
+        "kept": 20145,
+        "train": 19935,
+        "validation": 210
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00049.jsonl",
+      "documents": 20259,
+      "bytes": 137876200,
+      "sha256": "e093986bfd0af53faf071fc278e5fd15fd916a7eb2b6e4e1f9b5ad49758aa73a",
+      "counts": {
+        "input": 20259,
+        "kept": 20259,
+        "train": 20057,
+        "validation": 202
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00050.jsonl",
+      "documents": 19954,
+      "bytes": 137525371,
+      "sha256": "dfa20d739720861cfd62d064b2ecb521642eecb3817392ae459741bd7a5dbee1",
+      "counts": {
+        "input": 19954,
+        "kept": 19954,
+        "train": 19739,
+        "validation": 215
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00051.jsonl",
+      "documents": 19668,
+      "bytes": 137820830,
+      "sha256": "6cbe58144407868a50b9647b2f1e0fc86fd1d3828f6107727d6a73c618759d6f",
+      "counts": {
+        "input": 19668,
+        "kept": 19668,
+        "train": 19463,
+        "validation": 205
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00052.jsonl",
+      "documents": 19351,
+      "bytes": 137742006,
+      "sha256": "ec8de74ac364a373c606a478e1913ede86d543b3a7d28b345391febb1580170f",
+      "counts": {
+        "input": 19351,
+        "kept": 19351,
+        "train": 19147,
+        "validation": 204
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00053.jsonl",
+      "documents": 20070,
+      "bytes": 137812719,
+      "sha256": "b5647274b08350587e38232b115c72de01f82cfe1cb1810667538f8713ff0d75",
+      "counts": {
+        "input": 20070,
+        "kept": 20070,
+        "train": 19872,
+        "validation": 198
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00054.jsonl",
+      "documents": 19892,
+      "bytes": 137467389,
+      "sha256": "ab9fc9ddeff7d227150c4a59d05cce8dbbb69f2df96bb416d526a6dcc4247be4",
+      "counts": {
+        "input": 19892,
+        "kept": 19892,
+        "train": 19703,
+        "validation": 189
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00055.jsonl",
+      "documents": 19441,
+      "bytes": 137628464,
+      "sha256": "460254588a7a2b57d45b6cad06e365414d07b731b6f681e899877b33fedc9dd1",
+      "counts": {
+        "input": 19441,
+        "kept": 19441,
+        "train": 19247,
+        "validation": 194
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00056.jsonl",
+      "documents": 19477,
+      "bytes": 137374833,
+      "sha256": "6accdbb908d171824f9a874c72d4262938cc6fa4b42d5d823967c7a2cd5b3fa7",
+      "counts": {
+        "input": 19477,
+        "kept": 19477,
+        "train": 19294,
+        "validation": 183
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00057.jsonl",
+      "documents": 20130,
+      "bytes": 137637427,
+      "sha256": "727ada38010bcdbae6dd34dc4c522fcd78db720b6439d7abbda73b50e7965c76",
+      "counts": {
+        "input": 20130,
+        "kept": 20130,
+        "train": 19918,
+        "validation": 212
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00058.jsonl",
+      "documents": 19475,
+      "bytes": 137717527,
+      "sha256": "4936f244a41d0bb26a49b6fcda2f182ff9a8115b1964ad7b76f90fd1cb611dc7",
+      "counts": {
+        "input": 19475,
+        "kept": 19475,
+        "train": 19262,
+        "validation": 213
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00059.jsonl",
+      "documents": 19991,
+      "bytes": 136846352,
+      "sha256": "db032b6df1297a897e384c50b617e173d3a6dff3cefc921a10a51a7be2f559c5",
+      "counts": {
+        "input": 19991,
+        "kept": 19991,
+        "train": 19796,
+        "validation": 195
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00060.jsonl",
+      "documents": 19828,
+      "bytes": 137823326,
+      "sha256": "93b65663f09136d8f27ba998ae1064cfbba3dce73111426d2902b369cfea1201",
+      "counts": {
+        "input": 19828,
+        "kept": 19828,
+        "train": 19625,
+        "validation": 203
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00061.jsonl",
+      "documents": 20102,
+      "bytes": 137719978,
+      "sha256": "a29e3a7bea7ea8ce0360e9e029ccec78c866046f1c1ce4692f9a6ccf50f1ead9",
+      "counts": {
+        "input": 20102,
+        "kept": 20102,
+        "train": 19901,
+        "validation": 201
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00062.jsonl",
+      "documents": 20165,
+      "bytes": 137806804,
+      "sha256": "c871032160c13de243650be1c6bf210e384e5c19f45a119bb45da95db17f1af4",
+      "counts": {
+        "input": 20165,
+        "kept": 20165,
+        "train": 19973,
+        "validation": 192
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00063.jsonl",
+      "documents": 19491,
+      "bytes": 137652572,
+      "sha256": "ec18dbb065f4a0244040bfce1e731bc680c46c51a75f485423ea077b8a7db5bf",
+      "counts": {
+        "input": 19491,
+        "kept": 19491,
+        "train": 19308,
+        "validation": 183
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00064.jsonl",
+      "documents": 20162,
+      "bytes": 137844755,
+      "sha256": "bab77e1ccda47b7f4d8b4a94f45bac611691fe4eb23b2e506acb810821cd6792",
+      "counts": {
+        "input": 20162,
+        "kept": 20162,
+        "train": 19977,
+        "validation": 185
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00065.jsonl",
+      "documents": 19945,
+      "bytes": 137847977,
+      "sha256": "544b999a60708d8dfcd8345be9085ba0bcaeacf9727e65cd9069babbbf7958ae",
+      "counts": {
+        "input": 19945,
+        "kept": 19945,
+        "train": 19724,
+        "validation": 221
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00066.jsonl",
+      "documents": 20026,
+      "bytes": 137701442,
+      "sha256": "cad727fb5a25b51ef45832d3e0b177264252a64b2f766b011af5c00c27655fba",
+      "counts": {
+        "input": 20026,
+        "kept": 20026,
+        "train": 19805,
+        "validation": 221
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00067.jsonl",
+      "documents": 20351,
+      "bytes": 137923824,
+      "sha256": "aefa8dbc96f134db32a277ab0748d8f8799bd1345395a41ae7205bbd039faed2",
+      "counts": {
+        "input": 20351,
+        "kept": 20351,
+        "train": 20163,
+        "validation": 188
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00068.jsonl",
+      "documents": 19866,
+      "bytes": 137772817,
+      "sha256": "b7ac1c8a3c2e3eae2b4b1393bc3a52dfe3e483d906d5967be9765dbb9e9e365e",
+      "counts": {
+        "input": 19866,
+        "kept": 19866,
+        "train": 19675,
+        "validation": 191
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00069.jsonl",
+      "documents": 20317,
+      "bytes": 137828399,
+      "sha256": "247d216a3a0c7c09abce1e49fd0064e42042df899d58e716964e69ddb5285bd3",
+      "counts": {
+        "input": 20317,
+        "kept": 20317,
+        "train": 20106,
+        "validation": 211
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00070.jsonl",
+      "documents": 19870,
+      "bytes": 137784917,
+      "sha256": "6317d7f5544badbd040d4f5edf2bc7330d0f4857120d592d4a478c08c8c94dce",
+      "counts": {
+        "input": 19870,
+        "kept": 19870,
+        "train": 19674,
+        "validation": 196
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00071.jsonl",
+      "documents": 19992,
+      "bytes": 137833731,
+      "sha256": "17f821acee5c21860ba13ffb6b9c9c9c32796fa6e954d1ab4b7af839d044d71d",
+      "counts": {
+        "input": 19992,
+        "kept": 19992,
+        "train": 19783,
+        "validation": 209
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00072.jsonl",
+      "documents": 20016,
+      "bytes": 137782162,
+      "sha256": "4f5f5d626009cc27fcfe44b1dfc33b5c36373c6eb2275e68c06a3a1ea4b596da",
+      "counts": {
+        "input": 20016,
+        "kept": 20016,
+        "train": 19827,
+        "validation": 189
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00073.jsonl",
+      "documents": 19254,
+      "bytes": 137645959,
+      "sha256": "5283314a6115ab9f34cd875c9eded49416aeaf1aa9e736f896165f1c0aa17270",
+      "counts": {
+        "input": 19254,
+        "kept": 19254,
+        "train": 19069,
+        "validation": 185
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00074.jsonl",
+      "documents": 20009,
+      "bytes": 137814838,
+      "sha256": "22610551dae5fa3cef2fb1239d220b1edefcda1f2e12de5625d71f87727a3d52",
+      "counts": {
+        "input": 20009,
+        "kept": 20009,
+        "train": 19798,
+        "validation": 211
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00075.jsonl",
+      "documents": 19366,
+      "bytes": 137708183,
+      "sha256": "8ee36f7e6c8eaaf0bc5ce84b4d8d0c684511582f645056499a07132d34b7d18d",
+      "counts": {
+        "input": 19366,
+        "kept": 19366,
+        "train": 19167,
+        "validation": 199
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00076.jsonl",
+      "documents": 19718,
+      "bytes": 137831567,
+      "sha256": "d925d0f111b5002c2d1b6a9fefa1e84caa8d398bb7be559018620ca9e2d96a12",
+      "counts": {
+        "input": 19718,
+        "kept": 19718,
+        "train": 19526,
+        "validation": 192
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00077.jsonl",
+      "documents": 20211,
+      "bytes": 137780109,
+      "sha256": "4e15b0e7ba87ddfd2a36bc28d20c21231670e90c3476b490bb12fe8099202a46",
+      "counts": {
+        "input": 20211,
+        "kept": 20211,
+        "train": 20014,
+        "validation": 197
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00078.jsonl",
+      "documents": 20147,
+      "bytes": 137859898,
+      "sha256": "ba191a45a98bee67dd6f47fc304b80e71048a3bd7f44e309ffeb3d98b8dd2858",
+      "counts": {
+        "input": 20147,
+        "kept": 20147,
+        "train": 19957,
+        "validation": 190
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00079.jsonl",
+      "documents": 19892,
+      "bytes": 137709982,
+      "sha256": "725a3578e1e20096aa387514fc0218648ee4989165705e6076da036f1718f2ce",
+      "counts": {
+        "input": 19892,
+        "kept": 19892,
+        "train": 19716,
+        "validation": 176
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00080.jsonl",
+      "documents": 20379,
+      "bytes": 137701397,
+      "sha256": "8b68ed86815092c8664aa229050a430925ed942e7f3000d9f0e90ddffb572645",
+      "counts": {
+        "input": 20379,
+        "kept": 20379,
+        "train": 20179,
+        "validation": 200
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00081.jsonl",
+      "documents": 19841,
+      "bytes": 136922190,
+      "sha256": "0eb04143b9491248358c1cfd3e3a41bcae82bf94cd11e1cf49d27c8a0ca26c9c",
+      "counts": {
+        "input": 19841,
+        "kept": 19841,
+        "train": 19645,
+        "validation": 196
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00082.jsonl",
+      "documents": 19573,
+      "bytes": 137653809,
+      "sha256": "a1dd5b801e3db0637ee57f70051318565392ba4fd59067b3acb1585795db37db",
+      "counts": {
+        "input": 19573,
+        "kept": 19573,
+        "train": 19363,
+        "validation": 210
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00083.jsonl",
+      "documents": 20071,
+      "bytes": 137129503,
+      "sha256": "82c99d8e478258983df58d6d4378588abd2989ce0ebfac5ea81cbe284cd077e0",
+      "counts": {
+        "input": 20071,
+        "kept": 20071,
+        "train": 19874,
+        "validation": 197
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00084.jsonl",
+      "documents": 20042,
+      "bytes": 137580740,
+      "sha256": "e3a8280d7e794c10121c775b841778826b48d904df4ed0f3c737717dc6415cf2",
+      "counts": {
+        "input": 20042,
+        "kept": 20042,
+        "train": 19846,
+        "validation": 196
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00085.jsonl",
+      "documents": 20252,
+      "bytes": 137870366,
+      "sha256": "cf97f168ca29e4dea363adfa90d964e73183a9cd886c84a7984fe0b8b5f6cb2d",
+      "counts": {
+        "input": 20252,
+        "kept": 20252,
+        "train": 20051,
+        "validation": 201
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00086.jsonl",
+      "documents": 19365,
+      "bytes": 137265803,
+      "sha256": "bcc3474efe8463df186d0db7cf7ffab3e9252c12e3cc4599906a9ac49110ed26",
+      "counts": {
+        "input": 19365,
+        "kept": 19365,
+        "train": 19164,
+        "validation": 201
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00087.jsonl",
+      "documents": 19567,
+      "bytes": 137719769,
+      "sha256": "d6d8cb0d9efe08df3c1ce227bb100bdb7284f2dcf67725e138c860150567ea41",
+      "counts": {
+        "input": 19567,
+        "kept": 19567,
+        "train": 19372,
+        "validation": 195
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00088.jsonl",
+      "documents": 20206,
+      "bytes": 137551401,
+      "sha256": "7b25daa0bb07cf02400dee2cea259f41fa865ddba60bf68ed736ed833b88c37f",
+      "counts": {
+        "input": 20206,
+        "kept": 20206,
+        "train": 19996,
+        "validation": 210
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00089.jsonl",
+      "documents": 20215,
+      "bytes": 137912559,
+      "sha256": "65d3958f0e88661e325166eeeb8f5ea793fad4b9a8f942c925bf91354246d322",
+      "counts": {
+        "input": 20215,
+        "kept": 20215,
+        "train": 20000,
+        "validation": 215
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00090.jsonl",
+      "documents": 20464,
+      "bytes": 137904782,
+      "sha256": "d84cbb06b764a9ebc71a85a7a66b68189588b4300e6e417d085d4a476d74c51e",
+      "counts": {
+        "input": 20464,
+        "kept": 20464,
+        "train": 20271,
+        "validation": 193
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00091.jsonl",
+      "documents": 19832,
+      "bytes": 137739048,
+      "sha256": "17d5ba325ad9b06edcb41bc098d3c0053239fb89c5a6175200242d47f80356a5",
+      "counts": {
+        "input": 19832,
+        "kept": 19832,
+        "train": 19669,
+        "validation": 163
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00092.jsonl",
+      "documents": 20043,
+      "bytes": 137694193,
+      "sha256": "8deb770d2531282378376fc971538cd27cdb2fe17ba230a8b369d0ea9fec0625",
+      "counts": {
+        "input": 20043,
+        "kept": 20043,
+        "train": 19841,
+        "validation": 202
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00093.jsonl",
+      "documents": 19480,
+      "bytes": 137726313,
+      "sha256": "be8c4e06c82709c32d4763a27cff6bfa7fe9696d810b86665a401ddf1c375005",
+      "counts": {
+        "input": 19480,
+        "kept": 19480,
+        "train": 19288,
+        "validation": 192
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00094.jsonl",
+      "documents": 20003,
+      "bytes": 137884685,
+      "sha256": "2bcdb6ccddb50773d49838a502a7c1c62dd4165105d492a47425a71e1e538284",
+      "counts": {
+        "input": 20003,
+        "kept": 20003,
+        "train": 19800,
+        "validation": 203
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00095.jsonl",
+      "documents": 19718,
+      "bytes": 137822333,
+      "sha256": "0d493e91897905b55e082f368435424e9a33c1e426954ac17d9ce6c5336371e1",
+      "counts": {
+        "input": 19718,
+        "kept": 19718,
+        "train": 19519,
+        "validation": 199
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00096.jsonl",
+      "documents": 20042,
+      "bytes": 137858587,
+      "sha256": "787642989e870a766f3244c100abfc51c9d56951245d7d4f08d1d418392fa8aa",
+      "counts": {
+        "input": 20042,
+        "kept": 20042,
+        "train": 19837,
+        "validation": 205
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00097.jsonl",
+      "documents": 19743,
+      "bytes": 137639113,
+      "sha256": "abb78e808c303b4cf8e42d56a36a76103124cfa729288879fac304111bddff99",
+      "counts": {
+        "input": 19743,
+        "kept": 19743,
+        "train": 19521,
+        "validation": 222
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00098.jsonl",
+      "documents": 20107,
+      "bytes": 137849970,
+      "sha256": "34dd8e6232bd51a5d25f1b604ff1820319d2fa332d7ef935942d9bcc081c034a",
+      "counts": {
+        "input": 20107,
+        "kept": 20107,
+        "train": 19895,
+        "validation": 212
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00099.jsonl",
+      "documents": 19771,
+      "bytes": 137594317,
+      "sha256": "ca1df47162bf21ce80911b7cb31cb9775487a321e0916f9f2bd5542bb9505506",
+      "counts": {
+        "input": 19772,
+        "kept": 19771,
+        "train": 19565,
+        "validation": 206,
+        "duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00100.jsonl",
+      "documents": 19757,
+      "bytes": 137731226,
+      "sha256": "c1a69bcf6d73724248ef3acf27df48cbefa64219b940f7f01ca3e969a6995b31",
+      "counts": {
+        "input": 19757,
+        "kept": 19757,
+        "train": 19565,
+        "validation": 192
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00101.jsonl",
+      "documents": 19017,
+      "bytes": 137647762,
+      "sha256": "7e6b6975b374919ddee06ed7913e6ec5279c8bdaff0efc467d81c7afea85641d",
+      "counts": {
+        "input": 19017,
+        "kept": 19017,
+        "train": 18818,
+        "validation": 199
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00102.jsonl",
+      "documents": 19725,
+      "bytes": 137807327,
+      "sha256": "efb42583c38cd3c0a19ae929d2e70bdfc651ed012cac5dd4d86cf9dc9fd39966",
+      "counts": {
+        "input": 19725,
+        "kept": 19725,
+        "train": 19531,
+        "validation": 194
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00103.jsonl",
+      "documents": 20147,
+      "bytes": 137432642,
+      "sha256": "0be22e1b8e115463581b173745e4f188c83dec8aa1efd481a121b6d2ba9dd8f0",
+      "counts": {
+        "input": 20147,
+        "kept": 20147,
+        "train": 19940,
+        "validation": 207
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00104.jsonl",
+      "documents": 20030,
+      "bytes": 137787807,
+      "sha256": "1f66a1a1e2e1296e268cf266f80b7e04ce6262bfec7cb09a6f5d444d8e69b012",
+      "counts": {
+        "input": 20030,
+        "kept": 20030,
+        "train": 19834,
+        "validation": 196
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00105.jsonl",
+      "documents": 19904,
+      "bytes": 137671996,
+      "sha256": "3d837db2fc3a4d32e584c9c7cad39f87f9ba661609a7ea885a457c5d47ec3223",
+      "counts": {
+        "input": 19904,
+        "kept": 19904,
+        "train": 19694,
+        "validation": 210
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00106.jsonl",
+      "documents": 20812,
+      "bytes": 138046250,
+      "sha256": "0a6c5974dfe7e82e748b380103e2324fd868c288dba61bf4455459d25bf82557",
+      "counts": {
+        "input": 20812,
+        "kept": 20812,
+        "train": 20598,
+        "validation": 214
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00107.jsonl",
+      "documents": 19948,
+      "bytes": 137857052,
+      "sha256": "09c2ebaee8bd1f7e6b0de49afc8c047a3748b45f4111b20534dc0d6cadae9a5f",
+      "counts": {
+        "input": 19948,
+        "kept": 19948,
+        "train": 19756,
+        "validation": 192
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00108.jsonl",
+      "documents": 20038,
+      "bytes": 137687811,
+      "sha256": "442e9bb88ce1f75f6082807c02f417a1563b6b52cc6a898c93e23d7dd474b702",
+      "counts": {
+        "input": 20038,
+        "kept": 20038,
+        "train": 19853,
+        "validation": 185
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00109.jsonl",
+      "documents": 19412,
+      "bytes": 137686766,
+      "sha256": "e44bebb9e43674edef0604036c85a41b3701d286ce059527ed43cfaa00b50d6a",
+      "counts": {
+        "input": 19412,
+        "kept": 19412,
+        "train": 19221,
+        "validation": 191
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00110.jsonl",
+      "documents": 20082,
+      "bytes": 137714752,
+      "sha256": "1d3149dd9f497bc37e95ac2cc2d9d463e8ef391e2e1e768fb6665ec67a589908",
+      "counts": {
+        "input": 20082,
+        "kept": 20082,
+        "train": 19877,
+        "validation": 205
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00111.jsonl",
+      "documents": 20035,
+      "bytes": 137806119,
+      "sha256": "9f46d910d42111cabd20006da05614ecd35fd5f3169710adc6c2c406288fe474",
+      "counts": {
+        "input": 20035,
+        "kept": 20035,
+        "train": 19845,
+        "validation": 190
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00112.jsonl",
+      "documents": 19301,
+      "bytes": 137671131,
+      "sha256": "585813fabd33dfb3466a4ff8659460cff86a72e3e62d2e90dbfaa11ca38ba5f3",
+      "counts": {
+        "input": 19301,
+        "kept": 19301,
+        "train": 19116,
+        "validation": 185
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00113.jsonl",
+      "documents": 19141,
+      "bytes": 137618414,
+      "sha256": "92c605f190635c32b21fd6a137ab50802d44cd1ce0cda96ba016d44cde816c00",
+      "counts": {
+        "input": 19141,
+        "kept": 19141,
+        "train": 18941,
+        "validation": 200
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00114.jsonl",
+      "documents": 19066,
+      "bytes": 137666876,
+      "sha256": "14f776d863b4411641600164ff02dbeb7b5eda498c8c43453c81e8f65af6e95a",
+      "counts": {
+        "input": 19066,
+        "kept": 19066,
+        "train": 18885,
+        "validation": 181
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00115.jsonl",
+      "documents": 19776,
+      "bytes": 137766283,
+      "sha256": "00710482c1ebd79741d59b8cd67bbdb294ac103f1b9aa5c10ba412b1ef787ed7",
+      "counts": {
+        "input": 19776,
+        "kept": 19776,
+        "train": 19582,
+        "validation": 194
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00116.jsonl",
+      "documents": 19752,
+      "bytes": 137788358,
+      "sha256": "dafb1df306e87d2ade43397db94879b07a2a32eb2320ed834be53d7c94e9e917",
+      "counts": {
+        "input": 19752,
+        "kept": 19752,
+        "train": 19547,
+        "validation": 205
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00117.jsonl",
+      "documents": 20083,
+      "bytes": 137200725,
+      "sha256": "d0178f56f6955ce0f1344b62c5f691f5db3f727f5df699b5e3805462d7da07e7",
+      "counts": {
+        "input": 20083,
+        "kept": 20083,
+        "train": 19853,
+        "validation": 230
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00118.jsonl",
+      "documents": 19908,
+      "bytes": 137816303,
+      "sha256": "e6dc7e5100ce56389956732892155948f73298e71a44769ead3d4b597e92acd4",
+      "counts": {
+        "input": 19908,
+        "kept": 19908,
+        "train": 19690,
+        "validation": 218
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00119.jsonl",
+      "documents": 20080,
+      "bytes": 137761227,
+      "sha256": "7ac9b5449bbf90585c30c2190b788e47e98f477a2779bbdc8aedd00ced2d1d22",
+      "counts": {
+        "input": 20080,
+        "kept": 20080,
+        "train": 19864,
+        "validation": 216
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00120.jsonl",
+      "documents": 20257,
+      "bytes": 137825814,
+      "sha256": "634a53336539c4fb05fca5496980d798a0083e91b4deb1fa219bc35970d5333b",
+      "counts": {
+        "input": 20257,
+        "kept": 20257,
+        "train": 20046,
+        "validation": 211
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00121.jsonl",
+      "documents": 20035,
+      "bytes": 137874922,
+      "sha256": "ed903fa8726f0a8b7c0f40eb5d7d429d761a369e993efbf540ea0e59c7d2a32c",
+      "counts": {
+        "input": 20035,
+        "kept": 20035,
+        "train": 19858,
+        "validation": 177
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00122.jsonl",
+      "documents": 20202,
+      "bytes": 137543534,
+      "sha256": "0cfbd26d97207cee17af13885f7f04a2ac6c5159add588c59fbe9d60cc486c3f",
+      "counts": {
+        "input": 20202,
+        "kept": 20202,
+        "train": 20000,
+        "validation": 202
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00123.jsonl",
+      "documents": 20126,
+      "bytes": 137899968,
+      "sha256": "4763837f73581baed1eee69c9c2a07ac4adf9fd003b7c52637b1b42dfb1ca16d",
+      "counts": {
+        "input": 20126,
+        "kept": 20126,
+        "train": 19941,
+        "validation": 185
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00124.jsonl",
+      "documents": 19677,
+      "bytes": 137749236,
+      "sha256": "c4814bf14d3f914a81a97017d06c8e40be5ebb9892eced50fb34c9aeee85e092",
+      "counts": {
+        "input": 19677,
+        "kept": 19677,
+        "train": 19476,
+        "validation": 201
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00125.jsonl",
+      "documents": 19498,
+      "bytes": 137643942,
+      "sha256": "95dd59469be9e658a2cdea4bf855a6cca0f5a169a361931e48929f8cb805e4fa",
+      "counts": {
+        "input": 19498,
+        "kept": 19498,
+        "train": 19322,
+        "validation": 176
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00126.jsonl",
+      "documents": 19993,
+      "bytes": 137796370,
+      "sha256": "6da5828312e3dfb7cae6863123705b3223266c4cc4eed9203d6bdde6afa05488",
+      "counts": {
+        "input": 19993,
+        "kept": 19993,
+        "train": 19789,
+        "validation": 204
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00127.jsonl",
+      "documents": 19865,
+      "bytes": 137810219,
+      "sha256": "d53d3480f77ff9f1753f23e667e692380231689b99c8e11e6d5a46cfa3f451c4",
+      "counts": {
+        "input": 19865,
+        "kept": 19865,
+        "train": 19667,
+        "validation": 198
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00128.jsonl",
+      "documents": 20640,
+      "bytes": 137883125,
+      "sha256": "610def10f2b6fe19118ee392b4d83b335bd629f4fb4f28cd62730a4db2835215",
+      "counts": {
+        "input": 20640,
+        "kept": 20640,
+        "train": 20459,
+        "validation": 181
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00129.jsonl",
+      "documents": 19235,
+      "bytes": 137610758,
+      "sha256": "43c87d4063d965f5960e52250ea2252109ce988825eab4b15636cd181bed7b8b",
+      "counts": {
+        "input": 19235,
+        "kept": 19235,
+        "train": 19040,
+        "validation": 195
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00130.jsonl",
+      "documents": 19648,
+      "bytes": 137743308,
+      "sha256": "ea733d076020ad833ee124fe35602888aeebb01133754ada0fc49aadca2f0a0f",
+      "counts": {
+        "input": 19648,
+        "kept": 19648,
+        "train": 19467,
+        "validation": 181
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00131.jsonl",
+      "documents": 20351,
+      "bytes": 137770282,
+      "sha256": "2e4402254c1d4f9738c4ba255848b7d09f12c817c8df02e4c89b6efb97fc9fa1",
+      "counts": {
+        "input": 20351,
+        "kept": 20351,
+        "train": 20140,
+        "validation": 211
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00132.jsonl",
+      "documents": 20079,
+      "bytes": 137716363,
+      "sha256": "b14b0a63981863ce536ead825efccbd908b45d6b6e40397892265b19d27e6017",
+      "counts": {
+        "input": 20079,
+        "kept": 20079,
+        "train": 19890,
+        "validation": 189
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00133.jsonl",
+      "documents": 19266,
+      "bytes": 137276383,
+      "sha256": "c7c0c3fb2412b18fc3a264ceb3f98f98a889c2b5c2a14fd055d28070a2bc44ff",
+      "counts": {
+        "input": 19266,
+        "kept": 19266,
+        "train": 19076,
+        "validation": 190
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00134.jsonl",
+      "documents": 19667,
+      "bytes": 137044657,
+      "sha256": "bde60105fb40a5e46937327e055ad9b0a29e89302349eabefac6d5845b20cd7a",
+      "counts": {
+        "input": 19667,
+        "kept": 19667,
+        "train": 19466,
+        "validation": 201
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00135.jsonl",
+      "documents": 20056,
+      "bytes": 137729243,
+      "sha256": "3990bff8335d6430d471561ee4d2cc3cf10a912419f9c31cfb37b78006c5caec",
+      "counts": {
+        "input": 20056,
+        "kept": 20056,
+        "train": 19860,
+        "validation": 196
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00136.jsonl",
+      "documents": 20047,
+      "bytes": 137707688,
+      "sha256": "31606c4aa037511d9338f3138948799420248380e026ada0b7636567b1836d11",
+      "counts": {
+        "input": 20047,
+        "kept": 20047,
+        "train": 19841,
+        "validation": 206
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00137.jsonl",
+      "documents": 19282,
+      "bytes": 137368514,
+      "sha256": "638e972d0519e4e13eb091dca54d308047f53513f63e8b66a1fecc4e2a1599a6",
+      "counts": {
+        "input": 19282,
+        "kept": 19282,
+        "train": 19074,
+        "validation": 208
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00138.jsonl",
+      "documents": 19746,
+      "bytes": 137753939,
+      "sha256": "2bc3781e9b0ec442915dcf45ea8878253f9a57bd74ec9b1c1ecb20e24a7ec66e",
+      "counts": {
+        "input": 19746,
+        "kept": 19746,
+        "train": 19581,
+        "validation": 165
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00139.jsonl",
+      "documents": 19878,
+      "bytes": 137662530,
+      "sha256": "688d0b9547815e38cf11166908b6581c9e370cb20ab195d6c305f6b2a34623f7",
+      "counts": {
+        "input": 19878,
+        "kept": 19878,
+        "train": 19698,
+        "validation": 180
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00140.jsonl",
+      "documents": 19557,
+      "bytes": 137776885,
+      "sha256": "d14ad1b6cf177e94c67e7b0fc3cc6aa51e3a3d3dd79a81fd1928d42420dff11c",
+      "counts": {
+        "input": 19557,
+        "kept": 19557,
+        "train": 19348,
+        "validation": 209
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00141.jsonl",
+      "documents": 19566,
+      "bytes": 137685484,
+      "sha256": "2d233190423bbbffd05f8e7334a38a411c33faca8a83554452b72677880b14f5",
+      "counts": {
+        "input": 19566,
+        "kept": 19566,
+        "train": 19379,
+        "validation": 187
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00142.jsonl",
+      "documents": 19687,
+      "bytes": 137781261,
+      "sha256": "9627795dd1508f8da7af702efece4cb8d5978c144d600131bfa91ab740df65ce",
+      "counts": {
+        "input": 19687,
+        "kept": 19687,
+        "train": 19502,
+        "validation": 185
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00143.jsonl",
+      "documents": 19652,
+      "bytes": 137775842,
+      "sha256": "358ceac450a29be9c32cc66af9c67a54a35c27695b44f643fac8f5e45b03d610",
+      "counts": {
+        "input": 19652,
+        "kept": 19652,
+        "train": 19473,
+        "validation": 179
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00144.jsonl",
+      "documents": 19799,
+      "bytes": 137747018,
+      "sha256": "b9099f114b6dd38a07b21df69120eca3e01b83ef8d83c071519c3b05c2e1e63f",
+      "counts": {
+        "input": 19799,
+        "kept": 19799,
+        "train": 19618,
+        "validation": 181
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00145.jsonl",
+      "documents": 19435,
+      "bytes": 137712224,
+      "sha256": "f8a96bcd738f6b4a170574f25a42a291531f74ffdc3ebc7a5f3091046ae64055",
+      "counts": {
+        "input": 19435,
+        "kept": 19435,
+        "train": 19223,
+        "validation": 212
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00146.jsonl",
+      "documents": 19494,
+      "bytes": 136956842,
+      "sha256": "9cdbb124bf8ddf78564246448414e4c38227bedf08c31c317074fc5b0b1f4e7f",
+      "counts": {
+        "input": 19494,
+        "kept": 19494,
+        "train": 19294,
+        "validation": 200
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00147.jsonl",
+      "documents": 19741,
+      "bytes": 137616334,
+      "sha256": "2f96931c0cf9b92b2786a118a9410d315a0749af52e12d8445af73a7da24a6d7",
+      "counts": {
+        "input": 19741,
+        "kept": 19741,
+        "train": 19548,
+        "validation": 193
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00148.jsonl",
+      "documents": 19827,
+      "bytes": 137766701,
+      "sha256": "200fd200429dd7c52323407e7a320640ec8b199a7a400dab0902f18f6ccec2a1",
+      "counts": {
+        "input": 19827,
+        "kept": 19827,
+        "train": 19658,
+        "validation": 169
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00149.jsonl",
+      "documents": 19730,
+      "bytes": 136183360,
+      "sha256": "6fd6e29013ec2672a65dd9303fc2d9e6a7a0257ef8b4383afd8695a4d368515e",
+      "counts": {
+        "input": 19730,
+        "kept": 19730,
+        "train": 19563,
+        "validation": 167
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00150.jsonl",
+      "documents": 19852,
+      "bytes": 137704856,
+      "sha256": "d554099bfcbedcde3614df54c14403042d363a0788c8dfc26cf831c1d35916c1",
+      "counts": {
+        "input": 19852,
+        "kept": 19852,
+        "train": 19648,
+        "validation": 204
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00151.jsonl",
+      "documents": 19792,
+      "bytes": 137811024,
+      "sha256": "892efc8379d3a577835d62e2a8c97d87b8311162bfa86015ac1f905c8aa3438d",
+      "counts": {
+        "input": 19792,
+        "kept": 19792,
+        "train": 19595,
+        "validation": 197
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00152.jsonl",
+      "documents": 19714,
+      "bytes": 137696922,
+      "sha256": "ec48d0b0f06f4ac23038484b507a4d66ade248d7b0c1f2b82840e36458ac8431",
+      "counts": {
+        "input": 19714,
+        "kept": 19714,
+        "train": 19514,
+        "validation": 200
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00153.jsonl",
+      "documents": 19990,
+      "bytes": 137487867,
+      "sha256": "c6e34563d7d0b8d0d75fc73abec5726adfc75f0fb9a47abf4388f09422d5b120",
+      "counts": {
+        "input": 19990,
+        "kept": 19990,
+        "train": 19786,
+        "validation": 204
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00154.jsonl",
+      "documents": 19559,
+      "bytes": 137776501,
+      "sha256": "9682e7cd49e5d30650e4bb25a6b4660270a58ac1bef934e4daf65e71a57aff39",
+      "counts": {
+        "input": 19559,
+        "kept": 19559,
+        "train": 19395,
+        "validation": 164
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00155.jsonl",
+      "documents": 20383,
+      "bytes": 137829934,
+      "sha256": "806669d54bd90901d55ab956fcad1554cd881fe05f940ff818acc8806ff9a009",
+      "counts": {
+        "input": 20383,
+        "kept": 20383,
+        "train": 20175,
+        "validation": 208
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00156.jsonl",
+      "documents": 19006,
+      "bytes": 137602567,
+      "sha256": "9c18c9137e2cec1fe1bfcaa3760133a38420cd09f1a73c9d2dd319b18d5d8b79",
+      "counts": {
+        "input": 19006,
+        "kept": 19006,
+        "train": 18833,
+        "validation": 173
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00157.jsonl",
+      "documents": 20075,
+      "bytes": 137782187,
+      "sha256": "354c608ee3651ff6fd057e231a88025337ce4b87cb03851bc9e59e90fe04a29b",
+      "counts": {
+        "input": 20075,
+        "kept": 20075,
+        "train": 19872,
+        "validation": 203
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00158.jsonl",
+      "documents": 20407,
+      "bytes": 137858706,
+      "sha256": "10a0bb5f84404b30c79f0e2799ed519798ec471e4ad72383e11e84dcbaff78e3",
+      "counts": {
+        "input": 20407,
+        "kept": 20407,
+        "train": 20195,
+        "validation": 212
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00159.jsonl",
+      "documents": 20081,
+      "bytes": 136766923,
+      "sha256": "3c4419b163fb0c9ba21946510329ff0cbb1e424ab61c3f960ddc7dc09b0076e3",
+      "counts": {
+        "input": 20081,
+        "kept": 20081,
+        "train": 19895,
+        "validation": 186
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00160.jsonl",
+      "documents": 19926,
+      "bytes": 137737240,
+      "sha256": "6a22b08e67b017327c562bcfcd9fa47e5bbaba681323314cee1da725c7043399",
+      "counts": {
+        "input": 19926,
+        "kept": 19926,
+        "train": 19729,
+        "validation": 197
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00161.jsonl",
+      "documents": 19776,
+      "bytes": 137770555,
+      "sha256": "c7940f75491576dcb6158f9000c756c6e3377bd01431ee66ec15e8c96d5128d4",
+      "counts": {
+        "input": 19776,
+        "kept": 19776,
+        "train": 19562,
+        "validation": 214
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00162.jsonl",
+      "documents": 20450,
+      "bytes": 137747470,
+      "sha256": "4abfaa7828e70fa0ed59fce5247812e5c4a71e99a27221db07c7c5e23eddd0f3",
+      "counts": {
+        "input": 20450,
+        "kept": 20450,
+        "train": 20234,
+        "validation": 216
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00163.jsonl",
+      "documents": 19593,
+      "bytes": 136821267,
+      "sha256": "61a67567931fa5ff4ad3f7741d2703fc628e943cc11f199997ceb439ddbd6aae",
+      "counts": {
+        "input": 19593,
+        "kept": 19593,
+        "train": 19398,
+        "validation": 195
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00164.jsonl",
+      "documents": 19866,
+      "bytes": 137844825,
+      "sha256": "b9a5da4eee7ca0f8e91949a05a6de5fc98356d1eace94c332da08545942061f4",
+      "counts": {
+        "input": 19866,
+        "kept": 19866,
+        "train": 19676,
+        "validation": 190
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00165.jsonl",
+      "documents": 19785,
+      "bytes": 137765903,
+      "sha256": "c2ea7c704591c37eb5fd44eeeb3cc47cf031fb677a99a76cd14485a4473e3c5c",
+      "counts": {
+        "input": 19785,
+        "kept": 19785,
+        "train": 19557,
+        "validation": 228
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00166.jsonl",
+      "documents": 19692,
+      "bytes": 137686700,
+      "sha256": "826187abceb8f404a86c061c5e6e281de586a17b26b3f57bca101961af30958b",
+      "counts": {
+        "input": 19692,
+        "kept": 19692,
+        "train": 19494,
+        "validation": 198
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00167.jsonl",
+      "documents": 20109,
+      "bytes": 137890573,
+      "sha256": "2f6b2546f8b2879e5dbe95bdc50ec04543f36b1992c95c4f0e32009a5f0d58f7",
+      "counts": {
+        "input": 20109,
+        "kept": 20109,
+        "train": 19892,
+        "validation": 217
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00168.jsonl",
+      "documents": 19231,
+      "bytes": 137056812,
+      "sha256": "d81d456aa697249b3a8d2089b8fbe5237a2b4ed414b83d40c92b25854ba51380",
+      "counts": {
+        "input": 19231,
+        "kept": 19231,
+        "train": 19049,
+        "validation": 182
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00169.jsonl",
+      "documents": 19805,
+      "bytes": 137653774,
+      "sha256": "393dd1ff4dc0724e888876a0974824aa828f781ac38075005b38f5170b15d55b",
+      "counts": {
+        "input": 19805,
+        "kept": 19805,
+        "train": 19577,
+        "validation": 228
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00170.jsonl",
+      "documents": 19869,
+      "bytes": 137726706,
+      "sha256": "7785617e6f0a5e647e628086234ad71f8b0b61a1445cf57e109f5bfc24ee56b1",
+      "counts": {
+        "input": 19869,
+        "kept": 19869,
+        "train": 19660,
+        "validation": 209
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00171.jsonl",
+      "documents": 20026,
+      "bytes": 137833567,
+      "sha256": "1c31a6788839ab3d9957bb7b376176ec21fa903c76449fb448a55c59194788d1",
+      "counts": {
+        "input": 20026,
+        "kept": 20026,
+        "train": 19830,
+        "validation": 196
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00172.jsonl",
+      "documents": 19353,
+      "bytes": 137736503,
+      "sha256": "79bdd404048552de702ae92629b6dc603ca886cf1a4b0b5dafd323e69fc679f5",
+      "counts": {
+        "input": 19353,
+        "kept": 19353,
+        "train": 19163,
+        "validation": 190
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00173.jsonl",
+      "documents": 20103,
+      "bytes": 137886843,
+      "sha256": "ca0666bbd896463c00554ed2923aa91782cd5eee9d1e9212aead55af2c16849b",
+      "counts": {
+        "input": 20103,
+        "kept": 20103,
+        "train": 19890,
+        "validation": 213
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00174.jsonl",
+      "documents": 19554,
+      "bytes": 137040973,
+      "sha256": "19873696561441b5bf32df02a6fef095ebe39bb813aed93dbedc195f77bae772",
+      "counts": {
+        "input": 19554,
+        "kept": 19554,
+        "train": 19347,
+        "validation": 207
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00175.jsonl",
+      "documents": 20755,
+      "bytes": 137947584,
+      "sha256": "b6c3e8b2294d1327990e367c421f1c8c824bbf86bcb0fa83fb5a02024c49f30e",
+      "counts": {
+        "input": 20755,
+        "kept": 20755,
+        "train": 20550,
+        "validation": 205
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/deduped/finemath/part-00176.jsonl",
+      "documents": 14512,
+      "bytes": 100402146,
+      "sha256": "ece91678f40185909e6aa4c91401c8124a9cd3c8b6b089b343b271d791df7a4c",
+      "counts": {
+        "input": 14512,
+        "kept": 14512,
+        "train": 14355,
+        "validation": 157
+      }
+    }
+  ],
+  "upstream_report_sha256": "3352101acc354c4c54270dd9c783cd58ac921535bd19132f7db761200a16305e",
+  "global_identity": "a50e4ff168e887caf30aa501d46d0041d2036bc59aa7318fe7dec4daa8b0e80f",
+  "script_sha256": "d05b7da57b834d6b18a30d57203534a5d62e91898e809de40f8b3c8fd9ee873f"
+}

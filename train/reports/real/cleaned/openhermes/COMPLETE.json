@@ -1,0 +1,108 @@
+{
+  "source": "openhermes",
+  "status": "complete",
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2/cleaned/openhermes/part-00000.jsonl",
+      "documents": 67526,
+      "bytes": 140024668,
+      "sha256": "974526088fb84a34a28e870641692b218c8151c3be7a9ed395fe27b1f39d3aca"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/cleaned/openhermes/part-00001.jsonl",
+      "documents": 67380,
+      "bytes": 140010132,
+      "sha256": "d7186cbd1dc61115ecb93bc2ff0de6fbc63969fd53b696fcfdebd68245b85a43"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/cleaned/openhermes/part-00002.jsonl",
+      "documents": 73964,
+      "bytes": 140578483,
+      "sha256": "30a45c2e8ca3ff112964a0f313639b4a6d42123de43eec7b00b4d7d0aaa448d6"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/cleaned/openhermes/part-00003.jsonl",
+      "documents": 65638,
+      "bytes": 139858279,
+      "sha256": "24fc203a1d8ad9286bc7ccd63146ccaed1258f08ab778f4b3138778a661fc742"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/cleaned/openhermes/part-00004.jsonl",
+      "documents": 72729,
+      "bytes": 140465197,
+      "sha256": "29c56c759291eeb790c9e678f63336aa18a36704a1c8cb110530f9c2723d9eac"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/cleaned/openhermes/part-00005.jsonl",
+      "documents": 56487,
+      "bytes": 139013942,
+      "sha256": "1646f37a17a9910dce55866223cfa0b582d4a10c7e2c4c687ddf7748168f22cb"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/cleaned/openhermes/part-00006.jsonl",
+      "documents": 113238,
+      "bytes": 143954978,
+      "sha256": "e542bad62539742ccb7c37a86a70bbce5585dc7ca19033431c5d716cb7f7828c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/cleaned/openhermes/part-00007.jsonl",
+      "documents": 67483,
+      "bytes": 140019954,
+      "sha256": "f438a9695129844e72cf224cc4d879c2ed8251fda814d57c5c42c1f1abf40308"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/cleaned/openhermes/part-00008.jsonl",
+      "documents": 67424,
+      "bytes": 140014841,
+      "sha256": "7ad9d19e27d142cc16bdc2701f50cb3423f8e8a982a88d02fd8ad6beebd7c52a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/cleaned/openhermes/part-00009.jsonl",
+      "documents": 67871,
+      "bytes": 140051706,
+      "sha256": "40e01188c2ef783bd92b2dc7e691862df66e12bceda60b0657adb956be6c8d4c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/cleaned/openhermes/part-00010.jsonl",
+      "documents": 68186,
+      "bytes": 140081021,
+      "sha256": "1f8d3f5ef6654c3a38aa57e11deb7a01a57389c1832fef8027ea1120a4aa5b03"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/cleaned/openhermes/part-00011.jsonl",
+      "documents": 68006,
+      "bytes": 140065426,
+      "sha256": "150832ec7480ac91af7defddfe7f04438e0e3525ae47401826679a57d2a719ca"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/cleaned/openhermes/part-00012.jsonl",
+      "documents": 62800,
+      "bytes": 139617172,
+      "sha256": "7563ace1c7d4a08926a8db65a0fa785c28fba7563687b7a691248b49f6e21aa4"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/cleaned/openhermes/part-00013.jsonl",
+      "documents": 57770,
+      "bytes": 139184974,
+      "sha256": "9687779a41b680afc8fa8fe96230027f88e66b2a76db1f267e41a6fcbc7b91e7"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/cleaned/openhermes/part-00014.jsonl",
+      "documents": 25027,
+      "bytes": 79574422,
+      "sha256": "f9f3fd799f172df8c4d7d2f113cb266aefa77c31f3467f13eb8e06054cbc8392"
+    }
+  ],
+  "counts": {
+    "input": 1001551,
+    "kept": 1001529,
+    "reject_nul_byte": 1,
+    "reject_encoding_damage": 9,
+    "reject_secret_pattern": 12
+  },
+  "script_sha256": "2f8fc9d9624315558a9a9998d7c6084c62e74b460899e81b0d8efbc53380e8a2",
+  "upstream_report_sha256": "01dc4e46a6f3bf8847e7e4b8c546541f679ee0a0fc0b8a8f844afe3f13030c06",
+  "limits": [
+    "PII filtering covers email in prose and explicit secret-key patterns; not a guarantee of total PII removal"
+  ]
+}

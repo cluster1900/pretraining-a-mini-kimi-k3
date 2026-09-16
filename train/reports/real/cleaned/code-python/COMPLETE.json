@@ -1,0 +1,53 @@
+{
+  "source": "code-python",
+  "status": "complete",
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2/cleaned/code-python/part-00000.jsonl",
+      "documents": 371,
+      "bytes": 13244073,
+      "sha256": "f1c3c7cbc4b1865ada98b6e0b4e1619f2470b3caf0fb711b4a890efac41d6536"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/cleaned/code-python/part-00001.jsonl",
+      "documents": 575,
+      "bytes": 2946181,
+      "sha256": "ea85b218604e1fc77a6b7d54ad7ce64dbf38db06979097fb5389a2faeb4f3706"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/cleaned/code-python/part-00002.jsonl",
+      "documents": 637,
+      "bytes": 3079635,
+      "sha256": "a8a50b362bf4f52c055845526ab14c1d5b0b4ee3ca9dc94190ffddffffb4f9a9"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/cleaned/code-python/part-00003.jsonl",
+      "documents": 802,
+      "bytes": 6267898,
+      "sha256": "70bf839e7f3d1886b130a543ea043e61d3c65694d532aac8c612351c9fd54522"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/cleaned/code-python/part-00004.jsonl",
+      "documents": 1589,
+      "bytes": 7258914,
+      "sha256": "ebdf8e0cc7dae28b8c2207519710e96777c3b37bc9f481a07ea43679fdb5e6ac"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/cleaned/code-python/part-00005.jsonl",
+      "documents": 1472,
+      "bytes": 6437593,
+      "sha256": "2e9e9f1e6cae74e0556bfd23c84841694dcb0f5c7951bfaaceb2c0a9838d941d"
+    }
+  ],
+  "counts": {
+    "input": 166467,
+    "reject_code_license_not_allowlisted": 161019,
+    "kept": 5446,
+    "reject_too_short": 2
+  },
+  "script_sha256": "2f8fc9d9624315558a9a9998d7c6084c62e74b460899e81b0d8efbc53380e8a2",
+  "upstream_report_sha256": "e63ea2ac3fb811f5948828f02e8cf438dfdb116260df5f5c58ec4328ffcf0ea6",
+  "limits": [
+    "PII filtering covers email in prose and explicit secret-key patterns; not a guarantee of total PII removal"
+  ]
+}

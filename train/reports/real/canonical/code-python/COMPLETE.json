@@ -1,0 +1,94 @@
+{
+  "source": "code-python",
+  "repo": "HuggingFaceCode/stack-v3-train",
+  "role": "code",
+  "status": "complete",
+  "schema_version": 2,
+  "script_sha256": "3fa30a1ec632dda0db690cf11d8788d78af99c895370170f0768348e8a5c5ce5",
+  "inputs": [
+    {
+      "file": "data/part-00000-4beed122-1346-42f6-82eb-5757f2b6305f-c000.snappy.parquet",
+      "sha256": "3a15a62e28f9d0ca3de7496885d5265d14da1c241fc972b5dd99b20536856b11",
+      "bytes": 599381830
+    },
+    {
+      "file": "data/part-00000-50e95205-4aec-46cc-bde2-02f09aa216ac-c000.snappy.parquet",
+      "sha256": "f28da35d1af9dc7af21b9d4287341b59a0e9b7d3e55df9ce5fc1e4469b1589fb",
+      "bytes": 599291691
+    },
+    {
+      "file": "data/part-00001-4beed122-1346-42f6-82eb-5757f2b6305f-c000.snappy.parquet",
+      "sha256": "0b49b1c175727b49f74982e231920ac07506351639c57832d24b98b27d09f155",
+      "bytes": 663603739
+    },
+    {
+      "file": "data/part-00001-50e95205-4aec-46cc-bde2-02f09aa216ac-c000.snappy.parquet",
+      "sha256": "469f1f5749fec192df38a10680bd997e777b3a175a17c92caadda6d50e7067d3",
+      "bytes": 663690873
+    },
+    {
+      "file": "data/part-00002-4beed122-1346-42f6-82eb-5757f2b6305f-c000.snappy.parquet",
+      "sha256": "001714adf9f88790b295e7d991b6a65e4288204a63c4b4d67fdeac4f4c9faa2d",
+      "bytes": 562662751
+    },
+    {
+      "file": "data/part-00002-50e95205-4aec-46cc-bde2-02f09aa216ac-c000.snappy.parquet",
+      "sha256": "abe71f7935d1cede81ac7d0676d15dca909148e365b40f6bba02c506b4733dd8",
+      "bytes": 562168878
+    },
+    {
+      "file": "data/part-00003-4beed122-1346-42f6-82eb-5757f2b6305f-c000.snappy.parquet",
+      "sha256": "ad9547af48df82ee717972dbd489f142eec496d5af9341d933c0c29e4bf859e3",
+      "bytes": 572325552
+    },
+    {
+      "file": "data/part-00003-50e95205-4aec-46cc-bde2-02f09aa216ac-c000.snappy.parquet",
+      "sha256": "16104b85159934dda04c2541801f300afe92550ebdd47a3b38576eb8d473bb0c",
+      "bytes": 569709293
+    }
+  ],
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/code-python/part-00000.jsonl",
+      "documents": 27504,
+      "bytes": 134217142,
+      "sha256": "6f1c3a76d83232c8c3189f010bb11a821893db2e4a6047fac7df54db1255b6b5"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/code-python/part-00001.jsonl",
+      "documents": 29822,
+      "bytes": 134213978,
+      "sha256": "58ff52a0be033bf5d62073aca09aa964e5ccf57bc852a5ce8fc4bc892601f1ea"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/code-python/part-00002.jsonl",
+      "documents": 29432,
+      "bytes": 133520366,
+      "sha256": "c58f222ecf3b6454c04b971fd20d0c1399b01173a14ce7aae54538b22c824880"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/code-python/part-00003.jsonl",
+      "documents": 26973,
+      "bytes": 134216488,
+      "sha256": "291b7dc6bc6f25624501348fb5e47143f04a94931a32481effa5f5ce135a0ff5"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/code-python/part-00004.jsonl",
+      "documents": 28130,
+      "bytes": 134217086,
+      "sha256": "e346f2720cebe9cb5ac837d309dc9df0547d10c5d57d65094403affa7f3ac856"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2/canonical/code-python/part-00005.jsonl",
+      "documents": 24606,
+      "bytes": 112329787,
+      "sha256": "a92654542ec7ee901607f9cc2b770e9f61205e787f9c333ac13cf8df95faf760"
+    }
+  ],
+  "counts": {
+    "input_rows": 168484,
+    "non_python": 2332347,
+    "output_records": 166467,
+    "vendor": 224
+  }
+}

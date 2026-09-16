@@ -1,0 +1,17 @@
+{
+  "policy": "fixed_selected_training_quota",
+  "target": "Mini-K3 pretraining + SFT/RM/DPO data only",
+  "sources": {
+    "fineweb-edu": {"role":"pretrain","repo":"HuggingFaceFW/fineweb-edu","backend":"modelscope","target_raw_bytes":4641000000},
+    "chinese-fineweb-edu": {"role":"pretrain","repo":"opencsg/chinese-fineweb-edu","backend":"modelscope","target_raw_bytes":4832000000},
+    "cosmopedia": {"role":"pretrain","repo":"AI-ModelScope/chinese-cosmopedia","backend":"modelscope","target_raw_bytes":4856000000},
+    "finemath": {"role":"pretrain","repo":"HuggingFaceTB/finemath","backend":"modelscope","target_raw_bytes":10000000000},
+    "open-web-math": {"role":"pretrain","repo":"open-web-math/open-web-math","backend":"hf-mirror","target_raw_bytes":10000000000},
+    "dolma-body": {"role":"pretrain","repo":"modelscope/dolma","backend":"modelscope","target_raw_bytes":10000000000},
+    "code-python": {"role":"pretrain","repo":"HuggingFaceCode/stack-v3-train","backend":"modelscope","target_raw_bytes":4797000000},
+    "openassistant": {"role":"sft","repo":"OpenAssistant/oasst1","backend":"hf-mirror","target_raw_bytes":232000000},
+    "openhermes": {"role":"sft","repo":"teknium/OpenHermes-2.5","backend":"hf-mirror","target_raw_bytes":1937000000},
+    "openr1": {"role":"sft","repo":"open-r1/OpenR1-Math-220k","backend":"hf-mirror","target_raw_bytes":13000000000},
+    "ultrafeedback": {"role":"preference","repo":"argilla/ultrafeedback-binarized-preferences-cleaned","backend":"hf-mirror","target_raw_bytes":144000000}
+  }
+}
