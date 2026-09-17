@@ -2,6 +2,49 @@
 
 > 本文档覆盖当前 4 卡 V100 机器的预训练、SFT、DPO 与 PPO 对齐流程。所有训练相关代码均归档于 `train/` 目录中。
 
+## 2026-09-17 明确批准两个 SFT 子集并后台续跑
+
+用户明确授权：“批准这两个子集进入 SFT，接下来自动执行就可以了，我们不用实时监控着”。该批准仅适用于现有审核版中的 `glaive-code-assist` 182,240条与 `metamath` 56,448条：过滤后238,688条、邮箱模式替换3,489处，再由原清洗规则排除5条乱码和11条密钥格式记录，清洗后238,672条。未保留记录仍存在原始输入，不能扩大此次批准范围。有限抽样不代表所有答案正确；子来源映射依据发布者标签，尚未做上游逐行精确匹配。
+
+`approve_openhermes_reviewed.py` 登记上述用户批准，先校验原始/审核版SHA256、两个过滤/抽样报告、脚本及 canonical→cleaned 哈希链，再原子更新 `SOURCE_REVIEW.json` 并保存此前pending记录。新版审核门禁将批准绑定到当前 OpenHermes 两阶段报告和证据文件，替换回旧全量产物会失败。控制器在持有独占锁后检查来源批准、benchmark和已有阶段链；重复启动不能覆写运行中状态，任一失败会阻止进入下一阶段。stage报告内原有处理脚本保持不变。
+
+原始文件保留于 `/data/mini-k3/data/raw/openhermes/openhermes2_5.original-20260917.json`，SHA256 `abe573d17eade4161aac321028027dd5ba614a6d9516d51bde9299d5353e1609`；选中链接指向 `/data/mini-k3/data/raw/openhermes-reviewed-v2/openhermes2_5.json`，SHA256 `3a6a1610d8ce9a62788aa9d0b5a170bf0b265587b2f89215c3179d0959b7d25d`。旧阶段硬链接快照在 `/data/mini-k3/data/prepared-v2-before-review-20260917`，只作存档，其报告内路径仍是原路径，不能直接作为新流程输入。OpenHermes发生删行和文本变化，因此新目录中所有来源从全局精确去重开始重跑，保持跨来源去重定义及现有split规则；不复用旧去重数据库。预训练配比、tokenizer及硬件不变。
+
+自动链路：全局精确去重→近重复去重→13-gram去污染→11来源编码/分片→全部manifest审计→真实预训练manifest两步功能smoke。当前没有预训练checkpoint，此链路终点是数据准备完成，SFT权重训练须待预训练checkpoint与SFT短跑验证就绪；当前功能smoke不等于四卡短跑或SFT质量验证。控制器在服务器nohup运行，不依赖本地对话保持在线；失败时停止并写日志，恢复前须分析原因、完成有针对性的修复和测试，禁止盲目重试或重复实例。
+
+```bash
+cd /data/mini-k3/project
+/data/mini-k3/venv/bin/python train/data/approve_openhermes_reviewed.py
+PYTHONPATH=/data/mini-k3/project/train/data /data/mini-k3/venv/bin/python -m unittest discover -s train/data -p 'test_*.py'
+nohup /data/mini-k3/venv/bin/python -u /data/mini-k3/project/train/data/continue_v2.py --workers 2 >> /data/mini-k3/logs/prepared-v2/controller-approved-20260917.log 2>&1 < /dev/null &
+```
+
+验收依据是 `prepared-v2/PIPELINE_STATUS.json`、逐阶段报告、`manifests/AUDIT.json` 与 `manifests/SMOKE.json` 的内容和哈希，不是进程存在或完成标记计数。启动前测试在服务器现有venv中执行；具体测试结果与启动记录归档到 `train/reports/verification/`。
+
+每阶段报告在进入下一阶段前自动复制到服务器 `/data/mini-k3/project/train/reports/background/<run>/` 并生成SHA256索引，启动时保留代码快照与批准记录。仅归档元数据，不复制数据正文或大型SQLite数据库。
+
+启动实测：控制器PID101860、精确去重子进程PID101863，控制器已脱离SSH由PID1托管，状态为 `running/global_exact_dedup`；OpenHermes精确去重保留238,672条（train236,270 / validation2,402）。38项数据回归及真实tokenizer合成整链路均通过，初始审批、过滤/抽样、canonical/cleaned及测试证据已归档本地 `train/reports/verification/approved-20260917/`。应用内每小时自动跟进创建尝试两次均因自动审批超时未成功，因此当前没有定时代理修复、主动通知或持续同步到本地；服务器阶段推进和阶段归档不受影响。此处PID仅是启动记录，后续检查必须核实实时进程。
+
+2026-09-17 配方覆盖率预检：按 warmup+stable 占85%、decay占15%的实际WSD阶段计算，固定配方需要 FineWeb-EDU约4.275B、中文网页约1.425B、Dolma约1.000B、FineMath约0.605B、OpenWebMath约0.545B、Python代码约1.225B、Cosmopedia约0.925B训练token。旧完整token化报告显示 FineWeb-EDU约1.515B、中文约1.440B、Dolma约9.025B、FineMath约5.241B、OpenWebMath约4.482B、Python代码约0.0028B、Cosmopedia约1.690B；总量约23.395B但固定配比仍短缺 FineWeb-EDU约2.760B与代码约1.222B。最终重建完成后必须重跑 `assess_training_coverage.py`；在缺口补齐或明确修改配方前，不得声称满足10B固定混合训练。
+
+补充准备清单 `train/data/supplement_catalog_20260917.json` 已生成，当前只登记候选和目标 token 数，没有下载。FineWeb-EDU候选目标为缺口加20%缓冲（3.312B token），代码候选为 `codeparrot/github-code` 的 Python、明确许可证子集，目标缺口加20%缓冲（1.467B token）。开始下载前必须生成精确文件/分片清单、核对 revision 和 checksum，并先做小规模清洗/去重/token dry-run；禁止整库下载、按GB猜token或把许可证不明代码加入候选。
+
+自动补充脚本 `supplement_v1.py` 已实现上述流程：等待当前 `prepared-v2` 完成→按现有 FineWeb-EDU inventory 轮询不同 crawl 选择约12GB未下载 parquet→按固定 revision 均匀选择 GitHub-Code parquet 分片→下载并记录本地SHA256→将 Python/allowlist 记录转换为 Stack-v3 兼容 parquet→复制 prepared-v2 硬链接快照→从 canonical/cleaned 重建两受影响来源→全局去重、近去重、去污染、编码、manifest、smoke→运行 coverage report。每步状态、报告、日志、选择清单均写入服务器 `/data/mini-k3/data/reports/supplement-v1/`、`/data/mini-k3/logs/prepared-v2-supplement-v1/` 和独立 `/data/mini-k3/data/prepared-v2-supplement-v1/`；主数据目录和当前 run 不覆盖。代码下载源固定为 `codeparrot/github-code` revision 由 API 返回并写入 selection，保留 repo/path/language/license/size，未登记上游sha时只记录本地sha，不能声称上游校验通过。脚本会在当前 run 未完成时等待，不会并行改写共享阶段。
+
+启动实测：补充进程PID103215，状态文件为 `/data/mini-k3/data/reports/supplement-v1/PIPELINE_STATUS.json`，当前 `waiting_for_base`，等待主流程PID101860完成。补充流程不会因为SSH会话断开而退出。
+
+## 2026-09-17 来源门禁启动前检查
+
+修复 `continue_v2.py`：控制器现在在等待或重跑任何数据阶段前调用 `stage_audit.verify_source_review`，缺少 `prepared-v2/SOURCE_REVIEW.json` 或来源审核仍为 pending 时立即退出，并把 `PIPELINE_STATUS.json` 更新为 `stage=source_review` 的失败原因。此前同一门禁只在 `finalize_v2.py` 执行，可能先重复耗时的去重、去污染和编码再失败。该修改只改变失败提前时机，不放宽来源、许可证、数据配比或训练准入要求；OpenHermes 的 496,743 条无子来源记录仍须取得上游证据或按记录的过滤规则排除，未完成前不得启动 manifest、smoke 或正式训练。
+
+新增只读 `sample_openhermes_missing_source.py`，使用固定种子蓄水池抽样无 source 标签记录，检查对话结构、角色、长度、乱码、明显密钥、邮箱模式和样本内重复；报告不写入原文，只保留行号、哈希和统计，终端摘录会做邮箱/密钥遮盖。抽样可以评估内容质量，不能证明上游来源或许可证，也不会改变生产语料。
+
+只读抽查实测：无标签496,743条中随机抽样256条，全部未触发脚本的基本规则；全量原始无标签记录命中邮箱模式1,142条、乱码4条、密钥格式1条。模式命中不等于有效隐私泄露，基本规则通过不等于回答正确。另用固定种子20260918从256条中抽取12条完整问答审读，发现通用SFT候选内容，也确认体育史问答有年份错误，部分回答存在无依据扩写；不能据此估计全量错误率。方法、行号、核验依据及范围详见 `train/reports/verification/openhermes-sampling-notes-20260917.md`。本次没有修改生产数据或训练准入。
+
+2026-09-17 处理方案：不把缺失或不明许可的记录静默混入训练。新增 `filter_openhermes_reviewed.py`，只保留 OpenHermes 原始 `source` 精确等于 `glaive-code-assist` 或 `metamath` 的记录，并在保留记录的对话文本中将邮箱模式替换为 `[EMAIL]`；二者分别绑定 Glaive Apache-2.0 与 MetaMathQA MIT 的上游证据，其余标签和496,743条无标签记录全部保留在原始快照、排除在审核候选之外。过滤结果写入独立报告，随后将审核版作为 OpenHermes 的选中文件从 canonical 起重做受影响阶段；旧 `prepared-v2` 产物先做硬链接快照，不删除原始输入。过滤改变 OpenHermes SFT 数据量和文本内容，必须重新完成来源审核、manifest、smoke 后才可使用。
+
+新增 `sample_openhermes_reviewed.py` 对审核版中的 Glaive/MetaMath 记录做固定种子抽样，报告结构、明显安全模式和长度统计；该审查与来源/许可证门禁分离，任何一项未完成都不能生成通过验收的训练 manifest。
+
 ---
 
 ## 2026-09-15 v2.1 续跑与验收修订

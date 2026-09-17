@@ -50,6 +50,21 @@ def verify_source_review(root):
         require(item.get('license_review_status') == 'passed',
                 source + ': license review is not passed')
         require(item.get('evidence'), source + ': missing provenance/license evidence')
+        if source == 'openhermes' and review.get('schema_version', 1) >= 2:
+            require(item.get('approval', {}).get('kind') == 'explicit_user_approval',
+                    'openhermes: missing explicit subset approval')
+            require(set(item.get('retained_subsources', {})) == {'glaive-code-assist', 'metamath'},
+                    'openhermes: approved subset scope changed')
+            for stage in ('canonical', 'cleaned'):
+                marker = Path(root) / stage / source / 'COMPLETE.json'
+                expected = item.get('stage_report_sha256', {}).get(stage)
+                require(expected and digest_file(marker) == expected,
+                        'openhermes: approved ' + stage + ' report changed')
+            bindings = item.get('file_bindings', [])
+            require(bool(bindings), 'openhermes: missing approval evidence bindings')
+            for binding in bindings:
+                require(digest_file(binding['path']) == binding['sha256'],
+                        'openhermes: approval evidence changed: ' + binding['path'])
     return review
 
 

@@ -1,0 +1,3626 @@
+{
+  "status": "complete",
+  "scope": "Read-only deterministic sample of the provenance-filtered OpenHermes candidate",
+  "input_path": "/data/mini-k3/data/raw/openhermes-reviewed-v2/openhermes2_5.json",
+  "input_sha256": "3a6a1610d8ce9a62788aa9d0b5a170bf0b265587b2f89215c3179d0959b7d25d",
+  "script_sha256": "7a3f99baa2ae4465e12f8df0f964ace6e48bb4b42c7cb453e44b63e31ba945dd",
+  "records": 238688,
+  "source_counts": {
+    "glaive-code-assist": 182240,
+    "metamath": 56448
+  },
+  "sample_seed": 20260919,
+  "sample_size": 256,
+  "sample_records": [
+    {
+      "row": 1126,
+      "source": "glaive-code-assist",
+      "content_sha256": "25370fc8fecb4a59f9cd4042bd3a7be9878fea6b09402d7955856b0f70b063ad",
+      "issues": [],
+      "turns": 2,
+      "chars": 907,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 3776,
+      "source": "glaive-code-assist",
+      "content_sha256": "7fcc85d46c30c569d11a0990521a27aed73fffbc3513cc7f7b24762624bf6b3e",
+      "issues": [],
+      "turns": 2,
+      "chars": 1961,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 4146,
+      "source": "glaive-code-assist",
+      "content_sha256": "d2d4636f1452e9419a7770ece476a90d7d1f2cbc1fbd2d02f5728504cd48b7ab",
+      "issues": [],
+      "turns": 2,
+      "chars": 2416,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 4916,
+      "source": "glaive-code-assist",
+      "content_sha256": "ea075cb0623f4aa1f39136c3ad477382a8dd0de9058f7e375e412b1386d4cc0b",
+      "issues": [],
+      "turns": 2,
+      "chars": 1335,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 5845,
+      "source": "glaive-code-assist",
+      "content_sha256": "1b514548fb2df72e88f51289cf383c25428dda130e93705153fb7863050fd0fa",
+      "issues": [],
+      "turns": 2,
+      "chars": 1383,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 6435,
+      "source": "glaive-code-assist",
+      "content_sha256": "5edeb18258b054aa26531a09a777a495afd279b8b37a2266279dccff4ebfea32",
+      "issues": [],
+      "turns": 2,
+      "chars": 788,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 7671,
+      "source": "glaive-code-assist",
+      "content_sha256": "d1f2137015553af314c99c9f24e3a86c5d2535e24ddde5edd60082378784f00f",
+      "issues": [],
+      "turns": 2,
+      "chars": 3532,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 7798,
+      "source": "glaive-code-assist",
+      "content_sha256": "5cbea3dec5d765bac02f7358395f7b4bbe4167cb7e36c61cf111385975470cdf",
+      "issues": [],
+      "turns": 2,
+      "chars": 1768,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 7919,
+      "source": "glaive-code-assist",
+      "content_sha256": "c2ab22da3206a065ae8872c3eb749d17a6615aee88fd96c2bcea1fcf2d145054",
+      "issues": [],
+      "turns": 2,
+      "chars": 1026,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 12064,
+      "source": "glaive-code-assist",
+      "content_sha256": "54092f1d67b55d77aa9e50ad0ece756426bc399132f8b6ef51321b03827f96ba",
+      "issues": [],
+      "turns": 2,
+      "chars": 2141,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 12074,
+      "source": "glaive-code-assist",
+      "content_sha256": "e79252691430293e109a66739a24b13e3d8ed8eccedd27e3b0ee31b0d6235261",
+      "issues": [],
+      "turns": 2,
+      "chars": 1749,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 12668,
+      "source": "glaive-code-assist",
+      "content_sha256": "db195ac22037f4a67607b813eb5cb34a678007bbf9414d00eb2e20b33154d1db",
+      "issues": [],
+      "turns": 2,
+      "chars": 3305,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 12933,
+      "source": "glaive-code-assist",
+      "content_sha256": "c338067ec69844b97e3e623b9cce5fea7908256ad203e16409329f4a78d796c1",
+      "issues": [],
+      "turns": 2,
+      "chars": 1508,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 13170,
+      "source": "glaive-code-assist",
+      "content_sha256": "5115bd2ac363d8c0deca2dea074749e6a28fbca5095d0aacf0423b531e7a8615",
+      "issues": [],
+      "turns": 2,
+      "chars": 1413,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 13847,
+      "source": "glaive-code-assist",
+      "content_sha256": "dd592ff9f7c7c3507b05492ba2a3cbc1c7db71b5ad04216aea791252a474c1d2",
+      "issues": [],
+      "turns": 2,
+      "chars": 2258,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 14753,
+      "source": "glaive-code-assist",
+      "content_sha256": "ae9400f5af14c7aaa6cafd7ae743fa954972439efd827c5f2a11ed79d1edd7f6",
+      "issues": [],
+      "turns": 2,
+      "chars": 2111,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 14891,
+      "source": "glaive-code-assist",
+      "content_sha256": "66b367e1d67d0bb9254bdb9a9f178222566a97000b17a1b6188f2378e1bb3333",
+      "issues": [],
+      "turns": 2,
+      "chars": 1370,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 15183,
+      "source": "glaive-code-assist",
+      "content_sha256": "4078a532f4e531768dce15fa631d40cc8429aae4383bbd1b3cdc0ce21b21e12d",
+      "issues": [],
+      "turns": 2,
+      "chars": 2000,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 17347,
+      "source": "glaive-code-assist",
+      "content_sha256": "6a8a124dddaba9a23fad4319136040a6866f8442ac6c600212a00f2be94a89b3",
+      "issues": [],
+      "turns": 2,
+      "chars": 948,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 22271,
+      "source": "glaive-code-assist",
+      "content_sha256": "4f7c3f7942250e16f16d597f5394999087a332e7f8e5aeeedbcd94c31a898770",
+      "issues": [],
+      "turns": 2,
+      "chars": 1611,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 23295,
+      "source": "glaive-code-assist",
+      "content_sha256": "9729cde176d24f6bc5c2e919d7ad204c1a6b5edcb8b3296c51820abacbf9851f",
+      "issues": [],
+      "turns": 2,
+      "chars": 1441,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 23948,
+      "source": "glaive-code-assist",
+      "content_sha256": "32cd6d323b0c66bae30fa92461bd2091eda395aecde7402a8d980833cd6f933d",
+      "issues": [],
+      "turns": 2,
+      "chars": 2141,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 24107,
+      "source": "glaive-code-assist",
+      "content_sha256": "b9117d25d29114be1c2f5cf4166e6d6b681bcd08d58127f099049d7693685ea7",
+      "issues": [],
+      "turns": 2,
+      "chars": 1677,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 25043,
+      "source": "glaive-code-assist",
+      "content_sha256": "b62ed867f6dc1bc2d468572fcf09547852b1085e99f582369cf3873888042273",
+      "issues": [],
+      "turns": 2,
+      "chars": 1879,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 26423,
+      "source": "glaive-code-assist",
+      "content_sha256": "2e1f9af3d2dcb5384b3cce3790d5853b44dd158ab6cdde8d6b04bcc2b4c3e790",
+      "issues": [],
+      "turns": 2,
+      "chars": 847,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 28835,
+      "source": "glaive-code-assist",
+      "content_sha256": "767ad79e75fc22280469c2637bc97c35d2257961719976e768a9f8bd5ecf1e16",
+      "issues": [],
+      "turns": 2,
+      "chars": 546,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 29987,
+      "source": "glaive-code-assist",
+      "content_sha256": "333a3131c87662d253542190a41d0f3ad9d89650383fd2c2aec5c4a58c75f263",
+      "issues": [],
+      "turns": 2,
+      "chars": 1081,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 30019,
+      "source": "glaive-code-assist",
+      "content_sha256": "1acb273756878d457277c0be27bb6a339060baa6e8d4722fce61d1479c61b512",
+      "issues": [],
+      "turns": 2,
+      "chars": 1368,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 30638,
+      "source": "glaive-code-assist",
+      "content_sha256": "2dd63ceba5e63093149427a4676787f17b2ed6199dcd50dc5f04ff576685ea6b",
+      "issues": [],
+      "turns": 2,
+      "chars": 1446,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 30947,
+      "source": "glaive-code-assist",
+      "content_sha256": "6f02fbc371b6fb512ba2f128e277a8d61df19ad3631937e5b6584c1d03caace9",
+      "issues": [],
+      "turns": 2,
+      "chars": 1870,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 32819,
+      "source": "glaive-code-assist",
+      "content_sha256": "d8b34c2b063b3d388e668d5c4a82c94093c222ce1a6ee2f90237619bb7b1ba34",
+      "issues": [],
+      "turns": 2,
+      "chars": 2016,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 33372,
+      "source": "glaive-code-assist",
+      "content_sha256": "da5df6519680ee1f62e8cd2d7944733dc144153bf1a26049b35f283779159456",
+      "issues": [],
+      "turns": 2,
+      "chars": 1218,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 33873,
+      "source": "glaive-code-assist",
+      "content_sha256": "89ac52d3f462813d93f4e43ab69efbfeb759d5c43ea35cef9a829952d99d8f56",
+      "issues": [],
+      "turns": 2,
+      "chars": 1680,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 34108,
+      "source": "glaive-code-assist",
+      "content_sha256": "e48a329ad6d06626e3a16c652d530c6bf7df09d9c0b13151537d5bffb6f66eaf",
+      "issues": [],
+      "turns": 2,
+      "chars": 1309,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 35652,
+      "source": "glaive-code-assist",
+      "content_sha256": "2df9c08ae12dfcd6b431f95e70e34e890a6e1f296a00f9e8d8e19fa5073a0f9f",
+      "issues": [],
+      "turns": 2,
+      "chars": 608,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 35932,
+      "source": "glaive-code-assist",
+      "content_sha256": "3d8380b6d99cacc4501cf0684d142a7318c98128d1f36002d519d6d2637ad090",
+      "issues": [],
+      "turns": 2,
+      "chars": 2315,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 36443,
+      "source": "glaive-code-assist",
+      "content_sha256": "b9f7d4a6288388cd4eb4a52c1f6bbac55855c72b863155fe7e91609e66471ef4",
+      "issues": [],
+      "turns": 2,
+      "chars": 1141,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 36714,
+      "source": "glaive-code-assist",
+      "content_sha256": "3c2713029380ef3e36a3c7cad6c3ce28f2ac7ae7054090b4df4ea0e593275dc0",
+      "issues": [],
+      "turns": 2,
+      "chars": 1146,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 40905,
+      "source": "glaive-code-assist",
+      "content_sha256": "f5b733375fc45767b899f0dc0e8f273598d935413dc61549dbf88f651b4ae562",
+      "issues": [],
+      "turns": 2,
+      "chars": 1250,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 40944,
+      "source": "glaive-code-assist",
+      "content_sha256": "f2c1d70e9ee419dd8312828933dc4250b5ab7da355e3e652a08e69a7fa221149",
+      "issues": [],
+      "turns": 2,
+      "chars": 932,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 42345,
+      "source": "glaive-code-assist",
+      "content_sha256": "3068ae851c22ebe996ccca69ae530173e34f78d0cb94f115414dc7af42ce47c6",
+      "issues": [],
+      "turns": 2,
+      "chars": 1643,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 42428,
+      "source": "glaive-code-assist",
+      "content_sha256": "155e4a01e824544953bf8771abe4b38d2993c9724f2855e66c157ce4dfe9ddd6",
+      "issues": [],
+      "turns": 2,
+      "chars": 826,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 42767,
+      "source": "glaive-code-assist",
+      "content_sha256": "fdc20b524b4fa438d686d89b55df974696d734b281478f43141ccb93fb878fbb",
+      "issues": [],
+      "turns": 2,
+      "chars": 2674,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 42891,
+      "source": "glaive-code-assist",
+      "content_sha256": "3b5314a9513ebae30c3358fd86caf22c6de1d17738aa40b5452c68ec448e9ec0",
+      "issues": [],
+      "turns": 2,
+      "chars": 840,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 43082,
+      "source": "glaive-code-assist",
+      "content_sha256": "860a6e0ca60768b6382fa6d24c7dfcdbb2b6708d79c40afdc68a9a2875f3bd1d",
+      "issues": [],
+      "turns": 2,
+      "chars": 556,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 43146,
+      "source": "glaive-code-assist",
+      "content_sha256": "7b14134d8b7e83a2c2d420fbd4aeb80395c3c7c924ffb4db716f37096d8d0ae2",
+      "issues": [],
+      "turns": 2,
+      "chars": 586,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 44765,
+      "source": "glaive-code-assist",
+      "content_sha256": "e63b1839892983c9feb59aa47ea7e6719c1ab12ad43af5186e1ba07135c1f5c6",
+      "issues": [],
+      "turns": 2,
+      "chars": 2471,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 45173,
+      "source": "glaive-code-assist",
+      "content_sha256": "b81751251ff802d416757b15a1a2557e3b4fbc510c1f048c2c7863f3bb49437c",
+      "issues": [],
+      "turns": 2,
+      "chars": 414,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 45847,
+      "source": "glaive-code-assist",
+      "content_sha256": "978b2423249b20b9a28c47e76da703510af2b0c8201234815c0fe709e4b163df",
+      "issues": [],
+      "turns": 2,
+      "chars": 978,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 47873,
+      "source": "glaive-code-assist",
+      "content_sha256": "7e79c2bc40b8ec546a701b2aced855a6c524cae322d2b9838ac7f02a469375fb",
+      "issues": [],
+      "turns": 2,
+      "chars": 2437,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 48896,
+      "source": "glaive-code-assist",
+      "content_sha256": "2a9a8392d74777ecbe8e6b5c46803869baeacf242dc74cd0599d510bbdeb10d1",
+      "issues": [],
+      "turns": 2,
+      "chars": 1877,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 49722,
+      "source": "glaive-code-assist",
+      "content_sha256": "41ebc2fdd2a953d8a0cc0323606019c70e3be6e1c02b4e5cc26e6303dafba52a",
+      "issues": [],
+      "turns": 2,
+      "chars": 1723,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 51770,
+      "source": "glaive-code-assist",
+      "content_sha256": "ad9be839732222758d0a83f6f35a3e58bf360343f19d8a6f8e22086ed3676189",
+      "issues": [],
+      "turns": 2,
+      "chars": 1374,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 52486,
+      "source": "glaive-code-assist",
+      "content_sha256": "8392f43f5d9a38d9b734d0a55d8075513abecd6d1c2b0f35a42e0d50d2b192bd",
+      "issues": [],
+      "turns": 2,
+      "chars": 1204,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 52728,
+      "source": "glaive-code-assist",
+      "content_sha256": "c5d4c2b4e46f825a7a89d95c20d33e17c4d7588d06084e743334eafd7ed1b615",
+      "issues": [],
+      "turns": 2,
+      "chars": 943,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 52731,
+      "source": "glaive-code-assist",
+      "content_sha256": "ff11a7b386b8fc05b9cef80f224706b730f183461027719a6bf1930d2e2cc96a",
+      "issues": [],
+      "turns": 2,
+      "chars": 840,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 53505,
+      "source": "glaive-code-assist",
+      "content_sha256": "60e449070729a8f955495b7cbaac7c9c1b460d6f48cd2c052d6973a1d63dd6a5",
+      "issues": [],
+      "turns": 2,
+      "chars": 1720,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 53816,
+      "source": "glaive-code-assist",
+      "content_sha256": "c9135ba9a2dac465f321f0928fad28cb3a2901d394148ad82f708e4780251bc5",
+      "issues": [],
+      "turns": 2,
+      "chars": 1393,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 55172,
+      "source": "glaive-code-assist",
+      "content_sha256": "acf90f1bda040451898bac43af00247ef396d2b2b87c70d5d9c3c5d7106ce7b3",
+      "issues": [],
+      "turns": 2,
+      "chars": 486,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 55960,
+      "source": "glaive-code-assist",
+      "content_sha256": "e9aaef54fcd142247766f3371854949cbe85eda5c9d220cf2146a8f327a7d35f",
+      "issues": [],
+      "turns": 2,
+      "chars": 3856,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 56967,
+      "source": "glaive-code-assist",
+      "content_sha256": "492b748553d83a2e23228930ed2a14b40a2d9e7955b92408250fa30ab25a8f3a",
+      "issues": [],
+      "turns": 2,
+      "chars": 891,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 57188,
+      "source": "glaive-code-assist",
+      "content_sha256": "4c27fa13dc5b78e27ab9b5caaea80d2cd2643f3395b8742cd0c2479cad09419f",
+      "issues": [],
+      "turns": 2,
+      "chars": 2545,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 60210,
+      "source": "glaive-code-assist",
+      "content_sha256": "519924aadbe6bc9a59ed0f2f36bb9cd5a43e0795cb6fbb22bc7b620a99149a4f",
+      "issues": [],
+      "turns": 2,
+      "chars": 1323,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 61834,
+      "source": "glaive-code-assist",
+      "content_sha256": "48e9b0e3229f1f805e758f9ccdb01bd373baa73dac06b0d7897dea34cdbc76b3",
+      "issues": [],
+      "turns": 2,
+      "chars": 1324,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 63949,
+      "source": "glaive-code-assist",
+      "content_sha256": "c59e981fed161a63abedc12599cf84d78508899cad76d05a827c2489057098b4",
+      "issues": [],
+      "turns": 2,
+      "chars": 711,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 64836,
+      "source": "glaive-code-assist",
+      "content_sha256": "e3fe6387880ece95b57ca34bc403df342e022944fd61e8f7746f9b68692e18be",
+      "issues": [],
+      "turns": 2,
+      "chars": 2032,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 66581,
+      "source": "glaive-code-assist",
+      "content_sha256": "4dab03b67a5c1682a8c131d27dcbc7c71dce1242c008dc72334e978b57ea9fa1",
+      "issues": [],
+      "turns": 2,
+      "chars": 1599,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 67908,
+      "source": "glaive-code-assist",
+      "content_sha256": "7292df82648c14a9596df3d71778ba922b99480632df8a3e4ad42d1421c7a95c",
+      "issues": [],
+      "turns": 2,
+      "chars": 1864,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 70458,
+      "source": "glaive-code-assist",
+      "content_sha256": "2e897d2267b06a6842c35eda80c47ff41f26f9b830f55312258f74a2b4ab19ad",
+      "issues": [],
+      "turns": 2,
+      "chars": 372,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 72225,
+      "source": "glaive-code-assist",
+      "content_sha256": "e4716b53da3e0656f1a3d9d9ff03a36082b2778af1b54d911d282c58c9108675",
+      "issues": [],
+      "turns": 2,
+      "chars": 1375,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 73517,
+      "source": "glaive-code-assist",
+      "content_sha256": "7f854fe88fe8d2db0b3d39d9f0fe9ffc5c33e2900b25a70c1dcc88d24e7b9bd2",
+      "issues": [],
+      "turns": 2,
+      "chars": 1386,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 73749,
+      "source": "glaive-code-assist",
+      "content_sha256": "3b1f5d1eab3f8c1dc924751788e3aec3fba201b1b6b695e6484c6d6a6ad4b773",
+      "issues": [],
+      "turns": 2,
+      "chars": 1183,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 74349,
+      "source": "glaive-code-assist",
+      "content_sha256": "ce0fa45e1c3fc882aa52f54a96d1266b1f89e115b9d14beb0fe27104c7b3ed2c",
+      "issues": [],
+      "turns": 2,
+      "chars": 1303,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 74572,
+      "source": "glaive-code-assist",
+      "content_sha256": "2b41dc54a6345b555d02fe84c67de0718666878c7d7b7d391d4a413d73a43564",
+      "issues": [],
+      "turns": 2,
+      "chars": 1367,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 75070,
+      "source": "glaive-code-assist",
+      "content_sha256": "9be4c6dbc4e5d12792cf6f74cf3484f9039d2ed922a67c649274165c16f04166",
+      "issues": [],
+      "turns": 2,
+      "chars": 1650,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 75651,
+      "source": "glaive-code-assist",
+      "content_sha256": "bd70a2dc8bb4b16ce3d08542d180dbcce2acc9c66ceae356b2066c2ad97a840a",
+      "issues": [],
+      "turns": 2,
+      "chars": 1332,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 78078,
+      "source": "glaive-code-assist",
+      "content_sha256": "fda236caeedd24245f11e9f551c6832cc321050ba3eaa666a38ad77b1bda20dd",
+      "issues": [],
+      "turns": 2,
+      "chars": 1421,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 79070,
+      "source": "glaive-code-assist",
+      "content_sha256": "b8360ad830647e9801f12032b7465267635c1763e7bf1058848dc6358de6215c",
+      "issues": [],
+      "turns": 2,
+      "chars": 806,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 80935,
+      "source": "glaive-code-assist",
+      "content_sha256": "5fc11fe13b91d4f593ca2b207f3990e154b800c3a930ce1489e2c02cd8b76da8",
+      "issues": [],
+      "turns": 2,
+      "chars": 1795,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 81090,
+      "source": "glaive-code-assist",
+      "content_sha256": "fd72fd12f798c26bcb76000ee574025701b13e462e394164c4bd368c0d6465b6",
+      "issues": [],
+      "turns": 2,
+      "chars": 1417,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 81248,
+      "source": "glaive-code-assist",
+      "content_sha256": "a5e8a6d40aa16a6d7f6a8235dc546f5e288821f02c2ca29f8493568439732ada",
+      "issues": [],
+      "turns": 2,
+      "chars": 668,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 82130,
+      "source": "glaive-code-assist",
+      "content_sha256": "7472a69061fb8ff938093b49b8c7acd2b726b7b09950c83855920152d8617493",
+      "issues": [],
+      "turns": 2,
+      "chars": 1092,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 83656,
+      "source": "glaive-code-assist",
+      "content_sha256": "d7bbff74410666eec95b2afe6f90a7533b79ed28123af29082ffe5bcc6adb59c",
+      "issues": [],
+      "turns": 2,
+      "chars": 2020,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 86449,
+      "source": "glaive-code-assist",
+      "content_sha256": "2ff93c56c6c831212e790092235954f3964dda17902b425128f4b0be081cb0a9",
+      "issues": [],
+      "turns": 2,
+      "chars": 1477,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 88681,
+      "source": "glaive-code-assist",
+      "content_sha256": "95cea42233dda0630ada2bfdb398c7f33a42d47aecf0115cf8a7516897ca0faa",
+      "issues": [],
+      "turns": 2,
+      "chars": 1458,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 89642,
+      "source": "glaive-code-assist",
+      "content_sha256": "484f979771a6c074f3c4e21bfecab15ec15ef46144ba119804b29111675ecbb9",
+      "issues": [],
+      "turns": 2,
+      "chars": 811,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 89896,
+      "source": "glaive-code-assist",
+      "content_sha256": "7d83a4fc7027d590a18d14be0c88f50780b32949c73a10d8d1cf2c2a9909f635",
+      "issues": [],
+      "turns": 2,
+      "chars": 1707,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 90034,
+      "source": "glaive-code-assist",
+      "content_sha256": "3909808808f008640189349684fa8f526874bdcb1060ab1848c4d4d6355fede5",
+      "issues": [],
+      "turns": 2,
+      "chars": 726,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 90871,
+      "source": "glaive-code-assist",
+      "content_sha256": "d886f0d143f7a1d30de28548d25cd2cbc4c111027ac8626036cf6715e4bbae6e",
+      "issues": [],
+      "turns": 2,
+      "chars": 1542,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 91977,
+      "source": "glaive-code-assist",
+      "content_sha256": "daf788709b154a02ca2ab5b92f3d4da31ec30ed2d62cba386834a9faa5ae22b9",
+      "issues": [],
+      "turns": 2,
+      "chars": 1086,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 92838,
+      "source": "glaive-code-assist",
+      "content_sha256": "65b1433609730a591404412e684c08fc90d609a6c31f0c7ac85bb032063af2dd",
+      "issues": [],
+      "turns": 2,
+      "chars": 1576,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 93164,
+      "source": "glaive-code-assist",
+      "content_sha256": "c84b0b307b8a6d2ada1b0c801777f13c7dacd979d1ccc571cfd37a7bed655946",
+      "issues": [],
+      "turns": 2,
+      "chars": 1198,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 94116,
+      "source": "glaive-code-assist",
+      "content_sha256": "d6f6044f24632ffa9378cc230c2166e7314e86e7139c723f53cb3106e680fe9a",
+      "issues": [],
+      "turns": 2,
+      "chars": 791,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 95212,
+      "source": "glaive-code-assist",
+      "content_sha256": "55f74d1c23b2d1337438b58e7523f8ebec3573f3dd63eeb92d7d37759f02f96e",
+      "issues": [],
+      "turns": 2,
+      "chars": 1495,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 95374,
+      "source": "glaive-code-assist",
+      "content_sha256": "5aaa6690d6618fdf8f60d30ba884aa6dfd4571a375877274d934fba8e58a7b2a",
+      "issues": [],
+      "turns": 2,
+      "chars": 1914,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 95612,
+      "source": "glaive-code-assist",
+      "content_sha256": "edcc22bd9ed8595b96b2de8e92439f7254eab293cdbcd24a4fbd10320c36aa35",
+      "issues": [],
+      "turns": 2,
+      "chars": 1104,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 96644,
+      "source": "glaive-code-assist",
+      "content_sha256": "c45323682d535a068c7e051873fe47f13e40780a03813b38024de6134c00e4a1",
+      "issues": [],
+      "turns": 2,
+      "chars": 1568,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 98553,
+      "source": "glaive-code-assist",
+      "content_sha256": "f0ef8eac7a24083bbe48a4aa38481eddddab207aaabeed187104a321d37a57a9",
+      "issues": [],
+      "turns": 2,
+      "chars": 1019,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 98815,
+      "source": "glaive-code-assist",
+      "content_sha256": "66f63cb00d817d35ff004cce0f166e4ed258371fa4f00db3951aa876c63a0423",
+      "issues": [],
+      "turns": 2,
+      "chars": 2857,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 99246,
+      "source": "glaive-code-assist",
+      "content_sha256": "3850bce4ba567d95343ab669d48b00e5f731118fe183a204b64de27340bbcbb3",
+      "issues": [],
+      "turns": 2,
+      "chars": 1637,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 99415,
+      "source": "glaive-code-assist",
+      "content_sha256": "0151f9e35d9c5e8e6af5c040d90fc644bc9ca1e4b4814dec0c8c5fd5a778fb55",
+      "issues": [],
+      "turns": 2,
+      "chars": 733,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 100949,
+      "source": "glaive-code-assist",
+      "content_sha256": "865189da5033fbae27f91ec93ba806fc3b77f73e50af81d0ff1c38be877d4933",
+      "issues": [],
+      "turns": 2,
+      "chars": 1142,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 102313,
+      "source": "glaive-code-assist",
+      "content_sha256": "6ed451e2f41e6b0099067e337e1a98a5c92a463c7186f42e618f9c63d48ed150",
+      "issues": [],
+      "turns": 2,
+      "chars": 1364,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 102595,
+      "source": "glaive-code-assist",
+      "content_sha256": "817ef833956ef235356d459c8899f315e73f30bea66a05b00fe7b2a3d09a8493",
+      "issues": [],
+      "turns": 2,
+      "chars": 1106,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 102772,
+      "source": "glaive-code-assist",
+      "content_sha256": "9d87a2dd1901148a1b6688dc007e0ff41bc68b8fb504921a1b37864725092a6a",
+      "issues": [],
+      "turns": 2,
+      "chars": 754,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 102836,
+      "source": "glaive-code-assist",
+      "content_sha256": "c4fa6d5253bbd418495f849973587a8f66ed75d66bd36a1b7933bbdca8ffa8ed",
+      "issues": [],
+      "turns": 2,
+      "chars": 1157,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 103738,
+      "source": "glaive-code-assist",
+      "content_sha256": "13d1298e8c73d889e131dc6744b461cad66a4cfa7cfcddc3fd26ffe0091cfa39",
+      "issues": [],
+      "turns": 2,
+      "chars": 1353,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 106651,
+      "source": "glaive-code-assist",
+      "content_sha256": "7101f889e45c1c6f9b0ad19f09e1d6f9f82685735c8be177de6c9064479ea2be",
+      "issues": [],
+      "turns": 2,
+      "chars": 1545,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 108008,
+      "source": "glaive-code-assist",
+      "content_sha256": "0c4852836d51e09c1282accbcfd25216a80a8fe3a9b50050e4a2fc4ce2b28a08",
+      "issues": [],
+      "turns": 2,
+      "chars": 1641,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 108083,
+      "source": "glaive-code-assist",
+      "content_sha256": "791e399323f2cabefdb1ad95c44779f4ff14437650090cc35a9e18cd321d3e98",
+      "issues": [],
+      "turns": 2,
+      "chars": 935,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 108183,
+      "source": "glaive-code-assist",
+      "content_sha256": "f5bee805cb854f13fd150aee4780d323f837ad8c06668a0ac59f986b46fd3377",
+      "issues": [],
+      "turns": 2,
+      "chars": 1440,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 108813,
+      "source": "glaive-code-assist",
+      "content_sha256": "88763c4c49ecf88d4b4211a198cd89adffddb930e30ebfe4762c08293d783a89",
+      "issues": [],
+      "turns": 2,
+      "chars": 810,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 109379,
+      "source": "glaive-code-assist",
+      "content_sha256": "3ce5f5a903a45e8340c3a07ca3a37f343d4f150b73a1e1493f69f71b08728306",
+      "issues": [],
+      "turns": 2,
+      "chars": 1227,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 111732,
+      "source": "glaive-code-assist",
+      "content_sha256": "bb416bbde9054a8f732caf60ae16d7d520e617b7240dd7841fe003735afa7139",
+      "issues": [],
+      "turns": 2,
+      "chars": 662,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 112290,
+      "source": "glaive-code-assist",
+      "content_sha256": "fade3aaf635fcbf18b0b298ea71922f5bad96b8800b6a002f630d43ade87dd71",
+      "issues": [],
+      "turns": 2,
+      "chars": 1559,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 115213,
+      "source": "glaive-code-assist",
+      "content_sha256": "fdbc7cf0418991984ef41109781466a5cc0725ed4f18023fbbc8b7d9499123c1",
+      "issues": [],
+      "turns": 2,
+      "chars": 1098,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 115476,
+      "source": "glaive-code-assist",
+      "content_sha256": "f35e0c3aca3818759b4ee1a1ec4c33894d99b9359c444cd44ffbdbc1b7a6e8e8",
+      "issues": [],
+      "turns": 2,
+      "chars": 2372,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 118304,
+      "source": "glaive-code-assist",
+      "content_sha256": "4edb0f4ad45f553970df8782e7296731b98e700464a2936bb4b1d839e8ca6f05",
+      "issues": [],
+      "turns": 2,
+      "chars": 1674,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 120699,
+      "source": "glaive-code-assist",
+      "content_sha256": "32c832ad51ab8ba5276de604380a09f479056103821ac9e9654f6bbebfc0ee21",
+      "issues": [],
+      "turns": 2,
+      "chars": 2848,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 123166,
+      "source": "glaive-code-assist",
+      "content_sha256": "5b87b6d95725ca43fdb17b2aab544c266ee66566c66e2aad42e9c12de03d2c35",
+      "issues": [],
+      "turns": 2,
+      "chars": 2294,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 124644,
+      "source": "glaive-code-assist",
+      "content_sha256": "69d140001a1bf32f0792932da094560fddf81173078218789619b555cf4babd4",
+      "issues": [],
+      "turns": 2,
+      "chars": 1174,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 125697,
+      "source": "glaive-code-assist",
+      "content_sha256": "4f000287060741b2b8b85323629c0349077c93a38500d892ee27890ebc029201",
+      "issues": [],
+      "turns": 2,
+      "chars": 1661,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 127238,
+      "source": "glaive-code-assist",
+      "content_sha256": "9b095023a9b9deb6a401dcabb63d8dee87ce114174d29d1811dc774b76abf6f6",
+      "issues": [],
+      "turns": 2,
+      "chars": 3515,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 128891,
+      "source": "glaive-code-assist",
+      "content_sha256": "dc59cb61e99874f2006abf4945af561855bb83262fbcf993290f076d075b2329",
+      "issues": [],
+      "turns": 2,
+      "chars": 1078,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 130484,
+      "source": "glaive-code-assist",
+      "content_sha256": "25b996629c4c22b8e401fd450f44d6f10c85db39d35df254230dfab7106322f2",
+      "issues": [],
+      "turns": 2,
+      "chars": 930,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 130889,
+      "source": "glaive-code-assist",
+      "content_sha256": "2794c2361d863e4c7038e578de3211a33e8a0ff5a3c256af13f89b438d62c484",
+      "issues": [],
+      "turns": 2,
+      "chars": 1936,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 131249,
+      "source": "glaive-code-assist",
+      "content_sha256": "0c073d0e09282b9c35303fc83f684ea2bc02c7d0c77a3d3dbdf46fa01e8ce888",
+      "issues": [],
+      "turns": 2,
+      "chars": 3574,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 131377,
+      "source": "glaive-code-assist",
+      "content_sha256": "cd0aac2e463626dd3efd487b9bfe8fab4598dd0ba496ee4a956db76626f2d623",
+      "issues": [],
+      "turns": 2,
+      "chars": 6631,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 131934,
+      "source": "glaive-code-assist",
+      "content_sha256": "b877e446060f7d09131f68ae7b1c566e34de19662826a4c1c71aaa72f05571a0",
+      "issues": [],
+      "turns": 2,
+      "chars": 1045,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 132075,
+      "source": "glaive-code-assist",
+      "content_sha256": "1709525bdf01fb236741f6a814d8ce6ca635312d67e7985d72a2df6b3f2ff6d1",
+      "issues": [],
+      "turns": 2,
+      "chars": 1745,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 133491,
+      "source": "glaive-code-assist",
+      "content_sha256": "b0bdbf3d39da80771bef88436e3abaa7827b173dde5175715367793c95b65238",
+      "issues": [],
+      "turns": 2,
+      "chars": 2174,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 134143,
+      "source": "glaive-code-assist",
+      "content_sha256": "248c97034caee310c5f60bb53a326d0b55d856fe414f913e5deefd288802575c",
+      "issues": [],
+      "turns": 2,
+      "chars": 1972,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 135137,
+      "source": "glaive-code-assist",
+      "content_sha256": "eb032f6334559225f8b8fef93244848294f88f6d377de7f91a9f46fccb324cdd",
+      "issues": [],
+      "turns": 2,
+      "chars": 1771,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 135366,
+      "source": "glaive-code-assist",
+      "content_sha256": "7c97b3443d71d60fe18aa2784e2850280cd129449bde68b9d27cbe4bfc1d5f26",
+      "issues": [],
+      "turns": 2,
+      "chars": 6396,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 135868,
+      "source": "glaive-code-assist",
+      "content_sha256": "62b5d40092f44f542e8b6539415257ca5d5bcdebcbc7ee226d4b30f5171a475a",
+      "issues": [],
+      "turns": 2,
+      "chars": 1141,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 136283,
+      "source": "glaive-code-assist",
+      "content_sha256": "7652433c5a47347fa9291e698cbf755ae44e53ad0e5b0cb4155b17c72a43a7d1",
+      "issues": [],
+      "turns": 2,
+      "chars": 1131,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 137362,
+      "source": "glaive-code-assist",
+      "content_sha256": "3cc2d0fa686d2eb0d0c707c21975a2760e0288a80a63c00db7c356a36c3c930e",
+      "issues": [],
+      "turns": 2,
+      "chars": 1402,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 138471,
+      "source": "glaive-code-assist",
+      "content_sha256": "d0e7c5f64a7087d6865127a7da87f891e15ff5725088f2c86c4ac811b0629f67",
+      "issues": [],
+      "turns": 2,
+      "chars": 2562,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 139344,
+      "source": "glaive-code-assist",
+      "content_sha256": "c98ba9c47b81d199700334b3c4b2fa8e02cd5e4076385b9e197f0e16241ae268",
+      "issues": [],
+      "turns": 2,
+      "chars": 10927,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 141950,
+      "source": "glaive-code-assist",
+      "content_sha256": "d30b46861b18db8b5ab361ff9f501fc18437b425935973cc2c67bf96bed932c2",
+      "issues": [],
+      "turns": 2,
+      "chars": 1951,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 142070,
+      "source": "glaive-code-assist",
+      "content_sha256": "8f2e71c6f4672449b9dc89b944b26d263926d63c4248b1fd57efe2a3c345a006",
+      "issues": [],
+      "turns": 2,
+      "chars": 1396,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 143287,
+      "source": "glaive-code-assist",
+      "content_sha256": "09de024e6c1481a45e832512519bd382906916601a10ec4ca43f590eabe1a0b8",
+      "issues": [],
+      "turns": 2,
+      "chars": 1558,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 143875,
+      "source": "glaive-code-assist",
+      "content_sha256": "6a4b53916f309e7c742dbb083b3bb2cfa85270a1b43a731300bc51e689c98aa4",
+      "issues": [],
+      "turns": 2,
+      "chars": 1027,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 143983,
+      "source": "glaive-code-assist",
+      "content_sha256": "d141c379815351d544b7cc92906c469593ae436e2467b3ddf647451cd096f847",
+      "issues": [],
+      "turns": 2,
+      "chars": 2798,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 144065,
+      "source": "glaive-code-assist",
+      "content_sha256": "995b9a5573fe1450b89566d281c0b4fd894e4320907009aebc83bf281e5bc49a",
+      "issues": [],
+      "turns": 2,
+      "chars": 1539,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 144720,
+      "source": "glaive-code-assist",
+      "content_sha256": "908d69001094d746956ecbdef3e93ac2aaf77fcd80c59d793fba72a0d59ae796",
+      "issues": [],
+      "turns": 2,
+      "chars": 1613,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 145087,
+      "source": "glaive-code-assist",
+      "content_sha256": "b0a026c6af6f47c049d2ed64170960edb7964f2d6ea4d5794be1a42ebdc6a95a",
+      "issues": [],
+      "turns": 2,
+      "chars": 1873,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 145307,
+      "source": "glaive-code-assist",
+      "content_sha256": "569eaecfc1df8e1ed061e4eb02ded7bfc08fbb4b990264be7c83cc5d31289a61",
+      "issues": [],
+      "turns": 2,
+      "chars": 1342,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 146917,
+      "source": "glaive-code-assist",
+      "content_sha256": "1329d46f449fbf08a64dda6bffb68ef1dacae8124e79a746b1532fcef2679e0f",
+      "issues": [],
+      "turns": 2,
+      "chars": 1464,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 148006,
+      "source": "glaive-code-assist",
+      "content_sha256": "b424ce64b38ff6f422fbe309f50afd0832b9236c72c343cc930b9a639fee35df",
+      "issues": [],
+      "turns": 2,
+      "chars": 2958,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 148346,
+      "source": "glaive-code-assist",
+      "content_sha256": "e3523cb17369f4bb40497e322f923fc03c8e24aa7400f37f72c167b5bf954425",
+      "issues": [],
+      "turns": 2,
+      "chars": 2025,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 149487,
+      "source": "glaive-code-assist",
+      "content_sha256": "bc183a89e12539c32907e0f07f9cca7695a4be6399fe1274033e125b2a8fb7f9",
+      "issues": [],
+      "turns": 2,
+      "chars": 2711,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 150383,
+      "source": "glaive-code-assist",
+      "content_sha256": "a321bdec7926d217fb6dad43856fda3d29ed3e17b9e8f8526cd448f0f1068c05",
+      "issues": [],
+      "turns": 2,
+      "chars": 2624,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 152985,
+      "source": "glaive-code-assist",
+      "content_sha256": "80e3935f8becf05f826ff7bd67b1e3408b0872e2a2aac8790712bdee2bc7f4ce",
+      "issues": [],
+      "turns": 2,
+      "chars": 1172,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 157129,
+      "source": "glaive-code-assist",
+      "content_sha256": "1cf74b47b5b398b1dfae075f3482e88edcbf44a245d0fe32517b85fa69193c92",
+      "issues": [],
+      "turns": 2,
+      "chars": 1481,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 158408,
+      "source": "glaive-code-assist",
+      "content_sha256": "001343d404814dc9f63db210ddd44502555ccc836ec24a0b1610fca7f3a95cc3",
+      "issues": [],
+      "turns": 2,
+      "chars": 2011,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 158694,
+      "source": "glaive-code-assist",
+      "content_sha256": "9980dd9bdaa9f7418651a04b0f42a1e668d56884a8af38f585da012bec062b9d",
+      "issues": [],
+      "turns": 2,
+      "chars": 1459,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 159205,
+      "source": "glaive-code-assist",
+      "content_sha256": "dca7d3c44446f4dac7d11a8959a9c4bf56de1c8925eacadf201c337b5f2586fa",
+      "issues": [],
+      "turns": 2,
+      "chars": 1842,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 159300,
+      "source": "glaive-code-assist",
+      "content_sha256": "9d5f8aa62590588498e5cc0476b8198d1f29bd24267f5a7bc13b1e8510d67b36",
+      "issues": [],
+      "turns": 2,
+      "chars": 3871,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 159454,
+      "source": "glaive-code-assist",
+      "content_sha256": "21d1e20ee1e4acc13dd1f4b4291dabce1f6dc6715896f06adea2b202e0cd98a4",
+      "issues": [],
+      "turns": 2,
+      "chars": 3283,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 159870,
+      "source": "glaive-code-assist",
+      "content_sha256": "4d44da4657c4ea80460a8f4ba41fdc91bed15852f69abd9f7d3f7d0b6068a0c8",
+      "issues": [],
+      "turns": 2,
+      "chars": 2626,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 160276,
+      "source": "glaive-code-assist",
+      "content_sha256": "f19dda921cefb50932e243e573b0530373421b873a5c21fd1c45f6aeae404f95",
+      "issues": [],
+      "turns": 2,
+      "chars": 1757,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 160326,
+      "source": "glaive-code-assist",
+      "content_sha256": "5db51c4b925d2c7ca113fac22dda61a057335a5dc6a6c5f5ba4e3a4083850873",
+      "issues": [],
+      "turns": 2,
+      "chars": 2728,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 160453,
+      "source": "glaive-code-assist",
+      "content_sha256": "59cf0cb1c148df457525e1459eace4b8a7a5dffe3db0fcc138c4241fec541564",
+      "issues": [],
+      "turns": 2,
+      "chars": 2400,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 161670,
+      "source": "glaive-code-assist",
+      "content_sha256": "18aee25ef27d193b957482d99507f469095fc06f3a21f3be8d1e8f32f4bac5ac",
+      "issues": [],
+      "turns": 2,
+      "chars": 1750,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 162044,
+      "source": "glaive-code-assist",
+      "content_sha256": "8f6c30369a99f459290f0f3266e010e657964ba878db527915c6da957403a9f0",
+      "issues": [],
+      "turns": 2,
+      "chars": 5011,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 162284,
+      "source": "glaive-code-assist",
+      "content_sha256": "46afe0c573c542e86c50158595e0eaaaee0621a3458f10534cd3de80045ecde2",
+      "issues": [],
+      "turns": 2,
+      "chars": 1188,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 162370,
+      "source": "glaive-code-assist",
+      "content_sha256": "374c81182cb473e1e7c517ec9bec92d8f1971d05d8cb3267e1e9149746fd2de4",
+      "issues": [],
+      "turns": 2,
+      "chars": 725,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 163964,
+      "source": "glaive-code-assist",
+      "content_sha256": "9bf93312cfece666be3b706affaebca719288c5402ec38a2012e40bd7cfe9f09",
+      "issues": [],
+      "turns": 2,
+      "chars": 2774,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 164081,
+      "source": "glaive-code-assist",
+      "content_sha256": "10c1dd463c644c9b608667d7464c1fe131e6cca21788d8f84e3e2eb351f2cc4d",
+      "issues": [],
+      "turns": 2,
+      "chars": 918,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 164129,
+      "source": "glaive-code-assist",
+      "content_sha256": "bfc8b256a16c97f8f33d67c7318316bff949f269ef27f2ad592de354a1df49e9",
+      "issues": [],
+      "turns": 2,
+      "chars": 3465,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 164758,
+      "source": "glaive-code-assist",
+      "content_sha256": "a036277c8398bb851214880db5cdd74f55994bb36867570f0206139abd05a43a",
+      "issues": [],
+      "turns": 2,
+      "chars": 1201,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 164813,
+      "source": "glaive-code-assist",
+      "content_sha256": "2b9852e330af7906f881b41569f2b9f7d5b4f7f4c5a8e0598b57c156a11eba85",
+      "issues": [],
+      "turns": 2,
+      "chars": 772,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 166725,
+      "source": "glaive-code-assist",
+      "content_sha256": "22384770c6054584ed6374a14f569864847c38024ff4b537e877621b59f5e5d5",
+      "issues": [],
+      "turns": 2,
+      "chars": 1868,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 170963,
+      "source": "glaive-code-assist",
+      "content_sha256": "74cb21ce3a0455d6426553139d54d8d1ee07f235773ecf099d4b808efff9a981",
+      "issues": [],
+      "turns": 2,
+      "chars": 1033,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 171627,
+      "source": "glaive-code-assist",
+      "content_sha256": "5cc1ea4a6971f15be0cc763e93c17df1b13ea198ee62805b2a997bbfb5d48c11",
+      "issues": [],
+      "turns": 2,
+      "chars": 1960,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 172813,
+      "source": "glaive-code-assist",
+      "content_sha256": "49e3c1640c38de490ca85e81356cbd9a1145f4f8402a0b17eb6762c801268212",
+      "issues": [],
+      "turns": 2,
+      "chars": 2546,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 175863,
+      "source": "glaive-code-assist",
+      "content_sha256": "242596e33c2fdfe7ddbc413405b24e961fa34e362d22c0cc6966eb6a31234ba6",
+      "issues": [],
+      "turns": 2,
+      "chars": 4952,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 176767,
+      "source": "glaive-code-assist",
+      "content_sha256": "14f7b5a6cfc5ae133fd3a931d00ce22bc80ae83098eb1743b612a0de921e34ec",
+      "issues": [],
+      "turns": 2,
+      "chars": 1044,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 177432,
+      "source": "glaive-code-assist",
+      "content_sha256": "f355762942dc262cb2a4c53206b8f8a99462c31f365e48c29ecaf0b3b8e113cd",
+      "issues": [],
+      "turns": 2,
+      "chars": 1173,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 181347,
+      "source": "glaive-code-assist",
+      "content_sha256": "b8117d5baae95dbedf2fe74ab42eca1d5d24b022aa46b4dc40656d3f89df0da3",
+      "issues": [],
+      "turns": 2,
+      "chars": 2147,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 183047,
+      "source": "metamath",
+      "content_sha256": "e474c651cf4e728b954ea8aa160a7f5e085415132d3337defa2ef357431634d3",
+      "issues": [],
+      "turns": 2,
+      "chars": 401,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 183912,
+      "source": "metamath",
+      "content_sha256": "17644b4c38dbc8dde8ba83cc1ed735a8964cb6eb76a6de5998860ca6501087a0",
+      "issues": [],
+      "turns": 2,
+      "chars": 585,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 184318,
+      "source": "metamath",
+      "content_sha256": "dfb40c309e330db23d29f0ee95cce45f921db76239a150aced906a44aba6f535",
+      "issues": [],
+      "turns": 2,
+      "chars": 866,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 184512,
+      "source": "metamath",
+      "content_sha256": "8f2a0bc61805a8af49c29f0511a0838fc67f4380a523b96d50a3c9a93e0d5037",
+      "issues": [],
+      "turns": 2,
+      "chars": 1306,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 185338,
+      "source": "metamath",
+      "content_sha256": "3da4152f949354b005b086538883f8606bd17f802e5d58d0e174b46cc6f6fc2d",
+      "issues": [],
+      "turns": 2,
+      "chars": 753,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 185971,
+      "source": "metamath",
+      "content_sha256": "750fe8ba7371c4769b3dfa16cc536575567db5a64c8aba3b65dc39376635d40b",
+      "issues": [],
+      "turns": 2,
+      "chars": 728,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 186024,
+      "source": "metamath",
+      "content_sha256": "edc2a21b9810e1cef892ccadaaad1fd6e252cf7ddd38dedd78a030402893c7b7",
+      "issues": [],
+      "turns": 2,
+      "chars": 397,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 186241,
+      "source": "metamath",
+      "content_sha256": "e8abe443333d38b354760bb35ac63ce76005379610f21e1ff7ebfe62c28df516",
+      "issues": [],
+      "turns": 2,
+      "chars": 460,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 187065,
+      "source": "metamath",
+      "content_sha256": "a2552e7ebb062f340f9e0ceefa6ed8a0c9f2a3f6169badd96d88e33c7df59f50",
+      "issues": [],
+      "turns": 2,
+      "chars": 588,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 187396,
+      "source": "metamath",
+      "content_sha256": "a15b6cedcf292eefe2515252b60d1ae04fc96a32c31c0d09c4237b964abcbbd8",
+      "issues": [],
+      "turns": 2,
+      "chars": 771,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 188074,
+      "source": "metamath",
+      "content_sha256": "58a6ed691d98a3d8acbc843173fd936b4efc2eeb3ab354d8f31bccf6fd2e485f",
+      "issues": [],
+      "turns": 2,
+      "chars": 557,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 188318,
+      "source": "metamath",
+      "content_sha256": "3ff094bc855d77bb918ff19e5264ffac50ba62ce3ed681e458456a4504f0c63a",
+      "issues": [],
+      "turns": 2,
+      "chars": 1031,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 188460,
+      "source": "metamath",
+      "content_sha256": "fc35e2c1e23101c17dd364abf5d386269b15620091cbfd7600edde9588a51fd5",
+      "issues": [],
+      "turns": 2,
+      "chars": 1893,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 189020,
+      "source": "metamath",
+      "content_sha256": "67261ca8b0072739e9f38a62fa9bd4326e9375a901126596baadcd5bf886ae17",
+      "issues": [],
+      "turns": 2,
+      "chars": 903,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 190306,
+      "source": "metamath",
+      "content_sha256": "7d49a17f759318fe473686d61f5c04097460d0030c103f144b82cb4c30d812de",
+      "issues": [],
+      "turns": 2,
+      "chars": 873,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 190683,
+      "source": "metamath",
+      "content_sha256": "ca7ca2297dd15108a2a695e5732b55d8a787192337ab7ae65a3b3dd0469d3857",
+      "issues": [],
+      "turns": 2,
+      "chars": 925,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 190698,
+      "source": "metamath",
+      "content_sha256": "a51e8369b8972e319a3be8f4d143b9f8c89d9c743fc5faf4a5a474e1587f1a2d",
+      "issues": [],
+      "turns": 2,
+      "chars": 638,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 191356,
+      "source": "metamath",
+      "content_sha256": "40ceddfaa2be07d2e3a9d3b4ba6a1c85f1dc4ac9a76aa12a44986928207f6e6d",
+      "issues": [],
+      "turns": 2,
+      "chars": 509,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 191798,
+      "source": "metamath",
+      "content_sha256": "ea0388485e881674405beb6b64e829baf1a932955fc48444ff763938ab1f73f2",
+      "issues": [],
+      "turns": 2,
+      "chars": 385,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 191988,
+      "source": "metamath",
+      "content_sha256": "4ea9f771ef33ec2bd70e5a4b9c84249809c7c3ef325a934376d0128641a3d3d8",
+      "issues": [],
+      "turns": 2,
+      "chars": 470,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 196603,
+      "source": "metamath",
+      "content_sha256": "efe903b047d58dbf1d77ed526b3827909fd0961341d74470bdd038045b54eb46",
+      "issues": [],
+      "turns": 2,
+      "chars": 1066,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 196626,
+      "source": "metamath",
+      "content_sha256": "2b6d772e7763fc5243ede5b15f32899867edb4afa50ed01d881fb7486073ae79",
+      "issues": [],
+      "turns": 2,
+      "chars": 742,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 198492,
+      "source": "metamath",
+      "content_sha256": "bb20b82abaa1eacf715afde6522017d3f4ddf550088eea67d01d16d4020e4b22",
+      "issues": [],
+      "turns": 2,
+      "chars": 700,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 199418,
+      "source": "metamath",
+      "content_sha256": "7b4a827297718ca415727c7a5bee1e52c0b5a05274f174a8c18f38b9ac6a665b",
+      "issues": [],
+      "turns": 2,
+      "chars": 941,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 201561,
+      "source": "metamath",
+      "content_sha256": "950d5da1c3a8777e075ce890c312a36145df524971061945d332a37d0cca9287",
+      "issues": [],
+      "turns": 2,
+      "chars": 1144,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 202183,
+      "source": "metamath",
+      "content_sha256": "ad38c5e31bf96f5abc4baec40889a338469f799e4caa834a6328dd22c5522d87",
+      "issues": [],
+      "turns": 2,
+      "chars": 773,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 204401,
+      "source": "metamath",
+      "content_sha256": "a4f4f9f85aa1c89012f3356dbf81b40f3c13f27cc8ca4ef845fe5edf7a5a011a",
+      "issues": [],
+      "turns": 2,
+      "chars": 310,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 204739,
+      "source": "metamath",
+      "content_sha256": "78e3714bbe95ca2da7cbcf63601b065df2badb3c864e53e5155043e154ee1154",
+      "issues": [],
+      "turns": 2,
+      "chars": 512,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 206615,
+      "source": "metamath",
+      "content_sha256": "39587332df13e6a7ded7ce64c8f89e3158a0986c568033125bc6a0d9d6f448b4",
+      "issues": [],
+      "turns": 2,
+      "chars": 670,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 206786,
+      "source": "metamath",
+      "content_sha256": "c9de6d4d372dfcfb192b6c3d3961da0d1b375a6eaa376c18950e34fe1966bb63",
+      "issues": [],
+      "turns": 2,
+      "chars": 653,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 207068,
+      "source": "metamath",
+      "content_sha256": "67deaef43be677ee0054ea93c4cadaef4009e747749fd1e2d53e075952b9ad66",
+      "issues": [],
+      "turns": 2,
+      "chars": 904,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 207546,
+      "source": "metamath",
+      "content_sha256": "752d3a00e0aded2e4ec7942a3e5306bad567b75c351d0d2f97be85bb9fa81edd",
+      "issues": [],
+      "turns": 2,
+      "chars": 486,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 208230,
+      "source": "metamath",
+      "content_sha256": "00650fa2aa53cc6e420b70a6ffa861401c691e9a2f3be41f04aaa673556eff3e",
+      "issues": [],
+      "turns": 2,
+      "chars": 539,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 210851,
+      "source": "metamath",
+      "content_sha256": "d83ed15cf030bf9758ffb5c745bc96481f00ad8b9b310f92c1740251c72eec33",
+      "issues": [],
+      "turns": 2,
+      "chars": 1100,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 210904,
+      "source": "metamath",
+      "content_sha256": "eec79b50aeb4ac2b1f2b2e7ffe5b929e712776b0ba2974e535a4c29f22547281",
+      "issues": [],
+      "turns": 2,
+      "chars": 302,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 211108,
+      "source": "metamath",
+      "content_sha256": "dd8feca93f03b723454e1b6035e9488c9c70bf48b82dc811f8bfbbd92caea1b3",
+      "issues": [],
+      "turns": 2,
+      "chars": 1095,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 211180,
+      "source": "metamath",
+      "content_sha256": "1eb9096f65bbef88090cc1e50dea6889d55ca1f96319313b128866357c5cd936",
+      "issues": [],
+      "turns": 2,
+      "chars": 613,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 212251,
+      "source": "metamath",
+      "content_sha256": "e7b90df0b58e81dc0fcb59a9d49f6175ce34b2dd8d0fa91f4aec98ebb6402df4",
+      "issues": [],
+      "turns": 2,
+      "chars": 737,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 213307,
+      "source": "metamath",
+      "content_sha256": "bf580c4a901bd4db3120b0810aafaebd44c1ccd5b121cb4515745a4f5fd1ecb5",
+      "issues": [],
+      "turns": 2,
+      "chars": 438,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 215099,
+      "source": "metamath",
+      "content_sha256": "288752eec33dcfa052fc8e3d2f33df49f762001e09639b1290dc76e6d7b06a67",
+      "issues": [],
+      "turns": 2,
+      "chars": 1121,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 215120,
+      "source": "metamath",
+      "content_sha256": "5371b7b8f10a74a071fb07d0e45570f93057d484c75365b2bb73062309b47ccf",
+      "issues": [],
+      "turns": 2,
+      "chars": 534,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 216247,
+      "source": "metamath",
+      "content_sha256": "b07522b1a42348f2ce761c4c397546b3a5a65b5ed868177fb94f11f613d084d4",
+      "issues": [],
+      "turns": 2,
+      "chars": 387,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 216520,
+      "source": "metamath",
+      "content_sha256": "3c379d1f2b58eac4a5bbfa714ff3098c8e893cfefcae55c111220e7183a7a675",
+      "issues": [],
+      "turns": 2,
+      "chars": 562,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 216861,
+      "source": "metamath",
+      "content_sha256": "e2824a297fcb09f8c953c0fb7b564e88eaf4afa02145e2420d9faee9c7d9f054",
+      "issues": [],
+      "turns": 2,
+      "chars": 586,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 217842,
+      "source": "metamath",
+      "content_sha256": "49f2de71a5026bebd74a26a91e02be8b7c5e4614f0f3978f7b722ab9f1270ef3",
+      "issues": [],
+      "turns": 2,
+      "chars": 527,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 217859,
+      "source": "metamath",
+      "content_sha256": "7859d79ae61b96858778252c5d271212ee6c938b827aa8b7f9633772e0677912",
+      "issues": [],
+      "turns": 2,
+      "chars": 1156,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 218077,
+      "source": "metamath",
+      "content_sha256": "3f41b29261eaaef414efe6d58f0ea74e8da03d0a45158ee7033c0c9c80b3b59f",
+      "issues": [],
+      "turns": 2,
+      "chars": 799,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 218156,
+      "source": "metamath",
+      "content_sha256": "68e86397b4960ee7181f290379557d2c6b26e55241e10ad01f3f90e2013ac9bf",
+      "issues": [],
+      "turns": 2,
+      "chars": 821,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 218626,
+      "source": "metamath",
+      "content_sha256": "46bb72dfab346f2c21593c61d3fd46754082464a2a543a9925c80b932ca6f121",
+      "issues": [],
+      "turns": 2,
+      "chars": 754,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 220248,
+      "source": "metamath",
+      "content_sha256": "55eddc0e52e2aee1eeceed90ec3a6df2e763770efc5888cbeae86d471a64d846",
+      "issues": [],
+      "turns": 2,
+      "chars": 1445,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 221120,
+      "source": "metamath",
+      "content_sha256": "0c4c5cd4535888bbcbad14e856f94975d775d21d98c9a43e922bcd0dcfafd110",
+      "issues": [],
+      "turns": 2,
+      "chars": 337,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 221894,
+      "source": "metamath",
+      "content_sha256": "f29780efe668054d1c855732db3b2788c108a4ae630ab14366417dc9aa4fd693",
+      "issues": [],
+      "turns": 2,
+      "chars": 560,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 222983,
+      "source": "metamath",
+      "content_sha256": "df27384ffbb32c8b0c8917ba7022bd87880708dbd195ffd5a9c8503c724346a6",
+      "issues": [],
+      "turns": 2,
+      "chars": 491,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 223127,
+      "source": "metamath",
+      "content_sha256": "779938e135c645d4f886d6a29aef5908cdc80a7e5fcd9356ef4ebd7fce090fab",
+      "issues": [],
+      "turns": 2,
+      "chars": 1014,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 223306,
+      "source": "metamath",
+      "content_sha256": "a66f21a7f6d6ffc81fb633d8cb3c46f24637ea293c1bfbe8d1a92fc43be153d2",
+      "issues": [],
+      "turns": 2,
+      "chars": 749,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 224018,
+      "source": "metamath",
+      "content_sha256": "b93c88b26018f8a9868f1b8745042038918cb85a2c27c00aaac8527d7458b89f",
+      "issues": [],
+      "turns": 2,
+      "chars": 605,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 224087,
+      "source": "metamath",
+      "content_sha256": "ae694ca3e06bf7a1b7d037026355cd19d9caac3335ea8a54b8e28412b8276157",
+      "issues": [],
+      "turns": 2,
+      "chars": 489,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 224775,
+      "source": "metamath",
+      "content_sha256": "cf6001850e6aa378e7245b277a57cd36e3a888a4fa18a13d45f3a1c4279a964d",
+      "issues": [],
+      "turns": 2,
+      "chars": 761,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 227219,
+      "source": "metamath",
+      "content_sha256": "aca351597b83ed42a5407d217c9fd4a70963f948c59b7d652c2c3ac54b469010",
+      "issues": [],
+      "turns": 2,
+      "chars": 710,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 227236,
+      "source": "metamath",
+      "content_sha256": "aad6bd81800bc3bd6c083eff6db3d6d7219083cd3d8bf2b95603a4e418423327",
+      "issues": [],
+      "turns": 2,
+      "chars": 423,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 227260,
+      "source": "metamath",
+      "content_sha256": "6a91d01d89acabed91684624d34da7913d3eedb3619bf9ce38ad1234ff4bbf3a",
+      "issues": [],
+      "turns": 2,
+      "chars": 912,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 228109,
+      "source": "metamath",
+      "content_sha256": "0ed0cc9e46e6846dbd6f3f1203c0236b8d19c950ccb2a803bb832560c8aa917e",
+      "issues": [],
+      "turns": 2,
+      "chars": 642,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 228979,
+      "source": "metamath",
+      "content_sha256": "8d22ff9d4c1429ad206a6ae97a9fc215627d9f1d7c13fec2a7cea68845144b9e",
+      "issues": [],
+      "turns": 2,
+      "chars": 678,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 229537,
+      "source": "metamath",
+      "content_sha256": "e987f96050cc9c2aab8868c5cc5c05ab3ca940f9c0ba8b4dc69e3ad4558ec756",
+      "issues": [],
+      "turns": 2,
+      "chars": 424,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 229709,
+      "source": "metamath",
+      "content_sha256": "3f3a223d590e1ff19d1906afa3555863eeb63dbe39fc186679f7895e35f8e553",
+      "issues": [],
+      "turns": 2,
+      "chars": 811,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 230082,
+      "source": "metamath",
+      "content_sha256": "e7fa9edac5f886c544fe0fff7a36f6deea79e6e144c6e08db1356f3cd45b7911",
+      "issues": [],
+      "turns": 2,
+      "chars": 543,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 230806,
+      "source": "metamath",
+      "content_sha256": "b5d7881554f93109ff592ccbd132b7ab92d398f18439eb3240aa54a7c0f5fb6b",
+      "issues": [],
+      "turns": 2,
+      "chars": 1180,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 231044,
+      "source": "metamath",
+      "content_sha256": "3e9364f0b67e764d4a30a7cc6a4bea17f1c1ec36ec83ba990f93f0b68b9f79e3",
+      "issues": [],
+      "turns": 2,
+      "chars": 1047,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 232048,
+      "source": "metamath",
+      "content_sha256": "adc62ed46ac244cc58cc9343dbc5de15cb20f3420506855962c3eb55bbe68277",
+      "issues": [],
+      "turns": 2,
+      "chars": 1276,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 232384,
+      "source": "metamath",
+      "content_sha256": "4ba9d28258307080765ebec9e3ae81213d68a80e4cb528ee5642c0d511fac11e",
+      "issues": [],
+      "turns": 2,
+      "chars": 430,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 233120,
+      "source": "metamath",
+      "content_sha256": "9b4d50bba30a4a1150fb32530205634d90a7cb62eb02985f8c5997f7c4f26434",
+      "issues": [],
+      "turns": 2,
+      "chars": 497,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 233669,
+      "source": "metamath",
+      "content_sha256": "f0a3c9b64fd0b7b99189cc39520e6746c3aa9205db587f0ca84094b2500ee50f",
+      "issues": [],
+      "turns": 2,
+      "chars": 968,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 233988,
+      "source": "metamath",
+      "content_sha256": "83af5a255a825b162c0a0de2fe3b7e433c412b2e149b200ce0253c3c3bc164dc",
+      "issues": [],
+      "turns": 2,
+      "chars": 696,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 234096,
+      "source": "metamath",
+      "content_sha256": "6cd0a0ddba3c758f90ef9fff079310bf79fcaf525625580221a4b32dd21b756d",
+      "issues": [],
+      "turns": 2,
+      "chars": 545,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    },
+    {
+      "row": 237295,
+      "source": "metamath",
+      "content_sha256": "ef092068b9a5d81e3ef0f416d243ca3337fd18beac4f7290d2281264cffe8c7c",
+      "issues": [],
+      "turns": 2,
+      "chars": 681,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "email_hits": 0,
+      "secret_hits": 0
+    }
+  ],
+  "sample_eligible_by_structure_and_safety_checks": 256,
+  "all_retained_issue_counts": {
+    "encoding_damage": 5,
+    "secret_pattern": 11
+  },
+  "sample_turns": {
+    "count": 256,
+    "min": 2,
+    "median": 2.0,
+    "mean": 2,
+    "max": 2
+  },
+  "sample_chars": {
+    "count": 256,
+    "min": 302,
+    "median": 1193.0,
+    "mean": 1442.05,
+    "max": 10927
+  },
+  "sample_email_records": 0,
+  "sample_secret_records": 0,
+  "sample_duplicate_content_hashes": 0,
+  "limitations": [
+    "This checks structure and obvious patterns; it does not certify factual correctness.",
+    "It does not replace per-source license evidence or human review."
+  ]
+}

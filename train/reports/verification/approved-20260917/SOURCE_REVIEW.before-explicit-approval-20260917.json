@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "status": "pending",
+  "generated_at": "2026-09-17T07:40:00+08:00",
+  "scope": "Selected training sources only; approval requires per-source provenance/license evidence. OpenHermes remains blocked pending untraceable-record resolution.",
+  "sources": {
+    "fineweb-edu": {
+      "repo": "HuggingFaceFW/fineweb-edu",
+      "revision": "master",
+      "license": "ODC-By 1.0",
+      "training_approved": true,
+      "license_review_status": "passed",
+      "evidence": [
+        "/data/mini-k3/data/raw/fineweb-edu/INVENTORY.json",
+        "dataset card license=odc-by"
+      ]
+    },
+    "chinese-fineweb-edu": {
+      "repo": "opencsg/chinese-fineweb-edu",
+      "revision": "master",
+      "license": "Apache-2.0",
+      "training_approved": true,
+      "license_review_status": "passed",
+      "evidence": [
+        "/data/mini-k3/data/raw/culturax/INVENTORY.json",
+        "dataset card license=apache-2.0"
+      ]
+    },
+    "cosmopedia": {
+      "repo": "AI-ModelScope/chinese-cosmopedia",
+      "revision": "master",
+      "license": "Apache-2.0",
+      "training_approved": true,
+      "license_review_status": "passed",
+      "evidence": [
+        "/data/mini-k3/data/raw/cosmopedia/INVENTORY.json",
+        "dataset card license=apache-2.0"
+      ]
+    },
+    "finemath": {
+      "repo": "HuggingFaceTB/finemath",
+      "revision": "master",
+      "license": "ODC-By 1.0",
+      "training_approved": true,
+      "license_review_status": "passed",
+      "evidence": [
+        "/data/mini-k3/data/raw/finemath/INVENTORY.json",
+        "dataset card license=odc-by"
+      ]
+    },
+    "open-web-math": {
+      "repo": "open-web-math/open-web-math",
+      "revision": "fde8ef8de2300f5e778f56261843dab89f230815",
+      "license": "ODC-By 1.0",
+      "training_approved": true,
+      "license_review_status": "passed",
+      "evidence": [
+        "/data/mini-k3/data/raw/open-web-math/README.md",
+        "dataset README dataset_info.license=ODC-By 1.0; underlying content license retained"
+      ]
+    },
+    "dolma-body": {
+      "repo": "modelscope/dolma",
+      "revision": "master",
+      "license": "ODC-By 1.0",
+      "training_approved": true,
+      "license_review_status": "passed",
+      "evidence": [
+        "/data/mini-k3/data/raw/dolma-body/INVENTORY.json",
+        "dataset card license=odc-by"
+      ]
+    },
+    "code-python": {
+      "repo": "HuggingFaceCode/stack-v3-train",
+      "revision": "master",
+      "license": "ODC-By 1.0",
+      "training_approved": true,
+      "license_review_status": "passed",
+      "evidence": [
+        "/data/mini-k3/data/raw/code-python/INVENTORY.json",
+        "only files with explicit allowlisted license_type retained by clean_v2.py"
+      ]
+    },
+    "openassistant": {
+      "repo": "OpenAssistant/oasst1",
+      "revision": "fdf72ae0827c1cda404aff25b6603abec9e3399b",
+      "license": "Apache-2.0",
+      "training_approved": true,
+      "license_review_status": "passed",
+      "evidence": [
+        "/data/mini-k3/data/raw/openassistant/INVENTORY.json",
+        "dataset card license=apache-2.0"
+      ]
+    },
+    "openhermes": {
+      "repo": "teknium/OpenHermes-2.5",
+      "revision": "b82037821055c377bed0d495e72e46de3bc72e84",
+      "license": null,
+      "training_approved": false,
+      "license_review_status": "pending",
+      "evidence": [
+        "/data/mini-k3/data/reports/openhermes-subsource-inventory.json",
+        "https://huggingface.co/datasets/teknium/OpenHermes-2.5/discussions/9"
+      ],
+      "reason": "496743 records lack a source label; publisher states subsets have different licenses; provenance is not established for untraceable records",
+      "next_action": "Resolve or exclude untraceable records with a documented filter and review each retained subset license."
+    },
+    "openr1": {
+      "repo": "open-r1/OpenR1-Math-220k",
+      "revision": "e4e141ec9dea9f8326f4d347be56105859b2bd68",
+      "license": "Apache-2.0",
+      "training_approved": true,
+      "license_review_status": "passed",
+      "evidence": [
+        "/data/mini-k3/data/raw/openr1/INVENTORY.json",
+        "dataset card license=apache-2.0"
+      ]
+    },
+    "ultrafeedback": {
+      "repo": "argilla/ultrafeedback-binarized-preferences-cleaned",
+      "revision": "770076f077c4c5e298498fa32f804857f46d5134",
+      "license": "MIT",
+      "training_approved": true,
+      "license_review_status": "passed",
+      "evidence": [
+        "/data/mini-k3/data/raw/ultrafeedback/INVENTORY.json",
+        "dataset card license=mit"
+      ]
+    }
+  }
+}

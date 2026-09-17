@@ -1,0 +1,42 @@
+{
+  "SOURCE_REVIEW.before-explicit-approval-20260917.json": {
+    "sha256": "09c456073a089e65f21d882b8290bfee7538cec68e2584af556a48709d2c013b",
+    "bytes": 4551
+  },
+  "SOURCE_REVIEW.json": {
+    "sha256": "4a276b17f929a9c7442a87fdfb49e0790e35e69a98939f40ba948c1c005e6263",
+    "bytes": 6960
+  },
+  "approval-regression-20260917.log": {
+    "sha256": "c5e1b8523aef26aedb78dda8f8c4474aa0494e1dd05363373539116bb7732bad",
+    "bytes": 610
+  },
+  "approved-end-to-end-20260917.log": {
+    "sha256": "1c80ee6c199c3bf75d2a1dee4ca8186672de8fb8998e594d6cad4858cc6d958c",
+    "bytes": 4676
+  },
+  "canonical/openhermes/COMPLETE.json": {
+    "sha256": "c9ddaf6d4dd457b7a4bc63d77261dedaa7143c87206092653275cb040926488a",
+    "bytes": 1417
+  },
+  "cleaned/openhermes/COMPLETE.json": {
+    "sha256": "39d63b705a0cd38830790e2c8472b116271fde764b7ac40d4f197d4b11172687",
+    "bytes": 1436
+  },
+  "openhermes-reviewed-filter-20260917-v2.json": {
+    "sha256": "4070f1e0451f36028484f5ff2c806af19c4094b180a0c0d6bb02abfb2dcb71d9",
+    "bytes": 1391
+  },
+  "openhermes-reviewed-sample-20260917-v2.json": {
+    "sha256": "dcbc72eb6411233e1779f58e26f4160a47e354be5834f988074e70ec8212b035",
+    "bytes": 84992
+  },
+  "stage-chain-approved-through-cleaned-20260917.json": {
+    "sha256": "2f6f4bbd46307bb748171be09d74248da657e980656aa3f97bde5b96bc5bd815",
+    "bytes": 3873
+  },
+  "v2-end-to-end-approved-20260917.json": {
+    "sha256": "21d8bd17457a55e4f31ccf9b27053287278592b19e8413e97467aac1189021f1",
+    "bytes": 350
+  }
+}

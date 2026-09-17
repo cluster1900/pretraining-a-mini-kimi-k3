@@ -1,0 +1,183 @@
+{
+  "schema_version": 2,
+  "status": "passed",
+  "generated_at": "2026-09-17T03:54:18.832895+00:00",
+  "scope": "Selected sources; OpenHermes limited to the user-approved, hash-bound Glaive/MetaMath SFT candidate",
+  "sources": {
+    "fineweb-edu": {
+      "repo": "HuggingFaceFW/fineweb-edu",
+      "revision": "master",
+      "license": "ODC-By 1.0",
+      "training_approved": true,
+      "license_review_status": "passed",
+      "evidence": [
+        "/data/mini-k3/data/raw/fineweb-edu/INVENTORY.json",
+        "dataset card license=odc-by"
+      ]
+    },
+    "chinese-fineweb-edu": {
+      "repo": "opencsg/chinese-fineweb-edu",
+      "revision": "master",
+      "license": "Apache-2.0",
+      "training_approved": true,
+      "license_review_status": "passed",
+      "evidence": [
+        "/data/mini-k3/data/raw/culturax/INVENTORY.json",
+        "dataset card license=apache-2.0"
+      ]
+    },
+    "cosmopedia": {
+      "repo": "AI-ModelScope/chinese-cosmopedia",
+      "revision": "master",
+      "license": "Apache-2.0",
+      "training_approved": true,
+      "license_review_status": "passed",
+      "evidence": [
+        "/data/mini-k3/data/raw/cosmopedia/INVENTORY.json",
+        "dataset card license=apache-2.0"
+      ]
+    },
+    "finemath": {
+      "repo": "HuggingFaceTB/finemath",
+      "revision": "master",
+      "license": "ODC-By 1.0",
+      "training_approved": true,
+      "license_review_status": "passed",
+      "evidence": [
+        "/data/mini-k3/data/raw/finemath/INVENTORY.json",
+        "dataset card license=odc-by"
+      ]
+    },
+    "open-web-math": {
+      "repo": "open-web-math/open-web-math",
+      "revision": "fde8ef8de2300f5e778f56261843dab89f230815",
+      "license": "ODC-By 1.0",
+      "training_approved": true,
+      "license_review_status": "passed",
+      "evidence": [
+        "/data/mini-k3/data/raw/open-web-math/README.md",
+        "dataset README dataset_info.license=ODC-By 1.0; underlying content license retained"
+      ]
+    },
+    "dolma-body": {
+      "repo": "modelscope/dolma",
+      "revision": "master",
+      "license": "ODC-By 1.0",
+      "training_approved": true,
+      "license_review_status": "passed",
+      "evidence": [
+        "/data/mini-k3/data/raw/dolma-body/INVENTORY.json",
+        "dataset card license=odc-by"
+      ]
+    },
+    "code-python": {
+      "repo": "HuggingFaceCode/stack-v3-train",
+      "revision": "master",
+      "license": "ODC-By 1.0",
+      "training_approved": true,
+      "license_review_status": "passed",
+      "evidence": [
+        "/data/mini-k3/data/raw/code-python/INVENTORY.json",
+        "only files with explicit allowlisted license_type retained by clean_v2.py"
+      ]
+    },
+    "openassistant": {
+      "repo": "OpenAssistant/oasst1",
+      "revision": "fdf72ae0827c1cda404aff25b6603abec9e3399b",
+      "license": "Apache-2.0",
+      "training_approved": true,
+      "license_review_status": "passed",
+      "evidence": [
+        "/data/mini-k3/data/raw/openassistant/INVENTORY.json",
+        "dataset card license=apache-2.0"
+      ]
+    },
+    "openhermes": {
+      "repo": "teknium/OpenHermes-2.5",
+      "revision": "b82037821055c377bed0d495e72e46de3bc72e84",
+      "license": "Apache-2.0 (Glaive publisher declaration); MIT (MetaMathQA publisher declaration)",
+      "training_approved": true,
+      "license_review_status": "passed",
+      "evidence": [
+        "/data/mini-k3/data/reports/openhermes-reviewed-filter-20260917-v2.json",
+        "/data/mini-k3/data/reports/openhermes-reviewed-sample-20260917-v2.json",
+        "https://huggingface.co/datasets/glaiveai/glaive-code-assistant-v2",
+        "https://huggingface.co/datasets/meta-math/MetaMathQA"
+      ],
+      "approval": {
+        "kind": "explicit_user_approval",
+        "date": "2026-09-17",
+        "text": "批准这两个子集进入 SFT，接下来自动执行就可以了，我们不用实时监控着",
+        "scope": "SFT for these two filtered subsets only"
+      },
+      "file_bindings": [
+        {
+          "path": "/data/mini-k3/data/reports/openhermes-reviewed-filter-20260917-v2.json",
+          "sha256": "4070f1e0451f36028484f5ff2c806af19c4094b180a0c0d6bb02abfb2dcb71d9"
+        },
+        {
+          "path": "/data/mini-k3/data/reports/openhermes-reviewed-sample-20260917-v2.json",
+          "sha256": "dcbc72eb6411233e1779f58e26f4160a47e354be5834f988074e70ec8212b035"
+        },
+        {
+          "path": "/data/mini-k3/data/raw/openhermes/openhermes2_5.original-20260917.json",
+          "sha256": "abe573d17eade4161aac321028027dd5ba614a6d9516d51bde9299d5353e1609"
+        },
+        {
+          "path": "/data/mini-k3/data/raw/openhermes-reviewed-v2/openhermes2_5.json",
+          "sha256": "3a6a1610d8ce9a62788aa9d0b5a170bf0b265587b2f89215c3179d0959b7d25d"
+        },
+        {
+          "path": "/data/mini-k3/project/train/data/filter_openhermes_reviewed.py",
+          "sha256": "4b0d93c531529a221a88796797b8c750a62dfae466f402960eda6298771ab641"
+        },
+        {
+          "path": "/data/mini-k3/project/train/data/sample_openhermes_reviewed.py",
+          "sha256": "7a3f99baa2ae4465e12f8df0f964ace6e48bb4b42c7cb453e44b63e31ba945dd"
+        }
+      ],
+      "retained_subsources": {
+        "glaive-code-assist": 182240,
+        "metamath": 56448
+      },
+      "excluded_records": {
+        "missing_source": 496743,
+        "other_subsources": 266120
+      },
+      "quality_review_status": "basic_checks_and_limited_sampling_only",
+      "stage_report_sha256": {
+        "canonical": "c9ddaf6d4dd457b7a4bc63d77261dedaa7143c87206092653275cb040926488a",
+        "cleaned": "39d63b705a0cd38830790e2c8472b116271fde764b7ac40d4f197d4b11172687"
+      },
+      "filtered_input_sha256": "3a6a1610d8ce9a62788aa9d0b5a170bf0b265587b2f89215c3179d0959b7d25d",
+      "cleaned_documents": 238672,
+      "filter_rule": "Keep source exactly equal to glaive-code-assist or metamath; redact email-shaped strings; exclude missing and all other labels.",
+      "limitations": [
+        "Approval is limited to this candidate, not the original compilation.",
+        "Sampling does not prove all answers correct; Glaive version mapping is based on publisher labels, not upstream row matching."
+      ]
+    },
+    "openr1": {
+      "repo": "open-r1/OpenR1-Math-220k",
+      "revision": "e4e141ec9dea9f8326f4d347be56105859b2bd68",
+      "license": "Apache-2.0",
+      "training_approved": true,
+      "license_review_status": "passed",
+      "evidence": [
+        "/data/mini-k3/data/raw/openr1/INVENTORY.json",
+        "dataset card license=apache-2.0"
+      ]
+    },
+    "ultrafeedback": {
+      "repo": "argilla/ultrafeedback-binarized-preferences-cleaned",
+      "revision": "770076f077c4c5e298498fa32f804857f46d5134",
+      "license": "MIT",
+      "training_approved": true,
+      "license_review_status": "passed",
+      "evidence": [
+        "/data/mini-k3/data/raw/ultrafeedback/INVENTORY.json",
+        "dataset card license=mit"
+      ]
+    }
+  }
+}

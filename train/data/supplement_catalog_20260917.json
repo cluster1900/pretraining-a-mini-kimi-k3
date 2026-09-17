@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "status": "candidate_pending_explicit_file_selection",
+  "created_at": "2026-09-17",
+  "basis_report": "train/reports/verification/coverage-20260917/training-coverage-dry-run.json",
+  "policy": "No download has started. Select exact files, verify revision/checksums, and update TRAINING_PLAN.md before download.",
+  "shortfalls": {
+    "fineweb-edu": {
+      "required_train_tokens": 4275003064,
+      "available_train_tokens": 1515064013,
+      "deficit_tokens": 2759939051,
+      "target_with_20pct_buffer": 3311926861,
+      "role": "pretrain web",
+      "source": "HuggingFaceFW/fineweb-edu",
+      "backend": "modelscope",
+      "action": "Select additional parquet files from the fixed inventory not already present under raw/fineweb-edu; do not download the full repository."
+    },
+    "code-python": {
+      "required_train_tokens": 1225000878,
+      "available_train_tokens": 2829337,
+      "deficit_tokens": 1222171541,
+      "target_with_20pct_buffer": 1466605849,
+      "role": "pretrain code",
+      "source": "codeparrot/github-code",
+      "backend": "hf-mirror",
+      "action": "Build an adapter preserving repo_name/path/language/license/size, select Python rows with an explicit allowlisted license, then dry-run clean/dedup/token counts before any bulk download."
+    }
+  },
+  "not_selected": [
+    "FineWeb full",
+    "FineWeb-2",
+    "Common Crawl raw WARC",
+    "The Stack v2 full repository",
+    "unlicensed or license-ambiguous GitHub repositories"
+  ]
+}

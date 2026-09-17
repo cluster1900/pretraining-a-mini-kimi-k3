@@ -1,0 +1,32 @@
+{
+  "status": "complete",
+  "scope": "Retain only OpenHermes rows with an exact verified subsource label",
+  "input_path": "/data/mini-k3/data/raw/openhermes/openhermes2_5.original-20260917.json",
+  "input_sha256": "abe573d17eade4161aac321028027dd5ba614a6d9516d51bde9299d5353e1609",
+  "output_path": "/data/mini-k3/data/raw/openhermes-reviewed-v2/openhermes2_5.json",
+  "output_sha256": "3a6a1610d8ce9a62788aa9d0b5a170bf0b265587b2f89215c3179d0959b7d25d",
+  "script_sha256": "4b0d93c531529a221a88796797b8c750a62dfae466f402960eda6298771ab641",
+  "counts": {
+    "records": 1001551,
+    "excluded_unverified_subsource": 266120,
+    "excluded_missing_source": 496743,
+    "redacted_email_occurrences": 3489,
+    "retained": 238688
+  },
+  "retained_subsources": {
+    "glaive-code-assist": {
+      "upstream": "glaiveai/glaive-code-assistant-v2",
+      "license": "Apache-2.0",
+      "evidence": "https://huggingface.co/datasets/glaiveai/glaive-code-assistant-v2",
+      "records": 182240
+    },
+    "metamath": {
+      "upstream": "meta-math/MetaMathQA",
+      "license": "MIT",
+      "evidence": "https://huggingface.co/datasets/meta-math/MetaMathQA",
+      "records": 56448
+    }
+  },
+  "filter_rule": "Keep source exactly equal to glaive-code-assist or metamath; redact email-shaped strings; exclude missing and all other labels.",
+  "excluded_records_are_preserved_in_original_input": true
+}

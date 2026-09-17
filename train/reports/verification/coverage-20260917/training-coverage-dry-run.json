@@ -1,0 +1,49 @@
+{
+  "status": "insufficient_fixed_mix",
+  "scope": "Training token availability versus the documented stable/decay mixture; no download or training performed",
+  "root": "/data/mini-k3/data/prepared-v2-before-review-20260917",
+  "total_target_tokens": 10000007168,
+  "stable_fraction": 0.85,
+  "decay_fraction": 0.15,
+  "required_tokens": {
+    "fineweb-edu": 4275003064,
+    "chinese-fineweb-edu": 1425001021,
+    "dolma-body": 1000000716,
+    "finemath": 605000433,
+    "open-web-math": 545000390,
+    "code-python": 1225000878,
+    "cosmopedia": 925000663
+  },
+  "available_train_tokens": {
+    "fineweb-edu": 1515064013,
+    "chinese-fineweb-edu": 1439726521,
+    "dolma-body": 9025195969,
+    "finemath": 5240550811,
+    "open-web-math": 4481989293,
+    "code-python": 2829337,
+    "cosmopedia": 1689844133
+  },
+  "deficits": {
+    "fineweb-edu": 2759939051,
+    "code-python": 1222171541
+  },
+  "recommended_supplement_tokens_with_buffer": {
+    "fineweb-edu": 3311926861,
+    "code-python": 1466605849
+  },
+  "max_tokens_without_reuse_at_fixed_mix": 23096628,
+  "evidence": {
+    "fineweb-edu": "/data/mini-k3/data/prepared-v2-before-review-20260917/tokenized/fineweb-edu/COMPLETE.json",
+    "chinese-fineweb-edu": "/data/mini-k3/data/prepared-v2-before-review-20260917/tokenized/chinese-fineweb-edu/COMPLETE.json",
+    "dolma-body": "/data/mini-k3/data/prepared-v2-before-review-20260917/tokenized/dolma-body/COMPLETE.json",
+    "finemath": "/data/mini-k3/data/prepared-v2-before-review-20260917/tokenized/finemath/COMPLETE.json",
+    "open-web-math": "/data/mini-k3/data/prepared-v2-before-review-20260917/tokenized/open-web-math/COMPLETE.json",
+    "code-python": "/data/mini-k3/data/prepared-v2-before-review-20260917/tokenized/code-python/COMPLETE.json",
+    "cosmopedia": "/data/mini-k3/data/prepared-v2-before-review-20260917/tokenized/cosmopedia/COMPLETE.json"
+  },
+  "completion_scope": "provisional_tokenized_reports",
+  "warnings": [
+    "A total-token surplus cannot substitute for a missing source while the mixture is fixed.",
+    "This report does not authorize downloads or a change to the training mixture."
+  ]
+}

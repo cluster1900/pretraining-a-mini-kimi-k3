@@ -83,6 +83,40 @@ class StageAuditTests(unittest.TestCase):
 
 
 class SourceReviewTests(unittest.TestCase):
+    def test_explicit_subset_approval_is_bound_to_current_reports_and_evidence(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            good = {'schema_version': 2, 'status': 'passed', 'sources': {source: {
+                'training_approved': True, 'license_review_status': 'passed',
+                'evidence': ['test-only evidence']} for source in SPECS}}
+            item = good['sources']['openhermes']
+            item.update(approval={'kind': 'explicit_user_approval'},
+                        retained_subsources={'glaive-code-assist': 1, 'metamath': 1},
+                        stage_report_sha256={})
+            paths = []
+            for stage in ('canonical', 'cleaned'):
+                p = root / stage / 'openhermes/COMPLETE.json'
+                atomic_json(p, {'test': stage})
+                item['stage_report_sha256'][stage] = digest_file(p)
+                paths.append(p)
+            evidence = root / 'evidence.json'
+            atomic_json(evidence, {'input_sha256': 'approved input'})
+            item['file_bindings'] = [{'path': str(evidence), 'sha256': digest_file(evidence)}]
+            atomic_json(root / 'SOURCE_REVIEW.json', good)
+            self.assertEqual(verify_source_review(root), good)
+            for p in [*paths, evidence]:
+                original = p.read_bytes()
+                p.write_text('{"changed": true}')
+                with self.subTest(file=str(p)), self.assertRaisesRegex(ValueError, 'changed'):
+                    verify_source_review(root)
+                p.write_bytes(original)
+            for key in ('approval', 'retained_subsources', 'file_bindings'):
+                changed = json.loads(json.dumps(good))
+                changed['sources']['openhermes'].pop(key)
+                atomic_json(root / 'SOURCE_REVIEW.json', changed)
+                with self.subTest(missing=key), self.assertRaises(ValueError):
+                    verify_source_review(root)
+
     def test_unapproved_or_missing_evidence_is_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
