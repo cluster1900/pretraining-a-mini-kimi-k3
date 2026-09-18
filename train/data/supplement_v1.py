@@ -62,6 +62,7 @@ def select_fineweb(run, target_bytes=12_000_000_000):
     inv=json.loads((run.raw/'fineweb-edu/INVENTORY.json').read_text())
     groups={}
     for item in inv['files']:
+        if not (item['path'].startswith('data/') and item['path'].endswith('.parquet')): continue
         path=item['path']; p=run.raw/'fineweb-edu'/path
         if p.is_file() and p.stat().st_size==item['size']: continue
         group=path.split('/')[1] if path.count('/')>=2 else path
@@ -94,8 +95,9 @@ def download_fineweb(run, selection):
     return out
 
 
-def codeparrot_selection(count=320):
-    meta=json.load(urllib.request.urlopen('https://hf-mirror.com/api/datasets/codeparrot/github-code',timeout=60))
+def codeparrot_selection(count=200):
+    req=urllib.request.Request('https://hf-mirror.com/api/datasets/codeparrot/github-code',headers={'User-Agent':'Mozilla/5.0'})
+    meta=json.load(urllib.request.urlopen(req,timeout=60))
     revision=meta['sha']; files=[x['rfilename'] for x in meta['siblings'] if x.get('rfilename','').endswith('.parquet')]
     if not files: raise ValueError('No CodeParrot parquet shards found')
     step=max(1,len(files)//count); chosen=files[::step][:count]
@@ -120,12 +122,13 @@ def convert_codeparrot(run, files):
     for ordinal,item in enumerate(files):
         rows=[]; table=pq.read_table(item['path'])
         for row in table.to_pylist():
-            lang=str(row.get('language','')).lower(); lic=str(row.get('license','')).lower()
-            code=row.get('code')
-            if lang!='python': rejected['non_python']=rejected.get('non_python',0)+1; continue
+            path=row.get('path','')
+            if not path.endswith('.py'): rejected['non_python']=rejected.get('non_python',0)+1; continue
+            lic=str(row.get('license','')).lower()
+            code=row.get('content')
             if lic not in ALLOWED: rejected['license_not_allowlisted']=rejected.get('license_not_allowlisted',0)+1; continue
             if not isinstance(code,str) or len(code.strip())<20: rejected['too_short']=rejected.get('too_short',0)+1; continue
-            rows.append({'repo_path':row.get('repo_name'),'files':[{'content':code,'language':'Python','file_path':row.get('path'),'license_type':lic,'is_vendor':False}]})
+            rows.append({'repo_path':row.get('repo_name'),'files':[{'content':code,'language':'Python','file_path':path,'license_type':lic,'is_vendor':False}]})
         out=outdir/f'github-supplement-{ordinal:04d}.parquet';pq.write_table(pa.Table.from_pylist(rows),out)
         digest=digest_file(out);outputs.append({'path':str(out),'rows':len(rows),'bytes':out.stat().st_size,'sha256':digest});kept+=len(rows)
     return {'files':outputs,'kept_rows':kept,'rejected':rejected,'license_allowlist':sorted(ALLOWED)}

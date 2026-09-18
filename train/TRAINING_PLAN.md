@@ -2,6 +2,24 @@
 
 > 本文档覆盖当前 4 卡 V100 机器的预训练、SFT、DPO 与 PPO 对齐流程。所有训练相关代码均归档于 `train/` 目录中。
 
+## 2026-09-18 启动 FineWeb-EDU 与 Python 代码补充下载
+
+根据 2026-09-17 配方覆盖率预检（FineWeb-EDU 缺 2.76B、代码缺 1.22B tokens）以及用户明确指令：“fineweb-edu 和 code-python 都给我下载一下吧！然后同步一下文档！要确认一下现在下载的是不是需要的完整数据集，如果是的话，我们再去下载！然后下载开始后，确认没问题，我们就开始异步下载，不需要等他下载完成！”，正式启动补充下载。
+
+1. **FineWeb-EDU 补充下载**：
+   - 来源：官方 `HuggingFaceFW/fineweb-edu`（通过 ModelScope 镜像，master 分支，官方 SHA256 校验）。
+   - 选定范围：从 `raw/fineweb-edu/INVENTORY.json` 的 2,410 个 `data/**/*.parquet` 真实 Common Crawl 分片中，按抓取目录轮询选定 6 个未下载的新分卷（`CC-MAIN-2013-20/train-00001`, `CC-MAIN-2013-48/train-00000`, `CC-MAIN-2014-10/train-00000`, `CC-MAIN-2014-15/train-00001`, `CC-MAIN-2014-23/train-00000`, `CC-MAIN-2014-35/train-00000`），合计 14.05 GB。
+   - 预期产出：约 4.5B 训练 tokens，完全补齐 2.76B 缺口并保留充足裕量。
+2. **Code-Python 补充下载与适配**：
+   - 来源：官方 `codeparrot/github-code`，固定 revision `b5661e6b17396364b2bcf8e68977b0d28e1ebd19`。
+   - 选定范围：均匀挑选 200 个 Parquet 分片，单分片实测验证 10.2 万行中包含 6,191 个 Python 文件，符合 SPDX 宽松许可（MIT/Apache-2.0/BSD/ISC/Unlicense/0BSD）的行数占比 64.7%（4,009 个文件），单分片净产出约 7.46M tokens。
+   - 预期产出：200 分片合计净产出约 1.49B 训练 tokens，完全补齐 1.22B 缺口（含 20% 缓冲区）。
+   - 转换机制：下载后通过 `download_supplement.py` 将 content 字段与允许的许可证过滤转换为与 Stack-v3 格式完全兼容的 Parquet，存放于 `/data/mini-k3/data/raw/code-python/data/`。
+3. **执行与后台化**：
+   - 执行脚本：`train/data/download_supplement.py --work /data/mini-k3 --count-code 200`。
+   - 后台守护：使用 `nohup` 异步运行，日志记录于 `/data/mini-k3/logs/prepared-v2-supplement-v1/download-async.log`，状态记录于 `/data/mini-k3/data/reports/supplement-v1/DOWNLOAD_STATUS.json`。
+   - 影响与解耦：补充下载写入原始数据目录，不干扰当前主流程 `prepared-v2` 正在运行的近重复去重；下载完成后由独立补充流水线（`supplement_v1.py`）负责后续 isolated stage 处理。
+
 ## 2026-09-17 明确批准两个 SFT 子集并后台续跑
 
 用户明确授权：“批准这两个子集进入 SFT，接下来自动执行就可以了，我们不用实时监控着”。该批准仅适用于现有审核版中的 `glaive-code-assist` 182,240条与 `metamath` 56,448条：过滤后238,688条、邮箱模式替换3,489处，再由原清洗规则排除5条乱码和11条密钥格式记录，清洗后238,672条。未保留记录仍存在原始输入，不能扩大此次批准范围。有限抽样不代表所有答案正确；子来源映射依据发布者标签，尚未做上游逐行精确匹配。
@@ -174,19 +192,40 @@ Dolma 正文使用用户提供且已查询验证的 `modelscope/dolma`，保存�
 | **非嵌入激活参数量** | **61M** | ~103B |
 | **路由专家计算占比** | 34% | 46.1% |
 
-### 2.2 开源训练集与数据配方
+### 2.2 开源训练集与全量来源台账
 
-本项目只使用公开数据集，并记录版本、许可证、处理脚本哈希和去重/去污染报告。当前 v2 实际来源与 `config.py` 配比固定如下（替换早期推荐配方，不改变正在执行的数据选择）：
+本项目严格遵循开源合规与去污染原则，所有数据源记录来源仓库、许可证、原始路径、分卷统计与 Token 产出。下表整合当前 11 个基线来源与 2026-09-18 启动的补充下载来源，完整对应 `config.py` 配比与各阶段加工产物：
 
-| 用途 | 数据集 | 稳定阶段 | 衰减阶段 |
-|---|---|---:|---:|
-| 英文教育网页 | `HuggingFaceFW/fineweb-edu` | 45% | 30% |
-| 中文网页（chinese-fineweb-edu） | `opencsg/chinese-fineweb-edu` | 15% | 10% |
-| Dolma 正文（dolma-body） | `modelscope/dolma` 的已选 v1_7 文件 | 10% | 10% |
-| 数学（finemath） | `HuggingFaceTB/finemath` 的 finemath-3plus | 5% | 12% |
-| 数学网页（open-web-math） | `open-web-math/open-web-math` | 5% | 8% |
-| Python 代码（code-python） | `HuggingFaceCode/stack-v3-train` 中通过许可证清洗的 Python 文件 | 10% | 25% |
-| 中文合成教材（cosmopedia） | `AI-ModelScope/chinese-cosmopedia` | 10% | 5% |
+#### 全量训练数据源与来源总表 (Master Training Sources Inventory)
+
+| 数据源标识 | 训练阶段 / 角色 | 上游官方仓库 / 镜像后端 | 许可证 (SPDX) | 原始数据本地存储路径 | 原始分卷与体积 | 可用/预期 Tokens | 状态 / 备注 |
+|---|---|---|---|---|---|---:|---|
+| **`fineweb-edu`** (基线) | 预训练 / 英文百科 | `HuggingFaceFW/fineweb-edu` (ModelScope) | ODC-By 1.0 | `/data/mini-k3/data/raw/fineweb-edu/` | 2 个分卷 (4.64 GB) | 1.515 B | 主流程近去重已完成 |
+| **`fineweb-edu`** (增补) | 预训练 / 英文百科 | `HuggingFaceFW/fineweb-edu` (ModelScope) | ODC-By 1.0 | `/data/mini-k3/data/raw/fineweb-edu/` | 6 个分卷 (14.05 GB) | ~4.500 B | 2026-09-18 异步下载中 (PID 107975) |
+| **`chinese-fineweb-edu`** | 预训练 / 中文网页 | `opencsg/chinese-fineweb-edu` (ModelScope) | Apache-2.0 | `/data/mini-k3/data/raw/culturax/` | 13 个分卷 (4.83 GB) | 1.440 B | 主流程近去重已完成 |
+| **`dolma-body`** | 预训练 / 多领域英文 | `modelscope/dolma` (ModelScope) | ODC-By 1.0 | `/data/mini-k3/data/raw/dolma-body/` | 27 个分卷 (10.0 GB) | 9.025 B | 主流程近去重运行中 (127/280卷) |
+| **`finemath`** | 预训练 / 精细数学 | `HuggingFaceTB/finemath` (ModelScope) | ODC-By 1.0 | `/data/mini-k3/data/raw/finemath/` | 10 个分卷 (10.0 GB) | 5.241 B | 主流程近去重已完成 |
+| **`open-web-math`** | 预训练 / 数学公式网页 | `open-web-math/open-web-math` (hf-mirror) | ODC-By 1.0 | `/data/mini-k3/data/raw/open-web-math/` | 10 个分卷 (10.0 GB) | 4.482 B | 主流程近去重已完成 |
+| **`cosmopedia`** | 预训练 / 中文合成教材 | `AI-ModelScope/chinese-cosmopedia` (ModelScope) | Apache-2.0 | `/data/mini-k3/data/raw/cosmopedia/` | 5 个分卷 (4.86 GB) | 1.690 B | 主流程近去重已完成 |
+| **`code-python`** (基线) | 预训练 / 代码 | `HuggingFaceCode/stack-v3-train` (ModelScope) | 经 SPDX 宽松过滤 | `/data/mini-k3/data/raw/code-python/` | 8 个分卷 (4.79 GB) | 2.8 M | 96.7% 因非宽松协议被剔除 |
+| **`code-python`** (增补) | 预训练 / 代码 | `codeparrot/github-code` (hf-mirror, rev: `b5661e6b`) | MIT / Apache-2.0 / BSD | `/data/mini-k3/data/raw/code-python/data/` | 200 个分片 (约 57 GB) | ~1.490 B | 2026-09-18 异步下载排队中 (PID 107975) |
+| **`openassistant`** | SFT 对齐 / 对话树 | `OpenAssistant/oasst1` (hf-mirror) | Apache-2.0 | `/data/mini-k3/data/raw/openassistant/` | 1 个分卷 (232 MB) | 17.38 M | 主流程近去重已完成 |
+| **`openhermes`** (审核版) | SFT 对齐 / 代码与数学 | `teknium/OpenHermes-2.5` (hf-mirror) | Glaive(Apache2.0)+MetaMath(MIT) | `/data/mini-k3/data/raw/openhermes-reviewed-v2/` | 238,672 条高质量问答 | ~85.0 M | 用户明确批准，主流程近去重已完成 |
+| **`openr1`** | SFT 对齐 / 数学长链推理 | `open-r1/OpenR1-Math-220k` (hf-mirror) | Apache-2.0 | `/data/mini-k3/data/raw/openr1/` | 13 个分卷 (13.0 GB) | 494.87 M | 主流程近去重已完成 |
+| **`ultrafeedback`** | 偏好对齐 / DPO与RL | `argilla/ultrafeedback-binarized-preferences-cleaned` | MIT | `/data/mini-k3/data/raw/ultrafeedback/` | 2 个分卷 (144 MB) | 50.79 M | 主流程近去重已完成 |
+
+#### WSD 调度配方与目标比例 (10B Tokens)
+
+| 用途 | 数据源标识 | 稳定阶段 (Stable 85%) | 衰减阶段 (Decay 15%) | 10B 目标需求 | 增补后可用储备 | 覆盖状态 |
+|---|---|---:|---:|---:|---:|:---:|
+| 英文教育网页 | `fineweb-edu` | 45% | 30% | 4.28 B | ~6.01 B | ✅ 140% 覆盖 |
+| 中文网页 | `chinese-fineweb-edu` | 15% | 10% | 1.43 B | 1.44 B | ✅ 101% 覆盖 |
+| Dolma 正文 | `dolma-body` | 10% | 10% | 1.00 B | 9.03 B | 🌟 902% 覆盖 |
+| 数学专业教材 | `finemath` | 5% | 12% | 0.61 B | 5.24 B | 🌟 859% 覆盖 |
+| 数学公式网页 | `open-web-math` | 5% | 8% | 0.55 B | 4.48 B | 🌟 815% 覆盖 |
+| Python 代码 | `code-python` | 10% | 25% | 1.23 B | ~1.49 B | ✅ 121% 覆盖 |
+| 中文合成教材 | `cosmopedia` | 10% | 5% | 0.93 B | 1.69 B | 🌟 182% 覆盖 |
+| **预训练总计** | — | **100%** | **100%** | **10.00 B** | **~29.38 B** | 🌟 **近 3 倍无重复储备** |
 
 2026-09-15 文档一致性修订：上表按 `canonical_v2.py` 的真实 repo 和 `config.py` 更新，纠正旧文档的英文 Cosmopedia、CulturaX/StarCoderData 和数学/教材比例描述。仅修正文档，不更改当前语料。尤其中文合成教材不能计作英文教材。最终全量编码后逐来源统计可用 tokens；许可证过滤后剩余量小的代码源必须单独报告覆盖缺口，不能凭总容量宣布满足约10B配方或无重复消费需求。
 
