@@ -113,12 +113,18 @@ def main():
     print(f"[{now()}] Selected {len(code_selection['files'])} CodeParrot files", flush=True)
 
     # 1. Download FineWeb-EDU
-    update_status('downloading_fineweb', fineweb_total=len(fine_selection['files']), fineweb_done=0)
-    fineweb_results = []
-    for idx, item in enumerate(fine_selection['files'], 1):
-        res = download_fineweb_file(run.raw / 'fineweb-edu', run.work / 'ms-cache', item)
-        fineweb_results.append(res)
-        update_status('downloading_fineweb', fineweb_total=len(fine_selection['files']), fineweb_done=idx)
+    existing_fineweb = list((run.raw / 'fineweb-edu').glob('data/*/*.parquet'))
+    if getattr(args, 'skip_fineweb', False) or len(existing_fineweb) >= 8:
+        print(f"[{now()}] FineWeb already has {len(existing_fineweb)} files ({sum(p.stat().st_size for p in existing_fineweb) / 1e9:.2f} GB). Target met, skipping FineWeb download.", flush=True)
+        update_status('fineweb_complete', fineweb_total=len(existing_fineweb), fineweb_done=len(existing_fineweb))
+        fineweb_results = [{'path': str(p), 'bytes': p.stat().st_size} for p in existing_fineweb]
+    else:
+        update_status('downloading_fineweb', fineweb_total=len(fine_selection['files']), fineweb_done=0)
+        fineweb_results = []
+        for idx, item in enumerate(fine_selection['files'], 1):
+            res = download_fineweb_file(run.raw / 'fineweb-edu', run.work / 'ms-cache', item)
+            fineweb_results.append(res)
+            update_status('downloading_fineweb', fineweb_total=len(fine_selection['files']), fineweb_done=idx)
 
     # 2. Download CodeParrot
     update_status('downloading_codeparrot', codeparrot_total=len(code_selection['files']), codeparrot_done=0)

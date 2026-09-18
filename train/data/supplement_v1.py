@@ -59,6 +59,9 @@ def wait_base(run, poll=60):
 
 
 def select_fineweb(run, target_bytes=12_000_000_000):
+    existing=list((run.raw/'fineweb-edu').glob('data/*/*.parquet'))
+    if len(existing)>=8:
+        return {'source':'HuggingFaceFW/fineweb-edu','files':[],'selected_bytes':0,'selection':'cached'}
     inv=json.loads((run.raw/'fineweb-edu/INVENTORY.json').read_text())
     groups={}
     for item in inv['files']:
