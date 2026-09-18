@@ -109,6 +109,10 @@ def download_codeparrot(run, selection):
     dstroot=run.raw/'github-code';dstroot.mkdir(parents=True,exist_ok=True)
     for path in selection['files']:
         dst=dstroot/Path(path).name; tmp=dst.with_name(dst.name+'.incomplete')
+        if dst.is_file() and dst.stat().st_size > 0:
+            digest=digest_file(dst)
+            out.append({'path':str(dst),'source_path':path,'bytes':dst.stat().st_size,'sha256':digest})
+            continue
         url=f"https://hf-mirror.com/datasets/codeparrot/github-code/resolve/{selection['revision']}/{path}"
         run.run(['curl','-sS','-L','--fail','--retry','5','--retry-delay','3','--connect-timeout','20','--max-time','43200','-C','-','-o',str(tmp),url],f'download-codeparrot-{dst.name}.log')
         digest=digest_file(tmp); os.replace(tmp,dst)
@@ -120,6 +124,11 @@ def convert_codeparrot(run, files):
     import pyarrow as pa, pyarrow.parquet as pq
     outdir=run.raw/'code-python/data';outdir.mkdir(parents=True,exist_ok=True); outputs=[]; kept=0; rejected={}
     for ordinal,item in enumerate(files):
+        out=outdir/f'github-supplement-{ordinal:04d}.parquet'
+        if out.is_file() and out.stat().st_size > 0:
+            digest=digest_file(out)
+            outputs.append({'path':str(out),'sha256':digest,'cached':True})
+            continue
         rows=[]; table=pq.read_table(item['path'])
         for row in table.to_pylist():
             path=row.get('path','')
@@ -129,7 +138,7 @@ def convert_codeparrot(run, files):
             if lic not in ALLOWED: rejected['license_not_allowlisted']=rejected.get('license_not_allowlisted',0)+1; continue
             if not isinstance(code,str) or len(code.strip())<20: rejected['too_short']=rejected.get('too_short',0)+1; continue
             rows.append({'repo_path':row.get('repo_name'),'files':[{'content':code,'language':'Python','file_path':path,'license_type':lic,'is_vendor':False}]})
-        out=outdir/f'github-supplement-{ordinal:04d}.parquet';pq.write_table(pa.Table.from_pylist(rows),out)
+        pq.write_table(pa.Table.from_pylist(rows),out)
         digest=digest_file(out);outputs.append({'path':str(out),'rows':len(rows),'bytes':out.stat().st_size,'sha256':digest});kept+=len(rows)
     return {'files':outputs,'kept_rows':kept,'rejected':rejected,'license_allowlist':sorted(ALLOWED)}
 
