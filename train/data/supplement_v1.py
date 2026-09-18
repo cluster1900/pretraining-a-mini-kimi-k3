@@ -104,7 +104,7 @@ def codeparrot_selection(count=200):
     return {'source':'codeparrot/github-code','revision':revision,'files':chosen,'selection':'evenly spaced parquet shards','dataset_license':meta.get('cardData',{}).get('license')}
 
 
-def download_codeparrot(run, selection):
+def download_codeparrot(run, selection, max_retries=5):
     out=[]
     dstroot=run.raw/'github-code';dstroot.mkdir(parents=True,exist_ok=True)
     for path in selection['files']:
@@ -114,7 +114,23 @@ def download_codeparrot(run, selection):
             out.append({'path':str(dst),'source_path':path,'bytes':dst.stat().st_size,'sha256':digest})
             continue
         url=f"https://hf-mirror.com/datasets/codeparrot/github-code/resolve/{selection['revision']}/{path}"
-        run.run(['curl','-sS','-L','--fail','--retry','5','--retry-delay','3','--connect-timeout','20','--max-time','43200','-C','-','-o',str(tmp),url],f'download-codeparrot-{dst.name}.log')
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        for attempt in range(1, max_retries + 1):
+            try:
+                if tmp.exists():
+                    tmp.unlink()
+                with urllib.request.urlopen(req, timeout=120) as response, open(tmp, 'wb') as f:
+                    while True:
+                        chunk = response.read(2 * 1024 * 1024)
+                        if not chunk:
+                            break
+                        f.write(chunk)
+                if tmp.is_file() and tmp.stat().st_size > 0:
+                    break
+            except Exception as e:
+                if attempt == max_retries:
+                    raise RuntimeError(f"Download failed for {url} after {max_retries} attempts: {e}")
+                time.sleep(attempt * 2)
         digest=digest_file(tmp); os.replace(tmp,dst)
         out.append({'path':str(dst),'source_path':path,'bytes':dst.stat().st_size,'sha256':digest})
     return out

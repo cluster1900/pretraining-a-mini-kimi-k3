@@ -50,7 +50,7 @@ def download_fineweb_file(raw_dir, cache_dir, item):
     return {'path': str(p), 'bytes': p.stat().st_size, 'sha256': digest, 'cached': False}
 
 
-def download_codeparrot_file(dstroot, revision, path):
+def download_codeparrot_file(dstroot, revision, path, max_retries=5):
     dst = dstroot / Path(path).name
     tmp = dst.with_name(dst.name + '.incomplete')
     if dst.is_file() and dst.stat().st_size > 0:
@@ -60,15 +60,25 @@ def download_codeparrot_file(dstroot, revision, path):
 
     url = f"https://hf-mirror.com/datasets/codeparrot/github-code/resolve/{revision}/{path}"
     print(f"[CodeParrot] Downloading: {path} -> {dst.name}...", flush=True)
-    cmd = [
-        'curl', '-sS', '-L', '--fail', '--retry', '5', '--retry-delay', '3',
-        '-H', 'User-Agent: Mozilla/5.0',
-        '--connect-timeout', '20', '--max-time', '3600', '-C', '-',
-        '-o', str(tmp), url
-    ]
-    code = subprocess.call(cmd)
-    if code != 0 or not tmp.is_file() or tmp.stat().st_size == 0:
-        raise RuntimeError(f"Download failed for {url} (code={code})")
+    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    for attempt in range(1, max_retries + 1):
+        try:
+            if tmp.exists():
+                tmp.unlink()
+            with urllib.request.urlopen(req, timeout=120) as response, open(tmp, 'wb') as f:
+                while True:
+                    chunk = response.read(2 * 1024 * 1024)
+                    if not chunk:
+                        break
+                    f.write(chunk)
+            if tmp.is_file() and tmp.stat().st_size > 0:
+                break
+        except Exception as e:
+            print(f"[CodeParrot] Attempt {attempt} failed: {e}", flush=True)
+            if attempt == max_retries:
+                raise RuntimeError(f"Download failed for {url} after {max_retries} attempts: {e}")
+            time.sleep(attempt * 2)
+
     digest = digest_file(tmp)
     os.replace(tmp, dst)
     print(f"[CodeParrot] Completed: {dst.name} ({dst.stat().st_size / 1e6:.1f} MB) SHA256={digest[:16]}...", flush=True)
