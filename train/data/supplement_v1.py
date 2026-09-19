@@ -162,18 +162,54 @@ def convert_codeparrot(run, files):
     return {'files':outputs,'kept_rows':kept,'rejected':rejected,'license_allowlist':sorted(ALLOWED)}
 
 
+def rebind_cloned_root(root):
+    root = Path(root)
+    old_prefix = "/data/mini-k3/data/prepared-v2/"
+    new_prefix = str(root) + "/"
+    sources = ["openassistant", "openhermes", "openr1", "ultrafeedback",
+               "chinese-fineweb-edu", "cosmopedia", "finemath", "open-web-math", "dolma-body"]
+    for s in sources:
+        can_path = root / "canonical" / s / "COMPLETE.json"
+        if can_path.is_file():
+            can_data = json.loads(can_path.read_text())
+            for part in can_data.get("parts", []):
+                if part["path"].startswith(old_prefix):
+                    part["path"] = part["path"].replace(old_prefix, new_prefix)
+            atomic_json(can_path, can_data)
+            can_hash = digest_file(can_path)
+            
+            cln_path = root / "cleaned" / s / "COMPLETE.json"
+            if cln_path.is_file():
+                cln_data = json.loads(cln_path.read_text())
+                for part in cln_data.get("parts", []):
+                    if part["path"].startswith(old_prefix):
+                        part["path"] = part["path"].replace(old_prefix, new_prefix)
+                cln_data["upstream_report_sha256"] = can_hash
+                atomic_json(cln_path, cln_data)
+                cln_hash = digest_file(cln_path)
+                
+                if s == "openhermes":
+                    sr_path = root / "SOURCE_REVIEW.json"
+                    if sr_path.is_file():
+                        sr_data = json.loads(sr_path.read_text())
+                        sr_data["sources"]["openhermes"]["stage_report_sha256"]["canonical"] = can_hash
+                        sr_data["sources"]["openhermes"]["stage_report_sha256"]["cleaned"] = cln_hash
+                        atomic_json(sr_path, sr_data)
+
+
 def clone_root(run):
-    if run.root.exists(): raise ValueError('Supplement root already exists')
-    subprocess.run(['cp','-al',str(run.base/'prepared-v2'),str(run.root)],check=True)
-    for stage in ('canonical','cleaned'):
-        shutil.move(str(run.root/stage/'fineweb-edu'),str(run.root/stage/'fineweb-edu-before-supplement'))
-        shutil.move(str(run.root/stage/'code-python'),str(run.root/stage/'code-python-before-supplement'))
-    for stage in ('deduped','near-deduped','decontaminated','tokenized'):
-        shutil.move(str(run.root/stage),str(run.root/(stage+'-before-supplement')));(run.root/stage).mkdir()
-    for p in run.root.glob('*sqlite'):
-        p.rename(p.with_name(p.name+'-before-supplement'))
-    for p in run.root.glob('*COMPLETE.json'):
-        p.rename(p.with_name(p.name.replace('.json','-before-supplement.json')))
+    if not run.root.exists():
+        subprocess.run(['cp','-al',str(run.base/'prepared-v2'),str(run.root)],check=True)
+        for stage in ('canonical','cleaned'):
+            shutil.move(str(run.root/stage/'fineweb-edu'),str(run.root/stage/'fineweb-edu-before-supplement'))
+            shutil.move(str(run.root/stage/'code-python'),str(run.root/stage/'code-python-before-supplement'))
+        for stage in ('deduped','near-deduped','decontaminated','tokenized'):
+            shutil.move(str(run.root/stage),str(run.root/(stage+'-before-supplement')));(run.root/stage).mkdir()
+        for p in run.root.glob('*sqlite'):
+            p.rename(p.with_name(p.name+'-before-supplement'))
+        for p in run.root.glob('*COMPLETE.json'):
+            p.rename(p.with_name(p.name.replace('.json','-before-supplement.json')))
+    rebind_cloned_root(run.root)
 
 
 def main():
@@ -191,8 +227,12 @@ def main():
         run.update('cloning_base');clone_root(run)
         scripts=run.work/'project/train/data';py=run.work/'venv/bin/python'
         for source in ('fineweb-edu','code-python'):
-            run.update('canonical_'+source);run.run([str(py),'-u',str(scripts/'canonical_v2.py'),'--source',source,'--root',str(run.raw),'--output',str(run.root/'canonical')],f'canonical-{source}.log')
-            run.update('cleaned_'+source);run.run([str(py),'-u',str(scripts/'clean_v2.py'),'--source',source,'--root',str(run.root)],f'cleaned-{source}.log')
+            can_marker = run.root/'canonical'/source/'COMPLETE.json'
+            if not can_marker.exists() or json.loads(can_marker.read_text()).get('status') != 'complete':
+                run.update('canonical_'+source);run.run([str(py),'-u',str(scripts/'canonical_v2.py'),'--source',source,'--root',str(run.raw),'--output',str(run.root/'canonical')],f'canonical-{source}.log')
+            cln_marker = run.root/'cleaned'/source/'COMPLETE.json'
+            if not cln_marker.exists() or json.loads(cln_marker.read_text()).get('status') != 'complete':
+                run.update('cleaned_'+source);run.run([str(py),'-u',str(scripts/'clean_v2.py'),'--source',source,'--root',str(run.root)],f'cleaned-{source}.log')
         run.update('pipeline')
         run.run([str(py),'-u',str(scripts/'continue_v2.py'),'--root',str(run.root),'--work',str(run.work),'--workers',str(args.workers),'--log-dir',str(run.logs)],'controller.log')
         run.update('coverage');run.run([str(py),str(scripts/'assess_training_coverage.py'),'--root',str(run.root),'--report',str(run.reports/'coverage.json')],'coverage.log')
@@ -202,3 +242,4 @@ def main():
 
 
 if __name__=='__main__':main()
+

@@ -2,6 +2,20 @@
 
 > 本文档覆盖当前 4 卡 V100 机器的预训练、SFT、DPO 与 PPO 对齐流程。所有训练相关代码均归档于 `train/` 目录中。
 
+## 2026-09-19 补充流水线元数据重绑与断点续跑
+
+1. **补充数据就绪验证**：
+   - FineWeb-EDU：8个分卷（18.69 GB，约6.0B tokens）于 `/data/mini-k3/data/raw/fineweb-edu/data/` 校验完成。
+   - Code-Python：200个分片（6.5 GB，675,071个Python文件，约1.5B tokens）转换为 Stack-v3 格式，校验并归档于 `/data/mini-k3/data/raw/code-python/data/`。
+   - `DOWNLOAD_COMPLETE.json` 经核验就绪。
+2. **流水线硬链接路径断言分析与修复**：
+   - 现象：`supplement_v1.py` 在执行至 `continue_v2.py` 的 canonical 阶段审计时报错 `openassistant/canonical: part outside expected source directory`。
+   - 根因：`clone_root` 采用 `cp -al` 复制 `prepared-v2`，但除 FineWeb-EDU 与 Code-Python 重新生成外，其余9个未变动来源的 `COMPLETE.json` 中记录的分片绝对路径仍带有原目录前缀 `/data/mini-k3/data/prepared-v2/`，触发了 `stage_audit.py` 中 `require(p.parent == path.parent)` 的安全门禁。
+   - 修复：在 `supplement_v1.py` 中实现 `rebind_cloned_root`，自动将9个复用来源的 `canonical` 与 `cleaned` 阶段报告内分片路径重绑至当前 `prepared-v2-supplement-v1`，级联更新 `upstream_report_sha256` 哈希链，并同步更新 `SOURCE_REVIEW.json` 中 `openhermes` 的阶段报告哈希绑定。同时将 `supplement_v1.py` 改为幂等续跑，保留已生成的 FineWeb-EDU 与 Code-Python 规范化与清洗产物。
+   - 门禁核验：全部11个来源逐一通过 `stage_audit` 的 `canonical` 与 `cleaned` 阶段审计，`verify_source_review` 与 `verify_benchmark` 均通过；全部 38 项单元测试通过（Ran 38 tests in 0.350s, OK）。
+3. **续跑链路**：
+   - 恢复执行 `continue_v2.py`：全局精确去重（`dedup_v2.py`）→ 全局近重复去重（`near_dedup_v2.py`）→ 13-gram去污染（`contamination_v2.py`）→ 11来源token编码（`tokenize_v2.py`）→ manifest审计（`finalize_v2.py`）→ 模型smoke测试（`smoke_from_manifest.py`）→ 配比覆盖率评估（`assess_training_coverage.py`）。
+
 ## 2026-09-18 启动 FineWeb-EDU 与 Python 代码补充下载
 
 根据 2026-09-17 配方覆盖率预检（FineWeb-EDU 缺 2.76B、代码缺 1.22B tokens）以及用户明确指令：“fineweb-edu 和 code-python 都给我下载一下吧！然后同步一下文档！要确认一下现在下载的是不是需要的完整数据集，如果是的话，我们再去下载！然后下载开始后，确认没问题，我们就开始异步下载，不需要等他下载完成！”，正式启动补充下载。

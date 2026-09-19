@@ -51,12 +51,18 @@ def download_fineweb_file(raw_dir, cache_dir, item):
 
 
 def download_codeparrot_file(dstroot, revision, path, max_retries=5):
+    import pyarrow.parquet as _pq
     dst = dstroot / Path(path).name
     tmp = dst.with_name(dst.name + '.incomplete')
     if dst.is_file() and dst.stat().st_size > 0:
-        digest = digest_file(dst)
-        print(f"[CodeParrot] Already downloaded: {dst.name} ({dst.stat().st_size / 1e6:.1f} MB)", flush=True)
-        return {'path': str(dst), 'source_path': path, 'bytes': dst.stat().st_size, 'sha256': digest, 'cached': True}
+        try:
+            _pq.read_metadata(dst)
+            digest = digest_file(dst)
+            print(f"[CodeParrot] Already verified: {dst.name} ({dst.stat().st_size / 1e6:.1f} MB)", flush=True)
+            return {'path': str(dst), 'source_path': path, 'bytes': dst.stat().st_size, 'sha256': digest, 'cached': True}
+        except Exception as e:
+            print(f"[CodeParrot] Existing {dst.name} corrupted ({e}), deleting and re-downloading...", flush=True)
+            dst.unlink()
 
     url = f"https://hf-mirror.com/datasets/codeparrot/github-code/resolve/{revision}/{path}"
     print(f"[CodeParrot] Downloading: {path} -> {dst.name}...", flush=True)
@@ -72,9 +78,10 @@ def download_codeparrot_file(dstroot, revision, path, max_retries=5):
                         break
                     f.write(chunk)
             if tmp.is_file() and tmp.stat().st_size > 0:
+                _pq.read_metadata(tmp)
                 break
         except Exception as e:
-            print(f"[CodeParrot] Attempt {attempt} failed: {e}", flush=True)
+            print(f"[CodeParrot] Attempt {attempt} failed for {dst.name}: {e}", flush=True)
             if attempt == max_retries:
                 raise RuntimeError(f"Download failed for {url} after {max_retries} attempts: {e}")
             time.sleep(attempt * 2)
