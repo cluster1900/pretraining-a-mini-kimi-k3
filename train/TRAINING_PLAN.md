@@ -200,19 +200,19 @@ Dolma 正文使用用户提供且已查询验证的 `modelscope/dolma`，保存�
 
 | 数据源标识 | 训练阶段 / 角色 | 上游官方仓库 / 镜像后端 | 许可证 (SPDX) | 原始数据本地存储路径 | 原始分卷与体积 | 可用/预期 Tokens | 状态 / 备注 |
 |---|---|---|---|---|---|---:|---|
-| **`fineweb-edu`** (基线) | 预训练 / 英文百科 | `HuggingFaceFW/fineweb-edu` (ModelScope) | ODC-By 1.0 | `/data/mini-k3/data/raw/fineweb-edu/` | 2 个分卷 (4.64 GB) | 1.515 B | 主流程近去重已完成 |
-| **`fineweb-edu`** (增补) | 预训练 / 英文百科 | `HuggingFaceFW/fineweb-edu` (ModelScope) | ODC-By 1.0 | `/data/mini-k3/data/raw/fineweb-edu/` | 6 个分卷 (14.05 GB) | ~4.500 B | 2026-09-18 异步下载中 (PID 107975) |
-| **`chinese-fineweb-edu`** | 预训练 / 中文网页 | `opencsg/chinese-fineweb-edu` (ModelScope) | Apache-2.0 | `/data/mini-k3/data/raw/culturax/` | 13 个分卷 (4.83 GB) | 1.440 B | 主流程近去重已完成 |
-| **`dolma-body`** | 预训练 / 多领域英文 | `modelscope/dolma` (ModelScope) | ODC-By 1.0 | `/data/mini-k3/data/raw/dolma-body/` | 27 个分卷 (10.0 GB) | 9.025 B | 主流程近去重运行中 (127/280卷) |
-| **`finemath`** | 预训练 / 精细数学 | `HuggingFaceTB/finemath` (ModelScope) | ODC-By 1.0 | `/data/mini-k3/data/raw/finemath/` | 10 个分卷 (10.0 GB) | 5.241 B | 主流程近去重已完成 |
-| **`open-web-math`** | 预训练 / 数学公式网页 | `open-web-math/open-web-math` (hf-mirror) | ODC-By 1.0 | `/data/mini-k3/data/raw/open-web-math/` | 10 个分卷 (10.0 GB) | 4.482 B | 主流程近去重已完成 |
-| **`cosmopedia`** | 预训练 / 中文合成教材 | `AI-ModelScope/chinese-cosmopedia` (ModelScope) | Apache-2.0 | `/data/mini-k3/data/raw/cosmopedia/` | 5 个分卷 (4.86 GB) | 1.690 B | 主流程近去重已完成 |
-| **`code-python`** (基线) | 预训练 / 代码 | `HuggingFaceCode/stack-v3-train` (ModelScope) | 经 SPDX 宽松过滤 | `/data/mini-k3/data/raw/code-python/` | 8 个分卷 (4.79 GB) | 2.8 M | 96.7% 因非宽松协议被剔除 |
-| **`code-python`** (增补) | 预训练 / 代码 | `codeparrot/github-code` (hf-mirror, rev: `b5661e6b`) | MIT / Apache-2.0 / BSD | `/data/mini-k3/data/raw/code-python/data/` | 200 个分片 (约 57 GB) | ~1.490 B | 2026-09-18 异步下载排队中 (PID 107975) |
-| **`openassistant`** | SFT 对齐 / 对话树 | `OpenAssistant/oasst1` (hf-mirror) | Apache-2.0 | `/data/mini-k3/data/raw/openassistant/` | 1 个分卷 (232 MB) | 17.38 M | 主流程近去重已完成 |
-| **`openhermes`** (审核版) | SFT 对齐 / 代码与数学 | `teknium/OpenHermes-2.5` (hf-mirror) | Glaive(Apache2.0)+MetaMath(MIT) | `/data/mini-k3/data/raw/openhermes-reviewed-v2/` | 238,672 条高质量问答 | ~85.0 M | 用户明确批准，主流程近去重已完成 |
-| **`openr1`** | SFT 对齐 / 数学长链推理 | `open-r1/OpenR1-Math-220k` (hf-mirror) | Apache-2.0 | `/data/mini-k3/data/raw/openr1/` | 13 个分卷 (13.0 GB) | 494.87 M | 主流程近去重已完成 |
-| **`ultrafeedback`** | 偏好对齐 / DPO与RL | `argilla/ultrafeedback-binarized-preferences-cleaned` | MIT | `/data/mini-k3/data/raw/ultrafeedback/` | 2 个分卷 (144 MB) | 50.79 M | 主流程近去重已完成 |
+| **`fineweb-edu`** (基线) | 预训练 / 英文百科 | `HuggingFaceFW/fineweb-edu` (ModelScope) | ODC-By 1.0 | `/data/mini-k3/data/raw/fineweb-edu/` | 2 个分卷 (4.64 GB) | 1.515 B | 主流程分词与Manifest审计已通过 |
+| **`fineweb-edu`** (增补) | 预训练 / 英文百科 | `HuggingFaceFW/fineweb-edu` (ModelScope) | ODC-By 1.0 | `/data/mini-k3/data/raw/fineweb-edu/` | 6 个分卷 (14.05 GB) | ~4.500 B | 2026-09-18 已全量完成下载并校验落盘 |
+| **`chinese-fineweb-edu`** | 预训练 / 中文网页 | `opencsg/chinese-fineweb-edu` (ModelScope) | Apache-2.0 | `/data/mini-k3/data/raw/culturax/` | 13 个分卷 (4.83 GB) | 1.440 B | 主流程分词与Manifest审计已通过 |
+| **`dolma-body`** | 预训练 / 多领域英文 | `modelscope/dolma` (ModelScope) | ODC-By 1.0 | `/data/mini-k3/data/raw/dolma-body/` | 27 个分卷 (10.0 GB) | 9.025 B | 280卷近去重/去污染/分词全部完成，审计已通过 |
+| **`finemath`** | 预训练 / 精细数学 | `HuggingFaceTB/finemath` (ModelScope) | ODC-By 1.0 | `/data/mini-k3/data/raw/finemath/` | 10 个分卷 (10.0 GB) | 5.241 B | 主流程分词与Manifest审计已通过 |
+| **`open-web-math`** | 预训练 / 数学公式网页 | `open-web-math/open-web-math` (hf-mirror) | ODC-By 1.0 | `/data/mini-k3/data/raw/open-web-math/` | 10 个分卷 (10.0 GB) | 4.482 B | 主流程分词与Manifest审计已通过 |
+| **`cosmopedia`** | 预训练 / 中文合成教材 | `AI-ModelScope/chinese-cosmopedia` (ModelScope) | Apache-2.0 | `/data/mini-k3/data/raw/cosmopedia/` | 5 个分卷 (4.86 GB) | 1.690 B | 主流程分词与Manifest审计已通过 |
+| **`code-python`** (基线) | 预训练 / 代码 | `HuggingFaceCode/stack-v3-train` (ModelScope) | 经 SPDX 宽松过滤 | `/data/mini-k3/data/raw/code-python/` | 8 个分卷 (4.79 GB) | 2.8 M | 96.7% 因非宽松协议被剔除，审计已通过 |
+| **`code-python`** (增补) | 预训练 / 代码 | `codeparrot/github-code` (hf-mirror, rev: `b5661e6b`) | MIT / Apache-2.0 / BSD | `/data/mini-k3/data/raw/code-python/data/` | 200 个分片 (6.5 GB Parquet, 67.5万文件) | ~1.490 B | 2026-09-19 已全量下载与SPDX宽松清洗转码完成 |
+| **`openassistant`** | SFT 对齐 / 对话树 | `OpenAssistant/oasst1` (hf-mirror) | Apache-2.0 | `/data/mini-k3/data/raw/openassistant/` | 1 个分卷 (232 MB) | 17.38 M | 会话组切分已收敛，分词与Manifest审计已通过 |
+| **`openhermes`** (审核版) | SFT 对齐 / 代码与数学 | `teknium/OpenHermes-2.5` (hf-mirror) | Glaive(Apache2.0)+MetaMath(MIT) | `/data/mini-k3/data/raw/openhermes-reviewed-v2/` | 238,672 条高质量问答 | ~85.0 M | 用户明确批准，主流程分词与Manifest审计已通过 |
+| **`openr1`** | SFT 对齐 / 数学长链推理 | `open-r1/OpenR1-Math-220k` (hf-mirror) | Apache-2.0 | `/data/mini-k3/data/raw/openr1/` | 13 个分卷 (13.0 GB) | 494.87 M | 主流程分词与Manifest审计已通过 |
+| **`ultrafeedback`** | 偏好对齐 / DPO与RL | `argilla/ultrafeedback-binarized-preferences-cleaned` | MIT | `/data/mini-k3/data/raw/ultrafeedback/` | 2 个分卷 (144 MB) | 50.79 M | 主流程分词与Manifest审计已通过 |
 
 #### WSD 调度配方与目标比例 (10B Tokens)
 
