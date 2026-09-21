@@ -515,4 +515,15 @@ train/
    - 清理中断的 `decontaminated/finemath` 与 `decontaminated/fineweb-edu` 临时目录；
    - 重新拉起后台增补流水线 `supplement_v1.py`（PID 4188），自动跳过已完工的 7 个数据源，无缝重跑 `fineweb-edu` 和 `finemath` 并推进剩余流程。
 
+### 2026-09-22 05:16 阶段 3 全量收官与阶段 4 Tokenize 全面推进
+
+截至 2026-09-22 05:16:25，增补流水线 11 个数据源的阶段 3（13-gram 基准去污染）已 100% 全部顺利完工（`finemath` 00:23、`fineweb-edu` 00:27、`open-web-math` 03:10、`dolma-body` 05:16 全量通过去污染并生成 `COMPLETE.json`）。
+
+流水线自动进入阶段 4（多线程 Tokenize 分词）：
+1. **已完工数据源（6个）**：`openassistant`、`openhermes`、`openr1`、`ultrafeedback`、`code-python`、`chinese-fineweb-edu`。
+2. **正在分词（2个）**：`fineweb-edu`（已完成 157/249 分片，产出 3.49B tokens）、`cosmopedia`（已完成 53/74 分片，产出 1.24B tokens）。
+3. **待分词（3个）**：`finemath`、`open-web-math`、`dolma-body`。
+4. **计算资源**：4× Tesla V100-SXM2-32GB 当前已完全释放为空闲就绪状态（0% 使用率，30-34°C），等待数据流水线终态验收后随时可开启训练。
+
+
 
