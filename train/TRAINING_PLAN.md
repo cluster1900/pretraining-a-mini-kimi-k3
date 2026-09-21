@@ -484,3 +484,25 @@ train/
 ### 2026-09-16 11:15 近去重完成与去污染推进
 
 全局近似去重 11 个来源均已生成完成标记，阶段链审计 `/data/mini-k3/data/reports/stage-chain-through-near-deduped.json` 通过并已归档本地。13-gram 去污染已完成9/11；OpenWebMath和Dolma仍在运行。不得在11个去污染报告齐全前开始最终tokenizer/manifest验收声明。
+
+### 2026-09-19 增补流水线 prepared-v2-supplement-v1 启动
+
+针对 10B 配方有效 token 缺口，启动增补流水线 `prepared-v2-supplement-v1`。增补语料 FineWeb-Edu 8 个 Parquet 分片 (18.69 GB, ~6.0B tokens) 与 GitHub-Code 200 个分片 (~6.5 GB, 675,071 文件, ~1.5B tokens) 完成下载与清洗适配，并通过精确去重审计（`DEDUP_COMPLETE.json`）。
+
+### 2026-09-21 08:47 增补流水线 MinHash 近去重 100% 完工
+
+2026-09-21 08:47:36，增补流水线 11 个数据源的全局 MinHash 近去重全量顺利收官，生成 `NEAR_DEDUP_COMPLETE.json`。共保留 17,081,347 篇文档，过滤 471,177 篇近重复文档，11 个数据源的链式哈希校验全部落盘通过。
+
+### 2026-09-21 10:58 断电故障与 12:20 恢复重启
+
+2026-09-21 10:58 左右服务器因机房断电关机。断电时增补流水线正处于阶段 3（13-gram 基准去污染）。经全面审计排查：
+1. **数据与近去重零损失**：所有原始下载文件完整，阶段 1 全局精确去重与阶段 2 MinHash 近去重已在断电前全量完成并持久化落盘，完全无需重跑（节省约 30 小时计算）。
+2. **阶段 3 状态**：6 个数据源（`chinese-fineweb-edu`、`code-python`、`openassistant`、`openhermes`、`openr1`、`ultrafeedback`）已在断电前完工；2 个数据源（`fineweb-edu` 中断于 part-134、`cosmopedia` 中断于 part-21）被中断；3 个数据源（`finemath`、`open-web-math`、`dolma-body`）待处理。
+3. **故障恢复措施**：
+   - 清理 interrupted 分片与临时标记：删除 `decontaminated/fineweb-edu` 与 `decontaminated/cosmopedia` 目录。
+   - 控制器优化：升级 `train/data/continue_v2.py`，加入对已完成 `deduped` 和 `near-deduped` 的快速幂等跳过逻辑。
+   - 恢复运行：重新在后台拉起 `supplement_v1.py --work /data/mini-k3 --workers 2`。
+4. **硬件与训练红线**：
+   - 数据预处理各阶段（去重、去污染、Tokenize）完全在 CPU/RAM/磁盘执行，不依赖 GPU。
+   - 记录冷启动后 4× Tesla V100-SXM2 所在的 PLX PCIe 总线链路待进一步核验；严格遵循 Rule 7，未经用户明确要求，不得启动模型训练或重启系统服务。
+

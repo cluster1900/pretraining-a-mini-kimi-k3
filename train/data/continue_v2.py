@@ -88,10 +88,14 @@ def main():
             for source in SOURCES:verify_stage_chain(root,source,through='cleaned')
             archive_reports('cleaned')
             update(stage='global_exact_dedup')
-            run(scripts/'dedup_v2.py',['--root',str(root)],'global-exact-dedup.log')
+            if not (all((root/'deduped'/s/'COMPLETE.json').exists() for s in SOURCES) and (root/'DEDUP_COMPLETE.json').exists()):
+                run(scripts/'dedup_v2.py',['--root',str(root)],'global-exact-dedup.log')
+            for source in SOURCES:verify_stage_chain(root,source,through='deduped')
             archive_reports('deduped')
             update(stage='global_near_dedup')
-            run(scripts/'near_dedup_v2.py',['--root',str(root)],'global-near-dedup.log')
+            if not (all((root/'near-deduped'/s/'COMPLETE.json').exists() for s in SOURCES) and (root/'NEAR_DEDUP_COMPLETE.json').exists()):
+                run(scripts/'near_dedup_v2.py',['--root',str(root)],'global-near-dedup.log')
+            for source in SOURCES:verify_stage_chain(root,source,through='near-deduped')
             archive_reports('near-deduped')
             index=root/'benchmarks/13grams.json.gz'
             if not index.exists():raise RuntimeError('Verified benchmark index missing')
