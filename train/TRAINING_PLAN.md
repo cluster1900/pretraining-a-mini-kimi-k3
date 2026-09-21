@@ -506,3 +506,13 @@ train/
    - 数据预处理各阶段（去重、去污染、Tokenize）完全在 CPU/RAM/磁盘执行，不依赖 GPU。
    - 记录冷启动后 4× Tesla V100-SXM2 所在的 PLX PCIe 总线链路待进一步核验；严格遵循 Rule 7，未经用户明确要求，不得启动模型训练或重启系统服务。
 
+### 2026-09-21 21:10 硬件全量就绪与流水线断点重跑
+
+服务器经电源/硬件重置后重启（uptime 3h18m）：
+1. **硬件全量就绪**：4× Tesla V100-SXM2-32GB 显卡已由操作系统与 NVIDIA 驱动完整识别（`nvidia-smi` 正常，4 张卡空闲待命，温度 30-34°C，显存空闲）。
+2. **中间进度固化**：在下午阶段中，`cosmopedia` 已于 13:51 全量完成去污染落盘，阶段 3 已累计完成 7/11 个数据源（`chinese-fineweb-edu`、`code-python`、`cosmopedia`、`openassistant`、`openhermes`、`openr1`、`ultrafeedback`）。
+3. **故障清理与断点重跑**：
+   - 清理中断的 `decontaminated/finemath` 与 `decontaminated/fineweb-edu` 临时目录；
+   - 重新拉起后台增补流水线 `supplement_v1.py`（PID 4188），自动跳过已完工的 7 个数据源，无缝重跑 `fineweb-edu` 和 `finemath` 并推进剩余流程。
+
+
