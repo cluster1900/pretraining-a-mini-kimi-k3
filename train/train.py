@@ -15,6 +15,7 @@ import os
 import sys
 import time
 import math
+import random
 import argparse
 from pathlib import Path
 from contextlib import nullcontext
@@ -45,14 +46,24 @@ V100_4X_HOURLY_COST = 2.40  # Estimated ~$2.40 / hour for 4x V100 instance
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Train Mini Kimi K3 on 4x V100")
-    parser.add_argument("--data_manifest", type=str, default="/data/mini-k3/data/manifest.json", help="Path to data manifest JSON")
+    parser.add_argument(
+        "--data_manifest",
+        type=str,
+        default="/data/mini-k3/data/prepared-v2-supplement-v1/manifests/pretrain_stable.json",
+        help="Path to the audited pretraining manifest JSON",
+    )
     parser.add_argument("--checkpoint_dir", type=str, default="/data/mini-k3/checkpoints", help="Directory to store checkpoints")
-    parser.add_argument("--total_steps", type=int, default=38147, help="Total training steps (default 38,147 for 5B tokens)")
+    parser.add_argument("--total_steps", type=int, default=38147, help="Total training steps (default 38,147 for 10B tokens)")
     parser.add_argument("--resume", action="store_true", help="Resume training from latest valid checkpoint")
     parser.add_argument("--allow_missing_data", action="store_true", help="Allow missing data shards (default False)")
     parser.add_argument("--save_interval", type=int, default=1000, help="Checkpoint save interval in steps")
     parser.add_argument("--log_interval", type=int, default=10, help="Telemetry reporting interval in steps")
-    parser.add_argument("--validation_manifest", type=str, default="/data/mini-k3/data/manifests/validation.json")
+    parser.add_argument(
+        "--validation_manifest",
+        type=str,
+        default="/data/mini-k3/data/prepared-v2-supplement-v1/manifests/validation.json",
+        help="Path to the audited validation manifest JSON",
+    )
     parser.add_argument("--validation_interval", type=int, default=500)
     return parser.parse_args()
 

@@ -412,28 +412,27 @@ train/
    ```bash
    python train/eval_long_context.py --lengths 4096 8192 16384 32768
    ```
-5. **语料分词与分片构建**：
+5. **冻结后的 manifest/shard 完整性复核**（不重新构建数据）：
    ```bash
-   python train/data/build_shards.py \
-     --source_name fineweb-edu \
-     --input_files /data/mini-k3/data/raw/fineweb-edu.jsonl \
-     --tokenizer_model /data/mini-k3/data/tokenizer \
-     --output_dir /data/mini-k3/data/tokenized \
-     --manifest_path /data/mini-k3/data/manifest.json \
-     --weight 0.595
+   python train/data/validate_manifest.py \
+     --manifest /data/mini-k3/data/prepared-v2-supplement-v1/manifests/pretrain_stable.json
+   python train/data/validate_manifest.py \
+     --manifest /data/mini-k3/data/prepared-v2-supplement-v1/manifests/validation.json
    ```
 6. **启动主训练（4 卡 V100）**：
    ```bash
    mkdir -p /data/mini-k3/{data,checkpoints,logs,rollouts}
    torchrun --standalone --nproc_per_node=4 train/train.py \
-     --data_manifest /data/mini-k3/data/manifest.json \
+     --data_manifest /data/mini-k3/data/prepared-v2-supplement-v1/manifests/pretrain_stable.json \
+     --validation_manifest /data/mini-k3/data/prepared-v2-supplement-v1/manifests/validation.json \
      --checkpoint_dir /data/mini-k3/checkpoints \
      --total_steps 38147 --save_interval 1000
    ```
 7. **从中断检查点恢复训练**：
    ```bash
    torchrun --standalone --nproc_per_node=4 train/train.py --resume \
-     --data_manifest /data/mini-k3/data/manifest.json \
+     --data_manifest /data/mini-k3/data/prepared-v2-supplement-v1/manifests/pretrain_stable.json \
+     --validation_manifest /data/mini-k3/data/prepared-v2-supplement-v1/manifests/validation.json \
      --checkpoint_dir /data/mini-k3/checkpoints
    ```
 8. **评估模型检查点**：
@@ -537,6 +536,31 @@ train/
 4. **覆盖率评估 (Coverage Report)**：
    - 生成 `coverage.json`：固定配比下无需复用可支持 **9.64 B Tokens** 绝对纯净预训练；若 Python 代码允许 1.037 epoch 微量重用（仅 44M token 缺口，占 3.6%），即可实现完整 10.0 B Token 预训练无重复消费。
 
+### 2026-09-22 训练前整体复核与冻结门禁
 
+远端 `prepared-v2-supplement-v1` 已完成 11 个来源的全部阶段，`manifests/AUDIT.json`、真实数据 `SMOKE.json` 和来源审核均为 `passed`；远端 4×V100 空闲，当前没有训练进程。数据仍不能直接冻结为“固定配比完整覆盖”：`reports/supplement-v1/coverage.json` 的状态是 `insufficient_fixed_mix`，Python 代码在文档 WSD 配比下缺 **44,133,808 tokens**，固定配比无重复最多支持 **9,639,731,183 tokens**。训练前必须二选一并在同一变更中更新计划、配置和 manifest：
+
+1. 继续补充并重跑受影响流水线，至少补足报告建议的 **52,960,569 tokens**（含20%缓冲）；或
+2. 明确批准 Python 约 **3.6%** 的微量复用，记录复用策略并把 coverage 状态从阻断改为已批准的训练方案。
+
+本次复核还发现训练入口 `train/train.py` 缺少 `random` 导入，且默认 manifest 指向旧的不存在路径；已修复为当前审计版 `prepared-v2-supplement-v1/manifests/{pretrain_stable,validation}.json`。远端架构级 cache 等价、1M RoPE 稳定性和显存基准测试通过；无预训练 checkpoint 前，1M 长文档能力仍不能宣称完成。上述修复和复核不启动训练，也不改变已生成的数据正文。
+
+### 2026-09-22 批准方案 C（CodeSearchNet Python 增补）并启动 supplement-v2 全链路重跑
+
+用户明确审批选择方案 C：补充 `Nan-Do/code-search-net-python` 数据集以彻底填补 44,133,808 tokens 的 Python 代码缺口，消除 3.6% 潜在重复采样。
+
+1. **准入合规与来源审计**：
+   - 官方/镜像仓库：`Nan-Do/code-search-net-python` (`hf-mirror.com`)，上游 commit SHA `39db91866dd0f251f3b0c7f42c0f85634101df6e`。
+   - 许可证 (SPDX)：**Apache-2.0**，完全符合项目宽松商用白名单。
+   - 排除数据集：`codefuse-ai/CodeExercise-Python-27k` (CC-BY-NC-SA-4.0 含有非商业限制，一票否决)；`theothertom/codeparrot-python-only` (未知许可证，一票否决)；`jtatman/python-code-dataset-500k` (对话指令格式非预训练代码，一票否决)。
+   - 下载审计：下载全量 4 个 Parquet 分片（572 MB），本地 SHA256 校验完毕并记录于 `/data/mini-k3/data/reports/codesearchnet/download.json`。
+   - 结构化转换：提取带有完整 Docstring 与实现的 Python 函数，严格过滤非 Python 及短于 20 字符样本，转换为 4 个标准 Parquet 分片（`codesearchnet-0000.parquet` ~ `0003.parquet`），净入库 **455,243 条优质 Python 函数**（0 条拒绝），记录于 `/data/mini-k3/data/reports/codesearchnet/adapter.json`。预估产出 **75M - 85M tokens**，超出 52.96M 目标。
+
+2. **增补隔离流水线设计与启动 (supplement-v2)**：
+   - 隔离根目录：`/data/mini-k3/data/prepared-v2-supplement-v2`。
+   - 报告与日志：`/data/mini-k3/data/reports/supplement-v2/` 与 `/data/mini-k3/logs/prepared-v2-supplement-v2/`。
+   - 硬链接克隆与前缀重绑定：基于已包含补充 FineWeb-EDU 的 `prepared-v2-supplement-v1` 执行 `cp -al` 克隆，对其余 10 个数据源重新绑定路径前缀与校验哈希。
+   - 代码源全量重建：`code-python` 纳入基线 8 分片 + 补充 200 分片 + CodeSearchNet 4 分片，共计 212 个分片，从 `canonical_v2.py` 与 `clean_v2.py` 阶段重新生成。
+   - 自动化控制器：由 `train/data/supplement_v2.py` 驱动，后台 PID 50113 托管，使用 `--workers 4` 并行执行精确去重、近去重、13-gram去污染、分词编码、manifest 全量审计、Tesla V100 GPU smoke test 与最终覆盖率评估。
 
 
