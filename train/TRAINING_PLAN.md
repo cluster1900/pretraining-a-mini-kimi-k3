@@ -563,4 +563,16 @@ train/
    - 代码源全量重建：`code-python` 纳入基线 8 分片 + 补充 200 分片 + CodeSearchNet 4 分片，共计 212 个分片，从 `canonical_v2.py` 与 `clean_v2.py` 阶段重新生成。
    - 自动化控制器：由 `train/data/supplement_v2.py` 驱动，后台 PID 50113 托管，使用 `--workers 4` 并行执行精确去重、近去重、13-gram去污染、分词编码、manifest 全量审计、Tesla V100 GPU smoke test 与最终覆盖率评估。
 
+### 2026-09-22 Mac 本地测试环境与轻量验证套件就绪
+
+为支持本地快速开发与算法验证，在 Mac (Apple Silicon) 本地基于 Python 3.12 搭建了隔离测试环境 `.venv` 并固化核心依赖配置于 `train/requirements.txt`：
+1. **依赖环境**：安装 `torch==2.14.0` (支持 MPS 加速与 CPU 推理)、`tiktoken==0.14.0`、`pyarrow==25.0.1`、`modelscope==1.40.1`、`datasets==5.0.1`、`pytest==9.1.1`。
+2. **轻量验证通过**：
+   - 模型架构 Smoke Test (`train/smoke_test.py`)：1.02B 参数量核算准确，Step 0 初始损失 12.0988，优化器 2 步反向传播与 MoE 路由分发均正常。
+   - 1M Cache 等价性验证 (`train/test_cache_equivalence.py`)：100 万长位置 RoPE 酉圆旋转稳定性误差 $< 1.19 \times 10^{-7}$，无 cache 与 cache logits 最大绝对误差 $1.67 \times 10^{-6} < 10^{-4}$，逐 token 贪婪解码完全一致。
+   - KDA 运行时回归 (`train/test_kda_runtime.py`)：状态精度与分块等价完全一致。
+   - 显存基准 (`train/benchmark_memory.py`)：1M 上下文 MLA 滑动窗口显存占用严格保持 $O(1)$ 边界。
+   - 数据处理单元测试套件 (`pytest train/data/test_*.py`)：38 项单元测试全部通过。
+
+
 
