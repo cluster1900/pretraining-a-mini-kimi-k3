@@ -214,32 +214,30 @@ Dolma 正文使用用户提供且已查询验证的 `modelscope/dolma`，保存�
 
 | 数据源标识 | 训练阶段 / 角色 | 上游官方仓库 / 镜像后端 | 许可证 (SPDX) | 原始数据本地存储路径 | 原始分卷与体积 | 可用/预期 Tokens | 状态 / 备注 |
 |---|---|---|---|---|---|---:|---|
-| **`fineweb-edu`** (基线) | 预训练 / 英文百科 | `HuggingFaceFW/fineweb-edu` (ModelScope) | ODC-By 1.0 | `/data/mini-k3/data/raw/fineweb-edu/` | 2 个分卷 (4.64 GB) | 1.515 B | 主流程分词与Manifest审计已通过 |
-| **`fineweb-edu`** (增补) | 预训练 / 英文百科 | `HuggingFaceFW/fineweb-edu` (ModelScope) | ODC-By 1.0 | `/data/mini-k3/data/raw/fineweb-edu/` | 6 个分卷 (14.05 GB) | ~4.500 B | 2026-09-18 已全量完成下载并校验落盘 |
-| **`chinese-fineweb-edu`** | 预训练 / 中文网页 | `opencsg/chinese-fineweb-edu` (ModelScope) | Apache-2.0 | `/data/mini-k3/data/raw/culturax/` | 13 个分卷 (4.83 GB) | 1.440 B | 主流程分词与Manifest审计已通过 |
-| **`dolma-body`** | 预训练 / 多领域英文 | `modelscope/dolma` (ModelScope) | ODC-By 1.0 | `/data/mini-k3/data/raw/dolma-body/` | 27 个分卷 (10.0 GB) | 9.025 B | 280卷近去重/去污染/分词全部完成，审计已通过 |
-| **`finemath`** | 预训练 / 精细数学 | `HuggingFaceTB/finemath` (ModelScope) | ODC-By 1.0 | `/data/mini-k3/data/raw/finemath/` | 10 个分卷 (10.0 GB) | 5.241 B | 主流程分词与Manifest审计已通过 |
-| **`open-web-math`** | 预训练 / 数学公式网页 | `open-web-math/open-web-math` (hf-mirror) | ODC-By 1.0 | `/data/mini-k3/data/raw/open-web-math/` | 10 个分卷 (10.0 GB) | 4.482 B | 主流程分词与Manifest审计已通过 |
-| **`cosmopedia`** | 预训练 / 中文合成教材 | `AI-ModelScope/chinese-cosmopedia` (ModelScope) | Apache-2.0 | `/data/mini-k3/data/raw/cosmopedia/` | 5 个分卷 (4.86 GB) | 1.690 B | 主流程分词与Manifest审计已通过 |
-| **`code-python`** (基线) | 预训练 / 代码 | `HuggingFaceCode/stack-v3-train` (ModelScope) | 经 SPDX 宽松过滤 | `/data/mini-k3/data/raw/code-python/` | 8 个分卷 (4.79 GB) | 2.8 M | 96.7% 因非宽松协议被剔除，审计已通过 |
-| **`code-python`** (增补) | 预训练 / 代码 | `codeparrot/github-code` (hf-mirror, rev: `b5661e6b`) | MIT / Apache-2.0 / BSD | `/data/mini-k3/data/raw/code-python/data/` | 200 个分片 (6.5 GB Parquet, 67.5万文件) | ~1.490 B | 2026-09-19 已全量下载与SPDX宽松清洗转码完成 |
-| **`openassistant`** | SFT 对齐 / 对话树 | `OpenAssistant/oasst1` (hf-mirror) | Apache-2.0 | `/data/mini-k3/data/raw/openassistant/` | 1 个分卷 (232 MB) | 17.38 M | 会话组切分已收敛，分词与Manifest审计已通过 |
-| **`openhermes`** (审核版) | SFT 对齐 / 代码与数学 | `teknium/OpenHermes-2.5` (hf-mirror) | Glaive(Apache2.0)+MetaMath(MIT) | `/data/mini-k3/data/raw/openhermes-reviewed-v2/` | 238,672 条高质量问答 | ~85.0 M | 用户明确批准，主流程分词与Manifest审计已通过 |
-| **`openr1`** | SFT 对齐 / 数学长链推理 | `open-r1/OpenR1-Math-220k` (hf-mirror) | Apache-2.0 | `/data/mini-k3/data/raw/openr1/` | 13 个分卷 (13.0 GB) | 494.87 M | 主流程分词与Manifest审计已通过 |
-| **`ultrafeedback`** | 偏好对齐 / DPO与RL | `argilla/ultrafeedback-binarized-preferences-cleaned` | MIT | `/data/mini-k3/data/raw/ultrafeedback/` | 2 个分卷 (144 MB) | 50.79 M | 主流程分词与Manifest审计已通过 |
+| **`fineweb-edu`** (全量) | 预训练 / 英文百科 | `HuggingFaceFW/fineweb-edu` (ModelScope) | ODC-By 1.0 | `/data/mini-k3/data/raw/fineweb-edu/` | 8 个分卷 (18.69 GB) | 5.071 B (训练) + 51.1 M (验证) | 全量增补分词与Manifest审计已通过 |
+| **`chinese-fineweb-edu`** | 预训练 / 中文网页 | `opencsg/chinese-fineweb-edu` (ModelScope) | Apache-2.0 | `/data/mini-k3/data/raw/culturax/` | 13 个分卷 (4.83 GB) | 1.440 B (训练) + 14.3 M (验证) | 主流程分词与Manifest审计已通过 |
+| **`dolma-body`** | 预训练 / 多领域英文 | `modelscope/dolma` (ModelScope) | ODC-By 1.0 | `/data/mini-k3/data/raw/dolma-body/` | 27 个分卷 (10.0 GB) | 9.008 B (训练) + 91.3 M (验证) | 280卷去污染/分词全部完成，审计已通过 |
+| **`finemath`** | 预训练 / 精细数学 | `HuggingFaceTB/finemath` (ModelScope) | ODC-By 1.0 | `/data/mini-k3/data/raw/finemath/` | 10 个分卷 (10.0 GB) | 5.237 B (训练) + 52.4 M (验证) | 主流程分词与Manifest审计已通过 |
+| **`open-web-math`** | 预训练 / 数学公式网页 | `open-web-math/open-web-math` (hf-mirror) | ODC-By 1.0 | `/data/mini-k3/data/raw/open-web-math/` | 10 个分卷 (10.0 GB) | 4.481 B (训练) + 45.7 M (验证) | 主流程分词与Manifest审计已通过 |
+| **`cosmopedia`** | 预训练 / 中文合成教材 | `AI-ModelScope/chinese-cosmopedia` (ModelScope) | Apache-2.0 | `/data/mini-k3/data/raw/cosmopedia/` | 5 个分卷 (4.86 GB) | 1.690 B (训练) + 16.6 M (验证) | 主流程分词与Manifest审计已通过 |
+| **`code-python`** (全量) | 预训练 / 代码 | `stack-v3-train` + `codeparrot/github-code` | MIT / Apache-2.0 / BSD | `/data/mini-k3/data/raw/code-python/` | 8 基线 + 200 增补分片 (11.3 GB) | 1.181 B (训练) + 13.3 M (验证) | 200分片SPDX清洗转码入库，审计已通过 |
+| **`openassistant`** | SFT 对齐 / 对话树 | `OpenAssistant/oasst1` (hf-mirror) | Apache-2.0 | `/data/mini-k3/data/raw/openassistant/` | 1 个分卷 (232 MB) | 17.38 M (训练) + 1.16 M (验证) | 会话组切分已收敛，分词与Manifest审计已通过 |
+| **`openhermes`** (审核版) | SFT 对齐 / 代码与数学 | `teknium/OpenHermes-2.5` (hf-mirror) | Glaive(Apache2.0)+MetaMath(MIT) | `/data/mini-k3/data/raw/openhermes-reviewed-v2/` | 238,672 条高质量问答 | 85.16 M (训练) + 0.86 M (验证) | 用户明确批准，主流程分词与Manifest审计已通过 |
+| **`openr1`** | SFT 对齐 / 数学长链推理 | `open-r1/OpenR1-Math-220k` (hf-mirror) | Apache-2.0 | `/data/mini-k3/data/raw/openr1/` | 13 个分卷 (13.0 GB) | 494.87 M (训练) + 4.87 M (验证) | 主流程分词与Manifest审计已通过 |
+| **`ultrafeedback`** | 偏好对齐 / DPO与RL | `argilla/ultrafeedback-binarized-preferences-cleaned` | MIT | `/data/mini-k3/data/raw/ultrafeedback/` | 2 个分卷 (144 MB) | 50.79 M (训练) + 0.54 M (验证) | 主流程分词与Manifest审计已通过 |
 
 #### WSD 调度配方与目标比例 (10B Tokens)
 
 | 用途 | 数据源标识 | 稳定阶段 (Stable 85%) | 衰减阶段 (Decay 15%) | 10B 目标需求 | 增补后可用储备 | 覆盖状态 |
 |---|---|---:|---:|---:|---:|:---:|
-| 英文教育网页 | `fineweb-edu` | 45% | 30% | 4.28 B | ~6.01 B | ✅ 140% 覆盖 |
+| 英文教育网页 | `fineweb-edu` | 45% | 30% | 4.28 B | 5.07 B | ✅ 119% 覆盖 |
 | 中文网页 | `chinese-fineweb-edu` | 15% | 10% | 1.43 B | 1.44 B | ✅ 101% 覆盖 |
-| Dolma 正文 | `dolma-body` | 10% | 10% | 1.00 B | 9.03 B | 🌟 902% 覆盖 |
+| Dolma 正文 | `dolma-body` | 10% | 10% | 1.00 B | 9.01 B | 🌟 901% 覆盖 |
 | 数学专业教材 | `finemath` | 5% | 12% | 0.61 B | 5.24 B | 🌟 859% 覆盖 |
 | 数学公式网页 | `open-web-math` | 5% | 8% | 0.55 B | 4.48 B | 🌟 815% 覆盖 |
-| Python 代码 | `code-python` | 10% | 25% | 1.23 B | ~1.49 B | ✅ 121% 覆盖 |
+| Python 代码 | `code-python` | 10% | 25% | 1.23 B | 1.18 B | ⚠️ 96.4% 覆盖 (44M缺口) |
 | 中文合成教材 | `cosmopedia` | 10% | 5% | 0.93 B | 1.69 B | 🌟 182% 覆盖 |
-| **预训练总计** | — | **100%** | **100%** | **10.00 B** | **~29.38 B** | 🌟 **近 3 倍无重复储备** |
+| **预训练总计** | — | **100%** | **100%** | **10.00 B** | **28.11 B** | 🌟 **2.81 倍无重复储备** |
 
 2026-09-15 文档一致性修订：上表按 `canonical_v2.py` 的真实 repo 和 `config.py` 更新，纠正旧文档的英文 Cosmopedia、CulturaX/StarCoderData 和数学/教材比例描述。仅修正文档，不更改当前语料。尤其中文合成教材不能计作英文教材。最终全量编码后逐来源统计可用 tokens；许可证过滤后剩余量小的代码源必须单独报告覆盖缺口，不能凭总容量宣布满足约10B配方或无重复消费需求。
 
@@ -524,6 +522,21 @@ train/
 2. **正在分词（2个）**：`fineweb-edu`（已完成 157/249 分片，产出 3.49B tokens）、`cosmopedia`（已完成 53/74 分片，产出 1.24B tokens）。
 3. **待分词（3个）**：`finemath`、`open-web-math`、`dolma-body`。
 4. **计算资源**：4× Tesla V100-SXM2-32GB 当前已完全释放为空闲就绪状态（0% 使用率，30-34°C），等待数据流水线终态验收后随时可开启训练。
+
+### 2026-09-22 13:26 阶段 4 分词全量收官，阶段 5 全量 Manifest 审计与模型短跑验证 100% 通过
+
+1. **分词全量收官 (Stage 4 Complete)**：
+   - 11 个数据源多线程 Tokenize 分词全部完成，总计产出 **28,755,447,057 Tokens (28.76 B)** 训练数据与 **292,230,296 Tokens (292.2 M)** 严格隔离的验证数据。
+   - 预训练 Token 总池达 **28.11 B Tokens**，达标 10B 总体需求的 281%。
+2. **零泄漏收敛修复与阶段 5 全量 Manifest 审计通过 (Stage 5 Complete)**：
+   - 发现并修复 `openassistant` 中单个跨分枝同文本记录引发的训练/验证组冲突，统一收敛归入验证集后重新分词并通过 stage chain 校验。
+   - `finalize_v2.py` 对全量 287 亿 tokens 执行了逐文件 SHA256 校验、uint32 二进制边界扫描、EOS 统计与 SQLite 组隔离检查，结果为 `train_validation_overlap: 0`，全量通过审计并落盘 `pretrain_stable.json`、`pretrain_decay.json`、`validation.json`、`alignment.json` 与 `AUDIT.json`。
+3. **真实数据模型功能短跑通过 (Smoke Test Passed)**：
+   - 运行 `smoke_from_manifest.py`，从最新 `pretrain_stable.json` 真实切片中采样各来源数据，在 Tesla V100 上执行完整前向反向与两步优化器迭代。
+   - 各来源初始交叉熵损失均在 $\ln(163840) = 12.0067$ 基准附近（12.00 ~ 12.19），两步后平稳下降至 11.58，梯度范数正常（19.08），NoAuxBalancer 路由正常（dead fraction 0.266），报告记录于 `SMOKE.json`（状态 `passed`）。
+4. **覆盖率评估 (Coverage Report)**：
+   - 生成 `coverage.json`：固定配比下无需复用可支持 **9.64 B Tokens** 绝对纯净预训练；若 Python 代码允许 1.037 epoch 微量重用（仅 44M token 缺口，占 3.6%），即可实现完整 10.0 B Token 预训练无重复消费。
+
 
 
 
