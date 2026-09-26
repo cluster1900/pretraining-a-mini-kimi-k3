@@ -1,0 +1,21 @@
+{
+  "source": "openassistant",
+  "status": "complete",
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/openassistant/part-00000.jsonl",
+      "documents": 53705,
+      "bytes": 106599294,
+      "sha256": "0987b7dcb02713ab27c0ecc615fbad7802719052aeba61adce76f03742247550"
+    }
+  ],
+  "counts": {
+    "input": 53705,
+    "kept": 53705
+  },
+  "script_sha256": "2f8fc9d9624315558a9a9998d7c6084c62e74b460899e81b0d8efbc53380e8a2",
+  "upstream_report_sha256": "d3e96f3a320aae885192c1588bf8267b8ef6adef22e234e735b5429d5375c338",
+  "limits": [
+    "PII filtering covers email in prose and explicit secret-key patterns; not a guarantee of total PII removal"
+  ]
+}

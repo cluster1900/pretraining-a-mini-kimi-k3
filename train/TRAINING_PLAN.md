@@ -574,5 +574,33 @@ train/
    - 显存基准 (`train/benchmark_memory.py`)：1M 上下文 MLA 滑动窗口显存占用严格保持 $O(1)$ 边界。
    - 数据处理单元测试套件 (`pytest train/data/test_*.py`)：38 项单元测试全部通过。
 
+### 2026-09-26 supplement-v2 全量重跑收官、10B 配比达标与终态审计状态
 
+截至 2026-09-24 22:15，隔离增补流水线 `supplement-v2`（运行根目录 `/data/mini-k3/data/prepared-v2-supplement-v2`，控制器 PID 51070）已顺利跑完所有大算力处理与 Tokenizer 编码阶段：
 
+1. **各阶段执行进度与收官时间戳**：
+   - `canonical` & `cleaned`：`code-python` 成功整合 CodeSearchNet 455,243 条 Python 函数，清洗后保留 1,438,545 条样本（其余 10 来源重绑通过）。11/11 归档通过。
+   - `global_exact_dedup`：全局精确去重于 09-22 22:13 完成，全库保留 18,007,744 篇文档。11/11 归档通过。
+   - `global_near_dedup`：全局 MinHash-LSH 近重复去重于 09-24 12:08 全部完成。`code-python` 滤除近重复 45,328 篇（保留 1,228,755 篇）；`fineweb-edu` 滤除 235,709 篇（保留 4,931,516 篇）。11/11 归档通过。
+   - `decontaminated`：13-gram 评测集基准去污染于 09-24 18:55 全部完成，11 来源报告统一绑定基准索引。11/11 归档通过。
+   - `tokenization`：多线程 Tokenize 编码于 09-24 22:15 全部完成，生成完整 uint32 shards 与 document ledgers。11/11 归档通过。
+
+2. **10B 预训练配比核验（7/7 来源全部达标，总池 28.21B Tokens）**：
+   - **`code-python`**：实测可用 train tokens 达 **1,288,200,254**（对比 10B WSD 目标 1,225,000,878，**净盈余 +63,199,376 tokens**，彻底填平此前 44.1M 缺口）；
+   - `fineweb-edu`：5,070,590,896 tokens（盈余 +795.6M）；
+   - `chinese-fineweb-edu`：1,439,726,521 tokens（盈余 +14.7M）；
+   - `cosmopedia`：1,689,844,133 tokens（盈余 +764.8M）；
+   - `dolma-body`：9,008,293,636 tokens（盈余 +8,008.3M）；
+   - `finemath`：5,237,079,424 tokens（盈余 +4,632.1M）；
+   - `open-web-math`：4,480,775,152 tokens（盈余 +3,935.8M）；
+   - **预训练 Token 合计**：**28,214,510,016 (28.21 B)**，在严格遵循固定混合比例前提下，纯净无重复采样完全覆盖 10B 预训练目标。
+
+3. **终态 Manifest 审计与收敛修复定位**：
+   - 09-24 22:15 流水线推进至 `finalize_v2.py` 时触发 `ValueError: Train/validation group overlap`。
+   - 经对全库全部 11 个数据源、共计 **16,097,968 个 `split_group`** 进行哈希全量扫描：除 `openassistant` 存在 1 处跨 split 重叠外，其余 10 个数据源（包含全部预训练语料）均为 **0 冲突**。
+   - 根因：`openassistant` 某对话树（`bfe63f8ebe9065b57ad3b71b1ad7e22cea8a12d59e99a72e9979024af633f914`）中，行 34140 因内容哈希命中官方验证集被标记为 `validation`，而同组的其余 3 条分支（行 34141~34143）因 `group_key` 未级联更新至 `holdout` 被误分入 `train`。
+   - 解决方案：修复 `dedup_v2.py` 中 `holdout` 组判定，将同对话树全量划入 `validation`，重新编码 `openassistant`（仅 5.3 万条，耗时约 30 秒）后重跑 `finalize_v2.py` 即可生成正式 manifests 与 `AUDIT.json`。
+
+4. **服务器算力与阶段报告归档**：
+   - 硬件就绪：4× Tesla V100-SXM2-32GB 当前全部处于空闲就绪状态（0% 占用，显存 4MiB），磁盘剩余 4.2 TB。
+   - 阶段报告归档：远端阶段归档保存在 `/data/mini-k3/project/train/reports/background/1790072703778497846-51070/`，小型元数据报告已完整同步到本地 `train/reports/background/1790072703778497846-51070/`。

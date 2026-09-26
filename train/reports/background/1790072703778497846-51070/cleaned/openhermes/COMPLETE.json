@@ -1,0 +1,41 @@
+{
+  "source": "openhermes",
+  "status": "complete",
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/openhermes/part-00000.jsonl",
+      "documents": 66955,
+      "bytes": 139972665,
+      "sha256": "ffef248ce51f66ed704d2caf0ae349166dd2e798b8beedee524696567cf2595c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/openhermes/part-00001.jsonl",
+      "documents": 70544,
+      "bytes": 140269755,
+      "sha256": "81fae33ea5aeb5c603f11d8fda8ee372b88eb2b8c1402b86ade8fbe82f56c6b4"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/openhermes/part-00002.jsonl",
+      "documents": 60712,
+      "bytes": 139384360,
+      "sha256": "389b555da29805c68018f8c7f428d7424760cdaeec6158f0c06293d273308cb2"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/openhermes/part-00003.jsonl",
+      "documents": 40461,
+      "bytes": 48568591,
+      "sha256": "cad66be4146eb8798791b33abb923b437326fca926c48eadd1729a53e653ca67"
+    }
+  ],
+  "counts": {
+    "input": 238688,
+    "kept": 238672,
+    "reject_encoding_damage": 5,
+    "reject_secret_pattern": 11
+  },
+  "script_sha256": "2f8fc9d9624315558a9a9998d7c6084c62e74b460899e81b0d8efbc53380e8a2",
+  "upstream_report_sha256": "18de92868fd6900ecba0c6f6c9b6989ce82710dc6f1534fa797a8e97b489dc3b",
+  "limits": [
+    "PII filtering covers email in prose and explicit secret-key patterns; not a guarantee of total PII removal"
+  ]
+}

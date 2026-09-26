@@ -1,0 +1,53 @@
+{
+  "status": "complete",
+  "source": "openhermes",
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/openhermes/part-00000.jsonl",
+      "bytes": 146738420,
+      "documents": 66955,
+      "sha256": "0d16a34e18ce618216548e1543ba0ce0ca7f46eb9015cd84c4dc19c11dfec01d",
+      "counts": {
+        "input": 66955,
+        "kept": 66955
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/openhermes/part-00001.jsonl",
+      "bytes": 147398309,
+      "documents": 70544,
+      "sha256": "d92888886adadfd7907ef373e1ab9aa43fa479a615ac86c7252a00e7bdfe2f1f",
+      "counts": {
+        "input": 70544,
+        "kept": 70544
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/openhermes/part-00002.jsonl",
+      "bytes": 145519287,
+      "documents": 60712,
+      "sha256": "002d2f148b68e76ecef706b52dd0bdc5e50d96257e21a4361869307841298224",
+      "counts": {
+        "input": 60712,
+        "kept": 60712
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/openhermes/part-00003.jsonl",
+      "bytes": 52657237,
+      "documents": 40461,
+      "sha256": "cffce6c3a497440cbe9292415c9ab95eff4fef650e8cdbd37cdefa6703417b92",
+      "counts": {
+        "input": 40461,
+        "kept": 40461
+      }
+    }
+  ],
+  "counts": {
+    "input": 238672,
+    "kept": 238672
+  },
+  "upstream_report_sha256": "e64e38e119242154561da72afcb700266600544a464d69c331be2b79a5e7b4aa",
+  "script_sha256": "f7a5ba73ce3248c68efe9b3ee39d5421af0eeb3d8dde05a62d5fc216c861de9a",
+  "method": "5-unit shingles, 64 MinHash permutations, 8x8 LSH, feature Jaccard>=0.9; SFT/preference exact dedup only"
+}

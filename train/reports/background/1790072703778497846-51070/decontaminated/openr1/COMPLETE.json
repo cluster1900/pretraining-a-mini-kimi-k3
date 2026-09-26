@@ -1,0 +1,96 @@
+{
+  "source": "openr1",
+  "status": "complete",
+  "counts": {
+    "input": 93733,
+    "kept": 90342,
+    "removed": 3391
+  },
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/openr1/part-00000.jsonl",
+      "documents": 7196,
+      "bytes": 128714555,
+      "sha256": "16f1e9aa3667398ee4d141324adb09bc97245142310075f590fd29b0fad98599"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/openr1/part-00001.jsonl",
+      "documents": 7123,
+      "bytes": 128657357,
+      "sha256": "2a17677ea1ab4863b7aab5e3a5c623973a5b132a19606556fe2ecd8e9f53d969"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/openr1/part-00002.jsonl",
+      "documents": 7157,
+      "bytes": 129443534,
+      "sha256": "091665a8c81ef3213b6f6c2205eeced832b213f210c5afc427c6ab91d039a1f5"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/openr1/part-00003.jsonl",
+      "documents": 7098,
+      "bytes": 129014459,
+      "sha256": "84bf86672823f2e39638b3d44ceb3e99789a5a129014118590bf64a6256ae314"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/openr1/part-00004.jsonl",
+      "documents": 7085,
+      "bytes": 129558918,
+      "sha256": "9f55262939ca0042adb386433a45f5cfffa63e695d5eae8e9124ebe0c4b9095e"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/openr1/part-00005.jsonl",
+      "documents": 7136,
+      "bytes": 129071104,
+      "sha256": "f15bef74098db0f1ad554035749b961ec89ad3f3dc219510f70f8d6a2a78f617"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/openr1/part-00006.jsonl",
+      "documents": 7122,
+      "bytes": 129239166,
+      "sha256": "943b26ed7d3a5314f23f630323187b9d1a4d182443fc4ec52bb501d3a615d300"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/openr1/part-00007.jsonl",
+      "documents": 7143,
+      "bytes": 128953730,
+      "sha256": "078331ed960eef817eba962f9ba50d2cc2296b0a56c30368dbec907eb6f7ef42"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/openr1/part-00008.jsonl",
+      "documents": 7062,
+      "bytes": 129118807,
+      "sha256": "3b667e51670cc598e64467edc6f505924ff479378bd057248603ce32516ab667"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/openr1/part-00009.jsonl",
+      "documents": 7105,
+      "bytes": 129310115,
+      "sha256": "f39e03009d009930552c6c2ac362627db3501a878c22b6d80403b29571d67d8b"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/openr1/part-00010.jsonl",
+      "documents": 7167,
+      "bytes": 129110156,
+      "sha256": "1f917de45bb5826c9bcc2a92f43bbc8ef359eebe4b06433a99215b8fe19c0229"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/openr1/part-00011.jsonl",
+      "documents": 7124,
+      "bytes": 129296879,
+      "sha256": "0f3b06e6870fbb82252ea186dc48eb6b68c5c6ae61772e6f92a04b37d257ff34"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/openr1/part-00012.jsonl",
+      "documents": 4824,
+      "bytes": 87747114,
+      "sha256": "476c057fd188e6c8e8f7b05f06a5dd3fead643c8da693ed2064627b9248eea5c"
+    }
+  ],
+  "index_sha256": "8e1b0426827e05b0c2867098b59d4fba366057b40d74460e328e588ebaf15168",
+  "index_ngrams": {
+    "prose": 1507360,
+    "code": 23611
+  },
+  "upstream_report_sha256": "90aed83d5d0ce4f4617f0f2a59eb9f0bf1076af1e56d263de7f83e8dbe46afc7",
+  "script_sha256": "62ceec91b2725e759e678bd7355dda66483aa43ba3727e5c27a254e137c3dac1"
+}

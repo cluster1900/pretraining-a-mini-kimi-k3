@@ -1,0 +1,884 @@
+{
+  "status": "complete",
+  "source": "finemath",
+  "kind": "pretrain",
+  "counts": {
+    "documents": 3435549,
+    "train_documents": 3401273,
+    "train_tokens": 5237079424,
+    "validation_documents": 34276,
+    "validation_tokens": 52446358
+  },
+  "files": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00000.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32068,
+      "sha256": "fa2e8ea4615904b96074776270695040dd3fb0cb79cbb9ff68272ee3aa4a9a00",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00001.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32284,
+      "sha256": "072941331768f07e98d73e238e066233381f056a101203201824bbcfb81eb7a0",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00002.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32841,
+      "sha256": "7174258361d8ee6c7cbd56d1fa1f41c31855ac9ba64cea2130bac93582c11ba9",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00003.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32319,
+      "sha256": "ad061b88dc732ddf8bb325c7db4f9a1e0ac97c014dde16641030c64b600c1c83",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00004.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33134,
+      "sha256": "a7f81369dd388fabbcfaea19ccfd135d432c218b3b2079ca25cedc808e43f03e",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00005.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32413,
+      "sha256": "68dee5de62a3f0c98a7e6f2fa02992169298c4e676e82b4aff29c44896270b9d",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00006.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31764,
+      "sha256": "586ebd0fce74672aef5ebf0726ced4f0daf4c1b13eefaadc8e5fcdbb5ae50640",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00007.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33090,
+      "sha256": "36497f424d9d84c1659818276453f9fbf92ecbd6882b912eff40e801e300d2de",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00008.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32208,
+      "sha256": "4792f3c51f45efef784da21a67883cbbe6ffc7464828ea8951ce366e189b9b70",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00009.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33024,
+      "sha256": "e2c12e84dd0cc2c8aebbd5cfa37476dbdb7a0a7a3ecdaed204272d34198404ae",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00010.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31981,
+      "sha256": "1a1c5b56374579579f4450dfe952462bbb901f886bbe9962c7ef14d3ce3a3192",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00011.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31019,
+      "sha256": "680ebe7b0b5b76b6eae8cfefe2b2a97f76a79a438edab94b8031207d6d54a9d7",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00012.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31983,
+      "sha256": "582ff78ef3c68c40591071f81263c132319e22024b6ceb4aea0d351763b7d615",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00013.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32915,
+      "sha256": "0b8061b207b7f97dcb88b33c5fb7e514a60c76042a9f6e9d707e6420a39257f7",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00014.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32530,
+      "sha256": "8a40ebb38d437ab6f216613fc4e574a8a9aab03122140e9ad3b98c9725c47aa1",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00015.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31513,
+      "sha256": "fe5b6798a773d69f24678a85b8c5ac2d5503e7380407e105a860531672b29f09",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00016.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31429,
+      "sha256": "dcfb4cf31874203ada3a15bedd1ada9f739ac833cf750b688907e638b7d6323d",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00017.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32940,
+      "sha256": "db499a38d32c0d6980460525ffeb42a53c7b966ccd969e99e55564538d45170e",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00018.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33605,
+      "sha256": "44911ad6fdd4810a51b5498964a6bc1fe3c7bf612bb435ad6918ef74e114dde3",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00019.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32118,
+      "sha256": "0f87b27937276b526bb0f1ce49c7e83baccd7bd442f63c7b8d0cceed4e32aa38",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00020.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 34010,
+      "sha256": "0cfd60b3b6e0625ac24ba0f2c008f670cb9adf6fffd717e51650c9f813e55fbd",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00021.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32382,
+      "sha256": "52c1b67b1744a3421e6d0400f2b976990f437e74ff186ac59e9e4621277dd38d",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00022.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31838,
+      "sha256": "80893b8499a54aa96d4d737f9008f44bde1428a3466975f302ef64721e22badb",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00023.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32846,
+      "sha256": "2919ff66b9639879e0264e2837c5321cb62d14bb426ebab267a115f6ad1324f5",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00024.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33228,
+      "sha256": "69116bed7579cace0a0763393032706f31337e78e76b824f870cee2e58703321",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00025.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32942,
+      "sha256": "13e89a09a4a732fc3c4e36482db2126e4a7e6b585211e2371834ffe0f2679fd5",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00026.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32620,
+      "sha256": "bc8da2bec9432458d5a6bb5a0106610ace5816ec638d0df204b49eeb3f2185ac",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00027.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32734,
+      "sha256": "abb4cc69a5df9bf8c834acc7276de78e48e21f4e6c54112d700db12fb7518665",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00028.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31348,
+      "sha256": "578466f565c6ccf9da1578d3de52380d5fd2efa76b1ab512106b176bef13a527",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00029.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33547,
+      "sha256": "77e6171e2e150ce10d64845689b4309f98919d70dc69e10676ce8003e8724d05",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00030.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31764,
+      "sha256": "634d7ae81cd561c430f5b08d3b4c6fd13f696e628929945882ac65dedcbdd926",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00031.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31603,
+      "sha256": "03b9d50e996e9e3cf7eaa787ea57bd5a48bec11bfea36333d8cdd2b6e2cc7796",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00032.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33348,
+      "sha256": "bb3861de0ce1564d7e80305d2466bc07e5fcd755e58ffd76b66078b97e987bc4",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00033.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31121,
+      "sha256": "b0cc45e9302e546840c89fe5d8097829cd5431bd135ed77d14ea7c849c4894a7",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00034.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32717,
+      "sha256": "badd743d290f64722f9a50515592879a2423a6f2afb80181cd6056a5d2f04be2",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00035.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31893,
+      "sha256": "d5c3a6c62b9af0372d0f0fa2ecc4067479fc6a8431ed8658805b3ec1e913c2d8",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00036.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33011,
+      "sha256": "92d9def43465043d9633c962d24a3d5719f7c4a3219f137b8cb2e6a36f5fb240",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00037.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32533,
+      "sha256": "afb0ac1a14c5d8d48ee3cdf15a319a9d0e42198d41d451a649e71d5d12c63949",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00038.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32433,
+      "sha256": "573d6011a9e35a04b3a5907507113ad7590a751156c830130ca5080fc927e7c1",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00039.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32409,
+      "sha256": "c70daaf77c420f72bf1b308c586a9421c336d5701035621da95a5411e9080e41",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00040.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33283,
+      "sha256": "2e4c620b6981a7dd1a7ea2ebda6273e31bcf9d6d5348f6a5d65e112c326825d3",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00041.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32463,
+      "sha256": "e0aebb4a94a2d15fce27afd9aa45b08c86096886264b4437e7e08abbf55fa214",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00042.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32994,
+      "sha256": "73b641a1f6c7d98d13b7a38f3c92ef1f80fb395b5faf77ce1cacf600434cd74c",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00043.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31974,
+      "sha256": "b99671ea39d64000777a47ccbacc420b374a51aa0810506c1e11c9fa8236ac1c",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00044.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32530,
+      "sha256": "1dcdee0e152d58eee8dbdd17f9857a8d9819ed27049d96da35907c9f4ef44f71",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00045.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31618,
+      "sha256": "2f9b00c47ce991bacc3171f564d2a5a254347070b6e7c27302cb4af6ed5086fc",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00046.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33659,
+      "sha256": "4c652449b2e5dac0bb7f6f4a7b5cb8a4e6f999cd326e3812ef2e3f04e705c65f",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00047.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32397,
+      "sha256": "faee7bfd4a63de856c382efa17f50fc4557f079ed44706a45b81f35895b2d65d",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00048.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32899,
+      "sha256": "72c65afbaa04200789d406c7f23c34b0baf3e8a8864b46360592aca0015350cb",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00049.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32823,
+      "sha256": "8791272cf4a7224fbdcad52ca6c6a4a091de556247eca927ef4994086f5588bd",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00050.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33751,
+      "sha256": "51bb921ed2e3658b18a064b24dc88ca6cc4c48cd73e912e14a2015c01aa0939a",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00051.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31328,
+      "sha256": "4688b8f565cade8a25fb74ac3530f3dc7869b6884734cbba39182427398bc8d7",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00052.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33133,
+      "sha256": "8fc310ac6cd63b3d3d018b568cfbfe78e1ccfb4daaac67c269697ad0495e7509",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00053.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33367,
+      "sha256": "564986cf81db048013e87bc70d9c2dc8e67ee04d2dd074b75cff5d2215aafe91",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00054.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33189,
+      "sha256": "3b518e3a8a4f3b271446733d85011de5c22c46be59ced969322ef303cf051c67",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00055.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32371,
+      "sha256": "a1c5363a0ade7195d9fa467fb992e6e3035786a08c57397d9a7f0a571cebf5c5",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00056.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32481,
+      "sha256": "a5c14c022f86cc1af4e1074ecb37830e00aa7d2bf62e3261ab304255ce6de66a",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00057.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32989,
+      "sha256": "19388e9eea5f5e3236641fbf5dabeff25e64a397699aa5285bd5861b73844ce9",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00058.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32832,
+      "sha256": "78dece99aff3c6dd027d7a4e42dddd06e19174abd40ccb6636b4a083bc36f90a",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00059.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32439,
+      "sha256": "3c98373d5a19165efb9888af47d4e12a28ad49a4ccd45c89d88d461ad5a85242",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00060.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 30857,
+      "sha256": "f30eba83539f4545637fd41683d41ef934f5c4ba4f36b74ed6e3d8d5a25b1a9c",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00061.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33273,
+      "sha256": "edbe64ee5f28104e0499ed120f73b00b6d512298dfc4aacc45ff09d040a9338c",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00062.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32710,
+      "sha256": "dffd2bdce5ec23961ec8447ed633c656409bf9f43526d5d3a2409ef8475541b1",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00063.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33541,
+      "sha256": "79719fb2939d5b123824999665577547fbd67770bf9ad3ca18d51a4f3803218e",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00064.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32535,
+      "sha256": "d36450b2e03215e6f523dde445351eca07e3923354679134d159dec21b87964a",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00065.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32543,
+      "sha256": "821135a133d03b732640697a208c9f342dbe5f67bc857eb5ba6eae357a689cff",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00066.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32040,
+      "sha256": "8ab813e308b293fce8028da95a2a9a494f430b04009921be8d422e1e6cbfbec3",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00067.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 30546,
+      "sha256": "80908c0601dc1b6f4a7bdc5cc9c306484481d8a8b1de8ad82c5f0817a8be2c74",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00068.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 30844,
+      "sha256": "2b8a5abc37f1b137edccb653f412459e6368526c15c5e290b36c72470633140a",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00069.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32810,
+      "sha256": "c0d46beef0a8c376f8cd19ba6c5502f903f94fa9ad7fbb793ee1f06d165e40d1",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00070.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32953,
+      "sha256": "1e77e85e7bdd44b99459c73614ad97303097f4b81a2f1ea85694f8f75f3330d5",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00071.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33578,
+      "sha256": "f0d229ef2c62ed6d2a81101802d056595bbe2547824f6b5d36e927a4c9eb0e13",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00072.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33336,
+      "sha256": "6b8011e95e886f2267271600b5ae20908087b41659691797c2ed4a18ede58a17",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00073.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33102,
+      "sha256": "812adbf79adb822ccfcc71873f1e921f4a3d803a5d63ef840a3c72cb24063659",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00074.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32127,
+      "sha256": "a0dcfc3ca64706b7e7f387ab71acd10c25ec4557d26a82092c9daaf5b331b3ab",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00075.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32453,
+      "sha256": "bc543d7682f22b3f45f9b87ae4e972819a2ab9c897cb11583e2a5460ccc257b0",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00076.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33211,
+      "sha256": "7a31ec16ee8e8b4ab60abc64a4099bb81f76103634e31f57fa1c7bd9091124a8",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00077.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31445,
+      "sha256": "78c6cb4a07124434c55210ac531e750aa79e594f6cae3820a06796449e313ea4",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00078.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 34313,
+      "sha256": "1c40a5120447da4290a1fcb81c6694af430dda3b27a1f2947a40a01242f31655",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00079.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31799,
+      "sha256": "2af7f6a43cdd0c5e04cb6a98b3aff89471f261ac1450d122bfb5cbfc83f0270a",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00080.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32662,
+      "sha256": "710da0420f27c9f13c4d9f0644ccc208d7c3218ffe51206e36c81955ed6f26cf",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00081.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 30998,
+      "sha256": "fb9d23d95e604124e63664ce6f9b9334ad17088967103828c6665041f58fd0f5",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00082.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32121,
+      "sha256": "0e69c702159dff316151cb775900e1a1c4dd898a5413eb31e2da5fa29e91ef27",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00083.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32296,
+      "sha256": "11e7808199917fd38775985f6f7ec93cba8a46945b6699327f45e19d88bd86d6",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00084.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31796,
+      "sha256": "5ab9b005e1009b6d5295229362874af41dd5a5d132abf406ac4c875110af367b",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00085.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32328,
+      "sha256": "abeb4ccbbab22a3d1264c79d6b5fe16e4ea12049918dcf430b9199f4115f2392",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00086.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31836,
+      "sha256": "f8125086b118c34d8f327be186d9670dbd832d549b61d2bfd97d0ddaa8077c73",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00087.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32339,
+      "sha256": "c732b3fa59798ebe69c4fcd0831f7766e205f735a5e7e75b628600bbb1887bb2",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00088.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32640,
+      "sha256": "c57b9996202719f2673b21653a1f80ebfbf46c187313bd3327f4a845ff401f4d",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00089.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32307,
+      "sha256": "ada3fa9eea6984a7e99b434f0ee5c739b2164923eec9dadd152826b7dc10e126",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00090.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32836,
+      "sha256": "d93c745e94b52404856caba5dc63dabe0f2ad67060ae244e22c80d884d14ccda",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00091.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32288,
+      "sha256": "9618a5be97ec3835da4e304f588ba02bbf702a739494fe2b7968e313d8e817eb",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00092.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31424,
+      "sha256": "2e5407824d77e1c0a2607c4170ab7557ab299f78bd72939ca652b3abd4e15726",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00093.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32828,
+      "sha256": "23873cb6d16a8edebe28bccca69ac8878a18a51075c913fb33f3d20b808d4d3e",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00094.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33612,
+      "sha256": "56b9ca189f74b58aeac633676e7c817cb5870684f20918e0118d7dda8a7fc6ac",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00095.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31718,
+      "sha256": "7fa684f5c5f5a87914277b2432328e6f394f231c29921dd5fe5159d916920004",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00096.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33318,
+      "sha256": "b1e4fdae787bc1e8b9696c249be38518596a816123d78e726fc78fcbdcd84a7a",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00097.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31462,
+      "sha256": "f69a4ae5b1c81c4ff959ad5b128fcccffb9d29f8c86a30b812f0aad234d683e0",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00098.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32546,
+      "sha256": "6ca676360028c46c7a6360f95bce3a86da135d5c55b7c88c74988df764e9a040",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00099.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31903,
+      "sha256": "c8a390cfc9a1e222b5bb8285e448e1dd72800149c74a786795bf6731f416b3a3",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00100.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32237,
+      "sha256": "9f7f94a9a3c8bb4fa892fa856c55506918d7111b5f5ac53c9e5e7ca69bb1e195",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00101.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32471,
+      "sha256": "796e5e861a056e37de02c1c2257c53d144dbb818f93583c865c7ffd8ebfd2dcf",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00102.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31478,
+      "sha256": "ac4cf35c738caf0c7b9667ec600e1575def681103a49eb8e65c7cabe694210e0",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00103.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32759,
+      "sha256": "237080271c4a5d2af2bc3b17d290e0b1ae36a26c0eb0217de4456771265191f5",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/train/shard-00104.bin",
+      "tokens": 37079424,
+      "bytes": 148317696,
+      "eos": 25029,
+      "sha256": "3f508d00f8212b2ec1f49c1dcda5ed822a02ca195e902eb57ff0ebd7a4df0e60",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/validation/shard-00000.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32776,
+      "sha256": "19ed7a8e1244b570753bc0f4685737114371fb20034f44574dfe743b0421549b",
+      "split": "validation"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/validation/shard-00001.bin",
+      "tokens": 2446358,
+      "bytes": 9785432,
+      "eos": 1500,
+      "sha256": "074e744a42bb7b4e168ad7f13d672a768e737aca0132c5df062e9a13a71512eb",
+      "split": "validation"
+    }
+  ],
+  "tokenizer_fingerprint": "1732cd666e532d83bf2e6ff13888950eb517b6d2c8c2ffc542804907dd9026e8",
+  "tokenizer_assets": {
+    "tiktoken.model": "b6c497a7469b33ced9c38afb1ad6e47f03f5e5dc05f15930799210ec050c5103",
+    "tokenizer_config.json": "5d0803c94db9cd78763499e0956c95fd5a225c14a727e5a6cf5db3f96f010a6e",
+    "tokenization_kimi.py": "f28ea66e2d862a2a5814970b2ce40c2f7d8296ff09aed90a7e7def689b906944"
+  },
+  "vocab_size": 163840,
+  "dtype": "<u4",
+  "upstream_sha256": "a2664bcf1689df45ab0c3a425de3b6fbc34539935ecd1c566504a435c70af521",
+  "script_sha256": "f610649a6b17f43e7a2e8c3c7f1dc31d1dea8c03c1647cba6f1d1b0b2bf31b40",
+  "document_index": {
+    "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/documents.jsonl",
+    "sha256": "e61ddd4f4b029ef902e68db89932fad828ef6b496b52f21def8d181315fb9da2"
+  }
+}

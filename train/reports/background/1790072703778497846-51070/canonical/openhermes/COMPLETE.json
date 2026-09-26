@@ -1,0 +1,45 @@
+{
+  "source": "openhermes",
+  "repo": "teknium/OpenHermes-2.5",
+  "role": "sft",
+  "status": "complete",
+  "schema_version": 2,
+  "script_sha256": "3fa30a1ec632dda0db690cf11d8788d78af99c895370170f0768348e8a5c5ce5",
+  "inputs": [
+    {
+      "file": "openhermes2_5.json",
+      "sha256": "3a6a1610d8ce9a62788aa9d0b5a170bf0b265587b2f89215c3179d0959b7d25d",
+      "bytes": 384271222
+    }
+  ],
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/canonical/openhermes/part-00000.jsonl",
+      "documents": 66956,
+      "bytes": 134216904,
+      "sha256": "a307c05bdca5589b875b8987f392693bd6854c59673cf5edfcc90997410a31f6"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/canonical/openhermes/part-00001.jsonl",
+      "documents": 70548,
+      "bytes": 134215006,
+      "sha256": "1f2716d0177f49d186220e6e4b3e61ac97c63f936110a2edbf93edab11c7a838"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/canonical/openhermes/part-00002.jsonl",
+      "documents": 60723,
+      "bytes": 134217368,
+      "sha256": "08f0dd869492441097a51c659dc08c19c37b8f41292fab20da83ff1d5b7addce"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/canonical/openhermes/part-00003.jsonl",
+      "documents": 40461,
+      "bytes": 45088945,
+      "sha256": "2d0b3dcb6085edca2168397e820953cb25aa6f3f42eea946027371b9b9949771"
+    }
+  ],
+  "counts": {
+    "input_rows": 238688,
+    "output_records": 238688
+  }
+}

@@ -1,0 +1,1492 @@
+{
+  "status": "complete",
+  "source": "dolma-body",
+  "kind": "pretrain",
+  "counts": {
+    "documents": 2278324,
+    "train_documents": 2255350,
+    "train_tokens": 9008293636,
+    "validation_documents": 22974,
+    "validation_tokens": 91274652
+  },
+  "files": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00000.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 3551,
+      "sha256": "384fd4d73f76dcd27d90e3d2934755beff812063d39880ca0dcb1943f135fad2",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00001.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2930,
+      "sha256": "d50b6e30b498a26492dfc9fd65280f9006938010e352a23b23fb2a3d1ab2646b",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00002.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 3433,
+      "sha256": "b9380a25c8d93b389f3d6689f2f8fd9e0ffe52d2531a048fbd15dd35d5337550",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00003.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2950,
+      "sha256": "8b5807fe53a89d7a50cc1b17fcf8d0b4192dbf84de494889d4857c4275d3b289",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00004.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2771,
+      "sha256": "c49007db8c76627a63eeefe2460526653ef4ae5a2497551d06d05cab450daeb3",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00005.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2751,
+      "sha256": "e2df9a7c8b3dfeb0da4d3d2ee78efdd94f8bb9f27003570176fbe00106a6dc85",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00006.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2846,
+      "sha256": "14968e11a4354f40e10181c53f8461d247d3bff1d2b080ff732d3debc45e8ce5",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00007.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2883,
+      "sha256": "b4610517f43f4d463268bb10aa2accf70f5b991ce5527a11dab7f56aa17a8385",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00008.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2848,
+      "sha256": "59a2878eac331660c88a7ef3f2df4408e771c49fc663ca79bb2bc28913d0ff45",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00009.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2851,
+      "sha256": "5dcf972c37cb9693220b4d3e7d605e83ccbb32cd5f2aa830428d08e74896f6b4",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00010.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2933,
+      "sha256": "50c8c9115194aa9af2d590ab0c188267bffe2598013dc20cb7135cfd0b292863",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00011.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2802,
+      "sha256": "35fa158c5763e45cde70299ab90a27114d4d117d14365a0c2c7e7c31deb8950d",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00012.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2792,
+      "sha256": "ec66c42df4c4bbeeec2789edc4b2f81c19d306ed67a629774e77e7455e8e948a",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00013.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 3040,
+      "sha256": "562e279189786b882de8a2e57eb1991f2a466f5433b2a793521d7e3406977554",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00014.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2896,
+      "sha256": "125328159e782b2ef071032200a26d9e936aba0aadaaec3fd5eb11b5dae11bc3",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00015.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2817,
+      "sha256": "a3209c49f06e569d16ee057d99161c5e4a7b91517e3db6551994f85a5440130d",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00016.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 3179,
+      "sha256": "9897514d3fb977ce49d9d73100fb2879a00da6adbb2b0cd597fa15974bd3b3ea",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00017.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2964,
+      "sha256": "e6c56e6da8b4e7d6882fd2f3c9912959b02c9bfa6b4a5488e0e70610c212a1a7",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00018.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 3082,
+      "sha256": "dd656e2fb150182670aa9a83f5432f8a5d1480644f2b1aa6a81e5d8e02772072",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00019.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2951,
+      "sha256": "38cdaefab65da00f6962b0c8573e76cd3e4f12a496826c64c23e7e81006ec052",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00020.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2740,
+      "sha256": "e966445111ecc69fa51140db5ad5d1cf2d184ed23649ccf05e990423ba79cd48",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00021.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 3004,
+      "sha256": "7a14c1e5e7815b0be8114ca99d6839a6dd267b850b1325fed27f60dff3fbe97c",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00022.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2945,
+      "sha256": "bec346aa8abb07972ce17558280f3c6239b0b9d29a3488efaa69560698685945",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00023.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2713,
+      "sha256": "cf61267ca6459bb8b0f8439ef8f21211180a8703c2dbb1c230d9fa14473cd101",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00024.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2862,
+      "sha256": "2e849eea43d620f057cee46d35c48717eb0647958343ecb74689a810375aa04a",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00025.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 3345,
+      "sha256": "b4e54f5b90d4c0920beb3ce5da6133c04cbb2b26aefae26b9342d9306b6cfed6",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00026.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2854,
+      "sha256": "4b11ad8f1294fe7cd084360f49ea0967ce71f2bae253d0acc3c78991140cf5a9",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00027.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2792,
+      "sha256": "8b8d21dbf8ef6769dc353c740236ebb790fde2e1d6f60a587d91851165164a22",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00028.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 3183,
+      "sha256": "c887dfd871a3f6f36907135e8700d7de442636c873c237eda5a4277b469a3853",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00029.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2771,
+      "sha256": "c141f3cbc792e6ec7323ed977313f8dcaffd43bb067109283031ee296f7d9b5d",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00030.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2833,
+      "sha256": "3c564138e49fe5e01976a8e1b4b141d7fdf744c836179ac376a7076e0d17fde0",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00031.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2865,
+      "sha256": "af9a4cd0ea5e21c35e6be05ad4a36cc7d1ce594ababb518a66ced564d06e6c29",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00032.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2873,
+      "sha256": "b2083069cb4a6098f55e3d84179d8084966cf6707a18f7a83f0555d116ab3f10",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00033.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 3293,
+      "sha256": "d12a492ea92f7bcc3ada56d0ff80fe3cc4aed2be5b49f3416c8ac9a81bb2ca06",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00034.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2823,
+      "sha256": "2e532ba302acbe9ebb41639e8c7fc357fb969585702b490313e59e84ccef6e0f",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00035.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 3234,
+      "sha256": "46801c5d82c8de52bc19bd2887e96493ba058c958b0f1ee1c5d9af5a068661af",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00036.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2941,
+      "sha256": "604405390d69fb25c23df3ad760ce5f8406a2adb537bfb8c085d39dfb600266d",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00037.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2855,
+      "sha256": "c51fe174bef25e54e4a8719b01f08196c92bcc7f518098717194b7048321df2f",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00038.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2690,
+      "sha256": "76bbcbdc546ffe588862ee5a551e1a8f43450000639a751b428d017d9c21ea2f",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00039.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2807,
+      "sha256": "68abb15234462fa5c39247e1ef03c472d5b12f11ba950c6d87879c80ce561732",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00040.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2699,
+      "sha256": "816b55ef8d09fe397ba525c1a72d4b84ea11ea00a56f3629c7b7ab976bcc6af8",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00041.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2670,
+      "sha256": "64b75ce5d74989e8c560d2454becaa093d211cd89e3d75bafec96c6fd28a8bed",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00042.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2684,
+      "sha256": "7cb622ec0a39170cae4811d406b3912f08b6624fb5d9a730e695221411bbe8fd",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00043.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 3226,
+      "sha256": "b94dc5497020ea160eabcc7d86a4983b32ac28c6fa894a0cf50ea909782344a8",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00044.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2805,
+      "sha256": "826b7a40d0d8fadc1f82f3ed185ca117bccd3619ad937720f9e2859522afb405",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00045.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2835,
+      "sha256": "39952e77520158a0a70f28eaf20e22668c7b2105e59c9ac39fcdf370e8ac0b27",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00046.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2854,
+      "sha256": "8bc9f0de1b2be0a1d0d161df0b8aca8fde8b74eba7b997335e1d3949f854c24d",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00047.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2936,
+      "sha256": "0854d7e22dfd5dfc2c022421428a444a2b2624f0cc95d0265e4833e412a97e73",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00048.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2962,
+      "sha256": "63a2313a72249661494f00b255bca53175fd171a99179f16520f500b96c146ba",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00049.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2840,
+      "sha256": "16a087252288b71147af6edc4ca8a41c91ca703942912f72bb8ce12bcddcbea6",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00050.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 22554,
+      "sha256": "76bbc7397e6cd17fe9fc78c7dc3cfd04b4e89ddf350d29a6e89c400352d9140a",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00051.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 23881,
+      "sha256": "aef32b73d2e4a0087b687c65b9704bdae702f991ba7fcb67078538cd15868793",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00052.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 23946,
+      "sha256": "bfc06dbd7e073537fbd1ddbbe9d3815110acc87b04183561ac588466c4bb3a91",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00053.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25112,
+      "sha256": "1c47eef728ab660f26987695dffe490834e00d34fbced4984460f4eecd600bec",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00054.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24129,
+      "sha256": "1f3ac17b63805517da3a16c978d951cf43df552f55664eea0bf4ef5ff7f1b417",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00055.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24497,
+      "sha256": "196e7a4ad8c3b57b08a5d847f1cf053259b09d6f6fa9d4bd898ea9b0ae8ba976",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00056.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25090,
+      "sha256": "afc7e8e28df1332d836c2e89ef91e3238da9711e78e543a23137512db7751dd7",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00057.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25001,
+      "sha256": "4aa8dbdd38a342cf4effca2824e5fe7b2d3117987ed16704f0fcf33351ff239e",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00058.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24272,
+      "sha256": "39cf930a2e6b10c9f9ee5ce759dc6d88d9c49348932ec8ecbe3d42ab1e9ceb5f",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00059.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24673,
+      "sha256": "67691f39d0701a6c4c27e85e033b5e39c1448637d29d98dfbc418ee8d1e8a485",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00060.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 23791,
+      "sha256": "a01dbd4aebe25a724d5066913c024f4770959bd023b000983ce954e312581a0c",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00061.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24990,
+      "sha256": "26f6a03c5af6576de162ff9e4fe3cc9f3d2ab3b9604643d9ea47a0e47a2521cb",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00062.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 10936,
+      "sha256": "4c44a18f5b4ee6e5156c781179533aed14dd7859991ad1000205451a5b214de7",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00063.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 11214,
+      "sha256": "c3922abbcc6f5b3cc35918cfe8104f6e663e19da607d96fde1d113d543f30408",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00064.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 11246,
+      "sha256": "d0f5753fe6aeaccaabe87b60a66a0e2e89c6e5194a74d6443c0326b03dd31445",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00065.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 11787,
+      "sha256": "f08a56ec66d21127fe7a4ae6825f92871087e83e3db432fefe0dfe004066eb41",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00066.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 6136,
+      "sha256": "899fb0a86a7d8c8fd58dff35d17744495dbf73cd1437487db262acd6affd5aa5",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00067.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 5481,
+      "sha256": "5ea574ceff38ea3751379a904ad96ee028973fe257e8c54e0be34020df23533b",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00068.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 5498,
+      "sha256": "16fc06d0d3703ba3699772a3f99397ae5a353ccf219839f7061c995af57fdd05",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00069.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 5625,
+      "sha256": "ac61ba18e72dffd0f9b7b1f5bcaa45dbde70bfdfe64dddaed93591c0f603c791",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00070.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 4006,
+      "sha256": "fc22cce050008781643841be2ff2b307c07a33a7becb6ea970980dd1ae175342",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00071.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2785,
+      "sha256": "c3802624d3c00542903902aaff57061c2d77ccc6648d335c49a3642b90448a1c",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00072.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2823,
+      "sha256": "c5c0cef655372eee9d01e478c7418f2a6e1c16a4e095cdc3815e2d76bf4fb87c",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00073.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 23771,
+      "sha256": "f10d5e60f96f6948891ca78b8752d76a73d4a5fb9b45e232ab7c7604d37681b0",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00074.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24254,
+      "sha256": "b2cd13bad68bc875b03ef744a78ab82802643b885ab724ea2b467a177e652ca4",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00075.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24489,
+      "sha256": "b32fb74ac0ee5671f4617c1ebaa97f300b06ed08b68854bd8bd68a72f958e8f1",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00076.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 23940,
+      "sha256": "f45e240e82498c03f5d28149b6910f3e677ab4335ca87a5b0d1d427a3ceea3c7",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00077.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24270,
+      "sha256": "da8a3cd232230f1e398d8512d7cd7c2aa723f8df3dc8b6a8046296395454731e",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00078.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24795,
+      "sha256": "30e9b89875451900fa974150ee16cc0dccc982f72342f3a43570a302e0a02266",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00079.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24865,
+      "sha256": "15a330ae642a6a7b62ad013610d515e8cc8b84976755f3f94f9e5e20999b7030",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00080.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24495,
+      "sha256": "97708cdf13e58cbb1b3f1c4f6ef3b50eae0752b4db56bae42a3db0fbb0e05add",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00081.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24691,
+      "sha256": "05303442e97af59414fc658419c3c371512a92ba8c71db9a5aedd226b697e4eb",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00082.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 20780,
+      "sha256": "d0465bae418491d48dc3678d266585e7ea80676d790088e962b1e9c129894ef4",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00083.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 35378,
+      "sha256": "cc1930b70f990c15aee86c2e57122664c50102687d6ef87631ce01ac267683ac",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00084.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 34704,
+      "sha256": "036a81c4b32527d16462caa5c2fef036bc092a78868be4dfa5010e1caa445aed",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00085.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24418,
+      "sha256": "48731d5a2b02fff1d2d99415edb70f1b8c186d9c3131e8c3a954d2b45b45d7a6",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00086.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25099,
+      "sha256": "414a438a47b929de71f2fbb6430f0fa67b37318cc66b76a4ce3a3b14fb6c53e3",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00087.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24350,
+      "sha256": "17064872ca431939c2009a8cf4bceb519f06f6b55ca2c5d10dbd8dd6988edd9e",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00088.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24318,
+      "sha256": "2b0949cf99f9286de6b411f9b0d0efec00c55064acd34afa1b11b82e93371ff4",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00089.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24447,
+      "sha256": "aa11fbdfe6ed2ae8314d35a04c8415226020923734d8dbdc87cb7851765e58c8",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00090.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24772,
+      "sha256": "9381f368d436556418f17e68d53a1f6c4a02e6246ce42304fa3eb0cd51d2e36c",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00091.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24900,
+      "sha256": "de30dae6d466140f1027355f06bf4ac708e1c7822e849079b7438eec85070dd6",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00092.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24850,
+      "sha256": "6fed5f5e15b3c0bb0aeab3e8eb264610b36d8bace4052b67790b272f230de6b6",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00093.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25416,
+      "sha256": "7b79f9114118da2e406c425718879444e993e5ff4d7c0b3d27d2d4d1d5960be6",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00094.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24330,
+      "sha256": "27e2b575095fa52d046ad6866bb0465a668adc588ae8f193a8915407a89f6410",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00095.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 23839,
+      "sha256": "03e71fb04736b60b29bb26e049200e3173549535f8c47fc3a272a56a9955c816",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00096.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 18575,
+      "sha256": "240476563ab58522e54908338995e92f15ce88946797be0b89fcc68e3ce17ee6",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00097.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 17444,
+      "sha256": "f66dc7c4a020eee1689c7b35d60d28ace40bc965f9df80f62a4e46244e74704d",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00098.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 16784,
+      "sha256": "ea8ca8bbb46d04b57c789da53ec681aa81ea86de76be72a19f659049531b9369",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00099.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 16135,
+      "sha256": "0af41c869448cfa0c583c7d50959e3f4ce9462f38632531674cf15ffecc5dcd8",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00100.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 16980,
+      "sha256": "fc24851f1a66d8bdae47304d1b82e43b98cecb69a13b8f9518aaad7335e6e057",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00101.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 14557,
+      "sha256": "d94d74caa853be4aa3c313dd40f61883ff9fed8a173f55afdd1d0d4538c522b0",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00102.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 14592,
+      "sha256": "a36d9cfb9a65e64e7125ca1a684a30863465f25855ad5f7633e81828446a26b8",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00103.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 14899,
+      "sha256": "6bb7b0ed3145ab41cadf26b08895792890425dac0c4c401d708941343d9b3572",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00104.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 14702,
+      "sha256": "f921e788b0d015193b4893d600abb530436860752a7dea366ba5a27fc1445118",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00105.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 15317,
+      "sha256": "ebf982cb5df403f1711b0adc3646ca5a0b626763ae9e343e09d8b2a8e0b59a04",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00106.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 14623,
+      "sha256": "f93d64161552145a92e571c9bb7b80c90dbfbb7d163c19c1fd486b01610335d8",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00107.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 14779,
+      "sha256": "77a87e82e51e9944ec86514b9ac22451a3c74d747660d52ee7aa2e0985794832",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00108.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 14581,
+      "sha256": "1be8fb1af452f5cf94e95e508d0f178efb394bf27e2a50a0815ccd2e68967ddd",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00109.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 14402,
+      "sha256": "7cf761a2a0979cd8ba522217129ddf9c196686873f284f9a2a95ee62f17b923a",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00110.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 14515,
+      "sha256": "9748e3ce31b2b4ab87ddbf58869f9ac97ac7148d6dbd415909a729fcde7d6187",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00111.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 9947,
+      "sha256": "085c6d4feb450189ed4451a9d673ff4422db9b2cebecf996a9a518594a16c399",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00112.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 9697,
+      "sha256": "21dabae2dad6ed838fe44ff6eb7c311e5d2816d07e701d44ff823104fe683891",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00113.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 15455,
+      "sha256": "fe243660f093bfbb1b97fc7fe77bf74d84ded81d9b33cdf0020341ca88762412",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00114.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 22274,
+      "sha256": "8a4d33267dc9f4cc8120711b700b21893f45fd24c43415b0838ff3327b0105ca",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00115.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 18442,
+      "sha256": "952ecbbb76ce1cd1e0389bdd04a32f35d59e2cc00a2f3af882c9fa133e683b86",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00116.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 17113,
+      "sha256": "aad84d0022b3770707170bd21e4485613493c037dcfe6e200433666803a56ab6",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00117.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 17852,
+      "sha256": "1918dfac0034ecdc043d861639a1045e852b778ff9fe52b7c478ee37d7f84255",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00118.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 14489,
+      "sha256": "ceb9e3e345808b4f9b4ba3f2e893eb518f00bf76f653439928c77c0d2cbbd81d",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00119.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 16517,
+      "sha256": "f3609c1b99175281f6f182e144ed31bab8a5ef74b2c91a6f155a74bea18f24a3",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00120.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 16404,
+      "sha256": "ec393514cd39c3d944f36464e485018a70681dac67568a4756ad9027773bc677",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00121.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 16660,
+      "sha256": "ef579ecb62240378296dd779b06eacb6921da52ee253d43a87d1b0eb02a18d45",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00122.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 15762,
+      "sha256": "232e921fb86b63c16f9501fbd9addab94f6794887b390ae5d307a68650dddb7c",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00123.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 11992,
+      "sha256": "5ce433bba8a397fd5dcff81e9b09b92f0189647ed36ce04f291daf8439238498",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00124.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 18867,
+      "sha256": "28d78be3ba66f3b5e02334a58ce53e869f40cb338791f32c1b40d7ff3e843aed",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00125.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 23553,
+      "sha256": "a7cba127c50f09f1c2a9413f664f0d826e7eb32f9253dfe51059bbb5585e33d6",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00126.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 26833,
+      "sha256": "bb2b4181f4bb5e43576bc26008a3122db16a3c4e4c4e8c248b700d4d6401c05a",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00127.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 34338,
+      "sha256": "bc99e8a6eddaa9ed7a11ae067b07ef72ffaa35a07e8f1c3d5d5735b9aa905c33",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00128.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 21312,
+      "sha256": "3256fd816e65bc6486f907de0fd26065ed083eee0283f1bef1ed5b673adece7e",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00129.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 8030,
+      "sha256": "2c165231012bc031f6bba17103ae026fde094b28316768c90816ced49784551b",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00130.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 7337,
+      "sha256": "f6805decce5f1b1780d8bc70ce1593acb3038894d687b88db319f7ec0fb1f36c",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00131.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2519,
+      "sha256": "f5c3e048ff5bc685941c5dc0c65c3eaa5b4d6a67d4fdb5434467e3a5ac574641",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00132.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 22412,
+      "sha256": "4c0d744f6d8dfc00beb0ca86ed01f1eac5f6f4da70abfaed4734749ba022f12b",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00133.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24590,
+      "sha256": "ea93e0bacd4719fca1417adcb9284a659ff4ca4aef13bcf88d41c89732052d02",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00134.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24078,
+      "sha256": "4ceef16a874dc13fcb290a80ac4363a9fdc709fb7f578a047bf4baeeaa3da1c5",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00135.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24395,
+      "sha256": "2b8258821a6c3bb4c4d46ad232db6313787bb9e277f7802636f873e7f9e68dc9",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00136.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 23512,
+      "sha256": "362d4727f9bfa6a5d60f504f6185f54bfb90961ab228d8e45c2b59da4dd1d1d6",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00137.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 16749,
+      "sha256": "823b197c6b7e8b02bb20f8b6127cd11f82ca297b8e58ec9cc064bf93d18cbc6d",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00138.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 17468,
+      "sha256": "a7c57627512dfa898ca59cb9814ed047b06f0e399ec5fec34609f8c87843271d",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00139.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 15596,
+      "sha256": "2e5b7e546e6b417a03fa99d7d2949b463fef3e2b913f134487803209c02a7386",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00140.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 16276,
+      "sha256": "a39ce4b44d82afb63bcfa3794cd669255bf33420129158f2f8a1aab1beca7374",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00141.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 16799,
+      "sha256": "8e4c53e4b1381defcace0562eff54715381079397fc9d9beccff0180dd070c3f",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00142.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 16958,
+      "sha256": "807827920d6b57c1ec9f76db6cef5405540df6ae14e4cba95b30c5a32b27f9e9",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00143.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 16376,
+      "sha256": "44b4505426aa96102ac4a63dc6d4d27522be1c7703170271bf742b5572030782",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00144.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 17128,
+      "sha256": "080f820743a96b5c2da5f6a4ef01c7f53d409edd4badfb082c6e10c60a34c84c",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00145.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 12587,
+      "sha256": "5f735f4740da0c644100530f2f98b23df2cd77bb77a267a4895b242afdc3cf72",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00146.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2831,
+      "sha256": "6f1490c7b288ea79d0cf00dacb6f84314948f36f27524d38f9bacc86b57fceb9",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00147.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2757,
+      "sha256": "06e1f080f8982c6b320fc0589dc871995d5f1e95b06cde430cdb733373575e7a",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00148.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 21524,
+      "sha256": "e0e6e5a869366ebb990280d3fe8969d29bd08106df7799504159582e2f0f0773",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00149.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 35425,
+      "sha256": "2aba9eded8aec42704e93617f15fb10050e6d2b5d985e7ffe908e3e7611d75b1",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00150.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 36383,
+      "sha256": "481b3384e00974283125d5a4c4748bdd2e4bec36472384a47f7f4cb3134a8edc",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00151.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 36559,
+      "sha256": "bf29b2bfc4a37213012c6ca8bec880fc7b74573724ac865ab1589928a6443782",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00152.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 34997,
+      "sha256": "94f0703e1af3b3d1e9ed8e5fb5fb32ba416fc1c64c950662308f5686140fc106",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00153.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 35826,
+      "sha256": "23549494306c2807d477868d47458599634c5117c90d4967f3f592c365a38246",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00154.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 36571,
+      "sha256": "2a3c58791612b694c1a22a5d0d25d2e195e7f4035a03fadaeed18ac5649caebc",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00155.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 3344,
+      "sha256": "d4db4883c919645db78dc0f1657a56cab67dacdc002b6c78cf95e390d9781eba",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00156.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 3035,
+      "sha256": "7bb2db5a2e837bb66171f91f7ab9b86dcc1ae96d5ab94e814de1d76cfaec4c53",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00157.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2918,
+      "sha256": "8843c9f55ea8024de7f32eab72d86dc1a75c28ebe98bcc27565deb824eddcbdb",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00158.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2752,
+      "sha256": "3bb0f28dd77b49edad07d2a7fb14a3286bb1d8cb5db821a553a306d28219c8d4",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00159.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2742,
+      "sha256": "bf0b4aac3622d3c6f9a29d1f7d39cbf2bdcebc48471061cd5ed52d25c23d8eef",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00160.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2875,
+      "sha256": "d6a2df2be8478e0fb4f0eafffa6e5663e521697e05efee37486a35f18aabcccf",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00161.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2882,
+      "sha256": "06adb6df72b5744698c3be9f0e611a70d75c1e972c610f940a72042a3879ad98",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00162.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2674,
+      "sha256": "07c82180d8bea5a4254531d4ccff24ead8f933b26d118f56734d6cac8318b3b5",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00163.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2952,
+      "sha256": "7a89aacb1ca40be8ed716b6995d70c56bcbb50ae5e460b5a0cce03a65c61d7c4",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00164.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2843,
+      "sha256": "19f7cb6b0d225e9f56bebcf8fe7ca1e9b70b3b07fad3f4326d6b846bb93de0a5",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00165.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2898,
+      "sha256": "40358bddd34889f8aa3baa4bcb80ca2d695c170280dce25d69951b9484627881",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00166.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2836,
+      "sha256": "14ecf9235ee47c3df4cce33929c10236e40c4e330232bf11133dae1dea6d140d",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00167.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2841,
+      "sha256": "8ebf880d6e08177f0b471da5d28b1b7b94918aa08c98d8ab9bb83ef38f62d0dd",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00168.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2745,
+      "sha256": "7a69f7498ece240a4d282f556e9ee3f7e00bb304e59e79be464231e38e067f03",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00169.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2840,
+      "sha256": "42ba1be56e4b96ec3cac43a1357a558cc9f483a9f9f262bd8b324bc08c1e45aa",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00170.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2875,
+      "sha256": "71e527cd08912b3bf054ced8be6b3d04219c7b63f7db72ffc3053598c0df2e96",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00171.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2866,
+      "sha256": "9d2104aaca2a46db0b246b6b86f5b85e1f3bbb57ff49c1680cd8da79e3849aeb",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00172.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2778,
+      "sha256": "8251c8dda3146acef4f8ba5be8680e292014c002aaa74e56e013b543d6e10300",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00173.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2727,
+      "sha256": "f184665ff4d239c7fb938095f9c9665c25cb728b73113eca08070414e0a6b189",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00174.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2680,
+      "sha256": "4878e90243e66280f41ffc878600b5226aa6513ccf9e99ae132b33b20a2b8647",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00175.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2820,
+      "sha256": "ae765de021cb683fd870d348255df08613107534179b6afc9d1704453511085e",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00176.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2799,
+      "sha256": "1af36f1d6ad256bd7abc0343f8cb4d17db7c840609622616f25f0d5a65ad18c5",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00177.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 3321,
+      "sha256": "4c38190663247646987a35a648c53e6d01444d5cae9de078893a124a4d98c1be",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00178.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 3105,
+      "sha256": "64a38ec5191a555a21c5bb2982ec5fa81251257253be89732e2ad78f2da2ea44",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00179.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 2792,
+      "sha256": "e9f7f87787cb14bd5e46ebcc599e4b570c08fc7f1791a8ddedfa3d9dcaee5f67",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/train/shard-00180.bin",
+      "tokens": 8293636,
+      "bytes": 33174544,
+      "eos": 487,
+      "sha256": "f5db361d4321e03e1839df4c70d619a262fabc6e9f387ad4e5cc496863706de3",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/validation/shard-00000.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 12272,
+      "sha256": "0f525b5ff80c08a96a9e848423e261a6b14762633805529f35c206a5be24a824",
+      "split": "validation"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/validation/shard-00001.bin",
+      "tokens": 41274652,
+      "bytes": 165098608,
+      "eos": 10702,
+      "sha256": "6407c4aa9ddb77e7d1bdcd6b716cdc46770c1d0814014108f6bc4ac4b36339a8",
+      "split": "validation"
+    }
+  ],
+  "tokenizer_fingerprint": "1732cd666e532d83bf2e6ff13888950eb517b6d2c8c2ffc542804907dd9026e8",
+  "tokenizer_assets": {
+    "tiktoken.model": "b6c497a7469b33ced9c38afb1ad6e47f03f5e5dc05f15930799210ec050c5103",
+    "tokenizer_config.json": "5d0803c94db9cd78763499e0956c95fd5a225c14a727e5a6cf5db3f96f010a6e",
+    "tokenization_kimi.py": "f28ea66e2d862a2a5814970b2ce40c2f7d8296ff09aed90a7e7def689b906944"
+  },
+  "vocab_size": 163840,
+  "dtype": "<u4",
+  "upstream_sha256": "bccaa09e9c8700a334e474a657752afb4824e65d42fec642f770f78f59c39dff",
+  "script_sha256": "f610649a6b17f43e7a2e8c3c7f1dc31d1dea8c03c1647cba6f1d1b0b2bf31b40",
+  "document_index": {
+    "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/documents.jsonl",
+    "sha256": "e300333e297c68596f50b2c5e38d9ce68dd4e2de1fb9250e52a899e2058cf5bb"
+  }
+}

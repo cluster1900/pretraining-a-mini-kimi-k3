@@ -1,0 +1,33 @@
+{
+  "source": "ultrafeedback",
+  "repo": "argilla/ultrafeedback-binarized-preferences-cleaned",
+  "role": "preference",
+  "status": "complete",
+  "schema_version": 2,
+  "script_sha256": "3fa30a1ec632dda0db690cf11d8788d78af99c895370170f0768348e8a5c5ce5",
+  "inputs": [
+    {
+      "file": "data/train-00000-of-00001.parquet",
+      "sha256": "27dc59041d73654aecfa7685b6f839a0bbb2014d640ee92eefa047b262d1f1ca",
+      "bytes": 143257393
+    }
+  ],
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/canonical/ultrafeedback/part-00000.jsonl",
+      "documents": 41533,
+      "bytes": 134212098,
+      "sha256": "5cfbe02a596cd84fc6981e733770805c4366d0309041441af2e00e4e68d784bc"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/canonical/ultrafeedback/part-00001.jsonl",
+      "documents": 19384,
+      "bytes": 89815380,
+      "sha256": "7357ed55eedaecb34df695c93b6d4beb8a9cf4052dcd8d9e5a775077ea217711"
+    }
+  ],
+  "counts": {
+    "input_rows": 60917,
+    "output_records": 60917
+  }
+}

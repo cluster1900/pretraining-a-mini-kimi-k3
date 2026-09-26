@@ -1,0 +1,378 @@
+{
+  "source": "chinese-fineweb-edu",
+  "status": "complete",
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00000.jsonl",
+      "documents": 29773,
+      "bytes": 136729053,
+      "sha256": "8663e94f7481544cfd93bef0b552284447ccba2afe09adc613b4a21e381733bf"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00001.jsonl",
+      "documents": 29691,
+      "bytes": 136748196,
+      "sha256": "a50345196751c9c37ccbf260e256534d1a7b20051ccadf7aad7e55d1ba02a4b3"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00002.jsonl",
+      "documents": 29452,
+      "bytes": 136714453,
+      "sha256": "379356f90a1120053fff879dcccafb030f6b68a9edb5814dc8dc4c7472d7ddb9"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00003.jsonl",
+      "documents": 29589,
+      "bytes": 136726498,
+      "sha256": "db6cbdc4ad0b78ddf280a4c87331558a3fe2b4beb06e69001bb7162cf472958c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00004.jsonl",
+      "documents": 29327,
+      "bytes": 136700736,
+      "sha256": "e3df9be8339c7798a6a83c5fb1c2405bafcbc8230d737a113e57bd6c0a6b0b8a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00005.jsonl",
+      "documents": 29511,
+      "bytes": 136700222,
+      "sha256": "a8ced9c63222842ddacf522d78f9eb28e8f1d927b2934a4e6d5cc2febe658720"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00006.jsonl",
+      "documents": 29316,
+      "bytes": 136709992,
+      "sha256": "4d1e61d9b31e9d580f18fd4b8e99ebc1ae9e02218cab95666252ff7d6cc6b839"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00007.jsonl",
+      "documents": 29561,
+      "bytes": 136715745,
+      "sha256": "88f7ab55e0a18edbf793bbe9eb37068b9a9de6d5189bb5e9150152e90767f182"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00008.jsonl",
+      "documents": 29494,
+      "bytes": 136625133,
+      "sha256": "6e0ad01d271bfb3a20ae4336f24dcca66307f30cb626750755d4862bb085f013"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00009.jsonl",
+      "documents": 29632,
+      "bytes": 136729661,
+      "sha256": "ec79cfd1f442966386a704094e19a3808f91718ef535693708f3b5ae24ac0a57"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00010.jsonl",
+      "documents": 29224,
+      "bytes": 136711372,
+      "sha256": "1c7ab69ab162a6901784b89cca1b949dc5831ba909faf5c663d5548526763e96"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00011.jsonl",
+      "documents": 29355,
+      "bytes": 136702523,
+      "sha256": "a5c139fdc1521e763666c9ca2bda68984305deb71608f18d73a6b61449220250"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00012.jsonl",
+      "documents": 29341,
+      "bytes": 136710916,
+      "sha256": "bc9f003359c38ffb94bdfa1307da9affc1b4ac9a0708dc8c29afb10e1fa0df01"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00013.jsonl",
+      "documents": 29317,
+      "bytes": 136713335,
+      "sha256": "856265a7487ee1510c0c773af04881f2913928e284fb253008529035e3ec8712"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00014.jsonl",
+      "documents": 29146,
+      "bytes": 136705894,
+      "sha256": "31a797c256059331f9f310787c9c9131dc2e12d5c901170943ac1546cb905162"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00015.jsonl",
+      "documents": 29250,
+      "bytes": 136705714,
+      "sha256": "0455fdb2816038850be38bfdafdcc8e001b9b36d0a2a9bf682535b44da9a1506"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00016.jsonl",
+      "documents": 29040,
+      "bytes": 136530868,
+      "sha256": "0f465907d175eb35c77eed3536c264f947389f58922c7de059d08c1e6e6af3fb"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00017.jsonl",
+      "documents": 28879,
+      "bytes": 136662261,
+      "sha256": "134c21d52d47d5edcfc542c66155b2bafacabfceb3ee6a99a86ab800c7ae443c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00018.jsonl",
+      "documents": 29068,
+      "bytes": 136688731,
+      "sha256": "bf964251643bf97e4033270f7c4576f40fd0256b7b202957f18c5fc448baf453"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00019.jsonl",
+      "documents": 29366,
+      "bytes": 136730637,
+      "sha256": "0940b570e9a7f91a921e578f1f46d760b800ea2efb26295dde25881f4153c5c3"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00020.jsonl",
+      "documents": 29397,
+      "bytes": 136734269,
+      "sha256": "95fa17182369aa03fa01a3ae8bae6f03144df05dd16aa6b48700fd8c2804187d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00021.jsonl",
+      "documents": 29190,
+      "bytes": 136653253,
+      "sha256": "6edd51f6cbe937bd1e4b24d8e328d447f18b93ac691544495942342606761a3a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00022.jsonl",
+      "documents": 28827,
+      "bytes": 136684857,
+      "sha256": "83a48c87bfc279057de6b47ecc794f3c8ba88df80bbd781021b3e72b764b29f2"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00023.jsonl",
+      "documents": 29032,
+      "bytes": 136613866,
+      "sha256": "878750da141ad0a168d9202872cac198242e8fa660ce7ebadc29c7bb30144bc7"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00024.jsonl",
+      "documents": 29050,
+      "bytes": 136655164,
+      "sha256": "505ade7fe8a9d5d6a3a22c6b240f081f2e5bf489382ea1b433923cba375c682b"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00025.jsonl",
+      "documents": 28979,
+      "bytes": 136688698,
+      "sha256": "1b24783e31467e5116d381814469829e51797a545f7e29e9037fcab39e78eb6a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00026.jsonl",
+      "documents": 29106,
+      "bytes": 136704771,
+      "sha256": "452337ce7d915c5e9be9dc3dac5a674307693cbcba1313d635e388ce7e1fac54"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00027.jsonl",
+      "documents": 29241,
+      "bytes": 136713220,
+      "sha256": "64ad8613eb0e9115d5ab0c540d6f00b9b33d283b72a21365d1096b83a14eeab5"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00028.jsonl",
+      "documents": 28747,
+      "bytes": 136674914,
+      "sha256": "60c66321e6b764d42332aca4c9667c931fa8e038d2b9e1eb197461741c21c764"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00029.jsonl",
+      "documents": 28906,
+      "bytes": 136665835,
+      "sha256": "4edb0985eb7882ad5859316987edb0a9c0c2e85db315a5ad379a04c2818a243b"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00030.jsonl",
+      "documents": 29794,
+      "bytes": 136741443,
+      "sha256": "6f6515c135812b2ed68db993a9b2b9a324e3e59e5afad2656d12f2973da66a65"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00031.jsonl",
+      "documents": 31127,
+      "bytes": 136686980,
+      "sha256": "5bf4ee77dbb72417d8a0a4f6b603d624be714c6eff580a79d8aef93b7e73c916"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00032.jsonl",
+      "documents": 31208,
+      "bytes": 136705358,
+      "sha256": "383e1c203e76e2b21395db7e5aa5498481eb1d838f458201fd4038df99a52dbb"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00033.jsonl",
+      "documents": 31026,
+      "bytes": 136703502,
+      "sha256": "cf03567a9fca525462d16a2c2d9d7a235c85e3f95beaf6017ad89eac6ed5362c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00034.jsonl",
+      "documents": 31028,
+      "bytes": 136745050,
+      "sha256": "92a4bc752b59faf70714294586fed8ad18ded1a8ec917718dacb2bb89d226af5"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00035.jsonl",
+      "documents": 30699,
+      "bytes": 136668775,
+      "sha256": "a310db00ae7bde70cc6525ab412b8d0c0c348713a45779707a2fea4ec4b5fdcd"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00036.jsonl",
+      "documents": 30817,
+      "bytes": 136713262,
+      "sha256": "6b6edc2f576e8e284a84def9f7d7d8709e17d119347924834d83401048bbf0ba"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00037.jsonl",
+      "documents": 30986,
+      "bytes": 136760652,
+      "sha256": "4eb764e081b39c6cfaadcec9d135eadaf32eb3d450a697f5b73ba43f67c5cf0c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00038.jsonl",
+      "documents": 30882,
+      "bytes": 136733708,
+      "sha256": "3872fbacea3289a82d862345d6c1cfc94832a9ad1984e28f059e59d3d4770bd0"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00039.jsonl",
+      "documents": 30740,
+      "bytes": 136672588,
+      "sha256": "8cd43a7a06f57d813d83ed1c0a1481fa3427297e4b6623b9e722ccdec065e19f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00040.jsonl",
+      "documents": 30593,
+      "bytes": 136717742,
+      "sha256": "219c340be037bc2e22fe90139ed07b2d9b74252362c178f41063313dc0893d93"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00041.jsonl",
+      "documents": 30861,
+      "bytes": 136767342,
+      "sha256": "edc2678a0fc4804b25898d2f576aca7230347c9c8e9ba585cb6a7faf81d1c684"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00042.jsonl",
+      "documents": 31145,
+      "bytes": 136767797,
+      "sha256": "4a71d4926a78f7926f3d703766f18298b37570ef3863e66451c836b36f6b03a1"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00043.jsonl",
+      "documents": 31602,
+      "bytes": 136769580,
+      "sha256": "38cf7fd7981e1e1d26e95abdf3757ac631fbe711dd395d1c6aefcdd57db50ec9"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00044.jsonl",
+      "documents": 32153,
+      "bytes": 136784128,
+      "sha256": "642cea38c510ca5886f078c080f9fe5e70cf5b470085e8d0dc396bfba581a922"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00045.jsonl",
+      "documents": 32055,
+      "bytes": 136801281,
+      "sha256": "3b279fcf36264e21d61eecea5adebf2fab7140edd847ce78b1f85e806ada7f13"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00046.jsonl",
+      "documents": 32127,
+      "bytes": 136781533,
+      "sha256": "86bde49dc092f421576326b4e4929b324b64bf9d2afe8ea64a4e48d5784962a4"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00047.jsonl",
+      "documents": 32009,
+      "bytes": 136764883,
+      "sha256": "24a62f057d27b10992586a84015026322f8783a38795f87704775c535abc9c26"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00048.jsonl",
+      "documents": 32074,
+      "bytes": 136846050,
+      "sha256": "d683944dd7c115c5fcf180470d7a1a7da5034e397934f6a753839b6bccb69a63"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00049.jsonl",
+      "documents": 32019,
+      "bytes": 136823620,
+      "sha256": "731bb81004332508910b5b92780289a8eaff6fd1ec36b48a01cc8e9b208d93c3"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00050.jsonl",
+      "documents": 31995,
+      "bytes": 136783094,
+      "sha256": "f6342580a0448c7ab2d24076be749c8dc73eceda5c5b8cd0a11d5f9e6dc8360f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00051.jsonl",
+      "documents": 32067,
+      "bytes": 136819872,
+      "sha256": "5704e8ba17795ee51d7571b3799d29f0fa89b4e7d7e9cb5f1d86ce79d746560c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00052.jsonl",
+      "documents": 32165,
+      "bytes": 136852894,
+      "sha256": "302ff82058d5f027f8e8ededceea375997ad69a8a1dbbaebce76c37ba41f5ef3"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00053.jsonl",
+      "documents": 32002,
+      "bytes": 136742548,
+      "sha256": "f61487886908993f4f67306493a007d34a7a0c3f155c89ff9ab7eb4667372661"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00054.jsonl",
+      "documents": 32088,
+      "bytes": 136791818,
+      "sha256": "872c84f7d398da11cfc429343b29e00381ef6d6fdd13848d86acf4927cdcacff"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00055.jsonl",
+      "documents": 32002,
+      "bytes": 136832158,
+      "sha256": "1b0d961c429ff09024ca688955056776efe8b521cc2d863b68a496987ce1df08"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00056.jsonl",
+      "documents": 32091,
+      "bytes": 136842977,
+      "sha256": "6bd68e15d1f9741bf94758587ed158ab6f9f620097cea9c002cf5de49d5edee4"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00057.jsonl",
+      "documents": 32002,
+      "bytes": 136835429,
+      "sha256": "08979263857943ec38c699a75b5b9d0a521cadd8047ed209cce4bca1693cf02b"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00058.jsonl",
+      "documents": 31869,
+      "bytes": 136787037,
+      "sha256": "0674002ee1fd00b9198ff545cc0c8cd0eb9bc91acb59e66241e58bd20a4c6be4"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/chinese-fineweb-edu/part-00059.jsonl",
+      "documents": 7856,
+      "bytes": 34089429,
+      "sha256": "eed8bc0f1efde5c87bae8e644a3d672f747c0dd6d3939c0dbf09381b310a6e3a"
+    }
+  ],
+  "counts": {
+    "input": 1800000,
+    "kept": 1798889,
+    "reject_encoding_damage": 981,
+    "reject_repeated_lines": 1,
+    "reject_nul_byte": 129
+  },
+  "script_sha256": "2f8fc9d9624315558a9a9998d7c6084c62e74b460899e81b0d8efbc53380e8a2",
+  "upstream_report_sha256": "88e49b16c8dd6629c7e59d17ccfaabd22c812772a13322bb233f02df53839820",
+  "limits": [
+    "PII filtering covers email in prose and explicit secret-key patterns; not a guarantee of total PII removal"
+  ]
+}

@@ -1,0 +1,3010 @@
+{
+  "status": "complete",
+  "source": "dolma-body",
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00000.jsonl",
+      "bytes": 134507341,
+      "documents": 2602,
+      "sha256": "4b4c55c170fc324cba8ff4a89cf5388c86932f1365686fa738c7396547f137ab",
+      "counts": {
+        "input": 2602,
+        "kept": 2602
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00001.jsonl",
+      "bytes": 134211250,
+      "documents": 2338,
+      "sha256": "980b7c96c85b6c47237a60bb4042cc004b7e1d595cbb08b21b1801b811ea5746",
+      "counts": {
+        "input": 2338,
+        "kept": 2338
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00002.jsonl",
+      "bytes": 134336874,
+      "documents": 2358,
+      "sha256": "d38230a1f1a5274528c6a72066fd77db0d8b4f17017f0bc223f9b14f1b676ad4",
+      "counts": {
+        "input": 2359,
+        "kept": 2358,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00003.jsonl",
+      "bytes": 134503165,
+      "documents": 2629,
+      "sha256": "f87c4752f3e0ef2230058cf6266459d7721473f835bef3101dfa9817793133ff",
+      "counts": {
+        "input": 2629,
+        "kept": 2629
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00004.jsonl",
+      "bytes": 133932434,
+      "documents": 2239,
+      "sha256": "4227a05ce796f0c3e0ba7d30bede41dacd6fed9dd1a4fec0d95ec4a526b5d0ed",
+      "counts": {
+        "input": 2239,
+        "kept": 2239
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00005.jsonl",
+      "bytes": 134303588,
+      "documents": 2071,
+      "sha256": "5128430f21c8adb02c70f35ac9e22e0e24ea173cee5ee00bdc657957aa9497d4",
+      "counts": {
+        "input": 2071,
+        "kept": 2071
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00006.jsonl",
+      "bytes": 134277036,
+      "documents": 2097,
+      "sha256": "9a0803e55e942af7d7e1a39f9068086550e17c288f6ec2ea46d7db296eb59ed1",
+      "counts": {
+        "input": 2097,
+        "kept": 2097
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00007.jsonl",
+      "bytes": 134242689,
+      "documents": 2079,
+      "sha256": "7085024744bbaec177fc0d0e74ce2bfc4357779c87cb057c5514866373dcce04",
+      "counts": {
+        "input": 2079,
+        "kept": 2079
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00008.jsonl",
+      "bytes": 133973990,
+      "documents": 2184,
+      "sha256": "ce58cc12265eeae5325049b6e0afb3757e7a67e08e71341025fa5a02428f86d5",
+      "counts": {
+        "input": 2184,
+        "kept": 2184
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00009.jsonl",
+      "bytes": 133968497,
+      "documents": 2078,
+      "sha256": "61eb48522c4b9d090a1dc33aadf00cfde366eae9bec7953da32a150fa2ccaa56",
+      "counts": {
+        "input": 2078,
+        "kept": 2078
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00010.jsonl",
+      "bytes": 134280974,
+      "documents": 2235,
+      "sha256": "8f562fef4eefc9e69f1c8c33732e5428f3fba926f648c75e878e5b90afaee8e9",
+      "counts": {
+        "input": 2236,
+        "kept": 2235,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00011.jsonl",
+      "bytes": 134064241,
+      "documents": 2139,
+      "sha256": "bbbc16bd46f740e439eb265561de2eb5501c2093421d497894bba0a914319e65",
+      "counts": {
+        "input": 2139,
+        "kept": 2139
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00012.jsonl",
+      "bytes": 134185904,
+      "documents": 2219,
+      "sha256": "1d4f3981bc3cdd2e58f2dc9e136ac2fe40701a19d8f920c331e871220abe4100",
+      "counts": {
+        "input": 2220,
+        "kept": 2219,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00013.jsonl",
+      "bytes": 134269373,
+      "documents": 2145,
+      "sha256": "53d12ca260ab8a079b710db8701d0cf422eefe9762b8f71403f138e97e9d96c6",
+      "counts": {
+        "input": 2145,
+        "kept": 2145
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00014.jsonl",
+      "bytes": 134263618,
+      "documents": 2227,
+      "sha256": "69585e13ac5c5a9162c38bfbe26aee1b02be4cef10029010d2eddb336988abaa",
+      "counts": {
+        "input": 2227,
+        "kept": 2227
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00015.jsonl",
+      "bytes": 134011116,
+      "documents": 2116,
+      "sha256": "0da2b5852c30a18a47a69998df3b6ecb91b90a432a64197062d1004a845232ce",
+      "counts": {
+        "input": 2116,
+        "kept": 2116
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00016.jsonl",
+      "bytes": 134030282,
+      "documents": 2136,
+      "sha256": "4ec075cfb5f6c1839459d0b020841690410e91aeb08282d9a65d97d98f04fe48",
+      "counts": {
+        "input": 2136,
+        "kept": 2136
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00017.jsonl",
+      "bytes": 134151194,
+      "documents": 2331,
+      "sha256": "e245505103082e01a03e53459c6e18afbb341fc248551792e166cdab2cfcf12c",
+      "counts": {
+        "input": 2331,
+        "kept": 2331
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00018.jsonl",
+      "bytes": 133981121,
+      "documents": 2263,
+      "sha256": "10ed73fdeb35c1ae451e210bfab4941346b0f6cde6e6de3e74b036e62f303a61",
+      "counts": {
+        "input": 2263,
+        "kept": 2263
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00019.jsonl",
+      "bytes": 134115922,
+      "documents": 2100,
+      "sha256": "9c07e5301622c23ab67446aa163b885d5d655a3b0376ad94c7a4fd7fb57ede70",
+      "counts": {
+        "input": 2100,
+        "kept": 2100
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00020.jsonl",
+      "bytes": 133965526,
+      "documents": 2126,
+      "sha256": "1caf53718d00970550ca5b9328aff947d83ab765f7dd77e1427c03a3fda46743",
+      "counts": {
+        "input": 2127,
+        "kept": 2126,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00021.jsonl",
+      "bytes": 134268708,
+      "documents": 2445,
+      "sha256": "0440f9ad9ce440c09a249fe923bcf1f70687c3acf286ac0ff0c242979293a64c",
+      "counts": {
+        "input": 2445,
+        "kept": 2445
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00022.jsonl",
+      "bytes": 133795424,
+      "documents": 2301,
+      "sha256": "50a88b67df3c7c3d1fc7c740a78a9a61bd4a67acea640f96e846a8d899c8f6ad",
+      "counts": {
+        "input": 2301,
+        "kept": 2301
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00023.jsonl",
+      "bytes": 134220473,
+      "documents": 2167,
+      "sha256": "e4eb941c414eff358b957e7aaa0cd153b4a08a85de77ec67a855a8bf691ff40f",
+      "counts": {
+        "input": 2168,
+        "kept": 2167,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00024.jsonl",
+      "bytes": 134427503,
+      "documents": 2377,
+      "sha256": "6094a808dffa25b46013a0c8c6d95c32c0a28658f6db122d47a90f87b9d32c40",
+      "counts": {
+        "input": 2379,
+        "kept": 2377,
+        "near_duplicates": 2
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00025.jsonl",
+      "bytes": 134300435,
+      "documents": 2198,
+      "sha256": "6302a3ed97a681778c4208aff37686682e2a65cafd1e9d2f75727c38a0c90474",
+      "counts": {
+        "input": 2198,
+        "kept": 2198
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00026.jsonl",
+      "bytes": 133770194,
+      "documents": 2336,
+      "sha256": "e734f2f7e20c9d1d5c7818bca23d45a7573672d7c32dbefb452b7df0892fcf9d",
+      "counts": {
+        "input": 2336,
+        "kept": 2336
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00027.jsonl",
+      "bytes": 134202159,
+      "documents": 2009,
+      "sha256": "ad97e33622e0be1c52b9b854278f78889b4aac73d7b0892d9fe030202d22de04",
+      "counts": {
+        "input": 2009,
+        "kept": 2009
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00028.jsonl",
+      "bytes": 134349854,
+      "documents": 2300,
+      "sha256": "914cd9761b11caf5cdec29e8b4fcb735e102cc613acddbf3ece7a20fa99a9fee",
+      "counts": {
+        "input": 2300,
+        "kept": 2300
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00029.jsonl",
+      "bytes": 133988693,
+      "documents": 2258,
+      "sha256": "947639716a639476068738d28fd9a9249e45f940b9e480dbf3c11e90a29397c1",
+      "counts": {
+        "input": 2258,
+        "kept": 2258
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00030.jsonl",
+      "bytes": 133278296,
+      "documents": 2115,
+      "sha256": "dc2b09bd69e17ac24586d83384e4a6c55880e43512682213c413465ef18f2a41",
+      "counts": {
+        "input": 2116,
+        "kept": 2115,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00031.jsonl",
+      "bytes": 134223760,
+      "documents": 2063,
+      "sha256": "ea22edd0f589a05a8193522277513a4c2add4fb36ea99f9287dc645c5278afb1",
+      "counts": {
+        "input": 2063,
+        "kept": 2063
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00032.jsonl",
+      "bytes": 134345006,
+      "documents": 2184,
+      "sha256": "dca7b53be152a329eac0c2a8ff7354c92ab9cddb0cc956654919542ec6b7bd7d",
+      "counts": {
+        "input": 2186,
+        "kept": 2184,
+        "near_duplicates": 2
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00033.jsonl",
+      "bytes": 134377591,
+      "documents": 2280,
+      "sha256": "9784d81b2c03011b398ba5b47748a3bd2db7fc701851c343f7e652767da0a745",
+      "counts": {
+        "input": 2280,
+        "kept": 2280
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00034.jsonl",
+      "bytes": 134320543,
+      "documents": 2532,
+      "sha256": "23f35b9e76a99285b944592ceaec97c01ae1e86bfd47b322d124d36416583393",
+      "counts": {
+        "input": 2534,
+        "kept": 2532,
+        "near_duplicates": 2
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00035.jsonl",
+      "bytes": 134285252,
+      "documents": 2114,
+      "sha256": "5654608cd9bfa057f6c91ecd5e4325df99f8796526f3739f16d9920e7fc0609e",
+      "counts": {
+        "input": 2115,
+        "kept": 2114,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00036.jsonl",
+      "bytes": 134198802,
+      "documents": 2100,
+      "sha256": "05d2595b2a524c0ef25d15831d1e5851a2e4adba668ae1fce5e595b4b73287b6",
+      "counts": {
+        "input": 2100,
+        "kept": 2100
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00037.jsonl",
+      "bytes": 134172229,
+      "documents": 2125,
+      "sha256": "e6bc6b79fd88344a7e3eee31f149c940490e9b2c247042db6e98b8b91eaad531",
+      "counts": {
+        "input": 2125,
+        "kept": 2125
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00038.jsonl",
+      "bytes": 134154201,
+      "documents": 2490,
+      "sha256": "e7438fa05fd25be826c1a79ceb8f7fcfb89a81be9feb4126cc7731d8203b4f5b",
+      "counts": {
+        "input": 2490,
+        "kept": 2490
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00039.jsonl",
+      "bytes": 134115156,
+      "documents": 2080,
+      "sha256": "ea135c9228b8f079979a5f04c009013b8fdded623c8cade09ff5a7f88fb9ec85",
+      "counts": {
+        "input": 2080,
+        "kept": 2080
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00040.jsonl",
+      "bytes": 134222541,
+      "documents": 2069,
+      "sha256": "06671611b02b8c70b35ad3cb2e55c42b3b86975990deab85387c4a7ab5b41f00",
+      "counts": {
+        "input": 2071,
+        "kept": 2069,
+        "near_duplicates": 2
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00041.jsonl",
+      "bytes": 133942421,
+      "documents": 2263,
+      "sha256": "369a9f7d3cee06a3eabe38face9845bb383a6f6447e9b99de478233df44a260a",
+      "counts": {
+        "input": 2263,
+        "kept": 2263
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00042.jsonl",
+      "bytes": 133986260,
+      "documents": 2142,
+      "sha256": "15730c0c3efc6c6b06b5cba02c34caf637de423578abaa485aab0ddac48fb350",
+      "counts": {
+        "input": 2142,
+        "kept": 2142
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00043.jsonl",
+      "bytes": 134134742,
+      "documents": 2200,
+      "sha256": "667c935bd2f6a863329a0325dfc87949ddf1172013c003b981ddcfe169bef49a",
+      "counts": {
+        "input": 2201,
+        "kept": 2200,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00044.jsonl",
+      "bytes": 134324107,
+      "documents": 2190,
+      "sha256": "524c45644826cde3f1742f4574578dfba3a079aaa551b854de311c51a6eae290",
+      "counts": {
+        "input": 2190,
+        "kept": 2190
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00045.jsonl",
+      "bytes": 134485516,
+      "documents": 2542,
+      "sha256": "692fbbb6c12d60e14a22eb1a65fa937bb784d20fa633abb6751daa0048ffaf1d",
+      "counts": {
+        "input": 2544,
+        "kept": 2542,
+        "near_duplicates": 2
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00046.jsonl",
+      "bytes": 134336545,
+      "documents": 2156,
+      "sha256": "f6d73f8dd0a0a169c546f183ed4508ee22fc218e0dc0dfb7517f55feb860551a",
+      "counts": {
+        "input": 2157,
+        "kept": 2156,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00047.jsonl",
+      "bytes": 134559673,
+      "documents": 2572,
+      "sha256": "cb51d263353d4c77084a1043abcc9dd17fd6bdb9e61800b5177db60e1d87536d",
+      "counts": {
+        "input": 2572,
+        "kept": 2572
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00048.jsonl",
+      "bytes": 134033403,
+      "documents": 2214,
+      "sha256": "e44da085e058e2b9c1b25006583a4a6bec0761515720a6ca9b32267fcc5133c0",
+      "counts": {
+        "input": 2214,
+        "kept": 2214
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00049.jsonl",
+      "bytes": 134287728,
+      "documents": 2136,
+      "sha256": "89e95f5f3a32db844c638a1b60d24e58d155909efa4b818d9fc236ab2fc1279f",
+      "counts": {
+        "input": 2136,
+        "kept": 2136
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00050.jsonl",
+      "bytes": 134031945,
+      "documents": 2181,
+      "sha256": "25c3c721b3d30ca287ad4ae1f49cf5d9008c3cfc3edabb3da8609d534a4eb465",
+      "counts": {
+        "input": 2181,
+        "kept": 2181
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00051.jsonl",
+      "bytes": 134169564,
+      "documents": 1973,
+      "sha256": "c80da2c2f23ca01e8ad42d3a76383d5179db3c7db424814aedc9956411e6eec5",
+      "counts": {
+        "input": 1973,
+        "kept": 1973
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00052.jsonl",
+      "bytes": 134107860,
+      "documents": 2066,
+      "sha256": "ecb04d901a1e2d17bd89c8c63030894c20efb351409b464bb3274d2122955de1",
+      "counts": {
+        "input": 2066,
+        "kept": 2066
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00053.jsonl",
+      "bytes": 133844733,
+      "documents": 2187,
+      "sha256": "be33df1c50552007e34e1ee4b244fafe6f51a8bc48d6490078e6d41e366201de",
+      "counts": {
+        "input": 2188,
+        "kept": 2187,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00054.jsonl",
+      "bytes": 134201897,
+      "documents": 2057,
+      "sha256": "1ab010ae3b22d6f68408259cb7bb1ad2c2568fc781dce0d3ccb6a4e4ac9e130f",
+      "counts": {
+        "input": 2057,
+        "kept": 2057
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00055.jsonl",
+      "bytes": 134266649,
+      "documents": 1952,
+      "sha256": "0ce3338fb27380d06aaa17f3c22bd496d3c5f65f59e1fc6a6c24cc4601916adb",
+      "counts": {
+        "input": 1952,
+        "kept": 1952
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00056.jsonl",
+      "bytes": 134103186,
+      "documents": 2131,
+      "sha256": "d003284378d7ed73cf719388267dd980c912bde40e0a4e5c9167e94fcbef06da",
+      "counts": {
+        "input": 2131,
+        "kept": 2131
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00057.jsonl",
+      "bytes": 134183757,
+      "documents": 2087,
+      "sha256": "35474575786423b4242e263f4c93cb45efc6c027256e7f43349ce45ec43db180",
+      "counts": {
+        "input": 2087,
+        "kept": 2087
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00058.jsonl",
+      "bytes": 134469059,
+      "documents": 2535,
+      "sha256": "d458a36e70dbde4e5a284e50177956e795247013a1f8fad820a19dd2f1c26f0b",
+      "counts": {
+        "input": 2536,
+        "kept": 2535,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00059.jsonl",
+      "bytes": 134253693,
+      "documents": 2137,
+      "sha256": "1be559da4cad33f027d6bffc957321c96252052ca472bd7b96127bd8e3cebfb3",
+      "counts": {
+        "input": 2137,
+        "kept": 2137
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00060.jsonl",
+      "bytes": 133876098,
+      "documents": 2130,
+      "sha256": "4697da75acd1bdf06a5b558fc66b854e1bd940e25c890be54aed7477bebde49a",
+      "counts": {
+        "input": 2130,
+        "kept": 2130
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00061.jsonl",
+      "bytes": 133992114,
+      "documents": 2102,
+      "sha256": "9e09a28a55ced119d2945ca5b04e30eb238caf23764239737570daa3225c2993",
+      "counts": {
+        "input": 2103,
+        "kept": 2102,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00062.jsonl",
+      "bytes": 134086007,
+      "documents": 2192,
+      "sha256": "b1c47773eb3ee9593d003f5370b1c96d8043f8865c596e4e8497aaacbb1b2ac5",
+      "counts": {
+        "input": 2192,
+        "kept": 2192
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00063.jsonl",
+      "bytes": 134261899,
+      "documents": 1978,
+      "sha256": "4be891dc5f1083b673b857f2af2a96900120408018d94bb6b9575f0b4e19d4cf",
+      "counts": {
+        "input": 1978,
+        "kept": 1978
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00064.jsonl",
+      "bytes": 134484737,
+      "documents": 2600,
+      "sha256": "788f83e13efcb33974d0abc55b043ae88254d3c0f8b1280ca567e1e0791584fd",
+      "counts": {
+        "input": 2601,
+        "kept": 2600,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00065.jsonl",
+      "bytes": 134027097,
+      "documents": 2078,
+      "sha256": "fef88e64872d3e6dfc250b18ea5cc15020d68c7d486751e904f1c12eede451da",
+      "counts": {
+        "input": 2078,
+        "kept": 2078
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00066.jsonl",
+      "bytes": 134193763,
+      "documents": 2122,
+      "sha256": "d3c95e069bc7b79816b5ae8db866a88eeb063201aeb2773765907b62128012be",
+      "counts": {
+        "input": 2122,
+        "kept": 2122
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00067.jsonl",
+      "bytes": 101910636,
+      "documents": 6897,
+      "sha256": "ce6717e5241044fc9ff817bec88610b86ca3b0025d28d72dcf64ecf87a16e07a",
+      "counts": {
+        "input": 6897,
+        "kept": 6897
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00068.jsonl",
+      "bytes": 83762965,
+      "documents": 9952,
+      "sha256": "5530f776138cc63b3fcb87da5f6d32f361fac8af83ca673401c2e3d835b842bd",
+      "counts": {
+        "input": 9952,
+        "kept": 9952
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00069.jsonl",
+      "bytes": 85203986,
+      "documents": 9578,
+      "sha256": "e829c8bfb9790f7ccc4e40e1b1f044f7ac2d33d0e3c3e2beea9c413a5ef631d7",
+      "counts": {
+        "input": 9579,
+        "kept": 9578,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00070.jsonl",
+      "bytes": 85395817,
+      "documents": 9013,
+      "sha256": "430c6febf9758fa799cc98a12734ff6f5dc24b8c9dc8a00a7c838b8e19bda467",
+      "counts": {
+        "input": 9013,
+        "kept": 9013
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00071.jsonl",
+      "bytes": 84566118,
+      "documents": 9431,
+      "sha256": "e0d05a41f15f1a94da2adda7938e6e049ee99561566b99eea8ac23aaf868f0a1",
+      "counts": {
+        "input": 9432,
+        "kept": 9431,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00072.jsonl",
+      "bytes": 86722137,
+      "documents": 9247,
+      "sha256": "f5bd4e27105817a1ae7e4b5cfbfa678cf0e8f148b6bd3f572c434c79a913aa42",
+      "counts": {
+        "input": 9247,
+        "kept": 9247
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00073.jsonl",
+      "bytes": 84540734,
+      "documents": 9593,
+      "sha256": "3976ef24f95641070c3fb262c077fe97cf79dd8749ed3e1708d56adb152aed78",
+      "counts": {
+        "input": 9593,
+        "kept": 9593
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00074.jsonl",
+      "bytes": 85245198,
+      "documents": 9434,
+      "sha256": "a32b1d3cfeaa8ea3abf86dfc28a97488f5a3ef7cbd48102e2ba86a0398a8f3e6",
+      "counts": {
+        "input": 9434,
+        "kept": 9434
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00075.jsonl",
+      "bytes": 82461944,
+      "documents": 9597,
+      "sha256": "f92ace23e67fb058e3230adee2ac7fe1c0edaa90d2f98d005c6c31b7a08e4e0f",
+      "counts": {
+        "input": 9599,
+        "kept": 9597,
+        "near_duplicates": 2
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00076.jsonl",
+      "bytes": 85917104,
+      "documents": 9728,
+      "sha256": "5965c75631c6f6a90316a9d9605da1d99ccaed67cb4f1a6c7c024d0f454cbb50",
+      "counts": {
+        "input": 9728,
+        "kept": 9728
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00077.jsonl",
+      "bytes": 85145308,
+      "documents": 9496,
+      "sha256": "b44a14724352aaf3f2c7376b1bcc3dbf3e29067a7af384007495903aafec781a",
+      "counts": {
+        "input": 9496,
+        "kept": 9496
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00078.jsonl",
+      "bytes": 86387457,
+      "documents": 9516,
+      "sha256": "75fda43e92bd9d4ec226b8c62976def316f13aa29cf4538ffe7dd3ee7fef5bd1",
+      "counts": {
+        "input": 9517,
+        "kept": 9516,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00079.jsonl",
+      "bytes": 87294185,
+      "documents": 9311,
+      "sha256": "3eb099251af7cdbdf8d523f89eb9ee15ad1a439e3c79aa1d64993f4b361f69fe",
+      "counts": {
+        "input": 9312,
+        "kept": 9311,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00080.jsonl",
+      "bytes": 86877875,
+      "documents": 9834,
+      "sha256": "0c73591343fd8ba7d2725db9f953c4edd605040ce44ed6f83285d3811d4b88dc",
+      "counts": {
+        "input": 9835,
+        "kept": 9834,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00081.jsonl",
+      "bytes": 86093864,
+      "documents": 9711,
+      "sha256": "d041ec045fc583f62714870de97fd3af422bddda7d7f176b80600693dd4d529a",
+      "counts": {
+        "input": 9711,
+        "kept": 9711
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00082.jsonl",
+      "bytes": 86167877,
+      "documents": 9825,
+      "sha256": "df1c9226265b72b6a8e90888d4ef1ee40e187958373016f59cdeba6f007375d5",
+      "counts": {
+        "input": 9826,
+        "kept": 9825,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00083.jsonl",
+      "bytes": 85029021,
+      "documents": 9672,
+      "sha256": "962be51e95f6bb7ef376cf8bf68f54416a8c011b9646ea7dc58d8a9baad5a74b",
+      "counts": {
+        "input": 9673,
+        "kept": 9672,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00084.jsonl",
+      "bytes": 82539617,
+      "documents": 9046,
+      "sha256": "009fd78e4bf6f1711719165bf68cb3224c88118cf87e4832bcbc85ed8dffe17f",
+      "counts": {
+        "input": 9049,
+        "kept": 9046,
+        "near_duplicates": 3
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00085.jsonl",
+      "bytes": 84401686,
+      "documents": 9729,
+      "sha256": "d7a388c98b669ccf72d26b96c10fe1ca3842f96fc507f7c4d53bea9a67472284",
+      "counts": {
+        "input": 9730,
+        "kept": 9729,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00086.jsonl",
+      "bytes": 86937809,
+      "documents": 9820,
+      "sha256": "1cb6f045bfc5efbb4c229ab9e28f6b2e24de5f08d130d6eed12d454035223f25",
+      "counts": {
+        "input": 9820,
+        "kept": 9820
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00087.jsonl",
+      "bytes": 84135748,
+      "documents": 9671,
+      "sha256": "83d3c557e176ee07270dd7c838cbb54017191442bcea27dd5922698fb869d746",
+      "counts": {
+        "input": 9673,
+        "kept": 9671,
+        "near_duplicates": 2
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00088.jsonl",
+      "bytes": 84909378,
+      "documents": 9352,
+      "sha256": "ef224f2d6be40c96acbbe6f2f9f1b7c524e7765141dfae2f6b1f77913ea40e6a",
+      "counts": {
+        "input": 9354,
+        "kept": 9352,
+        "near_duplicates": 2
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00089.jsonl",
+      "bytes": 85413813,
+      "documents": 9722,
+      "sha256": "90a93321e0f0e07370febd52eefca0d5c17229adf969f2a3f5f2939ed277cf9d",
+      "counts": {
+        "input": 9723,
+        "kept": 9722,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00090.jsonl",
+      "bytes": 85558275,
+      "documents": 9478,
+      "sha256": "19727d8e71016878623c3c796f0adcbadd424c6cb41f200553074dec405b7502",
+      "counts": {
+        "input": 9479,
+        "kept": 9478,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00091.jsonl",
+      "bytes": 84385380,
+      "documents": 9552,
+      "sha256": "1796daab9c909686b3e62e7c54be9fa8578a488e2aa8b087bbc16235720dd2e7",
+      "counts": {
+        "input": 9553,
+        "kept": 9552,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00092.jsonl",
+      "bytes": 86207843,
+      "documents": 9401,
+      "sha256": "baa206686cc14d5a56a318d64d1e8b542d96568f17213a2080e6b98436b4d9e9",
+      "counts": {
+        "input": 9402,
+        "kept": 9401,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00093.jsonl",
+      "bytes": 85806179,
+      "documents": 9567,
+      "sha256": "571f786d5832624275660429ec81d61210e4b7866fe400c5f591a7c03b7f18e9",
+      "counts": {
+        "input": 9569,
+        "kept": 9567,
+        "near_duplicates": 2
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00094.jsonl",
+      "bytes": 86436621,
+      "documents": 9326,
+      "sha256": "34312a2880f5a5081fbf8037f36dfdc2ca73fc1c7375e9a489aa4f0f6ec22568",
+      "counts": {
+        "input": 9329,
+        "kept": 9326,
+        "near_duplicates": 3
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00095.jsonl",
+      "bytes": 88137922,
+      "documents": 9499,
+      "sha256": "551bf2f5f6b830023944d312d177d7c0439602684325544ebdd30894f99e4ac3",
+      "counts": {
+        "input": 9501,
+        "kept": 9499,
+        "near_duplicates": 2
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00096.jsonl",
+      "bytes": 85627075,
+      "documents": 9934,
+      "sha256": "3374d86448e2f4d6b6944695c6a30c0c3d428cfea4c1888fa9014c923eb700e4",
+      "counts": {
+        "input": 9939,
+        "kept": 9934,
+        "near_duplicates": 5
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00097.jsonl",
+      "bytes": 84872242,
+      "documents": 9452,
+      "sha256": "f7dda055db8a69918ebcca4c4fd3b5e20e044485271af63880d43883899eba1f",
+      "counts": {
+        "input": 9455,
+        "kept": 9452,
+        "near_duplicates": 3
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00098.jsonl",
+      "bytes": 112974909,
+      "documents": 9053,
+      "sha256": "8c7a78e2e1de76eb4b79db0b41681c0dddce71db65ec6379c0522596fe4087c1",
+      "counts": {
+        "input": 9111,
+        "kept": 9053,
+        "near_duplicates": 58
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00099.jsonl",
+      "bytes": 131321718,
+      "documents": 8457,
+      "sha256": "5543762c5923b75202f0d8d81d6f450015cd6707c573107929402ec2567d2b1f",
+      "counts": {
+        "input": 8776,
+        "kept": 8457,
+        "near_duplicates": 319
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00100.jsonl",
+      "bytes": 125377645,
+      "documents": 8415,
+      "sha256": "f3b0e048fd322cc41fa1f4829da571897abde278e942ff48ab9bcd04b92c79a2",
+      "counts": {
+        "input": 8968,
+        "near_duplicates": 553,
+        "kept": 8415
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00101.jsonl",
+      "bytes": 122173917,
+      "documents": 7907,
+      "sha256": "9868730d2781a359c0ecc262af8a4815295dda1d6260ddc823e033c5b4680595",
+      "counts": {
+        "input": 8652,
+        "kept": 7907,
+        "near_duplicates": 745
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00102.jsonl",
+      "bytes": 117645023,
+      "documents": 8072,
+      "sha256": "c64b26155a1acb1d5ac2dbee0abb27067b33c43666026b63fdff9cd89ffc99ce",
+      "counts": {
+        "input": 9037,
+        "kept": 8072,
+        "near_duplicates": 965
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00103.jsonl",
+      "bytes": 115529137,
+      "documents": 8094,
+      "sha256": "e49dcf6361da3607835129f313545e1a3f3fe5ea37d0422d006acaea07eb1021",
+      "counts": {
+        "input": 9204,
+        "kept": 8094,
+        "near_duplicates": 1110
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00104.jsonl",
+      "bytes": 129605102,
+      "documents": 4694,
+      "sha256": "29dcfc32425ae83aefe8d45f3eb3b85f84025713d362c10576c4cd48fb4fc740",
+      "counts": {
+        "input": 4925,
+        "kept": 4694,
+        "near_duplicates": 231
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00105.jsonl",
+      "bytes": 122736988,
+      "documents": 4404,
+      "sha256": "0dc3f4c7237d9f6109b44e677e70c6773b7102b10882d47af236d067771246af",
+      "counts": {
+        "input": 4849,
+        "kept": 4404,
+        "near_duplicates": 445
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00106.jsonl",
+      "bytes": 118212417,
+      "documents": 3808,
+      "sha256": "fab91d00e94bdd2957d872bf1c901bdd99b1056a4ea9779bec498800e19155e1",
+      "counts": {
+        "input": 4496,
+        "kept": 3808,
+        "near_duplicates": 688
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00107.jsonl",
+      "bytes": 109180660,
+      "documents": 3804,
+      "sha256": "acaa2d24507b3200b6e4c87a9f0646180b72277fd8607a2cf5047e298463b903",
+      "counts": {
+        "input": 4748,
+        "kept": 3804,
+        "near_duplicates": 944
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00108.jsonl",
+      "bytes": 104853131,
+      "documents": 3575,
+      "sha256": "3503c51c45b9fa2a63d876f0b5c34a47bb56aa9852bc87260739c6537357b9e4",
+      "counts": {
+        "input": 4607,
+        "kept": 3575,
+        "near_duplicates": 1032
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00109.jsonl",
+      "bytes": 97270887,
+      "documents": 3367,
+      "sha256": "aa0801a6ba1b345ed6ff1eabb77879757051329b50af83236d8cfd39562dd2ec",
+      "counts": {
+        "input": 4696,
+        "kept": 3367,
+        "near_duplicates": 1329
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00110.jsonl",
+      "bytes": 116513496,
+      "documents": 2730,
+      "sha256": "62e7a7e96491e7d7d1ce03bc52ea1b6864fa93a50cd757e8a2c74ac4e745b270",
+      "counts": {
+        "input": 3361,
+        "kept": 2730,
+        "near_duplicates": 631
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00111.jsonl",
+      "bytes": 134109091,
+      "documents": 2104,
+      "sha256": "ffe6b7d21b69e1d1b6bf6c71a71fee46e57b70336a37e07e6f1e0eb13dc69654",
+      "counts": {
+        "input": 2105,
+        "kept": 2104,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00112.jsonl",
+      "bytes": 134105770,
+      "documents": 2097,
+      "sha256": "2c8f4f499d5988bedd53ccb1356b3e7dbd184fa8713b9107f9d57ee77d523979",
+      "counts": {
+        "input": 2097,
+        "kept": 2097
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00113.jsonl",
+      "bytes": 134184949,
+      "documents": 2147,
+      "sha256": "afa869b7cf083cca573f1e88e56cfc2f744fb54bb6b3bf45c29a6964424d9725",
+      "counts": {
+        "input": 2148,
+        "kept": 2147,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00114.jsonl",
+      "bytes": 133627612,
+      "documents": 14326,
+      "sha256": "29dbc5477d65cb3b5e73787f549292d207858c37d57cf853bb0c4832de7b8308",
+      "counts": {
+        "input": 14391,
+        "kept": 14326,
+        "near_duplicates": 65
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00115.jsonl",
+      "bytes": 133280481,
+      "documents": 14303,
+      "sha256": "aa71e49446ef5c2ec5261ae0e0f82ef1b8009aed3bb5f406130a775cb831810f",
+      "counts": {
+        "input": 14385,
+        "kept": 14303,
+        "near_duplicates": 82
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00116.jsonl",
+      "bytes": 133475452,
+      "documents": 14616,
+      "sha256": "94d60cb252a4cf918690822505002cf04d8d71916b6d70ac40fc8dc235398fa5",
+      "counts": {
+        "input": 14704,
+        "kept": 14616,
+        "near_duplicates": 88
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00117.jsonl",
+      "bytes": 132772042,
+      "documents": 14317,
+      "sha256": "e3f220166c52cb0a40e2f5173ec4b35c6e8dabb50d8c58d9994d3d68cf412329",
+      "counts": {
+        "input": 14408,
+        "kept": 14317,
+        "near_duplicates": 91
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00118.jsonl",
+      "bytes": 132693876,
+      "documents": 14617,
+      "sha256": "94f02c400a0fa8ec9477b9008053b5f760df7e3cdcde425d810622cdfdf7dfd5",
+      "counts": {
+        "input": 14709,
+        "kept": 14617,
+        "near_duplicates": 92
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00119.jsonl",
+      "bytes": 133035660,
+      "documents": 14545,
+      "sha256": "e8cecc23cc0f470389a3472247e49e1dcda8c2c40589fb1b9495c4e0553186b2",
+      "counts": {
+        "input": 14649,
+        "kept": 14545,
+        "near_duplicates": 104
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00120.jsonl",
+      "bytes": 132977014,
+      "documents": 14105,
+      "sha256": "9dacfed86f62f4536b79437ebf50dcfdb02a3a67cbd8d350fe6726a94c20406b",
+      "counts": {
+        "input": 14205,
+        "kept": 14105,
+        "near_duplicates": 100
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00121.jsonl",
+      "bytes": 133010298,
+      "documents": 14641,
+      "sha256": "4225c44ed32375cbf0767c2d7b612591e90c17e7232f2b0517c87de73413a55d",
+      "counts": {
+        "input": 14708,
+        "kept": 14641,
+        "near_duplicates": 67
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00122.jsonl",
+      "bytes": 132693520,
+      "documents": 14575,
+      "sha256": "d90829465089d9238a2192f3ffd3f7c9e125de24124db60dfc899a722cc0f964",
+      "counts": {
+        "input": 14662,
+        "kept": 14575,
+        "near_duplicates": 87
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00123.jsonl",
+      "bytes": 133156376,
+      "documents": 14639,
+      "sha256": "e4cba23a34e4635557d18f13d22a185bd0bc1ceb803d692264ddb30ea404067a",
+      "counts": {
+        "input": 14728,
+        "kept": 14639,
+        "near_duplicates": 89
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00124.jsonl",
+      "bytes": 133668715,
+      "documents": 14746,
+      "sha256": "0ab0a96d3ecb750e4e4006632fb5982d2f23bf3ab15e0c4f5ce1dbe5bd3df53e",
+      "counts": {
+        "input": 14824,
+        "kept": 14746,
+        "near_duplicates": 78
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00125.jsonl",
+      "bytes": 133182691,
+      "documents": 14906,
+      "sha256": "18853fb1fb899926040ea0ce2410197d1cbae1cbb93d46fb0df5dc636a87c245",
+      "counts": {
+        "input": 14995,
+        "kept": 14906,
+        "near_duplicates": 89
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00126.jsonl",
+      "bytes": 132937395,
+      "documents": 14909,
+      "sha256": "1247226973ffb432d9ed1b9e5b6d0a51943d59c65b8a0654fdaa74563e7307bf",
+      "counts": {
+        "input": 14998,
+        "kept": 14909,
+        "near_duplicates": 89
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00127.jsonl",
+      "bytes": 132963554,
+      "documents": 14228,
+      "sha256": "c1267e5cf7e1993f94e76ca3e210ab4492274838cc3bb5b853812a740ab6635e",
+      "counts": {
+        "input": 14314,
+        "kept": 14228,
+        "near_duplicates": 86
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00128.jsonl",
+      "bytes": 133827855,
+      "documents": 14738,
+      "sha256": "74882f82b38111605a4c160939506f5bdf9723b918675080470ea424148e0d54",
+      "counts": {
+        "input": 14822,
+        "kept": 14738,
+        "near_duplicates": 84
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00129.jsonl",
+      "bytes": 132614617,
+      "documents": 14336,
+      "sha256": "88ea639f9163557e0fa332e8fd65e0ee2b99a1fb22e73c0b2a17eb7e4f1b54cf",
+      "counts": {
+        "input": 14426,
+        "kept": 14336,
+        "near_duplicates": 90
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00130.jsonl",
+      "bytes": 133955353,
+      "documents": 14072,
+      "sha256": "c352ff2d7515219bb2af635e9b58e56e30b0af8be88b3814106746bf9425c055",
+      "counts": {
+        "input": 14141,
+        "kept": 14072,
+        "near_duplicates": 69
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00131.jsonl",
+      "bytes": 136069052,
+      "documents": 13569,
+      "sha256": "bc105cadf73f55ca3f023df92f3c6b1a7f253337d9487a20681609e603408dbd",
+      "counts": {
+        "input": 13575,
+        "kept": 13569,
+        "near_duplicates": 6
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00132.jsonl",
+      "bytes": 138302116,
+      "documents": 32993,
+      "sha256": "8ab62ec9d0a2e6296bcfd4ecf39cd1651bf804b8dcfe48f95ee2420952004126",
+      "counts": {
+        "input": 33461,
+        "kept": 32993,
+        "near_duplicates": 468
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00133.jsonl",
+      "bytes": 105898007,
+      "documents": 19258,
+      "sha256": "be0be1d7bc3c90e761922d2792add722015a78d213f4e8b7db07f9426782f521",
+      "counts": {
+        "input": 19642,
+        "kept": 19258,
+        "near_duplicates": 384
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00134.jsonl",
+      "bytes": 84302023,
+      "documents": 9649,
+      "sha256": "e153774bafd0b6cf6f0e5b9131bf9d79edf27ee03ed931e07cd4583cfe4cae26",
+      "counts": {
+        "input": 9651,
+        "kept": 9649,
+        "near_duplicates": 2
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00135.jsonl",
+      "bytes": 87084423,
+      "documents": 9513,
+      "sha256": "d97ca2e2e3f4aafdf20d5c45253e775df0742efa6f5d3dcc1f8e5a383ccb7c6f",
+      "counts": {
+        "input": 9514,
+        "kept": 9513,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00136.jsonl",
+      "bytes": 83463756,
+      "documents": 9481,
+      "sha256": "528d0941e4c56428d99d38f256dfd88e5da90951be5f1f8435a0de7868410caf",
+      "counts": {
+        "input": 9482,
+        "kept": 9481,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00137.jsonl",
+      "bytes": 84557727,
+      "documents": 9743,
+      "sha256": "d2076747ba714cb10c2a17ffcac5261344207336def991bca47204b680460f67",
+      "counts": {
+        "input": 9745,
+        "kept": 9743,
+        "near_duplicates": 2
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00138.jsonl",
+      "bytes": 83976106,
+      "documents": 9771,
+      "sha256": "0a83f0c193ce8d1ecf2d12b313635f9620ff076d9d570126f0db103392252b4f",
+      "counts": {
+        "input": 9776,
+        "kept": 9771,
+        "near_duplicates": 5
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00139.jsonl",
+      "bytes": 86414215,
+      "documents": 9594,
+      "sha256": "d24aae303800fca6f425fe5f5ac713d7c27eff34d2db1bf401c1f49aa253b429",
+      "counts": {
+        "input": 9595,
+        "kept": 9594,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00140.jsonl",
+      "bytes": 85363878,
+      "documents": 9572,
+      "sha256": "c57f26d9e47bd2d4394fdbf713496e66c6dc8cac8636b3c729760d5407405a5c",
+      "counts": {
+        "input": 9577,
+        "kept": 9572,
+        "near_duplicates": 5
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00141.jsonl",
+      "bytes": 85330817,
+      "documents": 9380,
+      "sha256": "60c5b0953bd6c19bad9a2c2f077cc823242099beecefb9994a8921f63eceeb15",
+      "counts": {
+        "input": 9385,
+        "kept": 9380,
+        "near_duplicates": 5
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00142.jsonl",
+      "bytes": 84500105,
+      "documents": 9564,
+      "sha256": "2119f910d460f9538de69cbdaa22f83d379fa1ce8007c3c209897a5169720540",
+      "counts": {
+        "input": 9565,
+        "kept": 9564,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00143.jsonl",
+      "bytes": 85252838,
+      "documents": 9804,
+      "sha256": "603fb5b7bd665bbd61aa0145fc4b4b139737c36e64e511d5166d3a0869136bb6",
+      "counts": {
+        "input": 9808,
+        "kept": 9804,
+        "near_duplicates": 4
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00144.jsonl",
+      "bytes": 87425654,
+      "documents": 9502,
+      "sha256": "75a704350b04e9111929152ae6746821a7ff5a64e37d06c7fbd009db34d9ecbd",
+      "counts": {
+        "input": 9506,
+        "kept": 9502,
+        "near_duplicates": 4
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00145.jsonl",
+      "bytes": 87037067,
+      "documents": 9271,
+      "sha256": "69baab2b578b7d5fab926f6c746c4827c1c8bdf6103a11eefef99f8c2fa20d3f",
+      "counts": {
+        "input": 9275,
+        "kept": 9271,
+        "near_duplicates": 4
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00146.jsonl",
+      "bytes": 84711772,
+      "documents": 9585,
+      "sha256": "feaeb6e1a34602cda40f9c10ccb9fb579b857dbd2013f36d668d25d7c4121240",
+      "counts": {
+        "input": 9585,
+        "kept": 9585
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00147.jsonl",
+      "bytes": 85460375,
+      "documents": 9589,
+      "sha256": "b4a907f3a518a6b722d20b08a73e5757b0c1b9a0f6ec68d06e211247766595a7",
+      "counts": {
+        "input": 9590,
+        "kept": 9589,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00148.jsonl",
+      "bytes": 85765015,
+      "documents": 9481,
+      "sha256": "ac65d828c75eeede8df2201503c268e70d34f483779255892746b2a5d0a5949d",
+      "counts": {
+        "input": 9482,
+        "kept": 9481,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00149.jsonl",
+      "bytes": 82963641,
+      "documents": 9634,
+      "sha256": "b5573f73df1976b7222b438d36f47f1799373530308223993162ca6e20e67f6d",
+      "counts": {
+        "input": 9638,
+        "kept": 9634,
+        "near_duplicates": 4
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00150.jsonl",
+      "bytes": 82618526,
+      "documents": 9205,
+      "sha256": "49a618408d9ee071f6b263ceac94e567814ad7f4114ed4ea47b745905513481f",
+      "counts": {
+        "input": 9206,
+        "kept": 9205,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00151.jsonl",
+      "bytes": 86952453,
+      "documents": 9746,
+      "sha256": "b5a060e6c14c40eee3641e9918b7681e5ca7281ffdcefca30e8ac9ea8d9cf162",
+      "counts": {
+        "input": 9749,
+        "kept": 9746,
+        "near_duplicates": 3
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00152.jsonl",
+      "bytes": 85732781,
+      "documents": 9803,
+      "sha256": "eb4647957ea49a5fc808fe1a5ac8bb3bc72211ee8206757a6ae170b9f688377d",
+      "counts": {
+        "input": 9807,
+        "kept": 9803,
+        "near_duplicates": 4
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00153.jsonl",
+      "bytes": 83708927,
+      "documents": 9575,
+      "sha256": "1fe11f5d74273fff8195be464fa6a0f2e257f7c5d59c61549ac082e8598cf804",
+      "counts": {
+        "input": 9581,
+        "kept": 9575,
+        "near_duplicates": 6
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00154.jsonl",
+      "bytes": 86324189,
+      "documents": 9879,
+      "sha256": "ae22abfdd310cbe12e3257ff562f7e8a04eaf48d44244db24406b69cb68b9895",
+      "counts": {
+        "input": 9880,
+        "kept": 9879,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00155.jsonl",
+      "bytes": 83366337,
+      "documents": 9355,
+      "sha256": "f610927ccd9805d9147ffaf3ae78c8deb7da0a0bb1dec942bfd78cdb3f252f59",
+      "counts": {
+        "input": 9357,
+        "kept": 9355,
+        "near_duplicates": 2
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00156.jsonl",
+      "bytes": 82236839,
+      "documents": 9717,
+      "sha256": "5b10ed30a4ebfcc6dd48b16ba9a7094132085032eb3410d93113c70a1e6a2926",
+      "counts": {
+        "input": 9720,
+        "kept": 9717,
+        "near_duplicates": 3
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00157.jsonl",
+      "bytes": 87310994,
+      "documents": 9727,
+      "sha256": "ee8a9530fbcd170fdb6ab9131c9cbff3a4fe3919572e73d19f3f475424843d48",
+      "counts": {
+        "input": 9733,
+        "kept": 9727,
+        "near_duplicates": 6
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00158.jsonl",
+      "bytes": 83564777,
+      "documents": 9515,
+      "sha256": "f1d489bacca6cc3a9af8322ab631aacfe455cb2ca261a9be36ff11404917b4e0",
+      "counts": {
+        "input": 9518,
+        "kept": 9515,
+        "near_duplicates": 3
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00159.jsonl",
+      "bytes": 84637496,
+      "documents": 9381,
+      "sha256": "decbe31152c248912a776fbdb41bfb1ca815bea8c3d52dc48b6a3424f935d7bc",
+      "counts": {
+        "input": 9389,
+        "kept": 9381,
+        "near_duplicates": 8
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00160.jsonl",
+      "bytes": 85648576,
+      "documents": 9587,
+      "sha256": "88351d95a5596216065c4567e6e4ed367013b43ea474a3c47f1c6e35b7d42083",
+      "counts": {
+        "input": 9593,
+        "kept": 9587,
+        "near_duplicates": 6
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00161.jsonl",
+      "bytes": 85697096,
+      "documents": 9599,
+      "sha256": "c29d5a90af2ef839d7ffe7c8d0f6c62e0520df86450fbb330833886592c3cb92",
+      "counts": {
+        "input": 9604,
+        "kept": 9599,
+        "near_duplicates": 5
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00162.jsonl",
+      "bytes": 86280503,
+      "documents": 9488,
+      "sha256": "57666b32b51d4252465ee8d99644cd6256e3e5430deb7063de603654c59cd726",
+      "counts": {
+        "input": 9493,
+        "kept": 9488,
+        "near_duplicates": 5
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00163.jsonl",
+      "bytes": 87411093,
+      "documents": 9468,
+      "sha256": "fdfb1f74dca1ce5014ad0c535774c7d1e23d1b189a80c1fc065b7e7e453e4bc9",
+      "counts": {
+        "input": 9472,
+        "kept": 9468,
+        "near_duplicates": 4
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00164.jsonl",
+      "bytes": 114793386,
+      "documents": 10407,
+      "sha256": "4eca905fea2e369f82b8eb3476c8c4d43c48a5aae59e9d531dd9e048606e5c74",
+      "counts": {
+        "input": 10410,
+        "kept": 10407,
+        "near_duplicates": 3
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00165.jsonl",
+      "bytes": 135551976,
+      "documents": 10622,
+      "sha256": "d8cbbfb871850dceca91327dbc1e9b98c00cd642e731fa0497acdc707af77b38",
+      "counts": {
+        "input": 10624,
+        "kept": 10622,
+        "near_duplicates": 2
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00166.jsonl",
+      "bytes": 135612538,
+      "documents": 10985,
+      "sha256": "e9bf42aeb01a2b554d04759b392a57ffcfbdf3e1cb09f092cd6a7a6864975a36",
+      "counts": {
+        "input": 10993,
+        "kept": 10985,
+        "near_duplicates": 8
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00167.jsonl",
+      "bytes": 135686396,
+      "documents": 11023,
+      "sha256": "b3ee9bfee05e8977bca540331d15dfef0b5e5ab2d95819ecc272c3d8a6d245f8",
+      "counts": {
+        "input": 11034,
+        "kept": 11023,
+        "near_duplicates": 11
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00168.jsonl",
+      "bytes": 135546037,
+      "documents": 10646,
+      "sha256": "5feb04fe1daaa161bb6fc72d1ba88a3d4c3a0f1d7f218afee14ff899c4c83ca5",
+      "counts": {
+        "input": 10661,
+        "kept": 10646,
+        "near_duplicates": 15
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00169.jsonl",
+      "bytes": 135339443,
+      "documents": 10328,
+      "sha256": "a4444d23fb8cb9a9dc8623905466ef37dfd018fe4bea029f0fbd8ea77a8a8931",
+      "counts": {
+        "input": 10343,
+        "kept": 10328,
+        "near_duplicates": 15
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00170.jsonl",
+      "bytes": 135416782,
+      "documents": 10045,
+      "sha256": "48fc92839d2a2d2944962f856c109d6090dc3d2fcbafd081568d8b0d0ae3e8d3",
+      "counts": {
+        "input": 10077,
+        "kept": 10045,
+        "near_duplicates": 32
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00171.jsonl",
+      "bytes": 135400200,
+      "documents": 11222,
+      "sha256": "664fba12b5cd30afc79ee3673fe678fc5454e7e24013b2b636e3ec1506f9fc49",
+      "counts": {
+        "input": 11254,
+        "kept": 11222,
+        "near_duplicates": 32
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00172.jsonl",
+      "bytes": 135782740,
+      "documents": 11355,
+      "sha256": "ccea8edd7d2a0767b05e69a0653d684eb0658066c939563543576645b20a753d",
+      "counts": {
+        "input": 11362,
+        "kept": 11355,
+        "near_duplicates": 7
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00173.jsonl",
+      "bytes": 135506904,
+      "documents": 11589,
+      "sha256": "fd97531b751ff6c1c5bc028fd03037bb47191aeb3cc2b6f7088486a6ec604803",
+      "counts": {
+        "input": 11599,
+        "kept": 11589,
+        "near_duplicates": 10
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00174.jsonl",
+      "bytes": 135497723,
+      "documents": 11164,
+      "sha256": "9b83650e48fda1dbfd97fbbc8152766db079e6b0bc5e39a4a814da266dce81ba",
+      "counts": {
+        "input": 11184,
+        "kept": 11164,
+        "near_duplicates": 20
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00175.jsonl",
+      "bytes": 135459886,
+      "documents": 11388,
+      "sha256": "6ccc9c1816c7c4b6f68c58b969c2f9991dd58db86ec0cef1531bf31e1b5c6201",
+      "counts": {
+        "input": 11415,
+        "kept": 11388,
+        "near_duplicates": 27
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00176.jsonl",
+      "bytes": 135531559,
+      "documents": 11476,
+      "sha256": "9b87f5d26649f8d5b74530c70e662bc22272a3caf9ea7ee43b5ed6a663ec9a2f",
+      "counts": {
+        "input": 11502,
+        "kept": 11476,
+        "near_duplicates": 26
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00177.jsonl",
+      "bytes": 134600154,
+      "documents": 11762,
+      "sha256": "fcfc25ce4267e27eee53f96e34b26254ec6df142bf4650d8183ae2190a521b19",
+      "counts": {
+        "input": 11793,
+        "kept": 11762,
+        "near_duplicates": 31
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00178.jsonl",
+      "bytes": 135533563,
+      "documents": 11770,
+      "sha256": "c627006f5c6946ea322222c607aa9aa86abbaf104e0c7d5f67fb32b88aeda26d",
+      "counts": {
+        "input": 11805,
+        "kept": 11770,
+        "near_duplicates": 35
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00179.jsonl",
+      "bytes": 135432676,
+      "documents": 11716,
+      "sha256": "790739d027109a5ef3a4b438d9cb079a988c586498b7691eaa76e0b989aec5a8",
+      "counts": {
+        "input": 11756,
+        "kept": 11716,
+        "near_duplicates": 40
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00180.jsonl",
+      "bytes": 135212118,
+      "documents": 11278,
+      "sha256": "3253af093e8d877335b39c2d195e901953c5eb238d00ce8aceabf6656959e799",
+      "counts": {
+        "input": 11320,
+        "kept": 11278,
+        "near_duplicates": 42
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00181.jsonl",
+      "bytes": 135085341,
+      "documents": 11602,
+      "sha256": "98d72b6b853008888ba73a8e28d0f069adae08f37cdc0c81ffb88e018e29c7db",
+      "counts": {
+        "input": 11640,
+        "kept": 11602,
+        "near_duplicates": 38
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00182.jsonl",
+      "bytes": 135245708,
+      "documents": 11521,
+      "sha256": "2796078ea02eceb9834170377651d1122af6d9f640a1651cb447acb9d4f4497a",
+      "counts": {
+        "input": 11580,
+        "kept": 11521,
+        "near_duplicates": 59
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00183.jsonl",
+      "bytes": 135360097,
+      "documents": 11214,
+      "sha256": "55ee8c81c5f688c34c5d38eb5e881eb81256cef6ebe6c1bf3611ca5240b71d87",
+      "counts": {
+        "input": 11267,
+        "kept": 11214,
+        "near_duplicates": 53
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00184.jsonl",
+      "bytes": 134505032,
+      "documents": 11587,
+      "sha256": "98c160b8d5941ad9af84ddd66244c4d9a0311a1cebf2a811ceecf815fee3ca97",
+      "counts": {
+        "input": 11642,
+        "kept": 11587,
+        "near_duplicates": 55
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00185.jsonl",
+      "bytes": 131073334,
+      "documents": 8124,
+      "sha256": "06e27b9684f009d171c50b2dc0a1b1e1f548897582e53f0a4348f58e7128bfbb",
+      "counts": {
+        "input": 8480,
+        "kept": 8124,
+        "near_duplicates": 356
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00186.jsonl",
+      "bytes": 123641190,
+      "documents": 7542,
+      "sha256": "c8f0dae3ae2bc76920434a0d6441d2b7e17d124d904de319d0868498118be5c3",
+      "counts": {
+        "input": 8466,
+        "kept": 7542,
+        "near_duplicates": 924
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00187.jsonl",
+      "bytes": 118280312,
+      "documents": 6964,
+      "sha256": "446ea39a5fe354a1c7a033f491bff4185dcf67682e9f73a356833169f1d2fbba",
+      "counts": {
+        "input": 8277,
+        "kept": 6964,
+        "near_duplicates": 1313
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00188.jsonl",
+      "bytes": 121182298,
+      "documents": 11685,
+      "sha256": "aa4dbd303cff03a435b88a35d2e514245644dccdc80ea69a09a0d357bff691b7",
+      "counts": {
+        "input": 12860,
+        "kept": 11685,
+        "near_duplicates": 1175
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00189.jsonl",
+      "bytes": 137073744,
+      "documents": 20697,
+      "sha256": "db3d64b4b206c28bb9a441d2a00c4135b6d766121271d4fc3d69fca2ddfa43e4",
+      "counts": {
+        "input": 20739,
+        "kept": 20697,
+        "near_duplicates": 42
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00190.jsonl",
+      "bytes": 136773476,
+      "documents": 17421,
+      "sha256": "5359321d90df24fcd4bbdc917403e801717b45cf87bfc75b4d06e18ef17908c5",
+      "counts": {
+        "input": 17480,
+        "kept": 17421,
+        "near_duplicates": 59
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00191.jsonl",
+      "bytes": 131812646,
+      "documents": 15206,
+      "sha256": "ced0d2ac6fbd42b4b04303432749671a67e2567a52c49a1a8e2e329e961ed220",
+      "counts": {
+        "input": 15485,
+        "kept": 15206,
+        "near_duplicates": 279
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00192.jsonl",
+      "bytes": 134678170,
+      "documents": 15126,
+      "sha256": "7d40bef5c97399f55ab512de57466541f72017cedf1b63ee8216f15d0e827132",
+      "counts": {
+        "input": 15248,
+        "kept": 15126,
+        "near_duplicates": 122
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00193.jsonl",
+      "bytes": 133242094,
+      "documents": 14580,
+      "sha256": "ce76329fde1c9846c356f127831577b0112d6a579bc436518d4cf7590acd0446",
+      "counts": {
+        "input": 14687,
+        "kept": 14580,
+        "near_duplicates": 107
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00194.jsonl",
+      "bytes": 134947502,
+      "documents": 13137,
+      "sha256": "033c42b801c35852283475210f74a1f0ae539cebc589dc458eb289266d5bbf6f",
+      "counts": {
+        "input": 13249,
+        "kept": 13137,
+        "near_duplicates": 112
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00195.jsonl",
+      "bytes": 133198343,
+      "documents": 16346,
+      "sha256": "8579b14f999f11785affa7776235da0dbd26909d2f64ee202e1c9c291818bf48",
+      "counts": {
+        "input": 16505,
+        "kept": 16346,
+        "near_duplicates": 159
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00196.jsonl",
+      "bytes": 132278726,
+      "documents": 14251,
+      "sha256": "6213c7cad227ad4aa51821382b3b273dd896b5deab57b1e4bffa061e5030bb8a",
+      "counts": {
+        "input": 14390,
+        "kept": 14251,
+        "near_duplicates": 139
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00197.jsonl",
+      "bytes": 131285440,
+      "documents": 15384,
+      "sha256": "040e837a1752ef9ebcfef2af80a4d19e871c8f5caf7f40c9dcfd3a86ccee1633",
+      "counts": {
+        "input": 15685,
+        "kept": 15384,
+        "near_duplicates": 301
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00198.jsonl",
+      "bytes": 125611822,
+      "documents": 13766,
+      "sha256": "f9f33efeb09305096af89ceb83e44650623d5fdf5e93820d390cfb75809d14d3",
+      "counts": {
+        "input": 14050,
+        "kept": 13766,
+        "near_duplicates": 284
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00199.jsonl",
+      "bytes": 131349560,
+      "documents": 9737,
+      "sha256": "dcff39d469f3281879281474176d3af4fe79690a76d39252f6633c3ec7c9fda7",
+      "counts": {
+        "input": 9887,
+        "near_duplicates": 150,
+        "kept": 9737
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00200.jsonl",
+      "bytes": 131257061,
+      "documents": 18595,
+      "sha256": "7a4cbebb9b0808ad6d6233f0853b2e29f287940377810c52b7249f859e8ff618",
+      "counts": {
+        "input": 18787,
+        "kept": 18595,
+        "near_duplicates": 192
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00201.jsonl",
+      "bytes": 133444333,
+      "documents": 11433,
+      "sha256": "29195ce4a0deabd6ac5fbda8ab8eb264d7e59d39fbf636b80d521901765fd808",
+      "counts": {
+        "input": 11586,
+        "kept": 11433,
+        "near_duplicates": 153
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00202.jsonl",
+      "bytes": 128423234,
+      "documents": 28861,
+      "sha256": "c1e69fe5d5620ae97b0bd47a092888cdd17fe65614494c136308871cbb745d09",
+      "counts": {
+        "input": 29151,
+        "kept": 28861,
+        "near_duplicates": 290
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00203.jsonl",
+      "bytes": 128077452,
+      "documents": 21408,
+      "sha256": "3d99883eaeac411a150cfba7c1b48deae8b6b8954f41a1d36a6708a13c7f8135",
+      "counts": {
+        "input": 21632,
+        "kept": 21408,
+        "near_duplicates": 224
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00204.jsonl",
+      "bytes": 138874713,
+      "documents": 26677,
+      "sha256": "0302f6503a54cc397bc7f16ab0692dc0b6ab7ee5e23865600ccafa8f981a3732",
+      "counts": {
+        "input": 26688,
+        "kept": 26677,
+        "near_duplicates": 11
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00205.jsonl",
+      "bytes": 137449415,
+      "documents": 22387,
+      "sha256": "46a45de0ac5980498d0c2d3bc9b8ff2e23b6cc568eb855d65467a27f5e92dd8a",
+      "counts": {
+        "input": 22407,
+        "kept": 22387,
+        "near_duplicates": 20
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00206.jsonl",
+      "bytes": 129613746,
+      "documents": 5842,
+      "sha256": "60426aca19c9c753595b841a9ca15eeae32d4e2228fd73b3caa704fd569796e8",
+      "counts": {
+        "input": 6034,
+        "kept": 5842,
+        "near_duplicates": 192
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00207.jsonl",
+      "bytes": 124312253,
+      "documents": 5628,
+      "sha256": "dda412968f763798d19d38ed2a55f2b54a81cb18526b2daeae547ca414cffac7",
+      "counts": {
+        "input": 6008,
+        "kept": 5628,
+        "near_duplicates": 380
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00208.jsonl",
+      "bytes": 122439531,
+      "documents": 5707,
+      "sha256": "644392f889818c0640cf3c07e2c18d2025055e3396f2a2250e6ca80d7b2ce3d1",
+      "counts": {
+        "input": 6182,
+        "kept": 5707,
+        "near_duplicates": 475
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00209.jsonl",
+      "bytes": 128179670,
+      "documents": 4173,
+      "sha256": "aae43006478f94e481c197f1dcc537a7c22526e7b5cfa693c546a5463a800174",
+      "counts": {
+        "input": 4446,
+        "near_duplicates": 273,
+        "kept": 4173
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00210.jsonl",
+      "bytes": 134180532,
+      "documents": 5831,
+      "sha256": "bb231576df769eaf2c3f2f9497a1d531726a28e749a8458f78ac8a2d5f5fc7c0",
+      "counts": {
+        "input": 5869,
+        "kept": 5831,
+        "near_duplicates": 38
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00211.jsonl",
+      "bytes": 132671147,
+      "documents": 14623,
+      "sha256": "393f5aa4d8e6e3736bdafdd617973889d2c6ba96a04f54da34a01e09b77b748e",
+      "counts": {
+        "input": 14733,
+        "kept": 14623,
+        "near_duplicates": 110
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00212.jsonl",
+      "bytes": 132669576,
+      "documents": 14492,
+      "sha256": "f1532cad49dfaa72dd535ba02bb72ef21567236b6dfc544d6b10477699137fac",
+      "counts": {
+        "input": 14588,
+        "kept": 14492,
+        "near_duplicates": 96
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00213.jsonl",
+      "bytes": 132695741,
+      "documents": 14830,
+      "sha256": "9cbeecd8ea852492c9334d9effee92b2683386c5cc01a96f6deb02664f70840d",
+      "counts": {
+        "input": 14924,
+        "kept": 14830,
+        "near_duplicates": 94
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00214.jsonl",
+      "bytes": 133226666,
+      "documents": 14409,
+      "sha256": "acfe8a39a2ed852b3d692a79af19dfc20c08bc49950d19565b27ff26078f7ddd",
+      "counts": {
+        "input": 14488,
+        "kept": 14409,
+        "near_duplicates": 79
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00215.jsonl",
+      "bytes": 132614340,
+      "documents": 14045,
+      "sha256": "f7e34a88407a95ca1fc48373de80c0bc28d02c54eb7e5d14530bb78d27612825",
+      "counts": {
+        "input": 14127,
+        "kept": 14045,
+        "near_duplicates": 82
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00216.jsonl",
+      "bytes": 133759068,
+      "documents": 14981,
+      "sha256": "6bc9965a464e72d9156963c5052fde406dbcfb89a07a9f6a39b694ec3bbdc7c7",
+      "counts": {
+        "input": 15057,
+        "kept": 14981,
+        "near_duplicates": 76
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00217.jsonl",
+      "bytes": 135990272,
+      "documents": 19537,
+      "sha256": "89d279792e121d27f8526d7168ebd832f4c6ce26d4639ab0bba92c4dfd428ea8",
+      "counts": {
+        "input": 19579,
+        "kept": 19537,
+        "near_duplicates": 42
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00218.jsonl",
+      "bytes": 135608766,
+      "documents": 14051,
+      "sha256": "952770aac52c8b5f5e937a5ae98bab04d34c476a05cc0196674977b23ccfe963",
+      "counts": {
+        "input": 14085,
+        "kept": 14051,
+        "near_duplicates": 34
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00219.jsonl",
+      "bytes": 135240334,
+      "documents": 10613,
+      "sha256": "87857f26297d57e87a4d85a930bde55b6079dcde04d1654eda06552aea53fe55",
+      "counts": {
+        "input": 10654,
+        "kept": 10613,
+        "near_duplicates": 41
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00220.jsonl",
+      "bytes": 135014638,
+      "documents": 10251,
+      "sha256": "5723e1e3b8ec6385cd959a2265f658b3a1694f5bcb8606c81b12c9251e24bee6",
+      "counts": {
+        "input": 10294,
+        "kept": 10251,
+        "near_duplicates": 43
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00221.jsonl",
+      "bytes": 135492316,
+      "documents": 11644,
+      "sha256": "ca505593a7a2adc72f1892aa1a887d10964c83850cefa493532cafe9094e718b",
+      "counts": {
+        "input": 11687,
+        "kept": 11644,
+        "near_duplicates": 43
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00222.jsonl",
+      "bytes": 135183866,
+      "documents": 10291,
+      "sha256": "6cc0dc5a97707611744ef66db4ebd758d735ed6b1870dddf727db683f56c2cf7",
+      "counts": {
+        "input": 10332,
+        "kept": 10291,
+        "near_duplicates": 41
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00223.jsonl",
+      "bytes": 134495996,
+      "documents": 9917,
+      "sha256": "bb58e2a2841935086a3815ec51079e6b2dce50e8e51a24d829a07a139d247948",
+      "counts": {
+        "input": 9964,
+        "near_duplicates": 47,
+        "kept": 9917
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00224.jsonl",
+      "bytes": 135311213,
+      "documents": 10760,
+      "sha256": "6843fc7cc34189fd22f5f2fd5e4df234498bab6e82f65406fe8d571433a231d4",
+      "counts": {
+        "input": 10815,
+        "kept": 10760,
+        "near_duplicates": 55
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00225.jsonl",
+      "bytes": 134839467,
+      "documents": 10110,
+      "sha256": "8f1f34c82270b7f55c2430cb4171eec549f4ceeb133c2d48575106fc200ef748",
+      "counts": {
+        "input": 10184,
+        "kept": 10110,
+        "near_duplicates": 74
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00226.jsonl",
+      "bytes": 135156428,
+      "documents": 11006,
+      "sha256": "8958cd0a3afa2b82feb07bd0e4da56c8cc997ea0e93582a2787352fa1960d875",
+      "counts": {
+        "input": 11078,
+        "kept": 11006,
+        "near_duplicates": 72
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00227.jsonl",
+      "bytes": 135234004,
+      "documents": 10439,
+      "sha256": "92f639ec5cfc3343bc6819f6b3b73e994dfd46f7e21656b333e5ba39f8ca340e",
+      "counts": {
+        "input": 10498,
+        "kept": 10439,
+        "near_duplicates": 59
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00228.jsonl",
+      "bytes": 134479729,
+      "documents": 10580,
+      "sha256": "ceef3b742563f821dd549c21007073c74c46bee25b4d5c4815d4882aa6c81815",
+      "counts": {
+        "input": 10657,
+        "kept": 10580,
+        "near_duplicates": 77
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00229.jsonl",
+      "bytes": 135108313,
+      "documents": 10388,
+      "sha256": "8cb4c3eaf76fb2387f523f9076d05a3440e642dbf1e72b26e6e3eef87a4bc7bc",
+      "counts": {
+        "input": 10450,
+        "kept": 10388,
+        "near_duplicates": 62
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00230.jsonl",
+      "bytes": 134855933,
+      "documents": 10948,
+      "sha256": "c34d8613d12112acd52adbd22ffb8ad69bc0b292aec15d6e4517e525fd69aff4",
+      "counts": {
+        "input": 11043,
+        "kept": 10948,
+        "near_duplicates": 95
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00231.jsonl",
+      "bytes": 134770491,
+      "documents": 10396,
+      "sha256": "648630a64f8fa27c811efd7fd9912c6d4463e6193a2621e3ab46f5947d9ff544",
+      "counts": {
+        "input": 10476,
+        "kept": 10396,
+        "near_duplicates": 80
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00232.jsonl",
+      "bytes": 134152665,
+      "documents": 8573,
+      "sha256": "dfe55f88c432907f94acd525459518508a486cccd386b22053f2a5cd53b7e6a7",
+      "counts": {
+        "input": 8653,
+        "kept": 8573,
+        "near_duplicates": 80
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00233.jsonl",
+      "bytes": 134272956,
+      "documents": 2124,
+      "sha256": "0de99ef8da726901b56b6a46e6a60e090a2e9f1fed7af09a227cf496b0607433",
+      "counts": {
+        "input": 2124,
+        "kept": 2124
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00234.jsonl",
+      "bytes": 134239437,
+      "documents": 2119,
+      "sha256": "747800a57b350277fa30ca1714381d7e1de9b89a25114407194c471e846fcd2c",
+      "counts": {
+        "input": 2119,
+        "kept": 2119
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00235.jsonl",
+      "bytes": 134170252,
+      "documents": 2068,
+      "sha256": "f1aab4f4ef2a6feba4b0fdf69975e4a04463c9d16bf8724bf297f617d65ecfca",
+      "counts": {
+        "input": 2069,
+        "kept": 2068,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00236.jsonl",
+      "bytes": 136751809,
+      "documents": 15602,
+      "sha256": "416a125238307724c0d8921dc9325e029a24529e14e51918f46923ee0d9f5dbc",
+      "counts": {
+        "input": 15614,
+        "kept": 15602,
+        "near_duplicates": 12
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00237.jsonl",
+      "bytes": 138886269,
+      "documents": 26752,
+      "sha256": "2ab25c33c3a8ed683977bd959b1083521f06d1b3bee9f49b7041b1fe4f9e8903",
+      "counts": {
+        "input": 26782,
+        "kept": 26752,
+        "near_duplicates": 30
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00238.jsonl",
+      "bytes": 138854530,
+      "documents": 26847,
+      "sha256": "473285ee10af1d7b89bf53f262192abd52d2a1d650071183e6dbecec2b6362a2",
+      "counts": {
+        "input": 26881,
+        "kept": 26847,
+        "near_duplicates": 34
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00239.jsonl",
+      "bytes": 138825918,
+      "documents": 26810,
+      "sha256": "471d8abebc11c5d7a374cea68b08bbc1583e4da976ed02d7b3f8ea294c0bec8c",
+      "counts": {
+        "input": 26850,
+        "kept": 26810,
+        "near_duplicates": 40
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00240.jsonl",
+      "bytes": 138685045,
+      "documents": 26939,
+      "sha256": "079ac10c0260c97406246211a34535116c3093dbbe772e14a21dee793c8127af",
+      "counts": {
+        "input": 26994,
+        "kept": 26939,
+        "near_duplicates": 55
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00241.jsonl",
+      "bytes": 138686005,
+      "documents": 26927,
+      "sha256": "be766e768214fa9e287425a04505a770c537da33179d0dc07a5ec8d7f2b41e22",
+      "counts": {
+        "input": 26997,
+        "kept": 26927,
+        "near_duplicates": 70
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00242.jsonl",
+      "bytes": 138430644,
+      "documents": 25962,
+      "sha256": "501c01db938a24c91d4baa2ee545029239c146f3c60fdf263a115331d7e8e501",
+      "counts": {
+        "input": 26039,
+        "kept": 25962,
+        "near_duplicates": 77
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00243.jsonl",
+      "bytes": 138852253,
+      "documents": 26993,
+      "sha256": "8938414075e699cd86251089a58bfc3bbc0111114ad7d9b08ad7907c37dcc1d7",
+      "counts": {
+        "input": 27073,
+        "kept": 26993,
+        "near_duplicates": 80
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00244.jsonl",
+      "bytes": 138726159,
+      "documents": 26944,
+      "sha256": "64709f9b3382d1747a70a1f6b9cc2585e1f3585a4031ccd18a919f977950a0d4",
+      "counts": {
+        "input": 27025,
+        "kept": 26944,
+        "near_duplicates": 81
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00245.jsonl",
+      "bytes": 136184239,
+      "documents": 14327,
+      "sha256": "e93df599f3e09ae32f7c51dbb5f5ae488ea20c497e3cb70b0dfb175ddc737015",
+      "counts": {
+        "input": 14377,
+        "kept": 14327,
+        "near_duplicates": 50
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00246.jsonl",
+      "bytes": 134194964,
+      "documents": 2075,
+      "sha256": "f4274b387470647c9a2dd890e0cbe2d3c31c4a5988ef5e7024b840285cd9a69c",
+      "counts": {
+        "input": 2075,
+        "kept": 2075
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00247.jsonl",
+      "bytes": 134223890,
+      "documents": 2198,
+      "sha256": "28dcff933de3a234c5129ca661f6ab7a85d71546277ea6186fc89f28f926de59",
+      "counts": {
+        "input": 2198,
+        "kept": 2198
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00248.jsonl",
+      "bytes": 133840260,
+      "documents": 2451,
+      "sha256": "18310a3aa9fbb61916c601e1818c399807b44589903a33ce17733a8e94ec87e7",
+      "counts": {
+        "input": 2451,
+        "kept": 2451
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00249.jsonl",
+      "bytes": 134443902,
+      "documents": 2129,
+      "sha256": "7c0952387283733ea7bd0e3f86029d2228a12c0d5626193b45ddcb6b5949adac",
+      "counts": {
+        "input": 2129,
+        "kept": 2129
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00250.jsonl",
+      "bytes": 134147330,
+      "documents": 2125,
+      "sha256": "c40ad3e48a24115f8e9f9b97d97e04a2a9c209d66770762161f364a780502047",
+      "counts": {
+        "input": 2126,
+        "kept": 2125,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00251.jsonl",
+      "bytes": 133997482,
+      "documents": 2049,
+      "sha256": "6d0d6e9f26a20d820291018a45db9981e73b8c91068c7d7efcad31b46cd3d6e9",
+      "counts": {
+        "input": 2049,
+        "kept": 2049
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00252.jsonl",
+      "bytes": 134067586,
+      "documents": 2191,
+      "sha256": "ab4f9466280e35ad6b30f12968a988d8a0e6237e19c7c9c176da7dd65684e350",
+      "counts": {
+        "input": 2192,
+        "kept": 2191,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00253.jsonl",
+      "bytes": 134039734,
+      "documents": 2212,
+      "sha256": "5cf9562e072fc8b31c2cbca0650ec5860e0ae86cab8d8b76266daa53be7416d8",
+      "counts": {
+        "input": 2213,
+        "kept": 2212,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00254.jsonl",
+      "bytes": 134271630,
+      "documents": 2140,
+      "sha256": "73e27f9bd3900f826af513c6aeb76c218a5d850e8ddf4ea993dc5208dbe277e5",
+      "counts": {
+        "input": 2140,
+        "kept": 2140
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00255.jsonl",
+      "bytes": 134263830,
+      "documents": 1984,
+      "sha256": "81b832d4e2bb8e6c662b4d96d61cf153dc94f9bb68099b89d0e9f2df55bf26cd",
+      "counts": {
+        "input": 1984,
+        "kept": 1984
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00256.jsonl",
+      "bytes": 134044818,
+      "documents": 2113,
+      "sha256": "b7e33fccaddbd15c3898eab4c9b8d0732eb411d8f45a7367bea279445e1b427c",
+      "counts": {
+        "input": 2113,
+        "kept": 2113
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00257.jsonl",
+      "bytes": 133979825,
+      "documents": 2247,
+      "sha256": "05d2c6f42e336afcb542a90b05a201e499096bebf1e041c7dedce62189ca7292",
+      "counts": {
+        "input": 2248,
+        "kept": 2247,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00258.jsonl",
+      "bytes": 134231950,
+      "documents": 2137,
+      "sha256": "69697962e4f9ecef3f6a28a89500c786c8a99422a06db1e0e86cfdd5e02f977b",
+      "counts": {
+        "input": 2137,
+        "kept": 2137
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00259.jsonl",
+      "bytes": 133832442,
+      "documents": 2175,
+      "sha256": "dd81d4179e45b8ab3c0b4d89923742dcccf83cffc4d34a8606b1e114f4d17a27",
+      "counts": {
+        "input": 2176,
+        "kept": 2175,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00260.jsonl",
+      "bytes": 134114980,
+      "documents": 2180,
+      "sha256": "2483a9296cef8cc396a97171354a697e5419c28a16cffa762c4c99978a5951c8",
+      "counts": {
+        "input": 2180,
+        "kept": 2180
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00261.jsonl",
+      "bytes": 134154505,
+      "documents": 2103,
+      "sha256": "a5a9c5bfd872f4dc03c9af8542e9943ccbe996599db132c202f2068d611ad5b1",
+      "counts": {
+        "input": 2103,
+        "kept": 2103
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00262.jsonl",
+      "bytes": 134349008,
+      "documents": 2209,
+      "sha256": "603c4a14c8e9fd923f2c52df419bf3d2f1f10fea281d9b5e5caf6ad86dd20414",
+      "counts": {
+        "input": 2211,
+        "kept": 2209,
+        "near_duplicates": 2
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00263.jsonl",
+      "bytes": 133873072,
+      "documents": 2129,
+      "sha256": "9c0855549c0c6cbb5b68c445fe61fa997515dae8a9976db43e81ddf4d7025fb3",
+      "counts": {
+        "input": 2130,
+        "kept": 2129,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00264.jsonl",
+      "bytes": 133970961,
+      "documents": 2094,
+      "sha256": "41252dbac3bdfbd7b430c4b1c481eeb02116efea20d3a431b5667ee3508ff7b4",
+      "counts": {
+        "input": 2094,
+        "kept": 2094
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00265.jsonl",
+      "bytes": 134112284,
+      "documents": 2280,
+      "sha256": "cd91f3eb5b533602a240855e362f20c806184459cc01fcfd1a923781fb9bfb9f",
+      "counts": {
+        "input": 2280,
+        "kept": 2280
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00266.jsonl",
+      "bytes": 134194400,
+      "documents": 2053,
+      "sha256": "10510cc759c99faf2ab6a06eb33b0eefac733e304726ae106bf3706ff3401944",
+      "counts": {
+        "input": 2053,
+        "kept": 2053
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00267.jsonl",
+      "bytes": 134126956,
+      "documents": 2147,
+      "sha256": "bff3205cfaa9fb3b1693c58166ea4317453739dc80c021122ced3428185e30bc",
+      "counts": {
+        "input": 2148,
+        "kept": 2147,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00268.jsonl",
+      "bytes": 133941434,
+      "documents": 2161,
+      "sha256": "8c7c6462940d6f4138d1e2ae14ba98654170845341de499568411c31f70c4985",
+      "counts": {
+        "input": 2161,
+        "kept": 2161
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00269.jsonl",
+      "bytes": 133402126,
+      "documents": 2048,
+      "sha256": "a9b01c424759cd43389ff4cec608e649c6da4a03e6affe4c4b7b58c54c8d1db1",
+      "counts": {
+        "input": 2048,
+        "kept": 2048
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00270.jsonl",
+      "bytes": 134312200,
+      "documents": 2085,
+      "sha256": "5002519c0075548d7a93146e66239d92f3e56b36ed4f52d5edf2ad489e112005",
+      "counts": {
+        "input": 2085,
+        "kept": 2085
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00271.jsonl",
+      "bytes": 133864561,
+      "documents": 2010,
+      "sha256": "5888dcb4e431a6e520ab47f01be727b48def0683333cc358c8751c72f10c8016",
+      "counts": {
+        "input": 2010,
+        "kept": 2010
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00272.jsonl",
+      "bytes": 133949136,
+      "documents": 2129,
+      "sha256": "a884f2f0aedb208242f5af839a9e4edd3bd7b74e0c420b7e1caf2abe25bb5c87",
+      "counts": {
+        "input": 2130,
+        "kept": 2129,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00273.jsonl",
+      "bytes": 134132220,
+      "documents": 2061,
+      "sha256": "f72d62af54058ac96461da78f9d0fa9f1c7e3954ad6c9801846616bed731a2f9",
+      "counts": {
+        "input": 2062,
+        "kept": 2061,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00274.jsonl",
+      "bytes": 134288939,
+      "documents": 2134,
+      "sha256": "afe5b0f880359ee3cefa7adc9a4f6171005a487aa66fa0a55a89d6870fd8e101",
+      "counts": {
+        "input": 2135,
+        "kept": 2134,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00275.jsonl",
+      "bytes": 133941976,
+      "documents": 2275,
+      "sha256": "bdccb2b3271573d62e640aa3ffdfb97252458056218ac4ec4d685c476b9b0439",
+      "counts": {
+        "input": 2276,
+        "kept": 2275,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00276.jsonl",
+      "bytes": 134504231,
+      "documents": 2779,
+      "sha256": "395fa3c437a6506a1efa9572a53d7419d1546cf9bffe4484764c3073bc8f7573",
+      "counts": {
+        "input": 2779,
+        "kept": 2779
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00277.jsonl",
+      "bytes": 134249755,
+      "documents": 2115,
+      "sha256": "214b105e514b25aeb814609b6c33912b6499731edca1d37997dbbe4169e03b86",
+      "counts": {
+        "input": 2115,
+        "kept": 2115
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00278.jsonl",
+      "bytes": 134036376,
+      "documents": 2163,
+      "sha256": "c35420ece02d4b404b494eacf1fa7ab556ba5ac2858dfc7431d8afe51002686d",
+      "counts": {
+        "input": 2164,
+        "kept": 2163,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/dolma-body/part-00279.jsonl",
+      "bytes": 36137252,
+      "documents": 566,
+      "sha256": "b51187ea0b8d3a642593524f8570b4030c7af23f68664a01d07c732d900f65c8",
+      "counts": {
+        "input": 566,
+        "kept": 566
+      }
+    }
+  ],
+  "counts": {
+    "input": 2326234,
+    "kept": 2304360,
+    "near_duplicates": 21874
+  },
+  "upstream_report_sha256": "faf9bfa56e1d6141e356b2221cc967a2425f031b324001da8b7244bf9b0a86a6",
+  "script_sha256": "f7a5ba73ce3248c68efe9b3ee39d5421af0eeb3d8dde05a62d5fc216c861de9a",
+  "method": "5-unit shingles, 64 MinHash permutations, 8x8 LSH, feature Jaccard>=0.9; SFT/preference exact dedup only"
+}

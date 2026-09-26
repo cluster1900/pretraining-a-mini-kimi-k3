@@ -1,0 +1,23 @@
+{
+  "status": "complete",
+  "source": "openassistant",
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/openassistant/part-00000.jsonl",
+      "bytes": 111931003,
+      "documents": 53615,
+      "sha256": "d0f8e0f0e7986a4c52dc3e2b8258a16b07f9ef0fa9e07213039bf01e3862a6e9",
+      "counts": {
+        "input": 53615,
+        "kept": 53615
+      }
+    }
+  ],
+  "counts": {
+    "input": 53615,
+    "kept": 53615
+  },
+  "upstream_report_sha256": "cb16d57cf7274c97c0b5c958cbfaa5de5158cb18b8e8ef1633318d400f3b1572",
+  "script_sha256": "f7a5ba73ce3248c68efe9b3ee39d5421af0eeb3d8dde05a62d5fc216c861de9a",
+  "method": "5-unit shingles, 64 MinHash permutations, 8x8 LSH, feature Jaccard>=0.9; SFT/preference exact dedup only"
+}

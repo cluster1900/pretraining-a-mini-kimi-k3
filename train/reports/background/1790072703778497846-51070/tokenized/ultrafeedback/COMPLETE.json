@@ -1,0 +1,40 @@
+{
+  "status": "complete",
+  "source": "ultrafeedback",
+  "kind": "preference",
+  "counts": {
+    "documents": 60482,
+    "train_documents": 59872,
+    "train_tokens": 50794978,
+    "validation_documents": 610,
+    "validation_tokens": 539615
+  },
+  "files": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/ultrafeedback/train.jsonl",
+      "split": "train",
+      "bytes": 368354899,
+      "sha256": "a9154aa5455d6fbb3c5360ed0b31c7d4b95f3e7fb9d229e7ae57e2186d0e8ac6"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/ultrafeedback/validation.jsonl",
+      "split": "validation",
+      "bytes": 3895056,
+      "sha256": "39795f48793a0b1aaddba428dd6ad13f542d45c7aff9d491a526f786a05a4ff8"
+    }
+  ],
+  "tokenizer_fingerprint": "1732cd666e532d83bf2e6ff13888950eb517b6d2c8c2ffc542804907dd9026e8",
+  "tokenizer_assets": {
+    "tiktoken.model": "b6c497a7469b33ced9c38afb1ad6e47f03f5e5dc05f15930799210ec050c5103",
+    "tokenizer_config.json": "5d0803c94db9cd78763499e0956c95fd5a225c14a727e5a6cf5db3f96f010a6e",
+    "tokenization_kimi.py": "f28ea66e2d862a2a5814970b2ce40c2f7d8296ff09aed90a7e7def689b906944"
+  },
+  "vocab_size": 163840,
+  "dtype": "jsonl",
+  "upstream_sha256": "11bd05d93a11259b7be0de91e44c0016f325ad2912c72a5b0b0e89c18e4b5de7",
+  "script_sha256": "f610649a6b17f43e7a2e8c3c7f1dc31d1dea8c03c1647cba6f1d1b0b2bf31b40",
+  "document_index": {
+    "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/ultrafeedback/documents.jsonl",
+    "sha256": "1cef5d51edf93ffb923cc44633ffeebfe65d550fd6bbcbf0dfea1d76add5143b"
+  }
+}

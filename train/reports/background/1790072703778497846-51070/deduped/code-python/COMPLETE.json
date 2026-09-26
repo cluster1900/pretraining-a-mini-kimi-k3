@@ -1,0 +1,764 @@
+{
+  "source": "code-python",
+  "status": "complete",
+  "algorithm": "global-exact",
+  "counts": {
+    "input": 1277248,
+    "kept": 1274083,
+    "train": 1261696,
+    "validation": 12387,
+    "duplicates": 3165
+  },
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00000.jsonl",
+      "documents": 76863,
+      "bytes": 148474848,
+      "sha256": "babc41a63864da0f05c1185ddd587e0a7c732762cafaaf44996935e39526d446",
+      "counts": {
+        "input": 76863,
+        "kept": 76863,
+        "train": 76484,
+        "validation": 379
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00001.jsonl",
+      "documents": 91936,
+      "bytes": 151269814,
+      "sha256": "095358d332cb9a17a5e20a9d2fbfe04e226e5d17595d9e0b699814c6e35089ff",
+      "counts": {
+        "input": 91936,
+        "kept": 91936,
+        "train": 90724,
+        "validation": 1212
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00002.jsonl",
+      "documents": 83513,
+      "bytes": 149792564,
+      "sha256": "2cc816b20d9a6807b304cc62649d39c66c295df7f1f2279c91bbb764420c3ccf",
+      "counts": {
+        "input": 83513,
+        "kept": 83513,
+        "train": 82715,
+        "validation": 798
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00003.jsonl",
+      "documents": 82838,
+      "bytes": 149662938,
+      "sha256": "27c5a2e6bd5e2f053d6b39b20dc6f092604e2873a8251383483a7b91b3ddddb0",
+      "counts": {
+        "input": 82838,
+        "kept": 82838,
+        "train": 82379,
+        "validation": 459
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00004.jsonl",
+      "documents": 81948,
+      "bytes": 149445182,
+      "sha256": "ad90c421b3262218ffb8304da854c77280bd2a7643abbbf4d79797337ee7fc7b",
+      "counts": {
+        "input": 81948,
+        "kept": 81948,
+        "train": 80619,
+        "validation": 1329
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00005.jsonl",
+      "documents": 46927,
+      "bytes": 142819906,
+      "sha256": "3dbea52b691c15bbddc682882daf16d1cbdc771c9edf7fc99f62e77e5ec8af70",
+      "counts": {
+        "input": 46927,
+        "kept": 46927,
+        "train": 46654,
+        "validation": 273
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00006.jsonl",
+      "documents": 16317,
+      "bytes": 136991637,
+      "sha256": "a5fea67b23762fbe10ad7fb66962d35a6dff7ae077ccea642ee8835aba93a065",
+      "counts": {
+        "input": 16317,
+        "kept": 16317,
+        "train": 16169,
+        "validation": 148
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00007.jsonl",
+      "documents": 16253,
+      "bytes": 137010069,
+      "sha256": "7d5fa741423379323502439e3a4fb27bf67e213fa06951406e7e96434ed9dca3",
+      "counts": {
+        "input": 16253,
+        "kept": 16253,
+        "train": 16086,
+        "validation": 167
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00008.jsonl",
+      "documents": 16212,
+      "bytes": 137003366,
+      "sha256": "4612dded2269b21cf4e770d87fbbb3139d6c591864d9399a7134253f92b664f1",
+      "counts": {
+        "input": 16212,
+        "kept": 16212,
+        "train": 16057,
+        "validation": 155
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00009.jsonl",
+      "documents": 16019,
+      "bytes": 136978156,
+      "sha256": "0d5983c1620a7d9229d9fbb67a5ff484a3fb99712567f7eecdc6ceafda961f31",
+      "counts": {
+        "input": 16019,
+        "kept": 16019,
+        "train": 15850,
+        "validation": 169
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00010.jsonl",
+      "documents": 16482,
+      "bytes": 137077409,
+      "sha256": "af39d5f83def0ba0b4b761942834e45dcac3320f5c052070552fb522f69b03c2",
+      "counts": {
+        "input": 16482,
+        "kept": 16482,
+        "train": 16308,
+        "validation": 174
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00011.jsonl",
+      "documents": 15995,
+      "bytes": 136889958,
+      "sha256": "0d1a3d3ed77b2daa26811f37ef8e2d8b763b9b2bdc9f8184cd5f615d53bdac47",
+      "counts": {
+        "input": 15995,
+        "kept": 15995,
+        "train": 15842,
+        "validation": 153
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00012.jsonl",
+      "documents": 15334,
+      "bytes": 136877474,
+      "sha256": "edeb6cabf080c9a3a674a90d6c2a9d7dbb968be79e91c29ebe1c86f986237ec0",
+      "counts": {
+        "input": 15334,
+        "kept": 15334,
+        "train": 15204,
+        "validation": 130
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00013.jsonl",
+      "documents": 16732,
+      "bytes": 137131977,
+      "sha256": "ab555d060809a77f15d224ae05e65f97d9d185109290e91a2148616bef9da184",
+      "counts": {
+        "input": 16732,
+        "kept": 16732,
+        "train": 16574,
+        "validation": 158
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00014.jsonl",
+      "documents": 15997,
+      "bytes": 136934497,
+      "sha256": "49122cd0be1857c2577e9c77350d056c86a386ed7b9a96d8902bf6de56cc1679",
+      "counts": {
+        "input": 15997,
+        "kept": 15997,
+        "train": 15835,
+        "validation": 162
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00015.jsonl",
+      "documents": 16243,
+      "bytes": 137060991,
+      "sha256": "78d12d3882a93706d4515fa313380f2b09524e2f18033d45612044c9830d062e",
+      "counts": {
+        "input": 16243,
+        "kept": 16243,
+        "train": 16081,
+        "validation": 162
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00016.jsonl",
+      "documents": 15307,
+      "bytes": 136856506,
+      "sha256": "9473143b9a2e65bcf0596d91e3bb627317714ef38110d5814aeba179f4dfa9db",
+      "counts": {
+        "input": 15307,
+        "kept": 15307,
+        "train": 15157,
+        "validation": 150
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00017.jsonl",
+      "documents": 16361,
+      "bytes": 136899656,
+      "sha256": "dcaad360aa589a1a5a2256bbe9028fdca41c10bcdc66ee68b84eaff86b3d585a",
+      "counts": {
+        "input": 16361,
+        "kept": 16361,
+        "train": 16215,
+        "validation": 146
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00018.jsonl",
+      "documents": 16756,
+      "bytes": 137138248,
+      "sha256": "19dd0f5982c44698cebbd73f15e7ad1e11fadbacd756f21414db564db6d6436a",
+      "counts": {
+        "input": 16756,
+        "kept": 16756,
+        "train": 16580,
+        "validation": 176
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00019.jsonl",
+      "documents": 16033,
+      "bytes": 136887159,
+      "sha256": "54e8deb42577ddffa949ee9a91e483a74bc93ee3c12cd702d6161103cdd878d3",
+      "counts": {
+        "input": 16033,
+        "kept": 16033,
+        "train": 15871,
+        "validation": 162
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00020.jsonl",
+      "documents": 16499,
+      "bytes": 137102678,
+      "sha256": "8439827b5e0595811bde25481a837f25cb2b379143455f0014c878d8be829343",
+      "counts": {
+        "input": 16499,
+        "kept": 16499,
+        "train": 16336,
+        "validation": 163
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00021.jsonl",
+      "documents": 15806,
+      "bytes": 136930321,
+      "sha256": "139eef87e7b622b488ab52272159306f339b48f32496147dbbdc91eabc586670",
+      "counts": {
+        "input": 15806,
+        "kept": 15806,
+        "train": 15658,
+        "validation": 148
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00022.jsonl",
+      "documents": 16087,
+      "bytes": 136860431,
+      "sha256": "2fa870c34bfb46aa30ca945ea92314fe1e23db6ee29a49910d752d5baebbd671",
+      "counts": {
+        "input": 16087,
+        "kept": 16087,
+        "train": 15918,
+        "validation": 169
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00023.jsonl",
+      "documents": 15457,
+      "bytes": 136843736,
+      "sha256": "4967c10efbca590f8da0e054b317e2e8c3c280681dfd29bd755cb012e6f22717",
+      "counts": {
+        "input": 15457,
+        "kept": 15457,
+        "train": 15284,
+        "validation": 173
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00024.jsonl",
+      "documents": 15464,
+      "bytes": 136950802,
+      "sha256": "2b615d3b3298117fb038954e05808bd0f1c0b683f30ca777404cdfd0a0cf1d7f",
+      "counts": {
+        "input": 15464,
+        "kept": 15464,
+        "train": 15313,
+        "validation": 151
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00025.jsonl",
+      "documents": 16373,
+      "bytes": 137014284,
+      "sha256": "2c0259f65ab4519ce8c409cf1edc0dae02d9d6c2ad42c01652f56a5d775a4930",
+      "counts": {
+        "input": 16373,
+        "kept": 16373,
+        "train": 16229,
+        "validation": 144
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00026.jsonl",
+      "documents": 15735,
+      "bytes": 136884956,
+      "sha256": "66470422808d912d20ddf0387f4f0e8fe0c1532bd29976337a36fc55e1363ff0",
+      "counts": {
+        "input": 15735,
+        "kept": 15735,
+        "train": 15551,
+        "validation": 184
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00027.jsonl",
+      "documents": 16169,
+      "bytes": 136930689,
+      "sha256": "c9ffd7e0aa6cea63838ad5431a50ecc0caba45d738f1d46b93d11a9dcefafaff",
+      "counts": {
+        "input": 16169,
+        "kept": 16169,
+        "train": 15992,
+        "validation": 177
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00028.jsonl",
+      "documents": 16327,
+      "bytes": 136981398,
+      "sha256": "8b31335e4c65dbb13da06b9f0b87bbd289395060399907017287ed8e3fefa837",
+      "counts": {
+        "input": 16327,
+        "kept": 16327,
+        "train": 16156,
+        "validation": 171
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00029.jsonl",
+      "documents": 16195,
+      "bytes": 137078699,
+      "sha256": "21ec357cb934540ccc5763268e6f6e0cc2ff4c39f4abcb330aaeaa142914f11c",
+      "counts": {
+        "input": 16195,
+        "kept": 16195,
+        "train": 16011,
+        "validation": 184
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00030.jsonl",
+      "documents": 15933,
+      "bytes": 136977710,
+      "sha256": "8331f92298658fa61db1702fec62706eec46938c66d855ce9fb9e9bf2de80743",
+      "counts": {
+        "input": 15933,
+        "kept": 15933,
+        "train": 15786,
+        "validation": 147
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00031.jsonl",
+      "documents": 16121,
+      "bytes": 136997889,
+      "sha256": "43918818601f3246a39e790c05911f7be29ba3a5b0f615fcb8b85b8b0f5123f0",
+      "counts": {
+        "input": 16121,
+        "kept": 16121,
+        "train": 15975,
+        "validation": 146
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00032.jsonl",
+      "documents": 16364,
+      "bytes": 137100919,
+      "sha256": "0824d886374060fc1fd044c34e16aba89dbc0e5eedffc67df01b60f865fed283",
+      "counts": {
+        "input": 16364,
+        "kept": 16364,
+        "train": 16201,
+        "validation": 163
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00033.jsonl",
+      "documents": 16532,
+      "bytes": 136954273,
+      "sha256": "0ae41632d27b4056d74524f0726b3e9f91b58c884351a680d6cf1739854413f9",
+      "counts": {
+        "input": 16532,
+        "kept": 16532,
+        "train": 16375,
+        "validation": 157
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00034.jsonl",
+      "documents": 15707,
+      "bytes": 136873458,
+      "sha256": "33e3c3bc10b49d5d5f07256c532792f6f410a647afd3f6b08332e07899900da0",
+      "counts": {
+        "input": 15707,
+        "kept": 15707,
+        "train": 15568,
+        "validation": 139
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00035.jsonl",
+      "documents": 16224,
+      "bytes": 136986633,
+      "sha256": "1cb8b1777b9a98000b28bae07520b4c017c7fd5ff1fa235bbbab180724c9fbe3",
+      "counts": {
+        "input": 16224,
+        "kept": 16224,
+        "train": 16080,
+        "validation": 144
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00036.jsonl",
+      "documents": 16473,
+      "bytes": 137085154,
+      "sha256": "9977fe1bd6c3d9864695002ac3cc570173513f052ec279ea4d3aa9d433c8221e",
+      "counts": {
+        "input": 16473,
+        "kept": 16473,
+        "train": 16303,
+        "validation": 170
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00037.jsonl",
+      "documents": 16451,
+      "bytes": 136892754,
+      "sha256": "c2f4699292d1b25f47b4b55783d0847d879e5f37d64d85c1aeadb70b8b33815c",
+      "counts": {
+        "input": 16451,
+        "kept": 16451,
+        "train": 16291,
+        "validation": 160
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00038.jsonl",
+      "documents": 16721,
+      "bytes": 137170999,
+      "sha256": "1dfdb1688f36b3d8bc831e38afe1289053da0fc86afd7e34271ab33a48a13ead",
+      "counts": {
+        "input": 16721,
+        "kept": 16721,
+        "train": 16543,
+        "validation": 178
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00039.jsonl",
+      "documents": 16323,
+      "bytes": 136897526,
+      "sha256": "670792cf7e6cc69d530c7afb59488ada8e7b8c73ae0efafe019b1292634684b9",
+      "counts": {
+        "input": 16323,
+        "kept": 16323,
+        "train": 16162,
+        "validation": 161
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00040.jsonl",
+      "documents": 16140,
+      "bytes": 136887081,
+      "sha256": "41ab5233d797eef10cd91e964ff1945c0044e8f777d6b79aed3b913c9ea56f3b",
+      "counts": {
+        "input": 16140,
+        "kept": 16140,
+        "train": 16008,
+        "validation": 132
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00041.jsonl",
+      "documents": 16232,
+      "bytes": 136979227,
+      "sha256": "a2bf2826de552ad12c7bc2412268d08d52add5678a306dae75256c93236ce111",
+      "counts": {
+        "input": 16232,
+        "kept": 16232,
+        "train": 16074,
+        "validation": 158
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00042.jsonl",
+      "documents": 15913,
+      "bytes": 136975560,
+      "sha256": "fc4a2c6aee0eeef69a9883ec32405c7f7319dc267342ea422d641b0021b01573",
+      "counts": {
+        "input": 15913,
+        "kept": 15913,
+        "train": 15744,
+        "validation": 169
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00043.jsonl",
+      "documents": 16115,
+      "bytes": 136983648,
+      "sha256": "f6aafb84da35e15b16dbf95ab86eeed8577cd47c330aad390e307e4ff01f8d6f",
+      "counts": {
+        "input": 16115,
+        "kept": 16115,
+        "train": 15952,
+        "validation": 163
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00044.jsonl",
+      "documents": 15931,
+      "bytes": 137025580,
+      "sha256": "41ab63956e5ca596c63a7263798a00012c9ac093923354890a8f73b3bd43dca7",
+      "counts": {
+        "input": 15931,
+        "kept": 15931,
+        "train": 15778,
+        "validation": 153
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00045.jsonl",
+      "documents": 16636,
+      "bytes": 137133085,
+      "sha256": "0738fa214775b014c2b6677295cef3a79a06e4586840bbea16bd6ea777cd8218",
+      "counts": {
+        "input": 16636,
+        "kept": 16636,
+        "train": 16480,
+        "validation": 156
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00046.jsonl",
+      "documents": 15914,
+      "bytes": 137069946,
+      "sha256": "441cf6b4641fdfc4808123256d4bd2df6365f393267da341880cfce521276089",
+      "counts": {
+        "input": 15914,
+        "kept": 15914,
+        "train": 15771,
+        "validation": 143
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00047.jsonl",
+      "documents": 15792,
+      "bytes": 136584361,
+      "sha256": "e4dcfce388fe46e06901d6c2eff1e5e8161ff80d155679843743965f8281d7cf",
+      "counts": {
+        "input": 15792,
+        "kept": 15792,
+        "train": 15658,
+        "validation": 134
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00048.jsonl",
+      "documents": 15852,
+      "bytes": 137023020,
+      "sha256": "3eeccca5b48a3ea2f836a1292134d9ac35742728595c15e526aab152624a1497",
+      "counts": {
+        "input": 15852,
+        "kept": 15852,
+        "train": 15698,
+        "validation": 154
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00049.jsonl",
+      "documents": 16593,
+      "bytes": 137170890,
+      "sha256": "39a46d1c158e34cb935f941f03cca27c4c366373a31b91175468bad41a0956bc",
+      "counts": {
+        "input": 16593,
+        "kept": 16593,
+        "train": 16431,
+        "validation": 162
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00050.jsonl",
+      "documents": 16249,
+      "bytes": 136954859,
+      "sha256": "4f89dd8768fb36ab2fe838e94e1843d2bfa4f360d6de8649315c805fdc559793",
+      "counts": {
+        "input": 16249,
+        "kept": 16249,
+        "train": 16088,
+        "validation": 161
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00051.jsonl",
+      "documents": 15791,
+      "bytes": 136890342,
+      "sha256": "7bdac30db6795b468ae73597eb0534e730270eae1eeef501d3b74fb6542179c8",
+      "counts": {
+        "input": 15791,
+        "kept": 15791,
+        "train": 15628,
+        "validation": 163
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00052.jsonl",
+      "documents": 16452,
+      "bytes": 137165554,
+      "sha256": "7c4cff3511311a1d81d444f220007e8ca990c54330f102f7040dcd3714160c2c",
+      "counts": {
+        "input": 16452,
+        "kept": 16452,
+        "train": 16295,
+        "validation": 157
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00053.jsonl",
+      "documents": 15925,
+      "bytes": 136879454,
+      "sha256": "1e122cbdb1a2451987defb6c556012c8dd5b66054851640a0191fc9d18dd10bd",
+      "counts": {
+        "input": 15925,
+        "kept": 15925,
+        "train": 15777,
+        "validation": 148
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00054.jsonl",
+      "documents": 16478,
+      "bytes": 137115373,
+      "sha256": "77bf821294f4c4039425f213d010fa91210c17f7093d5bf287de7bed5ccb7439",
+      "counts": {
+        "input": 16478,
+        "kept": 16478,
+        "train": 16311,
+        "validation": 167
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00055.jsonl",
+      "documents": 16442,
+      "bytes": 137151760,
+      "sha256": "7745b3a0209957a89f00356e3cfe1eb5b7247421436cf6d0613d6e108033d7fd",
+      "counts": {
+        "input": 16442,
+        "kept": 16442,
+        "train": 16275,
+        "validation": 167
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00056.jsonl",
+      "documents": 609,
+      "bytes": 9211384,
+      "sha256": "ef4f9c8158d10998adb68f3ec3b6c6ea49c9bc83de5c612968e977f13ff3530f",
+      "counts": {
+        "input": 685,
+        "kept": 609,
+        "train": 604,
+        "validation": 5,
+        "duplicates": 76
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00057.jsonl",
+      "documents": 255,
+      "bytes": 1405019,
+      "sha256": "9cb98a9a12c6afdf1dbee58fcedeee70eaf541b6d5f10b5a631affdfa510dd89",
+      "counts": {
+        "input": 581,
+        "duplicates": 326,
+        "kept": 255,
+        "train": 255
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00058.jsonl",
+      "documents": 213,
+      "bytes": 981693,
+      "sha256": "3d7237834f47c4026e59fa23431166808d98b0a2425960edff03efac961a092b",
+      "counts": {
+        "input": 637,
+        "kept": 213,
+        "train": 210,
+        "duplicates": 424,
+        "validation": 3
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00059.jsonl",
+      "documents": 326,
+      "bytes": 2135337,
+      "sha256": "8d63248bdc6cef877b26a5616557edf677a7eff576d22082e7142cd236af5ae3",
+      "counts": {
+        "input": 730,
+        "kept": 326,
+        "train": 326,
+        "duplicates": 404
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00060.jsonl",
+      "documents": 1112,
+      "bytes": 5085323,
+      "sha256": "340ada22282f5e832c4726c4ead1cc5c9b7b534102c56db76c74017dcdb8dea8",
+      "counts": {
+        "input": 1658,
+        "duplicates": 546,
+        "kept": 1112,
+        "train": 1111,
+        "validation": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/code-python/part-00061.jsonl",
+      "documents": 86,
+      "bytes": 359440,
+      "sha256": "0b5dfbfe2c2f6c1b53e1ecd97af4266d7474c544d18b1f44b9c3cc2d2d81d8a2",
+      "counts": {
+        "input": 1475,
+        "kept": 86,
+        "train": 86,
+        "duplicates": 1389
+      }
+    }
+  ],
+  "upstream_report_sha256": "54d232753396cb7b4bc495f8b5a788e5145c0114d52d96cb0b74f48ecb8a5cb7",
+  "global_identity": "39c8862ef068f802d33936d1968a72cbdf221ffce8c2f6ae9d9f80541305f96f",
+  "script_sha256": "d05b7da57b834d6b18a30d57203534a5d62e91898e809de40f8b3c8fd9ee873f"
+}

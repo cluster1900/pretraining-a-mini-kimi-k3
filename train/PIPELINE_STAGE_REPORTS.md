@@ -2,24 +2,31 @@
 
 本文件是验收索引。每个阶段完成后，控制器把服务器上的真实报告、报告 SHA256 和对应脚本版本记录到服务器项目 `train/reports/background/<run>/`，再进入下一阶段；后续检查时同步小型报告到本地 `train/`。合成回归不计作真实语料完成证据。
 
-## 2026-09-17 用户批准审核子集后的重建（优先于下方历史快照）
+## 2026-09-26 supplement-v2 (CodeSearchNet 增补) 阶段完成与终态审计台账
 
-用户已明确批准 Glaive/MetaMath 两个子集并授权后台执行，238,688条候选经原清洗规则保留238,672条。批准仅覆盖SHA256为 `3a6a1610d8ce9a62788aa9d0b5a170bf0b265587b2f89215c3179d0959b7d25d` 的审核版，原始全量未获批准。`SOURCE_REVIEW.json` 已改为schema 2并绑定审核输入、报告、脚本与canonical/cleaned报告哈希；批准记录SHA256为 `4a276b17f929a9c7442a87fdfb49e0790e35e69a98939f40ba948c1c005e6263`。
+为彻底填平 `code-python` 在 10B 固定配比下的 44.1M tokens 缺口，启动隔离运行根目录 `/data/mini-k3/data/prepared-v2-supplement-v2`（控制器 PID 51070，归档于 `train/reports/background/1790072703778497846-51070/`）。
 
-本轮11来源canonical→cleaned元数据链通过；服务器38项数据回归通过；真实tokenizer的11来源合成整链路回归通过。全局去重及所有下游重新生成，不能沿用下表旧全量11/11作为本轮完成证据。自动链路终点为manifest审计与真实manifest功能smoke，正式SFT仍需预训练checkpoint与SFT短跑。
+截至 2026-09-24 22:15，**所有 11 个数据源的重度数据处理与 Token 编码阶段已 100% 全部完成**：
+1. **统一格式转换 (canonical) & 清洗 (cleaned)**：`code-python` 成功整合基线 8 分片 + 补充 200 分片 + CodeSearchNet 4 分片（455,243 条优质 Python 函数），产出 1,438,545 条 clean 样本；其余 10 来源重绑通过。11/11 已归档。
+2. **全局精确去重 (deduped)**：11 个数据源共保留 18,007,744 篇文档，其中 `code-python` 保留 1,274,083 篇。11/11 已归档。
+3. **全局 MinHash 近去重 (near-deduped)**：2026-09-24 12:08 全部完成。`code-python` 滤除近重复 45,328 篇（保留 1,228,755 篇）；`fineweb-edu` 滤除 235,709 篇（保留 4,931,516 篇）；全部 11 来源通过。11/11 已归档。
+4. **13-gram 评测基准去污染 (decontaminated)**：2026-09-24 18:55 全部完成，11 来源报告绑定统一 13-gram 索引。11/11 已归档。
+5. **Tokenizer 编码 (tokenized)**：2026-09-24 22:15 全部完成。产出全部 uint32 shards 与 document ledgers。11/11 已归档。
+6. **10B 预训练配比核验 (7/7 全部达标)**：总可用预训练训练 Token 达 **28,214,510,016 (28.21B)**。`code-python` 达 **1,288,200,254**（要求 1,225,000,878，**净盈余 +63.2M tokens**）；其余 6 领域均大幅盈余，彻底满足 10B 固定混合纯净无重复采样。
+7. **终态 Manifest 审计 (finalize)**：2026-09-24 22:15 执行 `finalize_v2.py` 时在 `openassistant` 触发 `ValueError: Train/validation group overlap`。全库 16,097,968 个唯一分组经全量哈希扫描确认：其余 10 个数据源 0 冲突，仅有 `openassistant` 的 1 个对话树（`bfe63f8ebe9065b57ad3b71b1ad7e22cea8a12d59e99a72e9979024af633f914`）存在 3 条分支与 1 条验证集分支跨 split，等待执行收敛修复并生成最终 Manifest 与 Smoke。
 
-启动证据：控制器PID101860及子进程101863已在SSH断开后继续执行全局精确去重，OpenHermes这一阶段保留238,672条（train236,270 / validation2,402）。服务器阶段归档路径 `/data/mini-k3/project/train/reports/background/1789617455875445126-101860/`。本地 `train/reports/verification/approved-20260917/INDEX.json` 记录本轮初始10份报告哈希；已核验批准与canonical/cleaned绑定一致。应用内自动跟进两次创建均因自动审批超时失败，当前仅服务器控制器自动推进与归档，尚无主动通知或代理自动修复。
-
-| 阶段 | 权威完成条件 | 本地报告 | 当前状态 |
+| 阶段 | 权威完成条件 | 本地报告路径 | 当前状态 |
 |---|---|---|---|
-| 统一格式转换 | 11 个来源 canonical 完成，来源、输入文件哈希、统计守恒通过 | `train/reports/real/canonical/*/COMPLETE.json` | 11/11 已归档；远端元数据链检查通过 |
-| 清洗 | 11 个来源清洗报告，拒绝原因、统计守恒、上游哈希通过 | `train/reports/real/cleaned/*/COMPLETE.json` | 11/11 已归档；远端元数据链检查通过 |
-| 去重 | 全局精确去重完成，训练/验证分组隔离 | `train/reports/real/deduped/*/COMPLETE.json` | 11/11 已归档；远端元数据链检查通过 |
-| 13-gram 去污染 | 七项评测索引非空，11 个来源报告绑定同一索引 | `train/reports/decontaminated.json` | 待真实流水线终态 |
-| tokenizer 编码 | 11 个来源编码完成，真实 tokenizer 指纹、EOS、统计守恒通过 | `train/reports/tokenized.json` | 待真实流水线终态 |
-| uint32 shards | 小端 uint32、文件字节数/哈希/词数全部通过 | `train/reports/shards.json` | 待真实流水线终态 |
-| manifest | 四份 manifest 与 AUDIT 哈希绑定，配比、来源、split 通过 | `train/reports/manifests.json` | 待真实流水线终态 |
-| smoke test | 真实 manifest smoke 两次优化更新通过，有限性/梯度/显存报告存在 | `train/reports/smoke.json` | 待真实流水线终态 |
+| 统一格式转换 (canonical) | 11 个来源 canonical 完成，来源/分片/统计守恒通过 | `train/reports/background/1790072703778497846-51070/canonical/*/COMPLETE.json` | 11/11 已归档并通过 |
+| 清洗 (cleaned) | 11 个来源清洗报告，拒绝原因/守恒/上游哈希通过 | `train/reports/background/1790072703778497846-51070/cleaned/*/COMPLETE.json` | 11/11 已归档并通过 |
+| 全局精确去重 (deduped) | 11 个来源精确去重完成，数据库哈希守恒 | `train/reports/background/1790072703778497846-51070/deduped/*/COMPLETE.json` | 11/11 已归档并通过 |
+| 全局近去重 (near-deduped) | 11 个来源 MinHash-LSH 完成，Jaccard>=0.9 滤除 | `train/reports/background/1790072703778497846-51070/near-deduped/*/COMPLETE.json` | 11/11 已归档并通过 (09-24 12:08) |
+| 13-gram 去污染 | 七项评测索引绑定，11 个来源过滤报告存在 | `train/reports/background/1790072703778497846-51070/decontaminated/*/COMPLETE.json` | 11/11 已归档并通过 (09-24 18:55) |
+| Tokenizer 编码 | 11 个来源 uint32 / sft jsonl 编码完成，指纹一致 | `train/reports/background/1790072703778497846-51070/tokenized/*/COMPLETE.json` | 11/11 已归档并通过 (09-24 22:15) |
+| Manifest 全量审计 | 4 份 manifest + AUDIT.json 生成，split 0 冲突 | `train/reports/manifests.json` | 待修复 openassistant 单组重叠并重跑 |
+| 模型 Smoke 验证 | 真实 manifest smoke 梯度/损失有限/显存报告通过 | `train/reports/smoke.json` | 待 manifest 审计完成后执行 |
+
+## 2026-09-17 用户批准审核子集后的重建（历史记录）
 
 阶段报告由 `train/data/stage_audit.py` 和 `train/data/finalize_v2.py` 生成或核验；最终 smoke 由 `train/smoke_from_manifest.py` 生成。所有报告必须保留服务器报告中的 `script_sha256`、输入/输出哈希和生成时间。
 

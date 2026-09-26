@@ -1,0 +1,64 @@
+{
+  "source": "openhermes",
+  "status": "complete",
+  "algorithm": "global-exact",
+  "counts": {
+    "input": 238672,
+    "kept": 238672,
+    "train": 236270,
+    "validation": 2402
+  },
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/openhermes/part-00000.jsonl",
+      "documents": 66955,
+      "bytes": 146738420,
+      "sha256": "0d16a34e18ce618216548e1543ba0ce0ca7f46eb9015cd84c4dc19c11dfec01d",
+      "counts": {
+        "input": 66955,
+        "kept": 66955,
+        "train": 66295,
+        "validation": 660
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/openhermes/part-00001.jsonl",
+      "documents": 70544,
+      "bytes": 147398309,
+      "sha256": "d92888886adadfd7907ef373e1ab9aa43fa479a615ac86c7252a00e7bdfe2f1f",
+      "counts": {
+        "input": 70544,
+        "kept": 70544,
+        "train": 69822,
+        "validation": 722
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/openhermes/part-00002.jsonl",
+      "documents": 60712,
+      "bytes": 145519287,
+      "sha256": "002d2f148b68e76ecef706b52dd0bdc5e50d96257e21a4361869307841298224",
+      "counts": {
+        "input": 60712,
+        "kept": 60712,
+        "train": 60109,
+        "validation": 603
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/openhermes/part-00003.jsonl",
+      "documents": 40461,
+      "bytes": 52657237,
+      "sha256": "cffce6c3a497440cbe9292415c9ab95eff4fef650e8cdbd37cdefa6703417b92",
+      "counts": {
+        "input": 40461,
+        "kept": 40461,
+        "train": 40044,
+        "validation": 417
+      }
+    }
+  ],
+  "upstream_report_sha256": "4f446827ed826627b0d74ce03074602f77bb91413c03ae75ecd3d2fb9b2fda97",
+  "global_identity": "39c8862ef068f802d33936d1968a72cbdf221ffce8c2f6ae9d9f80541305f96f",
+  "script_sha256": "d05b7da57b834d6b18a30d57203534a5d62e91898e809de40f8b3c8fd9ee873f"
+}

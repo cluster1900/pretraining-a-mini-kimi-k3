@@ -1,0 +1,694 @@
+{
+  "status": "complete",
+  "source": "code-python",
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00000.jsonl",
+      "bytes": 148016970,
+      "documents": 76759,
+      "sha256": "56b0b784ccfc06f58f3b9a5755394d3024a2fbb94e410da6fd8c8341be049276",
+      "counts": {
+        "input": 76863,
+        "kept": 76759,
+        "near_duplicates": 104
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00001.jsonl",
+      "bytes": 151224907,
+      "documents": 91899,
+      "sha256": "b25d65488e40ea88d59d184dca7a9753627838237a5095a7e19309175984cdf2",
+      "counts": {
+        "input": 91936,
+        "kept": 91899,
+        "near_duplicates": 37
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00002.jsonl",
+      "bytes": 149712915,
+      "documents": 83473,
+      "sha256": "82468eec3d09d4c69415259544f1b08d962d244a7af580665f3b9647706c7482",
+      "counts": {
+        "input": 83513,
+        "kept": 83473,
+        "near_duplicates": 40
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00003.jsonl",
+      "bytes": 149328611,
+      "documents": 82731,
+      "sha256": "8cb7900802938e5deac181e72ccc0ee73e6a0d655e9f63dd143cf3a30e071d93",
+      "counts": {
+        "input": 82838,
+        "kept": 82731,
+        "near_duplicates": 107
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00004.jsonl",
+      "bytes": 149383603,
+      "documents": 81914,
+      "sha256": "16cd4209118afabb44142a1a71ad30ffc9fec2bd553a607766de1ef015f9289c",
+      "counts": {
+        "input": 81948,
+        "kept": 81914,
+        "near_duplicates": 34
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00005.jsonl",
+      "bytes": 142501256,
+      "documents": 46878,
+      "sha256": "f1d52a77604d0ed005586079d4e8b781dbc6af67021a31a591b8bd7a9e338735",
+      "counts": {
+        "input": 46927,
+        "kept": 46878,
+        "near_duplicates": 49
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00006.jsonl",
+      "bytes": 135865282,
+      "documents": 16216,
+      "sha256": "d60ccfb373b5f1a32c6de59d2151f1d4ed80b4cea29c8ca575318180c5854cab",
+      "counts": {
+        "input": 16317,
+        "kept": 16216,
+        "near_duplicates": 101
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00007.jsonl",
+      "bytes": 135029750,
+      "documents": 16109,
+      "sha256": "01928963bb2ce3092b16f168edf183ff968c2e41550ddbed3af998a7bba05c44",
+      "counts": {
+        "input": 16253,
+        "kept": 16109,
+        "near_duplicates": 144
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00008.jsonl",
+      "bytes": 133853707,
+      "documents": 15993,
+      "sha256": "f5b3a5c923d208971d5bd95ced0f1b1ac22a8d8ca2ffee3d60e4f4977633f33e",
+      "counts": {
+        "input": 16212,
+        "kept": 15993,
+        "near_duplicates": 219
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00009.jsonl",
+      "bytes": 132566549,
+      "documents": 15762,
+      "sha256": "41ddc9dac6dad59c1caf27bc388ae25808896089db706191e368bf9b23d2d18b",
+      "counts": {
+        "input": 16019,
+        "kept": 15762,
+        "near_duplicates": 257
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00010.jsonl",
+      "bytes": 130334505,
+      "documents": 16181,
+      "sha256": "d75ef6b501cec3b06475e07c5a8ac4a8d46f0fc0983cebd86e1d9e7d755028a3",
+      "counts": {
+        "input": 16482,
+        "kept": 16181,
+        "near_duplicates": 301
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00011.jsonl",
+      "bytes": 130265589,
+      "documents": 15663,
+      "sha256": "e23b501d0d50a5009c3c6adbff54213693637dceb02f40997533a25f42ce4b75",
+      "counts": {
+        "input": 15995,
+        "kept": 15663,
+        "near_duplicates": 332
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00012.jsonl",
+      "bytes": 130162648,
+      "documents": 14968,
+      "sha256": "13db442fcefb9d9156978a3a91ef979040f7b210d4bb269a3326915d0eae1ab7",
+      "counts": {
+        "input": 15334,
+        "kept": 14968,
+        "near_duplicates": 366
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00013.jsonl",
+      "bytes": 129306692,
+      "documents": 16317,
+      "sha256": "4d2171b3b16da990de87c45a7acc057806bb71690e4509fcb073e6f2a93aaa2b",
+      "counts": {
+        "input": 16732,
+        "kept": 16317,
+        "near_duplicates": 415
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00014.jsonl",
+      "bytes": 128972483,
+      "documents": 15574,
+      "sha256": "6f8e9a936f3da2259ccdcfe7895477861c0d5e8e6ba57d3c543b8fdd144044b7",
+      "counts": {
+        "input": 15997,
+        "kept": 15574,
+        "near_duplicates": 423
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00015.jsonl",
+      "bytes": 127166815,
+      "documents": 15747,
+      "sha256": "f79e3337a6e5caf614e021b84c59f80f544eb6866cc95c5ca160de5d7ccf2b7a",
+      "counts": {
+        "input": 16243,
+        "kept": 15747,
+        "near_duplicates": 496
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00016.jsonl",
+      "bytes": 126850166,
+      "documents": 14835,
+      "sha256": "bc3fde38f97da754990f0ba2cdb5ad1dd17d0c87f5fdd64946543e897c4968dc",
+      "counts": {
+        "input": 15307,
+        "kept": 14835,
+        "near_duplicates": 472
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00017.jsonl",
+      "bytes": 124858992,
+      "documents": 15795,
+      "sha256": "716e2d0126f232d7a5f2c785309654a33aa68d9a03469700367c72f906384b5b",
+      "counts": {
+        "input": 16361,
+        "kept": 15795,
+        "near_duplicates": 566
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00018.jsonl",
+      "bytes": 127194199,
+      "documents": 16185,
+      "sha256": "079e86603fbdd613963a958af92f9482f165b344d835b0cd165749900af6752b",
+      "counts": {
+        "input": 16756,
+        "kept": 16185,
+        "near_duplicates": 571
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00019.jsonl",
+      "bytes": 125527047,
+      "documents": 15406,
+      "sha256": "9d94602143bb20d95f9f9cc84fc8e1ea7daf409fc8bca40ab68e01fd155a2b95",
+      "counts": {
+        "input": 16033,
+        "kept": 15406,
+        "near_duplicates": 627
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00020.jsonl",
+      "bytes": 124352929,
+      "documents": 15781,
+      "sha256": "e70017fcf96178e1305430601e548aa65ec7e4c71cf591f5a4b2057d4c007690",
+      "counts": {
+        "input": 16499,
+        "kept": 15781,
+        "near_duplicates": 718
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00021.jsonl",
+      "bytes": 123549764,
+      "documents": 15138,
+      "sha256": "218cc8f6b05763e38dea6f6c1965dc7ff9243ef3c4ef3bb898681c373d7c1209",
+      "counts": {
+        "input": 15806,
+        "kept": 15138,
+        "near_duplicates": 668
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00022.jsonl",
+      "bytes": 120946038,
+      "documents": 15353,
+      "sha256": "588caa1fda86b8c846cb7d9369ecace2bcb388e2412b6d10d646837e534aba61",
+      "counts": {
+        "input": 16087,
+        "kept": 15353,
+        "near_duplicates": 734
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00023.jsonl",
+      "bytes": 122493839,
+      "documents": 14799,
+      "sha256": "a6af1d73f706d54fea19e34c2f05b9663ac8d9e7c2f8f974d4919f789fb1d81e",
+      "counts": {
+        "input": 15457,
+        "kept": 14799,
+        "near_duplicates": 658
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00024.jsonl",
+      "bytes": 122040614,
+      "documents": 14767,
+      "sha256": "c83575da721ad5b6c4ef74531eacc0a5ca36e8cc1203ad3af94a31eb9900fbbc",
+      "counts": {
+        "input": 15464,
+        "kept": 14767,
+        "near_duplicates": 697
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00025.jsonl",
+      "bytes": 120694576,
+      "documents": 15583,
+      "sha256": "b866972547ba215382ed80ada5ef1ae6fb8b879079df79277f3ba9f6dccbd8cc",
+      "counts": {
+        "input": 16373,
+        "kept": 15583,
+        "near_duplicates": 790
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00026.jsonl",
+      "bytes": 120335555,
+      "documents": 14937,
+      "sha256": "958fb157ee6dc0c7738cd58adf37825cf3865fd96d11c8cad51487877cf3948c",
+      "counts": {
+        "input": 15735,
+        "kept": 14937,
+        "near_duplicates": 798
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00027.jsonl",
+      "bytes": 120061730,
+      "documents": 15305,
+      "sha256": "33980394185bf1af8e0395eb4d641e2074f14e81e6c73c884dcbd945535f4477",
+      "counts": {
+        "input": 16169,
+        "near_duplicates": 864,
+        "kept": 15305
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00028.jsonl",
+      "bytes": 119710254,
+      "documents": 15467,
+      "sha256": "c75e24c9ed43ba95c0f0901837d9a743130ef6ff64e2846392a0f8c728ae4534",
+      "counts": {
+        "input": 16327,
+        "kept": 15467,
+        "near_duplicates": 860
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00029.jsonl",
+      "bytes": 120040247,
+      "documents": 15334,
+      "sha256": "caea554a232cec37f40e45de34498d15c814c61b5b1cc8703de43f6944584416",
+      "counts": {
+        "input": 16195,
+        "kept": 15334,
+        "near_duplicates": 861
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00030.jsonl",
+      "bytes": 118121616,
+      "documents": 15028,
+      "sha256": "b1703542e0141e29361855bcca1565d42b2fb16f16851527fdbc3dafe3e852bf",
+      "counts": {
+        "input": 15933,
+        "kept": 15028,
+        "near_duplicates": 905
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00031.jsonl",
+      "bytes": 117509014,
+      "documents": 15188,
+      "sha256": "d97a8708e3a2c91ae0f9191b46e413cdc111bc755c9a64603a0af63200b1e834",
+      "counts": {
+        "input": 16121,
+        "kept": 15188,
+        "near_duplicates": 933
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00032.jsonl",
+      "bytes": 118070989,
+      "documents": 15346,
+      "sha256": "ae21d949e211ea107397cc6fec31444ed1e59c789bf92997c3099aa48edb5093",
+      "counts": {
+        "input": 16364,
+        "kept": 15346,
+        "near_duplicates": 1018
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00033.jsonl",
+      "bytes": 117349520,
+      "documents": 15483,
+      "sha256": "eab77381e84b872702c5872831f453d5036912c4616a749ea65477a2bee4d904",
+      "counts": {
+        "input": 16532,
+        "kept": 15483,
+        "near_duplicates": 1049
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00034.jsonl",
+      "bytes": 116255488,
+      "documents": 14688,
+      "sha256": "4bfd2c5799c2337abf58d5a4f7f3dadceed84195b5b2c8993d2dc6d80eb36baf",
+      "counts": {
+        "input": 15707,
+        "kept": 14688,
+        "near_duplicates": 1019
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00035.jsonl",
+      "bytes": 115268146,
+      "documents": 15227,
+      "sha256": "91181a8e57ab6fc88f05a7632b99944014588a4a57fd1e075ad824c5122e227d",
+      "counts": {
+        "input": 16224,
+        "kept": 15227,
+        "near_duplicates": 997
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00036.jsonl",
+      "bytes": 115356092,
+      "documents": 15347,
+      "sha256": "4553ea035ebbaae86d86bc7d9336ea6d34478567b35856e61065ce29b41a4601",
+      "counts": {
+        "input": 16473,
+        "kept": 15347,
+        "near_duplicates": 1126
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00037.jsonl",
+      "bytes": 114856056,
+      "documents": 15311,
+      "sha256": "65ed0881cfeff4eb807efbf89146b9555cd8fd26f2a41c113a0d0f7e124be208",
+      "counts": {
+        "input": 16451,
+        "kept": 15311,
+        "near_duplicates": 1140
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00038.jsonl",
+      "bytes": 114296119,
+      "documents": 15542,
+      "sha256": "8afa8ef37b7dbbd3e84bd1b1b6cd428c0684afebf5b18cc837941a78593495cf",
+      "counts": {
+        "input": 16721,
+        "kept": 15542,
+        "near_duplicates": 1179
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00039.jsonl",
+      "bytes": 112322320,
+      "documents": 15155,
+      "sha256": "7e51c16017b8ed067d7948d9c2820f65b1a5dfab4399e70ddd8e8cf9ac5c7f76",
+      "counts": {
+        "input": 16323,
+        "kept": 15155,
+        "near_duplicates": 1168
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00040.jsonl",
+      "bytes": 111206532,
+      "documents": 14951,
+      "sha256": "d742815c56950a1cf8492f105b99c2e12b6b4d06ca556d91755cc0f1e8d2554a",
+      "counts": {
+        "input": 16140,
+        "kept": 14951,
+        "near_duplicates": 1189
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00041.jsonl",
+      "bytes": 112590195,
+      "documents": 15013,
+      "sha256": "a7bd5e62eb9434ebb69ce6a1cff907811ed2e79045d622da196fd8d22344500c",
+      "counts": {
+        "input": 16232,
+        "kept": 15013,
+        "near_duplicates": 1219
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00042.jsonl",
+      "bytes": 112974980,
+      "documents": 14682,
+      "sha256": "c4ffc713294319bc85688e50d4281107ffdb2ae2f1c09a8ea4f81a5754ffa0c5",
+      "counts": {
+        "input": 15913,
+        "kept": 14682,
+        "near_duplicates": 1231
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00043.jsonl",
+      "bytes": 111421442,
+      "documents": 14869,
+      "sha256": "84acb6ea87cf37eb8c7b05c06295e7b4ea225f9358ca89e143bbf1c060786a7c",
+      "counts": {
+        "input": 16115,
+        "kept": 14869,
+        "near_duplicates": 1246
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00044.jsonl",
+      "bytes": 112630122,
+      "documents": 14658,
+      "sha256": "d1d80bbb25b638a33a0b37e8f0d942b032257648d05990f1a63e49c5aa6608fc",
+      "counts": {
+        "input": 15931,
+        "kept": 14658,
+        "near_duplicates": 1273
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00045.jsonl",
+      "bytes": 110674820,
+      "documents": 15306,
+      "sha256": "96b4fa63f11e25a2f3e4b581242aca3fd3d64654b4b69e3f90f2f314fa3d1480",
+      "counts": {
+        "input": 16636,
+        "kept": 15306,
+        "near_duplicates": 1330
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00046.jsonl",
+      "bytes": 109141173,
+      "documents": 14647,
+      "sha256": "b7e3a7eb02c3b4eb4e3664c557d1096cd4805ce4a91848d74ee8ddb68eb40f7e",
+      "counts": {
+        "input": 15914,
+        "kept": 14647,
+        "near_duplicates": 1267
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00047.jsonl",
+      "bytes": 110363953,
+      "documents": 14470,
+      "sha256": "cb66c41bacf436677c3e06b94d8d210def790a6af82948fdbec2ae48b91b0dae",
+      "counts": {
+        "input": 15792,
+        "near_duplicates": 1322,
+        "kept": 14470
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00048.jsonl",
+      "bytes": 109243481,
+      "documents": 14496,
+      "sha256": "4a09ad6c8f0f787c1c21acbfb0cbed2f0f07628ca53d2b6b7feb9bd2d8d31ae0",
+      "counts": {
+        "input": 15852,
+        "kept": 14496,
+        "near_duplicates": 1356
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00049.jsonl",
+      "bytes": 108753934,
+      "documents": 15148,
+      "sha256": "77f3e3ee4dd60c4cafe3387cc67dca57059984385f83363c88cfd6b6cc65a9f8",
+      "counts": {
+        "input": 16593,
+        "kept": 15148,
+        "near_duplicates": 1445
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00050.jsonl",
+      "bytes": 108906419,
+      "documents": 14882,
+      "sha256": "de1e9d099a966ca7a2f5a012646dde512657e9d84ff590a06da67f4a67299e65",
+      "counts": {
+        "input": 16249,
+        "kept": 14882,
+        "near_duplicates": 1367
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00051.jsonl",
+      "bytes": 108869972,
+      "documents": 14405,
+      "sha256": "71910b774d1a27d9caf9aaa58361677e5848ede6caa946214792920189125b67",
+      "counts": {
+        "input": 15791,
+        "kept": 14405,
+        "near_duplicates": 1386
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00052.jsonl",
+      "bytes": 107644138,
+      "documents": 14994,
+      "sha256": "882cf6335743facde7c8379c06a4829f75da8c94545e358f04314777463387ec",
+      "counts": {
+        "input": 16452,
+        "near_duplicates": 1458,
+        "kept": 14994
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00053.jsonl",
+      "bytes": 107539190,
+      "documents": 14488,
+      "sha256": "9335e4e3df7ed90a5591674236201934c9b79e6ac60d3932677af4076b8504b7",
+      "counts": {
+        "input": 15925,
+        "kept": 14488,
+        "near_duplicates": 1437
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00054.jsonl",
+      "bytes": 107754567,
+      "documents": 15061,
+      "sha256": "edb430661e50632812fa5a5bab8b8ca2d53979a321f71d502bc7ba9f8459ce94",
+      "counts": {
+        "input": 16478,
+        "kept": 15061,
+        "near_duplicates": 1417
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00055.jsonl",
+      "bytes": 107160196,
+      "documents": 14926,
+      "sha256": "3cfe3e7177f50a68e3fb344060b8db760e49609cd99c1865ce702835c4019358",
+      "counts": {
+        "input": 16442,
+        "near_duplicates": 1516,
+        "kept": 14926
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00056.jsonl",
+      "bytes": 8554201,
+      "documents": 586,
+      "sha256": "2ad2b1487e986998843c5f0b2c632277686cf7e82b79a7dc5a00ebc7fa8e0aa4",
+      "counts": {
+        "input": 609,
+        "kept": 586,
+        "near_duplicates": 23
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00057.jsonl",
+      "bytes": 1401445,
+      "documents": 254,
+      "sha256": "885297d2010e4dd1eab335e5dc936d8d7da82475135460a6f3920ac5c18e63bb",
+      "counts": {
+        "input": 255,
+        "kept": 254,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00058.jsonl",
+      "bytes": 972887,
+      "documents": 212,
+      "sha256": "13290db44c95fd0688ecca63e16796b01af2e2b934527570e8c1cc2c046e25ca",
+      "counts": {
+        "input": 213,
+        "kept": 212,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00059.jsonl",
+      "bytes": 2135337,
+      "documents": 326,
+      "sha256": "8d63248bdc6cef877b26a5616557edf677a7eff576d22082e7142cd236af5ae3",
+      "counts": {
+        "input": 326,
+        "kept": 326
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00060.jsonl",
+      "bytes": 5080430,
+      "documents": 1111,
+      "sha256": "8b20f1f9da2e90f3c3e63fe11b750a6a2a45c370d1dc22121b9e49b97015c1bb",
+      "counts": {
+        "input": 1112,
+        "kept": 1111,
+        "near_duplicates": 1
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/code-python/part-00061.jsonl",
+      "bytes": 359440,
+      "documents": 86,
+      "sha256": "0b5dfbfe2c2f6c1b53e1ecd97af4266d7474c544d18b1f44b9c3cc2d2d81d8a2",
+      "counts": {
+        "input": 86,
+        "kept": 86
+      }
+    }
+  ],
+  "counts": {
+    "input": 1274083,
+    "kept": 1228755,
+    "near_duplicates": 45328
+  },
+  "upstream_report_sha256": "687d52d5bbd679747602fcc87e25150bb1e2c64e07cea66f406d399bc162344e",
+  "script_sha256": "f7a5ba73ce3248c68efe9b3ee39d5421af0eeb3d8dde05a62d5fc216c861de9a",
+  "method": "5-unit shingles, 64 MinHash permutations, 8x8 LSH, feature Jaccard>=0.9; SFT/preference exact dedup only"
+}

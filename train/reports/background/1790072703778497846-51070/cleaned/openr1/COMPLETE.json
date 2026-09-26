@@ -1,0 +1,93 @@
+{
+  "source": "openr1",
+  "status": "complete",
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/openr1/part-00000.jsonl",
+      "documents": 7469,
+      "bytes": 134850466,
+      "sha256": "5f4ee6518db85b80b349d21e9013690ea1e9e912dc2cb5596266712c3228ebf2"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/openr1/part-00001.jsonl",
+      "documents": 7414,
+      "bytes": 134833794,
+      "sha256": "4985351a6e9150124a195f0b0bc47f6fc35926632cf46d0db51a3fd09a1c860f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/openr1/part-00002.jsonl",
+      "documents": 7408,
+      "bytes": 134832752,
+      "sha256": "df1ac79325b2b64df7daef5d0b84083cfcb49e2e0384c7f52807063c2e2cbb54"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/openr1/part-00003.jsonl",
+      "documents": 7366,
+      "bytes": 134845432,
+      "sha256": "95c6fb126c6ae8ae09221f1b0335de16e913f49bbe8c0eca07406e2a5ded1f14"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/openr1/part-00004.jsonl",
+      "documents": 7346,
+      "bytes": 134844699,
+      "sha256": "6134a4f22a1d230c3bbf56e8803a4b0840848c908f413c2c66667f0704c53600"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/openr1/part-00005.jsonl",
+      "documents": 7401,
+      "bytes": 134835056,
+      "sha256": "fa3544a04de33fca9bce689554437e3157c96bb01b8a0384d8e12c71ef718b7f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/openr1/part-00006.jsonl",
+      "documents": 7402,
+      "bytes": 134850168,
+      "sha256": "516e02d2523a92af7707f6002338c5e9d23dbe75a1af605703c26cb684b1b373"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/openr1/part-00007.jsonl",
+      "documents": 7407,
+      "bytes": 134836792,
+      "sha256": "7e04436b1527d9f7e4a28e2db4b41cea3e6bafbbda79d3d6836f0bc252f6703e"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/openr1/part-00008.jsonl",
+      "documents": 7335,
+      "bytes": 134842069,
+      "sha256": "db37de635cdb3b5395a89807ac7a8fed549e7b99a64e0e4e653e14d965e5df43"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/openr1/part-00009.jsonl",
+      "documents": 7362,
+      "bytes": 134838920,
+      "sha256": "0d9dfdf1cf113d2bbb727168f93a1690869cbbfd4ea1a3982f83ce95b3685f83"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/openr1/part-00010.jsonl",
+      "documents": 7442,
+      "bytes": 134852790,
+      "sha256": "23243eaf796f218b722a8a05176dec47186dde30a044899e35b32b8cd52d1df9"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/openr1/part-00011.jsonl",
+      "documents": 7382,
+      "bytes": 134845779,
+      "sha256": "28f08402aa79d4c3e91ceb5cf9cec3139cc1c0efa990f6a1396542787e7c55ea"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/cleaned/openr1/part-00012.jsonl",
+      "documents": 4999,
+      "bytes": 91364863,
+      "sha256": "b77b4461784ac343e09732f3bd8070c085b58567938fc2f9f2eadad4a4fd8cb2"
+    }
+  ],
+  "counts": {
+    "input": 93733,
+    "kept": 93733
+  },
+  "script_sha256": "2f8fc9d9624315558a9a9998d7c6084c62e74b460899e81b0d8efbc53380e8a2",
+  "upstream_report_sha256": "4f0fe749c5df4b04b433d8a9ea62711f29d5a6d5bc0f2f628585cd0e19530880",
+  "limits": [
+    "PII filtering covers email in prose and explicit secret-key patterns; not a guarantee of total PII removal"
+  ]
+}

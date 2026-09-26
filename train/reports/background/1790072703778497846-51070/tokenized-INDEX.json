@@ -1,0 +1,46 @@
+{
+  "tokenized/openassistant/COMPLETE.json": {
+    "sha256": "ddd707ac59b45c68c2fe38720678b330459ecbe111e0adb5b73af2013565e675",
+    "bytes": 1625
+  },
+  "tokenized/openhermes/COMPLETE.json": {
+    "sha256": "61a2447f7963e6a57092f9f4d4428cb0baf71cac07b084addb84dd7a75b561e2",
+    "bytes": 1615
+  },
+  "tokenized/openr1/COMPLETE.json": {
+    "sha256": "d005bf1e50a6e3bd33b52946a48c35fbb01d91e0c38bed8f71f9f831bcb7d484",
+    "bytes": 1599
+  },
+  "tokenized/ultrafeedback/COMPLETE.json": {
+    "sha256": "8ec058db9a84562de1e742056e8f7101d956a7ff5e044f89bcadea1448d92dd9",
+    "bytes": 1594
+  },
+  "tokenized/code-python/COMPLETE.json": {
+    "sha256": "2d8515e2426c8d3d89ce337f5642f46ccd14eba713ec47b8858c6f1aa38da1dc",
+    "bytes": 9157
+  },
+  "tokenized/fineweb-edu/COMPLETE.json": {
+    "sha256": "90e5d7d38a830e209ef4797ac0e6db36e343d9fea0e9ca420e5a5ed38697475b",
+    "bytes": 32107
+  },
+  "tokenized/chinese-fineweb-edu/COMPLETE.json": {
+    "sha256": "177a4fea90d7e52c8571663a3c7cfe641934f544faac9053a7375a75336accf4",
+    "bytes": 10305
+  },
+  "tokenized/cosmopedia/COMPLETE.json": {
+    "sha256": "eb357d5cbeeaeeae87ab99a7dbb523d1754d5bf5d44f57209da9f16d37c290c8",
+    "bytes": 11502
+  },
+  "tokenized/finemath/COMPLETE.json": {
+    "sha256": "17a376d3d25ba3eca23b8aeae7ee5ac1a043c429c5a5d260424b7726144a2335",
+    "bytes": 32675
+  },
+  "tokenized/open-web-math/COMPLETE.json": {
+    "sha256": "dfaa6d08bc1cc2335e81fc1f7370d10e2233d74d866f090c26592d42fb1dfd8b",
+    "bytes": 28414
+  },
+  "tokenized/dolma-body/COMPLETE.json": {
+    "sha256": "237eb85d646ac815f4c2a571138237559be6aaa00cd5f7ca112bfe1ffa665809",
+    "bytes": 55376
+  }
+}

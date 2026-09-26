@@ -1,0 +1,1512 @@
+{
+  "source": "fineweb-edu",
+  "status": "complete",
+  "counts": {
+    "input": 4931516,
+    "kept": 4926743,
+    "removed": 4773
+  },
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00000.jsonl",
+      "documents": 25075,
+      "bytes": 138646947,
+      "sha256": "a792f702bb49f5823d888eb97568eeb0e59ce4e284507c04ebb95420def43ed4"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00001.jsonl",
+      "documents": 24933,
+      "bytes": 138470685,
+      "sha256": "306fb957ca5bdfed25098a556c2978f8b976b3f22c596607c83e4d0645bf3ec5"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00002.jsonl",
+      "documents": 24928,
+      "bytes": 138691337,
+      "sha256": "024a1bb000c60cd120195032d233b7b265b7f7bbdc394f43f985b43feeac411f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00003.jsonl",
+      "documents": 24823,
+      "bytes": 138339425,
+      "sha256": "cac39eff6f201688f586e5a2bf08c306cf680e2e73dc9e35d8bb56ee84420cdb"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00004.jsonl",
+      "documents": 24717,
+      "bytes": 138204929,
+      "sha256": "6cf0615a47545582831e9a3b0ccc0510f956f6416680ba48bb25e54d947af8bd"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00005.jsonl",
+      "documents": 25219,
+      "bytes": 137841009,
+      "sha256": "d2fd72332bfac6b77a9c8c7b678d312756d6a68c3a784edad64469d53aa7379d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00006.jsonl",
+      "documents": 24374,
+      "bytes": 137976343,
+      "sha256": "c735ddd291189794b069db3d0ddf43ddf4fe6fef07e0e2b63f786a7c73303c51"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00007.jsonl",
+      "documents": 25039,
+      "bytes": 138706789,
+      "sha256": "23e2389521359de97c75ed74d056bc47e4e86eac35dcaf92f60b796d318efc3b"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00008.jsonl",
+      "documents": 24971,
+      "bytes": 138329339,
+      "sha256": "e1a1fbdd6f6bd827761b06bcd51c19e5ececdd21a0224e9a6d891426f242e6e5"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00009.jsonl",
+      "documents": 25077,
+      "bytes": 138611060,
+      "sha256": "de8e79aa26673f4fba9cb960a438630790d42940c52e6b1c4bfcde5e763c96be"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00010.jsonl",
+      "documents": 24773,
+      "bytes": 138406413,
+      "sha256": "f335db882da86ddde4ed68cca4c59c55fff62ecd6e6258735a424e827f4dd0f6"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00011.jsonl",
+      "documents": 24903,
+      "bytes": 138371654,
+      "sha256": "04ee47b094ad2f256f6191e0291f77588e0ae89dd29f59877f6493638046c230"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00012.jsonl",
+      "documents": 24454,
+      "bytes": 138457316,
+      "sha256": "3042092a6eb87077e2c0cfa94d811dd8cbf313e6e125b0455b9aca5a32d64639"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00013.jsonl",
+      "documents": 25190,
+      "bytes": 138618010,
+      "sha256": "d6b55882326d07beadc6200c5347260bff7c82f046eab7737f09e67c07c6a588"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00014.jsonl",
+      "documents": 25039,
+      "bytes": 138601233,
+      "sha256": "da5a0992b758d28be4f1137f31c95fe818e750a68a62e29cdb12e03e91dd305c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00015.jsonl",
+      "documents": 24974,
+      "bytes": 138602926,
+      "sha256": "705debcd6aa4da1eb9a09bdd3434dd32551823feb2c603bdeceaf39ee0a9fdbf"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00016.jsonl",
+      "documents": 25126,
+      "bytes": 138395289,
+      "sha256": "ca31819fa94800694e581693cc8a8c3542851ff38f91aff2198522ca8adce394"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00017.jsonl",
+      "documents": 24666,
+      "bytes": 138504489,
+      "sha256": "73da78dbfdef3bb642928aad0dd93624b7c441c0b70bf3b84bd0d706c7ea6486"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00018.jsonl",
+      "documents": 25058,
+      "bytes": 138541200,
+      "sha256": "844d6ea647bb28412e233d1645fd5cf1f5621961a67f9dbea149691273354aa9"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00019.jsonl",
+      "documents": 25142,
+      "bytes": 138524686,
+      "sha256": "a1e891a728db3c2505fbf150cffe643dc25e54c0a3029a753b3636acee008711"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00020.jsonl",
+      "documents": 24724,
+      "bytes": 138052313,
+      "sha256": "b87a75ae9e7b4a7f3dea1aaeb0922b3f1adf573006d4e561ec79cd1d39b36845"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00021.jsonl",
+      "documents": 25175,
+      "bytes": 138585271,
+      "sha256": "d8cb0aa05d8b9c5b9c52aecfef123c9e2439acfa2c0f2874196bf651d9534abf"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00022.jsonl",
+      "documents": 25051,
+      "bytes": 138501893,
+      "sha256": "c725acf74428798167b1f577f376abffe5aa0ebd8ad5db6e4b5795435911a5d6"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00023.jsonl",
+      "documents": 25295,
+      "bytes": 138451201,
+      "sha256": "e621943f36194092a2946e0630955d1fab8625d3f8146f3977ce514335c0619f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00024.jsonl",
+      "documents": 25090,
+      "bytes": 138590927,
+      "sha256": "c35f4a379e74facedd860e266ad85d61e2ef1636b3ef3b8ed19650b18c2c6b75"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00025.jsonl",
+      "documents": 24799,
+      "bytes": 138326666,
+      "sha256": "53a78aae9054feaf1166f3ec149ceec7176190eedd8739376a61b7b3b814a53e"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00026.jsonl",
+      "documents": 25022,
+      "bytes": 138631612,
+      "sha256": "50251e48180179a8e639b96f5dd696475e209e84afc15e5937dcf0044715d1af"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00027.jsonl",
+      "documents": 24987,
+      "bytes": 138501075,
+      "sha256": "bb330181d4a62c9793a64e9b1f0821bda2303d21a4c5d03c5d1eb41fff0ba339"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00028.jsonl",
+      "documents": 24422,
+      "bytes": 138077626,
+      "sha256": "61d7d42dab8b9652e2347589887796d69a51a7b1ec939e592163a8542329405d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00029.jsonl",
+      "documents": 24933,
+      "bytes": 138661555,
+      "sha256": "ea0bf1ef479d5e4dbafe7fea46d1d476a3ec0e0e29b4bf3f71d0afab4d33c01f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00030.jsonl",
+      "documents": 24765,
+      "bytes": 138314273,
+      "sha256": "b6039f5b59841501c9a742d447688fedf4cca7c874a402c6a09848bd25f5a598"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00031.jsonl",
+      "documents": 24569,
+      "bytes": 138495161,
+      "sha256": "c56eec7eecad9a6962c4c43d2b4e6b22a8811b77ae118318aca1f02f3a361fb4"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00032.jsonl",
+      "documents": 24600,
+      "bytes": 138554475,
+      "sha256": "d2e903d80beea802eacd4091fc42c95141dd87d15d0ad22288db37940e33099d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00033.jsonl",
+      "documents": 24729,
+      "bytes": 138490519,
+      "sha256": "9b8165933a96e65d7f414f49d7929b9863779b9dee7bfb40071e714f8c83782b"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00034.jsonl",
+      "documents": 25266,
+      "bytes": 138680426,
+      "sha256": "fb99094e49b21b84e0dadad0eac9596e5bdaf94083d344c3dc802fb8d085a371"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00035.jsonl",
+      "documents": 25016,
+      "bytes": 138349994,
+      "sha256": "db55ab55cc1fd7a6d66611cdbdcf098b83677779e5a83fd9a9facaff91c371ab"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00036.jsonl",
+      "documents": 24636,
+      "bytes": 138118382,
+      "sha256": "60dc60a1587f7234e1163e6461277450ecf27d32d76cea5baf5a2ad27e3cac88"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00037.jsonl",
+      "documents": 24315,
+      "bytes": 138149834,
+      "sha256": "f0609433713937c63f43fe8cd2d1c0b9d8b33cdd2b9c37239a010b7de6bed015"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00038.jsonl",
+      "documents": 24536,
+      "bytes": 138483626,
+      "sha256": "6c7b6a8bbd57636ee06d869bf1684d95ee956ae741101c70941e5013e6e33b26"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00039.jsonl",
+      "documents": 24984,
+      "bytes": 138530701,
+      "sha256": "490fca42af38235e6b2203f39040b36785459c9c77e56a4d032d2c4a97eb3c80"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00040.jsonl",
+      "documents": 24772,
+      "bytes": 138579983,
+      "sha256": "d3f4dcd59157438b8811b907fd3b5ac5b2e4416496ddf27bd7ff0dd308a267ae"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00041.jsonl",
+      "documents": 24936,
+      "bytes": 138079090,
+      "sha256": "5d37e7557a43b090b465bcaa33e55dd1f4b3b0a598b97136c5fb13e2447980f1"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00042.jsonl",
+      "documents": 25064,
+      "bytes": 138439249,
+      "sha256": "02dcef71c5b202950014ddf638d0b6c8a3ddb050784d2dd580e812b6b2301eff"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00043.jsonl",
+      "documents": 24797,
+      "bytes": 138362587,
+      "sha256": "4824c82d22aa7833be7c62fe6d92719ef33645562d95b702ed5802e17c1a8d4f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00044.jsonl",
+      "documents": 24653,
+      "bytes": 138289897,
+      "sha256": "5fe92776baeaf405bc139563b6e535595f2465ece86afe2d2a0083771a91d5e1"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00045.jsonl",
+      "documents": 24419,
+      "bytes": 138505295,
+      "sha256": "4fcc2c9663455046d557848109846d7c2cfc4c9d723664491718b72dab1741d3"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00046.jsonl",
+      "documents": 25223,
+      "bytes": 138603656,
+      "sha256": "543ad8adb673c1e6a794d4460d51a694280e4c4d90f043114119ca67bb812cfe"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00047.jsonl",
+      "documents": 24595,
+      "bytes": 138393246,
+      "sha256": "35c2fb00fdb9028b3162bac5bc1dca155d51eae5add2454e0ffff7e92aeae4a4"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00048.jsonl",
+      "documents": 25172,
+      "bytes": 138610572,
+      "sha256": "e939fc066222b6213299fa2963cce4f87c1846c076088fa33a224c019068f4f7"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00049.jsonl",
+      "documents": 24800,
+      "bytes": 138184234,
+      "sha256": "a57441a769368d5429bbc03cb5609cf41f52fc93da2424d2777bd5c751f508b5"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00050.jsonl",
+      "documents": 24721,
+      "bytes": 138184746,
+      "sha256": "27134de3beaa462f6b1147c7039f72de4da4160d7ca113631918615c94020864"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00051.jsonl",
+      "documents": 24333,
+      "bytes": 138147936,
+      "sha256": "1033a7265e4220722f51988f56c1f7e2f38c0d6cab96d3b7f9ac5ce707528be8"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00052.jsonl",
+      "documents": 25088,
+      "bytes": 138293177,
+      "sha256": "083ac4f8f41baee51b712ba0e65278f23700ba2b552023b1e914dfd8a1cc3f58"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00053.jsonl",
+      "documents": 25202,
+      "bytes": 138657309,
+      "sha256": "c412df608d8013ce12c22a23d0bf0d6e3ba2f2a32850b9a978b958e091571e77"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00054.jsonl",
+      "documents": 24706,
+      "bytes": 138389164,
+      "sha256": "95b775af03a3c54a031b63aa6fdcac1b7a063f53d2a2a6de185dd5631e8e67c2"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00055.jsonl",
+      "documents": 25356,
+      "bytes": 138563603,
+      "sha256": "63a29958955c158effb1b8bcc488b0309727a3bce61ca57178cf4918e98f3967"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00056.jsonl",
+      "documents": 24814,
+      "bytes": 138484969,
+      "sha256": "19f370d40d67822ba68cf84dda20b5cc5b4b29a37033839aec224602a6735192"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00057.jsonl",
+      "documents": 25075,
+      "bytes": 138135744,
+      "sha256": "e995289b2d60c16972e371f3edab621f8476f3e95f973dd3f47125307ac7055a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00058.jsonl",
+      "documents": 24849,
+      "bytes": 138556027,
+      "sha256": "aaf2278ef811da496ae590e5c2d5ab1cdc9c3bf7605f4450fd859cbdc38d7f38"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00059.jsonl",
+      "documents": 25287,
+      "bytes": 138606934,
+      "sha256": "76327cff2fb1a0735513672cb724f18a27e1ef6ce412df8b6e3eebe529e5ea77"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00060.jsonl",
+      "documents": 25169,
+      "bytes": 138645972,
+      "sha256": "66c950db1d2a3caa5e80d283d32402ed7bbea2b676f72163c9137e1755c8d989"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00061.jsonl",
+      "documents": 25150,
+      "bytes": 138478019,
+      "sha256": "c7c21ef5437594888ddc9bc5ea525427149464b8adbdaae76447ddf9d1a6aa5a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00062.jsonl",
+      "documents": 24658,
+      "bytes": 138108412,
+      "sha256": "082076dbd15f90c42033c0cfcd732e9b77663681e60c623637b21b0ef117e5fe"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00063.jsonl",
+      "documents": 20477,
+      "bytes": 111205560,
+      "sha256": "263b890704cce0d6f68b84056373c5050e9102bef064fa4425c320134128f036"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00064.jsonl",
+      "documents": 20036,
+      "bytes": 111177620,
+      "sha256": "bcc44560bb1e1b9749cbc4cebdb7d444341eb67d8b389350dfb0419ee4a5ddda"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00065.jsonl",
+      "documents": 20295,
+      "bytes": 111512653,
+      "sha256": "0188255078e7db3a1753590b73a7d86b0878d18855f3dbfb77a70e728a0ea330"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00066.jsonl",
+      "documents": 20741,
+      "bytes": 113388142,
+      "sha256": "9396907f3bed98450807dcab9b9db7e0e47ee2c970c43edf30ba1a60d7ca1464"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00067.jsonl",
+      "documents": 20629,
+      "bytes": 113661373,
+      "sha256": "082c0b80b37eb432de8804e3c935da0436ca22dbbf365b994bd63ae14b6e24a9"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00068.jsonl",
+      "documents": 20042,
+      "bytes": 113746863,
+      "sha256": "8c02737db1f3718d190b4086ed53f189752a919fe086976f03cfa8d43814046d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00069.jsonl",
+      "documents": 20841,
+      "bytes": 114654044,
+      "sha256": "2a69eaca331f8ff363a7ce355da44f556fcaae9c5c6e95839a6d67abc077abad"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00070.jsonl",
+      "documents": 20979,
+      "bytes": 115127318,
+      "sha256": "f21afbc681a3853fc90bdde3af41dd709ed7c4b183306ec4a06b36f473572f97"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00071.jsonl",
+      "documents": 20552,
+      "bytes": 115214430,
+      "sha256": "1b9f710163d13cf4c517054721465eefff4d8818ff37e5ca6e05782b2b8b8d03"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00072.jsonl",
+      "documents": 21083,
+      "bytes": 116657158,
+      "sha256": "6b5fc3718734c58dc270e2f3a56c91c5a87a9ce4822c23bf9aa0ce511eeff4a6"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00073.jsonl",
+      "documents": 21481,
+      "bytes": 116931625,
+      "sha256": "ba0665147e1a9e3dc485700c7e23fcb410b84b3ce22c937e394cbc8f5dd1f609"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00074.jsonl",
+      "documents": 21107,
+      "bytes": 116520455,
+      "sha256": "eacc3f9e792e577a792625355ce42b462f3353bfcf6e5936110af921e3e5db9b"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00075.jsonl",
+      "documents": 20899,
+      "bytes": 117013751,
+      "sha256": "732d0c606dfdbc1b4ac80358f2eeb38d4e62457527ef7fabdf8ec8843d35f4f0"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00076.jsonl",
+      "documents": 20723,
+      "bytes": 116374005,
+      "sha256": "272369d2fbbbbaca3a74f5a687edd70927e183a4872e8da22ef10f0275f2c445"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00077.jsonl",
+      "documents": 21394,
+      "bytes": 117924182,
+      "sha256": "d641027ddad5b091f3b49976a659cab2529853941894b0dbfdba00dff0126927"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00078.jsonl",
+      "documents": 21302,
+      "bytes": 117071282,
+      "sha256": "46b852bc435d07ced93498411d3b1783691ef214b60301c9f452641e0d8f6533"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00079.jsonl",
+      "documents": 21075,
+      "bytes": 117950736,
+      "sha256": "762782afc74f59b5e2fd7dcd4c5c8bb91a625f238cca9e1c1840e99af77d4646"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00080.jsonl",
+      "documents": 21726,
+      "bytes": 117385987,
+      "sha256": "f11a5ef9e2ed2eabc816f1abb3e7649efdde120b6fb1ab0df1cf018b015ba1ef"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00081.jsonl",
+      "documents": 21252,
+      "bytes": 117477152,
+      "sha256": "b327db1dc49009e69886516164bf865cac5037f2408353b7cd84cac6c8aa28f5"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00082.jsonl",
+      "documents": 21134,
+      "bytes": 117892872,
+      "sha256": "71329a86b48d8cc25965622a146f9b40ed80e6b7289f9abe6669b8c7a916fc14"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00083.jsonl",
+      "documents": 21373,
+      "bytes": 117918974,
+      "sha256": "9c05c61bfde346a018c5e2bebf15c6ee78a54806d28a43d15c40e41330d1a9f2"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00084.jsonl",
+      "documents": 21316,
+      "bytes": 116939750,
+      "sha256": "93db8c31a159e8e87d5926a7823fbf351a3efb547d73a8f7db41c1ffbc179a4a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00085.jsonl",
+      "documents": 21709,
+      "bytes": 117997619,
+      "sha256": "0b955c273a1768832f21ac12a256cd3d55ec05ad0add94ed02bdeb9a9216f58c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00086.jsonl",
+      "documents": 21121,
+      "bytes": 118036078,
+      "sha256": "55ea3642b3a71ff0df3f19f6b0ce7f7ac5918b6d888202d7843e256ac2317813"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00087.jsonl",
+      "documents": 21527,
+      "bytes": 119071271,
+      "sha256": "e285ba8b3ace981255fa943e1ca821392b7398837ce675ef6d183d6da0f8c6ea"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00088.jsonl",
+      "documents": 21895,
+      "bytes": 120191521,
+      "sha256": "adf0c987600f79b9996b25a3ed93f2a3819f87310255f1bb2c909d6be3f7d432"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00089.jsonl",
+      "documents": 21353,
+      "bytes": 117924983,
+      "sha256": "cf62d902ef2659f34ec45423a19b091104ed86ae37b33c58d169eee0e14465ef"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00090.jsonl",
+      "documents": 21471,
+      "bytes": 118794464,
+      "sha256": "bce66d6c0ad696991891093a5ff0893b29b20f986a344d314dbb59b630db249c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00091.jsonl",
+      "documents": 21979,
+      "bytes": 119425885,
+      "sha256": "3aac43f2255d4eca5c6f0269e44136a89f8a3953493ca707987147fd4f0f6bf6"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00092.jsonl",
+      "documents": 21640,
+      "bytes": 119038814,
+      "sha256": "07d3b3bb6ec3ec97443b24c337d39f04282cc0d83f92318606df9c6b15323662"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00093.jsonl",
+      "documents": 21192,
+      "bytes": 118440367,
+      "sha256": "3489e1e796339753cd99f658e43c0516ae73cc3d039d5380b6ab9d9782140306"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00094.jsonl",
+      "documents": 17476,
+      "bytes": 96806219,
+      "sha256": "6971ee18424b86104cb65ab818563bab49f2f853cfc91fc6fdefdfb5763cd538"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00095.jsonl",
+      "documents": 17673,
+      "bytes": 98179535,
+      "sha256": "b8401bb3cf736660d48c413f6a150602bd52b1acaecc8bfac625f5cee9b8f92d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00096.jsonl",
+      "documents": 17691,
+      "bytes": 99153783,
+      "sha256": "df089ea364f4495056c004f6897df6ba99ca5edc858dd23c8f13aaa0b7dc0326"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00097.jsonl",
+      "documents": 18068,
+      "bytes": 98555516,
+      "sha256": "1152223f3f3f74742a9cd5e1cc6df1854157740d442b18b3c8944660ee767176"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00098.jsonl",
+      "documents": 17788,
+      "bytes": 99743899,
+      "sha256": "a1a626f694f3c75a0789373e78edeb0d5b408d0ace552e9c1dde35541b707b93"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00099.jsonl",
+      "documents": 18228,
+      "bytes": 101624854,
+      "sha256": "e0df725e68d9973cbcaf9292d5e0f9887d183a186a1038ec8be8b9584001064a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00100.jsonl",
+      "documents": 18553,
+      "bytes": 101412789,
+      "sha256": "1c9132adc703a682cf04bb8fb8c79a5cb305e68d123d3ca8c40260926e4e6367"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00101.jsonl",
+      "documents": 18026,
+      "bytes": 101388397,
+      "sha256": "43f27757a425c306bbc411350af91f58b1555d9db193521d94a6f9a239946644"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00102.jsonl",
+      "documents": 18447,
+      "bytes": 102884395,
+      "sha256": "94600d5e21cf13d0754151799d8059b8ce9293871bcb243f4cf3a0f57abef41a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00103.jsonl",
+      "documents": 18782,
+      "bytes": 101763853,
+      "sha256": "ffbb4a965d723ba2dcbacac0da679ab649cb98366eb136dbd7a254b861db9b62"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00104.jsonl",
+      "documents": 18545,
+      "bytes": 104352857,
+      "sha256": "0d2c40a4ff4c1efdc0b7f4cfbbc12a81df826125149c97fdb0ea412f9973afd0"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00105.jsonl",
+      "documents": 18731,
+      "bytes": 103778189,
+      "sha256": "be6deb7aaed4741b2f3550f7f1e661b53673e648bfa50f42048f2c1dfbd8a45b"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00106.jsonl",
+      "documents": 18876,
+      "bytes": 104469156,
+      "sha256": "0ef80fbf7c31978dbb3495dd42c8cc7f28eee035236092dd5332379093f63890"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00107.jsonl",
+      "documents": 18987,
+      "bytes": 105808955,
+      "sha256": "a4a46cfc765e64c220da9c14ae6c0c684bb79c2b4ad95cd077943c1693d72dd3"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00108.jsonl",
+      "documents": 18797,
+      "bytes": 103135295,
+      "sha256": "df22a1eaa41e823f472535aa290765b1c442cd16049a4ddc6c81555c09177121"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00109.jsonl",
+      "documents": 19042,
+      "bytes": 104988721,
+      "sha256": "8d8e1ce6a7cfad65cd7bde9bbc4ce07a7e925297d604128b89af46f20dad7438"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00110.jsonl",
+      "documents": 19008,
+      "bytes": 104937722,
+      "sha256": "6e7f0b969db6501bb1c824eeeaa85cd93266a85a30134e2d2aa701998b2d1244"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00111.jsonl",
+      "documents": 18493,
+      "bytes": 103427872,
+      "sha256": "79e08a0f97b15b690476efb7f05c8999a559a3b26113ab9ef32c35b8a4060e53"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00112.jsonl",
+      "documents": 19212,
+      "bytes": 106207463,
+      "sha256": "190f52ce2aa79eeae54bb5b7b2801e45635f5870858e2b7af1e317c3b6851bb3"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00113.jsonl",
+      "documents": 19034,
+      "bytes": 105172491,
+      "sha256": "2df0239c92b1e6b53959e68633017b963e38fdd9a47480a45eeda731cf0ae170"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00114.jsonl",
+      "documents": 19018,
+      "bytes": 105415867,
+      "sha256": "ad7bd2ddf8c168173b8728daf8921cf51802eb5e5bc2e66ae3c4cbbe8215c050"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00115.jsonl",
+      "documents": 19512,
+      "bytes": 105630233,
+      "sha256": "8e029b1b7cffac61096991907414fdc6c6b0b03d80e13dd3c988a7bdc341b6d2"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00116.jsonl",
+      "documents": 19156,
+      "bytes": 107117890,
+      "sha256": "259198aa91e4cfce4d81c66b96983b3370c1f934a6a42964b3859081377ac649"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00117.jsonl",
+      "documents": 18934,
+      "bytes": 106695929,
+      "sha256": "f3f5fa4d7ce2e5b6c7c8f025239e05e11276a149443b9ef9a0b041c308435b21"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00118.jsonl",
+      "documents": 18620,
+      "bytes": 105780737,
+      "sha256": "1ac9e83982a744cd421bc1dd8c9856423435728647a7c58c35b0a066da46aa73"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00119.jsonl",
+      "documents": 19275,
+      "bytes": 106256290,
+      "sha256": "07a7977b6dcd175d856fdef42851d4ee134527e9f9cb986a119db1ab6a3506e3"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00120.jsonl",
+      "documents": 19489,
+      "bytes": 105786167,
+      "sha256": "e9f260363ef7fbd545260f40e039083245fdf681b28e726dde6252db4e9d303c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00121.jsonl",
+      "documents": 19121,
+      "bytes": 107930173,
+      "sha256": "00d96c95b8cb335c1842f2bfcb3688da0e8d9671ac5afbddd1b039069c5f6555"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00122.jsonl",
+      "documents": 18969,
+      "bytes": 105788389,
+      "sha256": "6b46136037019e3c7914bcb3aaa759ef2bf69e90c93b8cd39484670262286f8d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00123.jsonl",
+      "documents": 18980,
+      "bytes": 107194750,
+      "sha256": "92ef7c50d1a20de98fe9d3efe22827cbbe2586400ff502cb67ec5811dce4e463"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00124.jsonl",
+      "documents": 19404,
+      "bytes": 106909198,
+      "sha256": "05b22c67666c13de8892233511556382343cba125b62d8bfb1c927163c302497"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00125.jsonl",
+      "documents": 18563,
+      "bytes": 103237658,
+      "sha256": "3d2a9b0fb660f12bc135129cb3fba703552aedf619ea035a99f41c5271fe3591"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00126.jsonl",
+      "documents": 16697,
+      "bytes": 93468870,
+      "sha256": "687c5b4ce330bbb0c548f8c9a234d4d60c2f68b4d19170000fb3e4e6551be426"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00127.jsonl",
+      "documents": 17266,
+      "bytes": 96664587,
+      "sha256": "aa381c8c56422380f16bc0b7c970963a8d3113699929ef57a7e8c3833739bed5"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00128.jsonl",
+      "documents": 17323,
+      "bytes": 96242377,
+      "sha256": "8654ff80a53bd6681e85e25c8ada36be9fc2049f03b020a4f525c7985c61b134"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00129.jsonl",
+      "documents": 17416,
+      "bytes": 96958963,
+      "sha256": "e35274b44af2bb54d9e88088065af1435810b2caaeac15dc042a8c5404a43b92"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00130.jsonl",
+      "documents": 17471,
+      "bytes": 98494165,
+      "sha256": "ffe4711d6dea2d35f99eec53087a9b7c0bf34992d525eac09b8f8f1271520e73"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00131.jsonl",
+      "documents": 17593,
+      "bytes": 98918951,
+      "sha256": "ca580c911516d6a26db080087bde592cd009bcf7ec01447f312ed385df4c4cd9"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00132.jsonl",
+      "documents": 17619,
+      "bytes": 100940380,
+      "sha256": "db8fc13debdd1b0a21607f0e037114d4abf3dc0929d2e80f860b7b692641e743"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00133.jsonl",
+      "documents": 17870,
+      "bytes": 99476491,
+      "sha256": "edf1461e7f547abad4e5deca07e733d6a4eaf16ea72103ca9db76acbaa9bf42e"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00134.jsonl",
+      "documents": 17821,
+      "bytes": 100930965,
+      "sha256": "f7207c941916ccc49a78215585daa2307f00f3e851af8547ac7f292b5246acf3"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00135.jsonl",
+      "documents": 17710,
+      "bytes": 100789378,
+      "sha256": "514179e0e4583cca210dda213abeb492330197297fe9adf83717aa6510e6fe81"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00136.jsonl",
+      "documents": 17803,
+      "bytes": 102092511,
+      "sha256": "ba8047891100319f1f0cb2b8b8bd0cc923680e20b4920c72990fd7f1cf68bf88"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00137.jsonl",
+      "documents": 18175,
+      "bytes": 101245127,
+      "sha256": "3088eb52c329daf03a8f3b76b682d7654003063af8af2c2ac63d5830cd5ae1ea"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00138.jsonl",
+      "documents": 18113,
+      "bytes": 102374957,
+      "sha256": "3735f4f60d435737841ba372fa84b987e880f494f0b6e74a8945be51ffa53725"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00139.jsonl",
+      "documents": 18363,
+      "bytes": 102218752,
+      "sha256": "17e8303583a45663d6b188c064807beb22f4532e5708c7ecfd72351442fcc15d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00140.jsonl",
+      "documents": 17970,
+      "bytes": 102773539,
+      "sha256": "d453cbd41422601fc09fb8717f680a4de2ca757d1157afd2c62d8fd420192372"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00141.jsonl",
+      "documents": 18218,
+      "bytes": 102060715,
+      "sha256": "1b840903dd14f0bbc2167dc648e8dbb0f2a24cfe1960141febf5ddd65ae2537d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00142.jsonl",
+      "documents": 18123,
+      "bytes": 102460804,
+      "sha256": "55c0a4b52bce7b9db404486b00abbbc0aadadcb5375e330a90143c1be665b348"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00143.jsonl",
+      "documents": 18384,
+      "bytes": 104634240,
+      "sha256": "7848b11b04caf0bfb1970885dd565e92f531e1635ff79b2039df23e7e587c34c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00144.jsonl",
+      "documents": 18548,
+      "bytes": 103921732,
+      "sha256": "18304c297392b6f6bc49a2f495106b42c86fec1b3e0b523db4d469bff12cdef8"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00145.jsonl",
+      "documents": 18558,
+      "bytes": 103053249,
+      "sha256": "04e21c5be6204322f5de3be7b93ad1f10d1fcea5357ef83bf0a81b40dc842f9a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00146.jsonl",
+      "documents": 18521,
+      "bytes": 103215010,
+      "sha256": "5474f9f306f32bdce7424f6be266cdc3a47890eaaa28800e00ff961650f14bb1"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00147.jsonl",
+      "documents": 18507,
+      "bytes": 104096894,
+      "sha256": "e953e4a899c74ed7637f370fa326576a3e838bbd22799356ea542faf846077a9"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00148.jsonl",
+      "documents": 18400,
+      "bytes": 105242064,
+      "sha256": "e29a32894f6b4dbdb5550fbad2297ecf1dbb8a3c3b40a528ac357e8ce43ce5ab"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00149.jsonl",
+      "documents": 18265,
+      "bytes": 103783052,
+      "sha256": "d283610d2910979b9fe61f5bc711a43ed0550049a9fdd56fd801c7a1ce5d06a6"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00150.jsonl",
+      "documents": 18906,
+      "bytes": 105435632,
+      "sha256": "9f4bae893eba1a114806c5eaa73e7f414da91c45e4e806cfbba84723ce4156e4"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00151.jsonl",
+      "documents": 18918,
+      "bytes": 104487810,
+      "sha256": "291ce785da87b101bd1dde3c06acced5b13a9802abde98b6f43c6ce08cfd0b1e"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00152.jsonl",
+      "documents": 18071,
+      "bytes": 102191225,
+      "sha256": "5691f6043000a4782e2dc5285c1a0a468fe7122d45f0f60d0fbd1f192158b940"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00153.jsonl",
+      "documents": 18347,
+      "bytes": 104790449,
+      "sha256": "1467ecc93ba08e4c2b6809af5c08c6c927a0fb6d9286a527599fd57d9302a536"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00154.jsonl",
+      "documents": 18820,
+      "bytes": 105380271,
+      "sha256": "f650830fa4d72d8a2176309615058cd9a5680c3735f193c4d43583f3806f8a2f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00155.jsonl",
+      "documents": 19182,
+      "bytes": 105470393,
+      "sha256": "159981b5126e2bdbe65f36159e1c4fb2e32ff792ad9811a88b84f64ea61e964d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00156.jsonl",
+      "documents": 18629,
+      "bytes": 105870850,
+      "sha256": "bc8734f90ca7fdff87de4ca88989f11cbb899e7eae39e38c8e9d95379fd0eb7a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00157.jsonl",
+      "documents": 18448,
+      "bytes": 105580419,
+      "sha256": "aee8354f630818754d5adb4b782de2f226549c74cb1c80446755d0c40e042dfc"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00158.jsonl",
+      "documents": 18701,
+      "bytes": 104982258,
+      "sha256": "44732314bcb5ca9c0b1ea35deee77f5181036f1cb4c885c03efc17f28583c49e"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00159.jsonl",
+      "documents": 19015,
+      "bytes": 107016543,
+      "sha256": "e480a7582ad73168066dd7db39908a7cc000c4ddae5cfe4899f410a143406d48"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00160.jsonl",
+      "documents": 19037,
+      "bytes": 106265344,
+      "sha256": "6084b16302a7b89d3554fbe950979fb88e350bc6cd944583b347f1b6812bd85a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00161.jsonl",
+      "documents": 19175,
+      "bytes": 105033840,
+      "sha256": "4850565bac646d372e0811f00b87897e36b93da5ae42b4772956d3c7fbac0311"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00162.jsonl",
+      "documents": 18832,
+      "bytes": 105322501,
+      "sha256": "6d6b98b5cb24ecc46316ab5e7b75fa2c2ef804a9333d8747e8a8666fdf303f5a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00163.jsonl",
+      "documents": 18755,
+      "bytes": 106376386,
+      "sha256": "54ab59224214dbb6ff19098039d278c47353520f9a062720aedd451175a0c9f6"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00164.jsonl",
+      "documents": 18928,
+      "bytes": 106409418,
+      "sha256": "110d0123b83dbfaecb6cb4d357f372a607064353285a74b109756fd73afd5da2"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00165.jsonl",
+      "documents": 18872,
+      "bytes": 105070412,
+      "sha256": "bf8d3d8ffcb3e185a3b4186b35ed75658f93ce81079cdfbf0fcf95e49f26bbd3"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00166.jsonl",
+      "documents": 18958,
+      "bytes": 107131726,
+      "sha256": "3d10b10a1cc326086e3bf26349c3310469bfa5f0b909d650f3b41fc825762b52"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00167.jsonl",
+      "documents": 19359,
+      "bytes": 107413364,
+      "sha256": "3441e44a6958af2911609cf717ea491db349c2c5a67e85f1c21a17b50ce5817e"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00168.jsonl",
+      "documents": 19285,
+      "bytes": 108177755,
+      "sha256": "08a542833669ce57e2b2a1cd50c0e0c74dcca8b2def7738635eba4829e685ab3"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00169.jsonl",
+      "documents": 19067,
+      "bytes": 106479792,
+      "sha256": "6e13ba3387a47f0ae6accf8b143e4ca5d04068e496c35618f2c801d209781ca5"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00170.jsonl",
+      "documents": 19326,
+      "bytes": 108199906,
+      "sha256": "179765065ca7b32b6f9971de539e379684bbffff9b18494bc05d0e76defedcf8"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00171.jsonl",
+      "documents": 19307,
+      "bytes": 108103749,
+      "sha256": "a475571118a262a1bb3280b4a0d7c7053b2faff818620fac546c15fd090829ef"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00172.jsonl",
+      "documents": 19191,
+      "bytes": 107513229,
+      "sha256": "d8fa419e4924b894cc2b82aa8b713bf058e49b9141d69883077df9fbcaef8ae7"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00173.jsonl",
+      "documents": 18705,
+      "bytes": 107667852,
+      "sha256": "683938d84f17edfe0de477b86bab0dbae2ae88030bc9bcdd14255d02c50ed593"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00174.jsonl",
+      "documents": 18937,
+      "bytes": 107682800,
+      "sha256": "f74fba006abe61d9c56afd492de2af72d6af85b5ca6c7d4e75a209d1b5e63e68"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00175.jsonl",
+      "documents": 19050,
+      "bytes": 108873874,
+      "sha256": "2e2cba7be7a3892c2ec3bda1a601a89eed9defc2b8ad5de7a58bf280d3f683fb"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00176.jsonl",
+      "documents": 19091,
+      "bytes": 108117151,
+      "sha256": "302dea13107ddca2d0be79006693f40b3dc1933ce4a53ac7a0bda55e29805428"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00177.jsonl",
+      "documents": 19264,
+      "bytes": 108791660,
+      "sha256": "6f654d3078e5a62f98eb7165847bf99423a30d1cdd0356c5efb55fc494f7d26f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00178.jsonl",
+      "documents": 19380,
+      "bytes": 107465999,
+      "sha256": "439e990a4d39f95d3a04eadaefe0511937584ea769512448fe5d277dd41acf1b"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00179.jsonl",
+      "documents": 19361,
+      "bytes": 109470783,
+      "sha256": "1ce9dc96cd9904d1c6308fc1e5a8927a2ec327c2cbc404934cd181b5071becf1"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00180.jsonl",
+      "documents": 19464,
+      "bytes": 108548981,
+      "sha256": "3f5963eee0d4bdb28c8b8f1ed3e4472dd0919a9104b1ee75ebb1dadca14a0ac2"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00181.jsonl",
+      "documents": 18975,
+      "bytes": 108874763,
+      "sha256": "9d01d845cdb2eeb35553bde6ece0b96fa7b1c8d6cf84ee7e5ef7076f70bbafce"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00182.jsonl",
+      "documents": 18816,
+      "bytes": 108513411,
+      "sha256": "2d7ff16ddfc2973053f54d4eb777441aef909be194f5035895b957b23d5ea6cc"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00183.jsonl",
+      "documents": 19145,
+      "bytes": 108760357,
+      "sha256": "80bd9173cad28aee241479ddbee6be4e8d9b1bd5c4f51ba9385d8b9faa8ec9ca"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00184.jsonl",
+      "documents": 19736,
+      "bytes": 108098689,
+      "sha256": "c8362cde2ad045045fb30e457c8001a0b6411a60640183e51053e3f34f89d8de"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00185.jsonl",
+      "documents": 19368,
+      "bytes": 109071430,
+      "sha256": "b5c285cce7e1cd305895ecf1d1cc6a0732449ade4e65b638dd26b2666f433d24"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00186.jsonl",
+      "documents": 15190,
+      "bytes": 86140695,
+      "sha256": "570ea293d06b60d359c865d1acad1b18ca29d91604eeb46d09daedaf5add0e8e"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00187.jsonl",
+      "documents": 15058,
+      "bytes": 85892802,
+      "sha256": "003b0b21cf739ce4f7907f9fac112b53cd2c55ccc190cc6d4a1986c971eff7fb"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00188.jsonl",
+      "documents": 15536,
+      "bytes": 87214243,
+      "sha256": "9f6cd3ae9ffc6bb6e768060961d535f4eca1ee1d18c214e29783a2b851e931db"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00189.jsonl",
+      "documents": 15649,
+      "bytes": 87775533,
+      "sha256": "7d3b36c92d0551c72ce0fe56d5fb69a9d45579e70880fc53ec7e85c92d80a340"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00190.jsonl",
+      "documents": 15657,
+      "bytes": 88277224,
+      "sha256": "bbfb513dd0577273586bfdff19a027fa360eb0ba5439174b1377719626881548"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00191.jsonl",
+      "documents": 15547,
+      "bytes": 89215685,
+      "sha256": "72ac47677fb7e7781dca825acfddd6dfe1837c917913fef39abb5d4a8a321b22"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00192.jsonl",
+      "documents": 15593,
+      "bytes": 89362891,
+      "sha256": "acbe3b4b7e8054c496f1c475cf6bcfef610841ece0dacbeb246edb7eadadd442"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00193.jsonl",
+      "documents": 15687,
+      "bytes": 91303664,
+      "sha256": "779f7025cf76aebae2f12066cae188fa03930f6aac48d11a69f507115a4c9b46"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00194.jsonl",
+      "documents": 16211,
+      "bytes": 89670432,
+      "sha256": "9fdf742d25aa9c532398cd3dc22642f377502bf055d206b7b568bdfbafbc5776"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00195.jsonl",
+      "documents": 16074,
+      "bytes": 90372522,
+      "sha256": "01fde3ea61309d509c80a7f3636cd8c1534258f5696b68b31ad32e2e50ed02c7"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00196.jsonl",
+      "documents": 16219,
+      "bytes": 92311353,
+      "sha256": "6b2eb3937a2698028301481817fbfe7d537ad53568d8a8795baba08d6645c55f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00197.jsonl",
+      "documents": 16167,
+      "bytes": 91428539,
+      "sha256": "8fee6fb13b3bb1c68874e1a9cb479a5cae22210ebb7f6b05d92f43f641511105"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00198.jsonl",
+      "documents": 16213,
+      "bytes": 90501364,
+      "sha256": "7fde1671ff8ca25eb31bc5928e96ede648b8e9f59cd70322d32b0b84d5396915"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00199.jsonl",
+      "documents": 16698,
+      "bytes": 90619393,
+      "sha256": "0b0211dd3fc5601560d89e9129d97791411b94ffa3424d6c405e6056a7784435"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00200.jsonl",
+      "documents": 16252,
+      "bytes": 91157215,
+      "sha256": "316c2e11f90730ffd05a2256940f6d5342972ab4b9f82dd9d838ba2e4040a831"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00201.jsonl",
+      "documents": 16727,
+      "bytes": 92812520,
+      "sha256": "64905903af154a0ac68869483b39bb18547ae897d55859ea9806b442d06a5366"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00202.jsonl",
+      "documents": 16489,
+      "bytes": 93386850,
+      "sha256": "f8bfa0d8de3e242713f17a81f1e93c39841ac0d28d43055a82d3b59bc97303c1"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00203.jsonl",
+      "documents": 16375,
+      "bytes": 91686941,
+      "sha256": "47db18016e76e7c0a6cb03dc7a9ba7439d8de33623247986dbb69ecf9db98cd0"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00204.jsonl",
+      "documents": 16718,
+      "bytes": 92739783,
+      "sha256": "61e70122d651c04ccfea190dbc5ffdc043b7edf2c86a1b4e63dfe383b5b2cbef"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00205.jsonl",
+      "documents": 16926,
+      "bytes": 93471022,
+      "sha256": "647d1070626c3250ec2d0cab07a5a5eef1fd4affbcb9acd091664d5bab59eae0"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00206.jsonl",
+      "documents": 16591,
+      "bytes": 93433979,
+      "sha256": "3f72a730628c5a790af89434b4e5d1f84a5b209cd72a7aa29543110806ab2030"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00207.jsonl",
+      "documents": 16875,
+      "bytes": 94718583,
+      "sha256": "aedc8be7058377a693925c8b392c51bd1edf82b8d155e888394d8f0230386b43"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00208.jsonl",
+      "documents": 17158,
+      "bytes": 94201548,
+      "sha256": "23c89fbb644f685f1761d979ae3c8c1d14afda7184239a8626681711b64999aa"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00209.jsonl",
+      "documents": 16734,
+      "bytes": 93817584,
+      "sha256": "f2b6c1d29399214169c333b84ec1884e317b558f7dfc8c710de1bdda85bbcead"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00210.jsonl",
+      "documents": 16690,
+      "bytes": 94651550,
+      "sha256": "d7598318fafbd8a2e6a01e2c30ff1de2afdaa7e8229aba1dc23a0723a5e96cb5"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00211.jsonl",
+      "documents": 16562,
+      "bytes": 93064764,
+      "sha256": "6eee0f56f018f5c4cf612038ee3b15584e4fbd26e1a7d7fd4d7ab23c5a67e247"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00212.jsonl",
+      "documents": 17189,
+      "bytes": 93987231,
+      "sha256": "41f7649b178a571d311dbd733056076c7b7e7542152cccba913b344faeb52973"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00213.jsonl",
+      "documents": 16934,
+      "bytes": 95549124,
+      "sha256": "40cbf2b833e939c72416d5b089b04dc72941b4fcfa7df2450e91a7d13dcf9af6"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00214.jsonl",
+      "documents": 17033,
+      "bytes": 94520126,
+      "sha256": "f47879dae25e1658b147cd7b55e35b37b1818e8e176b5147780c11dcad9fad38"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00215.jsonl",
+      "documents": 16997,
+      "bytes": 94200569,
+      "sha256": "8c20590e5e21253c07c94e6b3ddbecc6e3b9c9c13988d887039f6cea679dc38b"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00216.jsonl",
+      "documents": 17651,
+      "bytes": 95973627,
+      "sha256": "4b6fab3c135bd18c0d60f2f960a4dac5682c924f65a34f9c717bb947e80d6f49"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00217.jsonl",
+      "documents": 16987,
+      "bytes": 95412202,
+      "sha256": "f4ebba82b9ff3bb3ecbfb508a07fe5f8526c35e8aaa2ae9c37fb97c4095110e1"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00218.jsonl",
+      "documents": 14476,
+      "bytes": 80678549,
+      "sha256": "a9b870092f98fcf2800487c16737630bd59732e990b2dfa38cc2505f61506d6a"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00219.jsonl",
+      "documents": 14252,
+      "bytes": 79518008,
+      "sha256": "c0ca2017b126907f9db57c8c0fdb4383433920e125cc82f7b17dc33017ca63c7"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00220.jsonl",
+      "documents": 14546,
+      "bytes": 80635103,
+      "sha256": "9c53aa269cb421fc85826415a71644a6fcc138c75d72d727e5d31cea9ec01fd1"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00221.jsonl",
+      "documents": 14761,
+      "bytes": 80305974,
+      "sha256": "ae92b377c2298297ea6bee05c8db31d68502a463fa9ebd4b0efe124b7a8a174d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00222.jsonl",
+      "documents": 14558,
+      "bytes": 80384413,
+      "sha256": "5268eebe73289b211e55372116512dbb79c29d658523ee8d36240962cc24ffad"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00223.jsonl",
+      "documents": 15176,
+      "bytes": 82394097,
+      "sha256": "c54f67b9f13bef0d6268e23cf979b3f8bcac11437fda914add5a30395687c55f"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00224.jsonl",
+      "documents": 14924,
+      "bytes": 83301843,
+      "sha256": "9f933b1ea6ca00fa00d7de338c42a3223f8d90d555ebf082026195fe83c7e5fa"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00225.jsonl",
+      "documents": 15098,
+      "bytes": 82855319,
+      "sha256": "b36aa743f53105414fd4d06992f0e7e93381f7c88bab492f2d6d712920641521"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00226.jsonl",
+      "documents": 14924,
+      "bytes": 85193358,
+      "sha256": "e26329c36fd00094bd89412466a193f58c366343c7593f815091a3544102379d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00227.jsonl",
+      "documents": 15109,
+      "bytes": 84359177,
+      "sha256": "238c4df26ada3319cab44b6e17bc3c47dfb03407526101d188beb6439cc7667d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00228.jsonl",
+      "documents": 14911,
+      "bytes": 82153164,
+      "sha256": "e75ed22d1f544a7e9a0e16e301fc46304397d336f95004d945647597352b2823"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00229.jsonl",
+      "documents": 15330,
+      "bytes": 84751819,
+      "sha256": "84ebbeb0c2f2d8dde19a483912e7f1099593deccb6d16a4a98284d88cad87da6"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00230.jsonl",
+      "documents": 15726,
+      "bytes": 86219732,
+      "sha256": "4b40bec72013654caf559e70263ebb1ee042ca5be11c46c86971d955ed45d961"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00231.jsonl",
+      "documents": 15483,
+      "bytes": 85648185,
+      "sha256": "06cd7a9faebf17e2f9f46a8df5b2df534970f01005ee9d761e2a3fd7851c4c09"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00232.jsonl",
+      "documents": 15346,
+      "bytes": 86429409,
+      "sha256": "5fffcbaeb4858118f391be6768a68ae5d501a16e3656bd126111bfbe0eb7e689"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00233.jsonl",
+      "documents": 15639,
+      "bytes": 84944128,
+      "sha256": "c4a6a5fc691a351a4c91288fe6c2fd969cbca4830362c369767a919b888e745e"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00234.jsonl",
+      "documents": 15318,
+      "bytes": 87256012,
+      "sha256": "e8c111401c6ce6475a21ca9329108c8773181f21c5fe8af655ea5c78181f0e41"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00235.jsonl",
+      "documents": 15692,
+      "bytes": 86228305,
+      "sha256": "0799b9c9cd4e0e7fe576194f28d6c02075cf2698116b5c40bff30da6589caf84"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00236.jsonl",
+      "documents": 15789,
+      "bytes": 87643332,
+      "sha256": "0c01f6732583df87bc15c58a9da5bb34709a86dd2312fefe9fe192809e227915"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00237.jsonl",
+      "documents": 15462,
+      "bytes": 86857610,
+      "sha256": "1ba241d3a195e740d051ac7c7a1f1ba744ec1b41c97a5982ac1108fdf556a532"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00238.jsonl",
+      "documents": 15484,
+      "bytes": 87418009,
+      "sha256": "2c281dbb7392e122db29705f2bf55ca5aaa949b92483af78bf0b92c681f8ff28"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00239.jsonl",
+      "documents": 15469,
+      "bytes": 88264698,
+      "sha256": "0bd25863192eb5b2e1a05da59a6b4280833feae8d1a6ec30295d2f56d1971182"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00240.jsonl",
+      "documents": 15811,
+      "bytes": 87682631,
+      "sha256": "bcaedcbd53bfc7b64e3bede953aff5d32a52a6d68baec1a943761ff45b24e09c"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00241.jsonl",
+      "documents": 15698,
+      "bytes": 87075409,
+      "sha256": "ca416c3cb8b8c96860029ee5c51cebe1c5d8bd9263c51506dba052aa1a6314d2"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00242.jsonl",
+      "documents": 15905,
+      "bytes": 87866574,
+      "sha256": "1bfe2932b801d4b05a9016d076641f4c3dbfa2e3de468bb1816f997d028f3e6e"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00243.jsonl",
+      "documents": 15747,
+      "bytes": 86722307,
+      "sha256": "9ec05dbabf39d787326db9f087ac1ddf6dfc9ebaf6d3be9d281c8d500bd8a886"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00244.jsonl",
+      "documents": 16043,
+      "bytes": 89260930,
+      "sha256": "ab834cfac56395eadbeb50a813a28001989fe4a1b8b9833693a1cc9c77fd1924"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00245.jsonl",
+      "documents": 15814,
+      "bytes": 89816303,
+      "sha256": "b09fba0d09a92f6e80d7e1b7c9124c486730fcba76f575cbdbcc5dcb6d60eb7d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00246.jsonl",
+      "documents": 16027,
+      "bytes": 89172894,
+      "sha256": "c9728c664779036cdef1b141e7985ab4a0ef455224a75f8d650e2b04971ee7ec"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00247.jsonl",
+      "documents": 15633,
+      "bytes": 88269707,
+      "sha256": "b0907237a3c6bb7c2844e1e03536b692a4371e81f3c85e564bc42f3fa14ba12d"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/fineweb-edu/part-00248.jsonl",
+      "documents": 5974,
+      "bytes": 33070843,
+      "sha256": "3b333caae467dcfcd28ef57df0294aed1657592554e6dea04e200fd45e7613a8"
+    }
+  ],
+  "index_sha256": "8e1b0426827e05b0c2867098b59d4fba366057b40d74460e328e588ebaf15168",
+  "index_ngrams": {
+    "prose": 1507360,
+    "code": 23611
+  },
+  "upstream_report_sha256": "027786a44e1ce9027f3c4a4d14780d1cbea3557d61685958f644dac072398c0c",
+  "script_sha256": "62ceec91b2725e759e678bd7355dda66483aa43ba3727e5c27a254e137c3dac1"
+}

@@ -1,0 +1,30 @@
+{
+  "source": "openassistant",
+  "status": "complete",
+  "algorithm": "global-exact",
+  "counts": {
+    "input": 53705,
+    "kept": 53615,
+    "train": 50383,
+    "duplicates": 90,
+    "validation": 3232
+  },
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/deduped/openassistant/part-00000.jsonl",
+      "documents": 53615,
+      "bytes": 111931003,
+      "sha256": "d0f8e0f0e7986a4c52dc3e2b8258a16b07f9ef0fa9e07213039bf01e3862a6e9",
+      "counts": {
+        "input": 53705,
+        "kept": 53615,
+        "train": 50383,
+        "duplicates": 90,
+        "validation": 3232
+      }
+    }
+  ],
+  "upstream_report_sha256": "c6aba8595a82b30b658f8840c69dffa2e8ef105cced29f68de38f0623fca2855",
+  "global_identity": "39c8862ef068f802d33936d1968a72cbdf221ffce8c2f6ae9d9f80541305f96f",
+  "script_sha256": "d05b7da57b834d6b18a30d57203534a5d62e91898e809de40f8b3c8fd9ee873f"
+}

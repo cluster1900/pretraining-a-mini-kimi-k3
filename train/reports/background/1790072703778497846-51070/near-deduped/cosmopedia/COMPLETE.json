@@ -1,0 +1,753 @@
+{
+  "status": "complete",
+  "source": "cosmopedia",
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00000.jsonl",
+      "bytes": 136937218,
+      "documents": 14617,
+      "sha256": "d9add542414af244c43209ae3bcd46ba2871feb459f1637475af80168162b942",
+      "counts": {
+        "input": 14617,
+        "kept": 14617
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00001.jsonl",
+      "bytes": 136938724,
+      "documents": 14643,
+      "sha256": "6b7bd401a09772f57f277b8677eaddbec52d86ccdaeb6674280d77d83ff7f5be",
+      "counts": {
+        "input": 14643,
+        "kept": 14643
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00002.jsonl",
+      "bytes": 136953122,
+      "documents": 14717,
+      "sha256": "2669be57456918d4fbf258719ad062c92d7302067583539de24b37ccc65ef0c9",
+      "counts": {
+        "input": 14717,
+        "kept": 14717
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00003.jsonl",
+      "bytes": 136947436,
+      "documents": 14709,
+      "sha256": "f1820e9dc9a2da29bbe82437353e0063445043876a9844307f32983093e593c3",
+      "counts": {
+        "input": 14709,
+        "kept": 14709
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00004.jsonl",
+      "bytes": 136946541,
+      "documents": 14697,
+      "sha256": "1e8278f3b5fbd1ccfa7cc8024dcedbd465c67f2a66e001289c9cc8667a02959b",
+      "counts": {
+        "input": 14697,
+        "kept": 14697
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00005.jsonl",
+      "bytes": 136965973,
+      "documents": 14698,
+      "sha256": "d6927bae4bb2d2da12699d4b6715acae82c817b1727e22b773befcf8c4c6fd8c",
+      "counts": {
+        "input": 14698,
+        "kept": 14698
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00006.jsonl",
+      "bytes": 136976061,
+      "documents": 14763,
+      "sha256": "a3059b53ff2e25d5cc71c38ccfe155282d403d2699d9336dc3b2b74a5b38fa40",
+      "counts": {
+        "input": 14763,
+        "kept": 14763
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00007.jsonl",
+      "bytes": 136957306,
+      "documents": 14698,
+      "sha256": "543833fc9a83feb8139fc01d3a8cbd0519dac6f46910e78a9b85babdfb0a32c7",
+      "counts": {
+        "input": 14698,
+        "kept": 14698
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00008.jsonl",
+      "bytes": 136960218,
+      "documents": 14684,
+      "sha256": "756ee1d0b6559ff8e606fd45f8d362662c7eb03fe6a64a93163721474e2b59e5",
+      "counts": {
+        "input": 14684,
+        "kept": 14684
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00009.jsonl",
+      "bytes": 136937935,
+      "documents": 14709,
+      "sha256": "4a56200395a871b38568da323616fcaa7c3cb441b3389836860a02afd113fd69",
+      "counts": {
+        "input": 14709,
+        "kept": 14709
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00010.jsonl",
+      "bytes": 136894262,
+      "documents": 14813,
+      "sha256": "96a404fffa417ba195bc50a77c9037cbf0945c4f3211d6a2af71bffc314d4cf2",
+      "counts": {
+        "input": 14813,
+        "kept": 14813
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00011.jsonl",
+      "bytes": 136936555,
+      "documents": 14595,
+      "sha256": "27744a9799c6404367ae916425d1f73f5f27b6f6d37bc312d661d38a843bc07c",
+      "counts": {
+        "input": 14595,
+        "kept": 14595
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00012.jsonl",
+      "bytes": 136935873,
+      "documents": 14734,
+      "sha256": "dd5bb8a1518b93fc85fe2c9d8a9a7fd2c26652cbe20eb776ab6c18e4d2e69d98",
+      "counts": {
+        "input": 14734,
+        "kept": 14734
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00013.jsonl",
+      "bytes": 136970340,
+      "documents": 14723,
+      "sha256": "1126ecb84b4070b1594a7e1500febd5e74398b353252e50de365eb45ecda8c13",
+      "counts": {
+        "input": 14723,
+        "kept": 14723
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00014.jsonl",
+      "bytes": 136923456,
+      "documents": 14585,
+      "sha256": "db0c60170d6ead27a06e1192397c8168c4d5094bda012e124403c9c180d8abad",
+      "counts": {
+        "input": 14585,
+        "kept": 14585
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00015.jsonl",
+      "bytes": 136975097,
+      "documents": 14761,
+      "sha256": "f57558ca45a482193b468b5139901b6a72709d2ee189b5325bfc740da3e0c220",
+      "counts": {
+        "input": 14761,
+        "kept": 14761
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00016.jsonl",
+      "bytes": 136884942,
+      "documents": 14514,
+      "sha256": "632da8f9a7d14bdcf324c2805c1dcb01f893aabb5a9ab627a880fb39e6777ec1",
+      "counts": {
+        "input": 14514,
+        "kept": 14514
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00017.jsonl",
+      "bytes": 136988101,
+      "documents": 14827,
+      "sha256": "6847ef52c89caaa477b02126b5b45c26de5cfb28e651225da589ff9ebc20bb05",
+      "counts": {
+        "input": 14827,
+        "kept": 14827
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00018.jsonl",
+      "bytes": 136904334,
+      "documents": 14679,
+      "sha256": "6f9d542b1749bf43e348b689622e04dfd406d889aa2a9d1111a6b30d18d096ab",
+      "counts": {
+        "input": 14679,
+        "kept": 14679
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00019.jsonl",
+      "bytes": 136955319,
+      "documents": 14659,
+      "sha256": "a57f19aa7f836808070e9d949a515ed685fff1c82e9c8f1861c101b0b01bbdbf",
+      "counts": {
+        "input": 14659,
+        "kept": 14659
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00020.jsonl",
+      "bytes": 136971939,
+      "documents": 14739,
+      "sha256": "565e3244bdc267b8b3e131070f341c1a21865aa7e93b3c1d0384f1412827beea",
+      "counts": {
+        "input": 14739,
+        "kept": 14739
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00021.jsonl",
+      "bytes": 136903588,
+      "documents": 14449,
+      "sha256": "5d7c096eb380ded2131b50dec6c0815ba70521008a62412c0c6adfb405e33b38",
+      "counts": {
+        "input": 14449,
+        "kept": 14449
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00022.jsonl",
+      "bytes": 136949510,
+      "documents": 14636,
+      "sha256": "b4c2b365331c505dd1e0a178099dbc74603eadc3803fb8142790446819ab84d4",
+      "counts": {
+        "input": 14636,
+        "kept": 14636
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00023.jsonl",
+      "bytes": 136956119,
+      "documents": 14695,
+      "sha256": "7f5fa0303f6c54d9ac4ba6ebac03fc6f8363e6eb1788fa85b7e1ed4401dbc8f0",
+      "counts": {
+        "input": 14695,
+        "kept": 14695
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00024.jsonl",
+      "bytes": 136948567,
+      "documents": 14633,
+      "sha256": "d0b89982ba8b29815f52ad45792180b9b3d0e01fd1c27ac42c7b689468c9c75a",
+      "counts": {
+        "input": 14633,
+        "kept": 14633
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00025.jsonl",
+      "bytes": 136988511,
+      "documents": 14833,
+      "sha256": "6013e7dae3ab2da27cd3e158669975a8ab070675a358ae60249513d9d4c68a33",
+      "counts": {
+        "input": 14833,
+        "kept": 14833
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00026.jsonl",
+      "bytes": 136881747,
+      "documents": 14553,
+      "sha256": "ef83eaf102bbef30ae5b585e17cc1a08342b9866c9f4cd45b44443a2d9254280",
+      "counts": {
+        "input": 14553,
+        "kept": 14553
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00027.jsonl",
+      "bytes": 136970941,
+      "documents": 14813,
+      "sha256": "5b29ba0b25f7290a56f88a2b9a3f6602977fb897c149ba2fffd00da26c9def6d",
+      "counts": {
+        "input": 14813,
+        "kept": 14813
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00028.jsonl",
+      "bytes": 136945454,
+      "documents": 14741,
+      "sha256": "d2748608e7f092053bbe6bceb6d960e277b41fa46f04aa8c3c1658d4cb831112",
+      "counts": {
+        "input": 14741,
+        "kept": 14741
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00029.jsonl",
+      "bytes": 136977194,
+      "documents": 14803,
+      "sha256": "79caa62b93d8491f5433beb7aa3203938db8d530ff6521fa096c2f6e919b16f2",
+      "counts": {
+        "input": 14803,
+        "kept": 14803
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00030.jsonl",
+      "bytes": 136950129,
+      "documents": 14630,
+      "sha256": "46a86de55ab9828e8626842b7d05b295e27d6e0b296a3f9747104c132cc46a4c",
+      "counts": {
+        "input": 14630,
+        "kept": 14630
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00031.jsonl",
+      "bytes": 136922226,
+      "documents": 14628,
+      "sha256": "3b25b4dca3f25227a00e6d60b8c412a143b9987c2535b5b141da67aa1d3fa4c4",
+      "counts": {
+        "input": 14628,
+        "kept": 14628
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00032.jsonl",
+      "bytes": 136956950,
+      "documents": 14682,
+      "sha256": "ec596316703c2b85f6d247660c08125fe355737884e80daa54bf80985686efb0",
+      "counts": {
+        "input": 14682,
+        "kept": 14682
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00033.jsonl",
+      "bytes": 136947437,
+      "documents": 14716,
+      "sha256": "66228d7c5af1d2b4836c969938cec67a63162594ddea6e51479c67664b1fa3cf",
+      "counts": {
+        "input": 14716,
+        "kept": 14716
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00034.jsonl",
+      "bytes": 136959586,
+      "documents": 14687,
+      "sha256": "47c71b92a5b29dda610cb7870f6b05315bb955b272cabfd1492faf7e84c6585e",
+      "counts": {
+        "input": 14687,
+        "kept": 14687
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00035.jsonl",
+      "bytes": 136931901,
+      "documents": 14686,
+      "sha256": "bd5124349ab3f293e58d804c893675ec5d93c52d2713c351eb681a1a633cf248",
+      "counts": {
+        "input": 14686,
+        "kept": 14686
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00036.jsonl",
+      "bytes": 136933606,
+      "documents": 14721,
+      "sha256": "251e38b5f25d5b3b266776eb20343d24bfeb318423edf70d0aab0c4c71003037",
+      "counts": {
+        "input": 14721,
+        "kept": 14721
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00037.jsonl",
+      "bytes": 136893216,
+      "documents": 14593,
+      "sha256": "8699c10b17f81f828fb3af2141f4c3bfaba246608ff9fbd90b2b760297ea8731",
+      "counts": {
+        "input": 14593,
+        "kept": 14593
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00038.jsonl",
+      "bytes": 136973955,
+      "documents": 14779,
+      "sha256": "8173e2a7ed4b8f7eed20419a06d534419d094cd7b85d28d00683ceb4476e9d3b",
+      "counts": {
+        "input": 14779,
+        "kept": 14779
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00039.jsonl",
+      "bytes": 136951876,
+      "documents": 14747,
+      "sha256": "11ffe38d9eaffa7efd7b11c68c3c1c1f847fcd14d09b0123601b75ec43ef81c3",
+      "counts": {
+        "input": 14747,
+        "kept": 14747
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00040.jsonl",
+      "bytes": 136931193,
+      "documents": 14561,
+      "sha256": "ecbfca56fcf6486f03c047870319391efe08873d1ab385733c2dc9d7e34edc92",
+      "counts": {
+        "input": 14561,
+        "kept": 14561
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00041.jsonl",
+      "bytes": 136970692,
+      "documents": 14769,
+      "sha256": "d4d1c975d2bc98df5643debf4f6ae6750645d54b8d82ebdda2af3cc2d3908d23",
+      "counts": {
+        "input": 14769,
+        "kept": 14769
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00042.jsonl",
+      "bytes": 136945023,
+      "documents": 14763,
+      "sha256": "aa65507385be2b93d053a39bb68a190557456e038492581f675d326dfc435e89",
+      "counts": {
+        "input": 14763,
+        "kept": 14763
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00043.jsonl",
+      "bytes": 136962574,
+      "documents": 14808,
+      "sha256": "46c9798e32501d4b06d2008beff3c78eeb0b7b5d796bae2dd7b0b3051c2e28d9",
+      "counts": {
+        "input": 14808,
+        "kept": 14808
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00044.jsonl",
+      "bytes": 136972713,
+      "documents": 14803,
+      "sha256": "41f70d5c8863d9046be1941a7d06c389c00b44a7709089948f4246ed64052d9c",
+      "counts": {
+        "input": 14803,
+        "kept": 14803
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00045.jsonl",
+      "bytes": 136974883,
+      "documents": 14792,
+      "sha256": "6f26799fa8c6baebbea295d637ca9782f3346cb6555945b7b82bdd435e8e4da6",
+      "counts": {
+        "input": 14792,
+        "kept": 14792
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00046.jsonl",
+      "bytes": 136946050,
+      "documents": 14601,
+      "sha256": "29bdcfece18b6e35c83473ac9abac817bf0d55549e2c3846b6cf4c73d551fdd5",
+      "counts": {
+        "input": 14601,
+        "kept": 14601
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00047.jsonl",
+      "bytes": 136964816,
+      "documents": 14847,
+      "sha256": "e74fbc815ba9e60585b882474b00ba67188d2cb707ee53dc67181f68350d7381",
+      "counts": {
+        "input": 14847,
+        "kept": 14847
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00048.jsonl",
+      "bytes": 136948781,
+      "documents": 14698,
+      "sha256": "bbc7b71a6377c297c2eff087660d91588ba0f2dc2f7de5ef6559fc1e7fa3b07c",
+      "counts": {
+        "input": 14698,
+        "kept": 14698
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00049.jsonl",
+      "bytes": 136975235,
+      "documents": 14758,
+      "sha256": "875fa61ca97334be035c699ff496ce19d886ce236818db62c5c3d958ff4d7a15",
+      "counts": {
+        "input": 14758,
+        "kept": 14758
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00050.jsonl",
+      "bytes": 136953865,
+      "documents": 14719,
+      "sha256": "b0f46cf04a40219ed42ef9b372328d58d588a9452fce7662504d938759e4cefe",
+      "counts": {
+        "input": 14719,
+        "kept": 14719
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00051.jsonl",
+      "bytes": 136964385,
+      "documents": 14739,
+      "sha256": "d2bc30268a49f0a5ad22d945cf563ca10cccd43e726ecf60e1ce1e07f2fd0d63",
+      "counts": {
+        "input": 14739,
+        "kept": 14739
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00052.jsonl",
+      "bytes": 136938526,
+      "documents": 14656,
+      "sha256": "66ee726e44bfce2d383a6bc56f2daefb3bb607f251df5789d08f878530da5309",
+      "counts": {
+        "input": 14656,
+        "kept": 14656
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00053.jsonl",
+      "bytes": 136935973,
+      "documents": 14777,
+      "sha256": "665c0ffc1bc8948b70a029a9a4b6baec87f83fc283277cd846681253a794fad5",
+      "counts": {
+        "input": 14777,
+        "kept": 14777
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00054.jsonl",
+      "bytes": 136954453,
+      "documents": 14655,
+      "sha256": "91d90129393814fb5cf90f79f5c7f42683d4c69cbfb5416d4a885a660301d558",
+      "counts": {
+        "input": 14655,
+        "kept": 14655
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00055.jsonl",
+      "bytes": 136946215,
+      "documents": 14726,
+      "sha256": "b894dd795cc050c08b11e21e5085d780d7fa001a50ccd2088441144534cf0f11",
+      "counts": {
+        "input": 14726,
+        "kept": 14726
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00056.jsonl",
+      "bytes": 136906165,
+      "documents": 14604,
+      "sha256": "35af16caf9cc250f8e2d6c38de22ae67002f7aff148fdf65cdd432dad6015083",
+      "counts": {
+        "input": 14604,
+        "kept": 14604
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00057.jsonl",
+      "bytes": 136917078,
+      "documents": 14597,
+      "sha256": "272104ef5dbf9143a7c6896d3e4f9b8987886503d6de5b015156a34c1fe262cf",
+      "counts": {
+        "input": 14597,
+        "kept": 14597
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00058.jsonl",
+      "bytes": 136933470,
+      "documents": 14704,
+      "sha256": "7d3d404f452951303eac05eb061bcd57789681326f2ed7877c87f12ca4d9f580",
+      "counts": {
+        "input": 14704,
+        "kept": 14704
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00059.jsonl",
+      "bytes": 136916865,
+      "documents": 14544,
+      "sha256": "63573c2b5080ca458d9868554c65ca8ede95cea30a9c9f62d85c8a5d1881709d",
+      "counts": {
+        "input": 14544,
+        "kept": 14544
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00060.jsonl",
+      "bytes": 136931930,
+      "documents": 14712,
+      "sha256": "f3c993e45d9a94254151c481f1cc0f260cef887956e60ffda5e52e8ffe8c88ef",
+      "counts": {
+        "input": 14712,
+        "kept": 14712
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00061.jsonl",
+      "bytes": 136951359,
+      "documents": 14674,
+      "sha256": "19344a7a81a6267a553d52a575eefe5ea8a1a8f6eda798bc51d705cf0c3746e7",
+      "counts": {
+        "input": 14674,
+        "kept": 14674
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00062.jsonl",
+      "bytes": 136952511,
+      "documents": 14654,
+      "sha256": "208b41b8a0081fa9825913a0d9ea3b19da704a8e50453b33e711dc9b9719c366",
+      "counts": {
+        "input": 14654,
+        "kept": 14654
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00063.jsonl",
+      "bytes": 136960098,
+      "documents": 14683,
+      "sha256": "30d5a8a5647d821ad95aea93f40b6861b5a4db46c8be44a246d9dfe931384354",
+      "counts": {
+        "input": 14683,
+        "kept": 14683
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00064.jsonl",
+      "bytes": 136938264,
+      "documents": 14694,
+      "sha256": "53f84b4f0a78fa8cc6b61b9c0f3f950fb79b1665aeafa4b21a54a682294c2e29",
+      "counts": {
+        "input": 14694,
+        "kept": 14694
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00065.jsonl",
+      "bytes": 136906130,
+      "documents": 14659,
+      "sha256": "169d243e9b8c30941bddcaa88a335804a5fb4a986085414ea80056429d3e694f",
+      "counts": {
+        "input": 14659,
+        "kept": 14659
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00066.jsonl",
+      "bytes": 136945346,
+      "documents": 14640,
+      "sha256": "f47ef95e0ca617b336e801182da8903f866cb3eb41169924173a7e5d70272b52",
+      "counts": {
+        "input": 14640,
+        "kept": 14640
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00067.jsonl",
+      "bytes": 136986862,
+      "documents": 14832,
+      "sha256": "6ff55bef7888a2ceb45961b991282e392605a305f2be533734d3f6e213d8b53d",
+      "counts": {
+        "input": 14832,
+        "kept": 14832
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00068.jsonl",
+      "bytes": 136969550,
+      "documents": 14801,
+      "sha256": "ef378b250851e73cf8670f7e4b5a3a4059a986eb40086e43869034b5f1d0e473",
+      "counts": {
+        "input": 14801,
+        "kept": 14801
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00069.jsonl",
+      "bytes": 136967614,
+      "documents": 14749,
+      "sha256": "682a7c1c1d8dc8322bf38b1afab057339bc7261822f78bacf8447124a11c0126",
+      "counts": {
+        "input": 14749,
+        "kept": 14749
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00070.jsonl",
+      "bytes": 136961908,
+      "documents": 14783,
+      "sha256": "3561e797e74ad052b0e4f1a65a6bf5bb16d96e4c5672b90f895690205a78c7fa",
+      "counts": {
+        "input": 14783,
+        "kept": 14783
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00071.jsonl",
+      "bytes": 136968663,
+      "documents": 14737,
+      "sha256": "a6e82099d5d4b00f71294498c9ab8fc05e1ae7dccf2f6163158f5245d22df478",
+      "counts": {
+        "input": 14737,
+        "kept": 14737
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00072.jsonl",
+      "bytes": 136953185,
+      "documents": 14654,
+      "sha256": "29d3a8a0805174f8b73246915e05994dfee099c6cc99d28cdb8b576b440135db",
+      "counts": {
+        "input": 14654,
+        "kept": 14654
+      }
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/near-deduped/cosmopedia/part-00073.jsonl",
+      "bytes": 46042855,
+      "documents": 4881,
+      "sha256": "e1cb68afa293966fa9e536852c494663dfb298006c1d80e74c9229b8713a57fc",
+      "counts": {
+        "input": 4881,
+        "kept": 4881
+      }
+    }
+  ],
+  "counts": {
+    "input": 1077863,
+    "kept": 1077863
+  },
+  "upstream_report_sha256": "e9096adaba5666a0c30100c625b4762c6adfc93296fbe18535160a42e7d21a4a",
+  "script_sha256": "f7a5ba73ce3248c68efe9b3ee39d5421af0eeb3d8dde05a62d5fc216c861de9a",
+  "method": "5-unit shingles, 64 MinHash permutations, 8x8 LSH, feature Jaccard>=0.9; SFT/preference exact dedup only"
+}

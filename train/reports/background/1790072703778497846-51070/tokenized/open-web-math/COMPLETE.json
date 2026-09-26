@@ -1,0 +1,756 @@
+{
+  "status": "complete",
+  "source": "open-web-math",
+  "kind": "pretrain",
+  "counts": {
+    "documents": 2303353,
+    "train_documents": 2280474,
+    "train_tokens": 4480775152,
+    "validation_documents": 22879,
+    "validation_tokens": 45699021
+  },
+  "files": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00000.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 26402,
+      "sha256": "20fe1bf48d444855db19d9e05a17a4c12cf1db7763773521561e97f317126f2f",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00001.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25384,
+      "sha256": "f985854d2713d57e333ef35eb8378f2d95ab75dc0d6735b644429769d438eff3",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00002.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25734,
+      "sha256": "e938772c76115097188aabca9633f2f52bcd0d30b9185b3e17962c3ab123b5fb",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00003.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25639,
+      "sha256": "5acbaf7d1bbf63dc6a2615122bbb609b7624fb7666eaaa44888597c5bae23672",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00004.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25722,
+      "sha256": "e73eaac3fafd1ed577fde883673dd593ca2ffae14e59090aa8949ab91c1efe26",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00005.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25803,
+      "sha256": "6eee7b12dc35a2398af10e3ef1f3d4837513be4da98f8a5e335849730cbd5285",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00006.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25454,
+      "sha256": "f910fdd41579e338ffe65052da1df214ac1b58aa30aba52f93d56779206b2afc",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00007.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25370,
+      "sha256": "271679bdf004906dda988c8e7f9da087f939edbb334d11a981da78459a786b29",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00008.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 26010,
+      "sha256": "fc2e6a3b4926de29b42e1650882fa2f9bc786ee1cb03043c4cce882c9f13cf55",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00009.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25899,
+      "sha256": "cd3bbe6aae4c418105530670ecda97b04183eb98ec173e0f77fbb5d945863632",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00010.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24660,
+      "sha256": "3a4d255cea3fd42f0ab0c9736aa81cebdcd6fdce7d15e2f95dd14647dca341ec",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00011.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25214,
+      "sha256": "5bb786010051c78c7cc94265e0a350539915d59eb1e8ca2e68ff54d733c53558",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00012.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25885,
+      "sha256": "b13d0cf96ee710ee988165222ec615f3325064c252a8d6d5806cdd62a6c45f00",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00013.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25479,
+      "sha256": "db0bdfa249cc490bc691b78f4f80fd8b8c6c8d2800f34584dfe174e9ec18710f",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00014.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25178,
+      "sha256": "bce3712a541ffc435407c3a1a3f08897214570a25030df411231487c49c1111b",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00015.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24926,
+      "sha256": "bb60bb5aba7f85c6617a3b65d3e50c710ae05daa03c7a86896f45c2d35063a24",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00016.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25313,
+      "sha256": "4479da94f1f704a105678ddc6dac1f418c19e5761d928bc5c6b56fe56ef9fddd",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00017.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24398,
+      "sha256": "33fed2df7d21e4dfe881acb0dcc194a3ff56d0415d2982bbba2556ed23221fe0",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00018.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25146,
+      "sha256": "a9b94edf2bb8941f00020880b8998430830d004088159ef69a8123dd1b877061",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00019.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25567,
+      "sha256": "c42f878b918c1268cc5cbd4d71a8fce2aef0500d750590f3042608e92c6e84a4",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00020.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25905,
+      "sha256": "2c7a1ffca2f5f54f9f4d879d957aba2f88e9a356cc95642cca4fa741cd8652ea",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00021.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 26007,
+      "sha256": "9fa0a2d155f5152f605463e22c8eb4cd3400ab7de838b1ef692bbaaf8cf8fc4c",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00022.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25026,
+      "sha256": "0b18a8fb93ae443707474af97509d6287feb50c8704276b5be8d5e8f5a44be1f",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00023.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24906,
+      "sha256": "fdaeff7e28868d2a1ca4fec35386962750f6b998231ea9a75e0a2ec6d79a6a22",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00024.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25639,
+      "sha256": "047f8c9b1718f248e1fb4ea45f36802bde6ee3d4c4638fcdecdd809e1232bec3",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00025.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 26059,
+      "sha256": "bd08df72abab80a2c70d85b0e04ad440fd65751a3380d71ff82471e583b3dab9",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00026.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25819,
+      "sha256": "7637d4ceb1741c5f0e73eb6668747d49b6fafd1a747aaf9c4f37c6272fbe632d",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00027.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25166,
+      "sha256": "9b62e382c10630087d02b7da11e33014f36d1e7a363ffa43df73d9d7dd422a75",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00028.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25118,
+      "sha256": "1f36084e34354c2a0ae63d054110047cfdf364db30912897054edb634b3fca02",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00029.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25387,
+      "sha256": "467cf5255916854f5906bf69e13637fbd173171d2b7fc4c7031921a3a5cac603",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00030.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25594,
+      "sha256": "d8f7efaec7e2063b74dbcb6ca4d826cad899af5313fd6a400f93fca8d37e9c9d",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00031.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25867,
+      "sha256": "bee0eb7c1eee041f8ef656d1f6ca2e936efbe7d2097ab598e66834ed1256b58d",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00032.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24809,
+      "sha256": "eb5b06bfc37696a1fa0da15a5e523f518154738e658f4ca7b6ad525453301954",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00033.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25339,
+      "sha256": "062cf160c74ad47f63c04ed5d6d6183c76348a91151b2d013661e6411dc4a11d",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00034.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25504,
+      "sha256": "2229999d3c53fc5568003421c7e042048629b5b4d58db9e8d9cf6d9ea6ab59e9",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00035.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 26149,
+      "sha256": "3f0069730a4aee56ed342ad23dd63cb749a214f3e404ada9f0fa331f18a5efbc",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00036.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24397,
+      "sha256": "5cb3c4279efc41f5e0c6f95909a5506e0bc26710a866109e0c872af90ccae3f6",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00037.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25104,
+      "sha256": "f9a90958293064eed73e891bc342251c77eb6221b0433ed868bd10a4ee201b96",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00038.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25688,
+      "sha256": "5468ed47654d26c088d66bd0cf32818ae8c8f367279d5b3e76f6f381d6da1a67",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00039.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24652,
+      "sha256": "2589a4f525a8b6af5df87ab7882d650dca133cd30e0325302106a2f5845a6648",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00040.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24802,
+      "sha256": "811285e3ce3b14dda8e2ffa07cca706194a5cdf1550c8b8b233ac187a1f11b1f",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00041.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25902,
+      "sha256": "45d35edf3aa1076b89d979fb354668015e1a963a40116a1d4b3d40813728f42b",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00042.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25788,
+      "sha256": "9307e2ea24a98a00724392f5619afe492fe129d2b520d5fde11b343b58c47f62",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00043.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25357,
+      "sha256": "026fc5dff2d19c3bb345af4e1a3d3bf14c24d4316186151be6a32c0887c6752e",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00044.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25220,
+      "sha256": "21fa02c812cd986de709ca65c7fa1f7a83517aae2f9b6300b65f9df6da56b551",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00045.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25705,
+      "sha256": "179465176476b5ba0eecf7e4fee89ca3165909ab1fb4dcf9d36034c4a7021306",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00046.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25670,
+      "sha256": "877813c04484516aa432376ab007ac0eedf79677478e3dbcbdb3bd13f0892513",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00047.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25653,
+      "sha256": "3523f53bd6cbab3952af17721f928e043b25b946daead2178823135f601980b5",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00048.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25143,
+      "sha256": "93ed7cf4d511e102d71a6cf34570421b916c4cfff6a23f9e428f7f1622a73fee",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00049.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 26017,
+      "sha256": "edea902564e557901e86386588f025ca59b8d2210871c8f28a0fcdb3f747d5cd",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00050.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 26003,
+      "sha256": "bd916fcf4416eb1deca451212427860c3296d31316d9b6a810e8bbd8d51c12f9",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00051.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25365,
+      "sha256": "98cf80a1a95b5e9ca05abb98fe0fc97693fcb881490753cb6a8483fc9a2d860f",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00052.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24581,
+      "sha256": "b0a0db2664905c224dd24745046ea54cabb08b60a0d7fccf72d8939c11544368",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00053.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25827,
+      "sha256": "7a44d4d7c7f178f9e0120e934d9b6b8514fa9422b2798997ccaf412a39e9ccf7",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00054.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25485,
+      "sha256": "ac0f7c917a9563a856c4bcdb82e7cd4c5f9c88aba2d82782502a77f35acb4663",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00055.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25493,
+      "sha256": "2b1fb46e50d5c57c3f545346ef583e27ce9802661c3b007e74963cc4e1c227ee",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00056.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25727,
+      "sha256": "c3ecc6255a9547817e31b9a669b9a37e005e0aeb14fa3e9a1d005c919307ced5",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00057.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25229,
+      "sha256": "4f74fcee10d9e87092b21ef5b9e57c82471e3e737c1998403e0dc699d29a8e28",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00058.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25428,
+      "sha256": "2e91bb5c711a99ade90d0f24432c24e9973c9c0647b2323c27817d22c05537ca",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00059.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25819,
+      "sha256": "470bb38e196de460e84a2c7644d2ffbf69a19afbefe1316ef34406246bb6f38f",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00060.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 26211,
+      "sha256": "ba6ab5ca240b7d16d1f10761124b285f052375b001fcdedff3b5a5fa130870be",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00061.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25558,
+      "sha256": "147c39d34a560aa3a16ea0c8c7c370d04c466aa55724fd8d31af8d59b17fecbb",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00062.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24740,
+      "sha256": "4dd3293f4e284ab9b4db4ef8a263d3e7d6ae5facc2590c8ff259bb66936d5319",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00063.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24918,
+      "sha256": "0ecdf3804b11ebaac0bfabd80bf8d9f4eb3d078b691050591b3436850707106c",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00064.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25108,
+      "sha256": "3a7650c6a702f1c8edcb40fd2c6b75209bd2dbdebb933a3d5a4854681caabe8a",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00065.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25588,
+      "sha256": "9717ea97879a7ca6175891d06d9b0006000d98cbda9be36dbf0a0aee975ef6e2",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00066.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25519,
+      "sha256": "7458a6a7b0cd3cf3b33db5751e93b06f25601ea09569ac66d399ed9938e47373",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00067.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25778,
+      "sha256": "e09fbdd61fdf0aa2d3c0ad3ca9caad0846c64847c9fa48ec2a9d95aecd1f351b",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00068.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25919,
+      "sha256": "a2bd165e88ccae3a44c39bf11191a6e1042fe8649c92c72ebb1a2265ee3400e6",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00069.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24733,
+      "sha256": "7a41a4556dd416a3063f1151d913ae2193ef6aa9b4d34fbb69a8f4c86543ac45",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00070.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25269,
+      "sha256": "9a217aa3f29c0ff90fb7f882e9d6bcb464926f7c1a1b45b407067dcfce151d37",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00071.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25608,
+      "sha256": "1e5b411480a9cc576e26c934295510651c457e5d8fccad034a64ecbf66eb64ff",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00072.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25042,
+      "sha256": "accf00a20098e974822a0af5dea8e1e4d03dbd4aed91f640a4c7715f194e008c",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00073.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25766,
+      "sha256": "7b82fb1faed9b2f1cf0998a6d072ccddac10421d1c3ffb1643c319ffb506daed",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00074.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25313,
+      "sha256": "cac4597b251ab9fa70073fcbe526f56fdbe02018bc2d64ce53ffd600585d6e44",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00075.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25022,
+      "sha256": "a0a960208851692201a2c32321fcc781b5a1758873f2f3957ba09b75d7f353a8",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00076.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24801,
+      "sha256": "373c4fda3a0fb8d79b6846b97ee67cab915d3350408eec7c8427628149360366",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00077.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 26288,
+      "sha256": "fe040a707daba31c1ea27d4133950e07b8f0fffd2c4c2b155bba687c660d2150",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00078.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25389,
+      "sha256": "c6c4b002c17c039a775969a3899aacec09c19ce42c65badbe4e845fa552b1e7f",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00079.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25746,
+      "sha256": "df482bfb9c30fa9a4cca6453200433906a8529fc5c3e7724f1f99d215482ea58",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00080.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25541,
+      "sha256": "dbd7b3e51cabcff9aab57eedaf832ce3a709208f6da6f77bea6a5197cde93487",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00081.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25517,
+      "sha256": "9c74c1331af2000476347a2b412dbe2e09c9e5532b9b8667c0190f6d2e9a2eea",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00082.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25391,
+      "sha256": "eff9717597890a169a30202a9cfcc79488c757d396cf44358fd4487202b60d3d",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00083.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25399,
+      "sha256": "dd87e465b50db76d6916f334c61b49bce9e815e3914a7e5001d5266f2de14614",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00084.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24962,
+      "sha256": "689c6df0b17e19dfcf7dce5ab1c69993483f941b47d10dfde1dd1435b83bbacc",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00085.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 24702,
+      "sha256": "118d4c5cd3b9e6b7ca7743f84768ca6026c9af3b948a918b71a2482acd9e2788",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00086.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25782,
+      "sha256": "41cd58552a81c71ccef66857768f248bb89157a6fd7b8af3976f14e498af75fb",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00087.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25603,
+      "sha256": "abf61fbd47b8a1e8e4f5dcc24e321e642c33dec17c01f167468b2d8046475f88",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00088.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 25498,
+      "sha256": "d9c4db613363e3aef70608c336e829b66e6c2cb5c93dadfa87e524ec6a98b39f",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/train/shard-00089.bin",
+      "tokens": 30775152,
+      "bytes": 123100608,
+      "eos": 16231,
+      "sha256": "1cab64663b6c6b04341160d23051ec039cb2f9d54cd08abc862df659d9e23145",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/validation/shard-00000.bin",
+      "tokens": 45699021,
+      "bytes": 182796084,
+      "eos": 22879,
+      "sha256": "df6f038d64808ef1a9e81b567409e220ab8a3b8d7c4d012b0d35fbcbc1124cd3",
+      "split": "validation"
+    }
+  ],
+  "tokenizer_fingerprint": "1732cd666e532d83bf2e6ff13888950eb517b6d2c8c2ffc542804907dd9026e8",
+  "tokenizer_assets": {
+    "tiktoken.model": "b6c497a7469b33ced9c38afb1ad6e47f03f5e5dc05f15930799210ec050c5103",
+    "tokenizer_config.json": "5d0803c94db9cd78763499e0956c95fd5a225c14a727e5a6cf5db3f96f010a6e",
+    "tokenization_kimi.py": "f28ea66e2d862a2a5814970b2ce40c2f7d8296ff09aed90a7e7def689b906944"
+  },
+  "vocab_size": 163840,
+  "dtype": "<u4",
+  "upstream_sha256": "41a6c39d9531e6f6eaa8244c0677a6eea898b07d201daf30f384237498f1f7c1",
+  "script_sha256": "f610649a6b17f43e7a2e8c3c7f1dc31d1dea8c03c1647cba6f1d1b0b2bf31b40",
+  "document_index": {
+    "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/documents.jsonl",
+    "sha256": "32d59394dc5175947e220f099eecf16c24d7e4aa6c5551823ba7eab9eb5d76c9"
+  }
+}

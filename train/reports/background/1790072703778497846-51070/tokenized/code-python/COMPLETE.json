@@ -1,0 +1,244 @@
+{
+  "status": "complete",
+  "source": "code-python",
+  "kind": "pretrain",
+  "counts": {
+    "documents": 1216300,
+    "train_documents": 1204475,
+    "train_tokens": 1288200254,
+    "validation_documents": 11825,
+    "validation_tokens": 14286731
+  },
+  "files": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00000.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 214456,
+      "sha256": "e056759a5a8892bd65b274d358e9ba595fc0be7ace44cec572b893cca710fa7d",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00001.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 203882,
+      "sha256": "1e14112eeb5f98e8f760b726e1893cd558b141ee9dbe5e0a90a421a3273844d3",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00002.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 56423,
+      "sha256": "415fc9d3078add10f1dff7979e1811528dfabfac1916a4c771b9e4019c8b4a7a",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00003.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 30311,
+      "sha256": "fe4fee9d9389dd5bb27e29560d933f9d2fcea1953d167eab2e408e0509bfe757",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00004.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 30270,
+      "sha256": "b340c2f6a4b23159c4c20dd21c4d0f6fed4ac3b36e17334fb85d2040a1ce353e",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00005.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 29247,
+      "sha256": "c7699bcda14063b1927522209f78447b2aed9b42d65d318f8a6d52c94808bb66",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00006.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31405,
+      "sha256": "a403bbd8b2a0deb63e8b90c74be2256898c14c238144b735e71acb7c25b21e77",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00007.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 30287,
+      "sha256": "518dbcbb868438d941116628ac2210c8488796041b741926d20b8d56a8012748",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00008.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31313,
+      "sha256": "95637d645f19e3d36981e1760511cc92f57f74a148083239cab0ff4730ade1e1",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00009.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31585,
+      "sha256": "ee9ab1dc86d2f92fcdf543611c34c54c6d95f90ff559bf4817e18761314d5cfd",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00010.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 30705,
+      "sha256": "56b62714d6a7c6a1a5aa7b5ba54c1bb69da9e7fdfe83163a680ec75c13fe35a6",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00011.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 30093,
+      "sha256": "75faf20cf956089b220d6c5e955578ce1f171eaf26d05bc8d0c9eeaf35349bb6",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00012.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31595,
+      "sha256": "c032553ae87d2d2652b899c88bac89c75ade5d9143adce06ba6619931ab75660",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00013.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31586,
+      "sha256": "a82e8fb1d901498834a53a44685b9833498ec724b574006335cf407fd6cbdfae",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00014.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31885,
+      "sha256": "247c84c8b0165bbc9bebb2b07ae4ecda7134dd60236ded795b535be45d13d12a",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00015.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32117,
+      "sha256": "1876ffe6fe76dcc53cca1f20e9b9c578f8a01c5d7d2fd1d23a778a4c8e77fe19",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00016.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31708,
+      "sha256": "6a0fb55596e067be810950bc0750663b6724a0b9ee4ae73302c2204d8973c914",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00017.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33401,
+      "sha256": "2134e545015c9e9b8a16636db5695ec51f50a0ea9708b7897b7a5336113ac1a0",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00018.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 34242,
+      "sha256": "f74ef351cc6009c52082f6a581b44333cc4c579f30d4fa0982f20a0e39445d50",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00019.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33539,
+      "sha256": "fe90d989f36673a7845272169807638a676412d81dcb6ff311320279890de92f",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00020.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 32336,
+      "sha256": "fb25a0f58d80fa5758f971c342eaae6c01f0d24ce9b07ae7417472ee7e05ec51",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00021.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 34002,
+      "sha256": "a4cf9595ff624064622116bb4b17cbc87025f18e2f9f96cf6db799e5f00c1362",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00022.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33393,
+      "sha256": "6a2618af909fc8fb2a450e4143dd0ab598ce82d9627a5b46dc24db86694e2ba6",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00023.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 33432,
+      "sha256": "c01c635c5e5baf62102f9a84de8643a46a67ee307f30b1d0b755efa3d29aeb50",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00024.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 34430,
+      "sha256": "165226af1066b3b012aef3002579cee005399175fd8449772d44ca4ae26d1812",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/train/shard-00025.bin",
+      "tokens": 38200254,
+      "bytes": 152801016,
+      "eos": 26832,
+      "sha256": "262188cc8374be6cf201efe734ff058b3ae6f2b8a775b5f7c644d45543659faa",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/validation/shard-00000.bin",
+      "tokens": 14286731,
+      "bytes": 57146924,
+      "eos": 11825,
+      "sha256": "702d85b663d47d89cad1f10ae0aca2039aa59b1cbedfe2e8c68fb2994a9ffd6f",
+      "split": "validation"
+    }
+  ],
+  "tokenizer_fingerprint": "1732cd666e532d83bf2e6ff13888950eb517b6d2c8c2ffc542804907dd9026e8",
+  "tokenizer_assets": {
+    "tiktoken.model": "b6c497a7469b33ced9c38afb1ad6e47f03f5e5dc05f15930799210ec050c5103",
+    "tokenizer_config.json": "5d0803c94db9cd78763499e0956c95fd5a225c14a727e5a6cf5db3f96f010a6e",
+    "tokenization_kimi.py": "f28ea66e2d862a2a5814970b2ce40c2f7d8296ff09aed90a7e7def689b906944"
+  },
+  "vocab_size": 163840,
+  "dtype": "<u4",
+  "upstream_sha256": "0de5e56f0abfc939e255865b62b3dbff0f3d702100fb072255175fe52fa95939",
+  "script_sha256": "f610649a6b17f43e7a2e8c3c7f1dc31d1dea8c03c1647cba6f1d1b0b2bf31b40",
+  "document_index": {
+    "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/documents.jsonl",
+    "sha256": "7ce0c58fc0829b129f28bc4a5b8a4c1e62984248d425ac39b8daf1f43484ab22"
+  }
+}

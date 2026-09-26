@@ -1,0 +1,42 @@
+{
+  "source": "openhermes",
+  "status": "complete",
+  "counts": {
+    "input": 238672,
+    "kept": 233224,
+    "removed": 5448
+  },
+  "parts": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/openhermes/part-00000.jsonl",
+      "documents": 64712,
+      "bytes": 142195893,
+      "sha256": "e934cc3d7e4bf800aa7c069bd6e38f8a8e0ec934c5bcab4a0185e98a2565f150"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/openhermes/part-00001.jsonl",
+      "documents": 67937,
+      "bytes": 142348340,
+      "sha256": "4f066b9046dfb7f384516397cc92a4bb96e9a84595c3c812a9bb6d411365bf58"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/openhermes/part-00002.jsonl",
+      "documents": 60151,
+      "bytes": 144047985,
+      "sha256": "9d2cd5d6636eb142998fe1accb22376f180976e7945304ca1fc7843af7cd5de7"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/decontaminated/openhermes/part-00003.jsonl",
+      "documents": 40424,
+      "bytes": 52599735,
+      "sha256": "2b311d94cd17c68535fa2c445782de6ed60b75173d4706d39c3e795c1796a6e5"
+    }
+  ],
+  "index_sha256": "8e1b0426827e05b0c2867098b59d4fba366057b40d74460e328e588ebaf15168",
+  "index_ngrams": {
+    "prose": 1507360,
+    "code": 23611
+  },
+  "upstream_report_sha256": "6072c4397b00883184926193a52ede9d52d46bdbcfa623323917c1d5e2ab60c4",
+  "script_sha256": "62ceec91b2725e759e678bd7355dda66483aa43ba3727e5c27a254e137c3dac1"
+}

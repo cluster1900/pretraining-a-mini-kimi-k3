@@ -1,0 +1,308 @@
+{
+  "status": "complete",
+  "source": "cosmopedia",
+  "kind": "pretrain",
+  "counts": {
+    "documents": 1075892,
+    "train_documents": 1065326,
+    "train_tokens": 1689844133,
+    "validation_documents": 10566,
+    "validation_tokens": 16643495
+  },
+  "files": [
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00000.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31376,
+      "sha256": "81569919b6816c61252993b3f9ec52d9f312aea0dd78d60bdab13c40f4bf6954",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00001.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31578,
+      "sha256": "31fbdc91855e8fe3d59607315acb05366e14d36aa8f2250248799d706d1f5fc1",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00002.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31571,
+      "sha256": "bc52060016354d2cee26ca6f4c9f7160d2a959df65afb897f3f2a3b627d7e248",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00003.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31540,
+      "sha256": "bee99587bf0a95ef3590a1731771d6fc35364d4940a15c7bc63db80df4d97d42",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00004.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31678,
+      "sha256": "bd04cf13af2088748052b2424aa844639d752f9d78ccdd1e3031f8c792530a08",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00005.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31449,
+      "sha256": "5cea43cbde2246b8c9ce86c4f6b731a33de34d164fed90a1095139c3ad23d7ae",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00006.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31452,
+      "sha256": "f812457ab48c7a0a57c74bfec14736ea421dce76608c3f0d7ab0174b72bb7c47",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00007.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31469,
+      "sha256": "bf10b3ae270b3f0db16d11a275ec66874a7ca05c3bc455d17ff93c8965a256aa",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00008.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31578,
+      "sha256": "881fa03d3c559bae5ef5095b8f1f4dec487e4451c929c6e43baf3b2a52b12611",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00009.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31329,
+      "sha256": "b5fce6e8eca8e2e6c48fcfd1c7a897f6669f8d748212430ad427863f4048d941",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00010.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31396,
+      "sha256": "56d36d0846e1d2fcb13f08971f6e1c29630de64b3ac961efca960c9cdefd3353",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00011.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31613,
+      "sha256": "c6cf44f01c03660be3f57f206749970b418982a46b8135b19e65d58e5fd75212",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00012.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31622,
+      "sha256": "7e0bb5af9e7dd5559a1eff5840f536433bebf5fe7c41cc8d468e4d96688f9e88",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00013.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31578,
+      "sha256": "146e9a4e51d854062a3d56eac80c2d17aab2b50b4c864cd22fd92e568e8120db",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00014.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31342,
+      "sha256": "47521e80ccc6f7f13c3a6d17e9873ac066d67eb1ae5ecf3db093e7b076a004b9",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00015.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31571,
+      "sha256": "b9e6f9000a426fc237f0b5e1c341d83c19bd7cdf185f27e0c5bc2015415a3eae",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00016.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31516,
+      "sha256": "caed440a410ee3f1f952d3c7d1e43ed9427086b6ae3e032d1dc2410bfd38165e",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00017.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31451,
+      "sha256": "bb16f0c23819d0aadc5447d42c7e32859ef9fdd74f6571d506250678ac2d7455",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00018.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31487,
+      "sha256": "4f435e22ef24f284a47df43fbcd9166d2eb9fef7b79cfb5dcb0ae459b870894a",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00019.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31750,
+      "sha256": "0bb79dd6243d3209b7f22a4b2212896e174e006b1313c59d2c0c0f6243204c51",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00020.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31677,
+      "sha256": "c48d54bede320f5f73528ee6d89bc4ea655ff376b5940863e651d85b365b5fc4",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00021.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31629,
+      "sha256": "d27efc8bb4506e3481ea41e38510177844f9d6e6590cafa33f782b27f7404dd9",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00022.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31613,
+      "sha256": "bb6ca003debee58fe469a231b0bf162891ce5f67028f2d1bb712d37a6cb67477",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00023.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31578,
+      "sha256": "dd2a7992db3bdf9c21afb7c31cd6fe7bfc9bcc6e10415a9d9c95d1bb84db132e",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00024.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31505,
+      "sha256": "13dd55d18fda4a44b0914284ed54f75dabec46e65c9d611ef9796ae971d9cc4a",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00025.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31413,
+      "sha256": "ba23e166a24a12efc3ec8f39fc725d92d8dcc8b287d44c08d60c75303cec3f2e",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00026.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31413,
+      "sha256": "4ba236b2fdc3b153d1feed9abae71bd4929a3063557289583c488ea6a5d41d0c",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00027.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31402,
+      "sha256": "e06e75ba343486291285df73f79a9a62c87c9f41b7c146f9cd79ff9031bf98ab",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00028.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31368,
+      "sha256": "ea46829acfa5b7d91dad0056744ea1e953c231fd0c87fb5228426472e116c034",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00029.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31501,
+      "sha256": "7a7e79fee83127383a88fc611aa908c6344a731091ee67d6575d0ee3740a6f66",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00030.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31413,
+      "sha256": "49cb20a2dc04216aee9fd6619abdd267fa50db9bcb53a519f93aa3c816e4d9d3",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00031.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31690,
+      "sha256": "5f0966894e12b6a85d2d29158becf826b2588fb9ed1156ee3a890658dd05eaf8",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00032.bin",
+      "tokens": 50000000,
+      "bytes": 200000000,
+      "eos": 31720,
+      "sha256": "366159f023b41ad82929eff266ef73627cac77583b85855729a3980f337d2a32",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/train/shard-00033.bin",
+      "tokens": 39844133,
+      "bytes": 159376532,
+      "eos": 25058,
+      "sha256": "274627e83f3997f8110765243a996ba7acc14d34e09809ec42f81a2d98d657e0",
+      "split": "train"
+    },
+    {
+      "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/validation/shard-00000.bin",
+      "tokens": 16643495,
+      "bytes": 66573980,
+      "eos": 10566,
+      "sha256": "b786cb5b5a2589bf51b5072c4efd516fc413ef9f3535781e6ffbe303b732d5d9",
+      "split": "validation"
+    }
+  ],
+  "tokenizer_fingerprint": "1732cd666e532d83bf2e6ff13888950eb517b6d2c8c2ffc542804907dd9026e8",
+  "tokenizer_assets": {
+    "tiktoken.model": "b6c497a7469b33ced9c38afb1ad6e47f03f5e5dc05f15930799210ec050c5103",
+    "tokenizer_config.json": "5d0803c94db9cd78763499e0956c95fd5a225c14a727e5a6cf5db3f96f010a6e",
+    "tokenization_kimi.py": "f28ea66e2d862a2a5814970b2ce40c2f7d8296ff09aed90a7e7def689b906944"
+  },
+  "vocab_size": 163840,
+  "dtype": "<u4",
+  "upstream_sha256": "0b0567c91dff084b1ef77b33259e38a0224ca075adf00912aa7253d9ca72ab8e",
+  "script_sha256": "f610649a6b17f43e7a2e8c3c7f1dc31d1dea8c03c1647cba6f1d1b0b2bf31b40",
+  "document_index": {
+    "path": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/documents.jsonl",
+    "sha256": "be0dd7490a4f9cb076a53e44ec78152f3b6e46e844df5146ae35785681071ae1"
+  }
+}
