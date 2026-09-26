@@ -37,6 +37,31 @@ def assigned_split(key,official_holdout=False):
     return 'validation' if official_holdout or int(key[:16],16)%100==0 else 'train'
 
 
+def promote_content_holdout_groups(con, inputs):
+    """Put a conversation into the holdout once any of its text is held out.
+
+    Official validation text can occur on one branch of another conversation.
+    That branch is marked validation while its siblings stay in train, and the
+    shared split group then fails the final audit. OpenAssistant is processed
+    first, so the kept copy of such text is in this source.
+    """
+    upstream = inputs.get('openassistant')
+    if not upstream:
+        return 0
+    added = 0
+    for part in upstream['parts']:
+        verify_part(part)
+        with Path(part['path']).open(encoding='utf-8') as handle:
+            for line in handle:
+                row = json.loads(line)
+                if con.execute('SELECT 1 FROM holdout WHERE key=?', (content_key(row),)).fetchone():
+                    added += con.execute(
+                        'INSERT OR IGNORE INTO holdout VALUES (?)', (group_key(row),)
+                    ).rowcount
+    con.commit()
+    return added
+
+
 def verify_part(item):
     path=Path(item['path'])
     if not path.is_file() or path.stat().st_size!=item['bytes'] or digest_file(path)!=item['sha256']:
@@ -75,6 +100,10 @@ def deduplicate(root,sources=None,after_part=None):
                         if r.get('official_split')=='validation':
                             con.executemany('INSERT OR IGNORE INTO holdout VALUES (?)',[(group_key(r),),(content_key(r),)])
             con.execute("INSERT INTO meta VALUES ('holdout_done','1')");con.commit()
+        # A sibling can share a conversation with a row whose text matches an
+        # official validation message. Holding out only that one row splits the
+        # group. Promote the whole conversation before any split is assigned.
+        promote_content_holdout_groups(con, inputs)
         total=Counter();completed=[]
         try:
             for source in sources:

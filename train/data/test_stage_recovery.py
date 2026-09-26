@@ -42,6 +42,28 @@ class RecoveryTests(unittest.TestCase):
         a={'kind':'sft','messages':[{'role':'user','content':'question'},{'role':'assistant','content':'one'}]}
         b={'kind':'sft','messages':[{'role':'user','content':'question'},{'role':'assistant','content':'two'}]}
         self.assertEqual(group_key(a),group_key(b));self.assertEqual(assigned_split(group_key(a)),assigned_split(group_key(b)))
+    def test_validation_text_promotes_the_whole_conversation(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td);out=root/'cleaned'/'openassistant';out.mkdir(parents=True)
+            rows=[]
+            for i,text,tree,official in (
+                (0,'other branch','tree-train','train'),
+                (1,'held out wording','tree-train','train'),
+                (2,'held out wording','tree-val','validation'),
+            ):
+                row={'id':f'id{i}','source':'openassistant','repo':'OpenAssistant/oasst1','kind':'sft',
+                     'messages':[{'role':'user','content':'q'},{'role':'assistant','content':text}],
+                     'group_id':tree,'official_split':official}
+                row['content_sha256']=content_key(row);rows.append(row)
+            path=out/'part-00000.jsonl'
+            path.write_text(''.join(json.dumps(r,ensure_ascii=False)+'\n' for r in rows))
+            part={'path':str(path),'bytes':path.stat().st_size,'sha256':digest_file(path),'documents':len(rows)}
+            atomic_json(out/'COMPLETE.json',{'parts':[part]})
+            deduplicate(root,['openassistant'])
+            kept=[json.loads(line) for line in (root/'deduped'/'openassistant'/'part-00000.jsonl').read_text().splitlines()]
+            promoted=[row for row in kept if row['group_id']=='tree-train']
+            self.assertEqual(len(promoted),2)
+            self.assertEqual({row['split'] for row in promoted},{'validation'})
     def test_uint32_cross_shard_boundary(self):
         with tempfile.TemporaryDirectory() as td:
             w=TokenWriter(td,3);w.write([1,2,3,4,255],255);w.write([9,255],255);w.close()

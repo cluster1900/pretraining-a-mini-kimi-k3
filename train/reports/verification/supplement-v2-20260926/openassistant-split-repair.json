@@ -1,0 +1,13 @@
+{
+  "status": "repaired",
+  "groups": [
+    "bfe63f8ebe9065b57ad3b71b1ad7e22cea8a12d59e99a72e9979024af633f914"
+  ],
+  "rows_moved_to_validation": {
+    "deduped": 3,
+    "near-deduped": 3,
+    "decontaminated": 3
+  },
+  "openassistant_decontaminated_sha256": "41469109005e1cefcaf202e6865b31c6fc77bf7d53507342e17a7548933e4584",
+  "dedup_script_sha256": "c65ee38139d0c8ba2b5cacf86a6ac3baeb09cc647970d2971a67f70e1cdfe6f0"
+}

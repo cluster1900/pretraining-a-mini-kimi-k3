@@ -12,7 +12,7 @@ class ScalarHeadModel(nn.Module):
         if checkpoint:
             ckpt_p = Path(checkpoint)
             model_file = ckpt_p / "model.pt" if ckpt_p.is_dir() else ckpt_p
-            self.backbone.load_state_dict(torch.load(model_file, map_location="cpu"), strict=True)
+            self.backbone.load_state_dict(torch.load(model_file, map_location="cpu", weights_only=False), strict=True)
         self.score = nn.Linear(config.hidden_size, 1, bias=False)
 
     def forward(self, input_ids, attention_mask=None):

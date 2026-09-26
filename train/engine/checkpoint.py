@@ -60,10 +60,9 @@ class CheckpointManager:
         if dist.is_available() and dist.is_initialized(): dist.barrier()
         tmp_dir.mkdir(parents=True, exist_ok=True)
         
-        # 1. Model weights
-        torch.save(model.state_dict(), tmp_dir / "model.pt")
-        
-        # 2. Rank-local optimizer state (each DDP replica owns its state)
+        # Model and metadata are written once. Every rank writes its own optimizer and RNG.
+        if rank == 0:
+            torch.save(model.state_dict(), tmp_dir / "model.pt")
         torch.save(optimizer.state_dict(), tmp_dir / f"optimizer_rank{rank}.pt")
         
         # 3. RNG States
@@ -90,30 +89,29 @@ class CheckpointManager:
                 self.best_metric, self.best_step = metric, step
                 meta["is_best"] = True
                 meta["best_metric"] = metric
-        torch.save(meta, tmp_dir / "meta.pt")
-        
-        # Each rank writes its own loader cursor. Marker is written only by
-        # rank 0 after all ranks have finished writing their state.
+        if rank == 0:
+            torch.save(meta, tmp_dir / "meta.pt")
         if data_loader_state is not None:
             torch.save(data_loader_state, tmp_dir / f"loader_rank{rank}.pt")
-        if dist.is_available() and dist.is_initialized(): dist.barrier()
+        if dist.is_available() and dist.is_initialized():
+            dist.barrier()
         if rank == 0:
             (tmp_dir / "COMPLETE").write_text(f"step={step}\nworld_size={world_size}\n")
-        
-        # Atomic rename
-            if target_dir.exists(): shutil.rmtree(target_dir)
+            if target_dir.exists():
+                shutil.rmtree(target_dir)
             tmp_dir.rename(target_dir)
             if meta.get("is_best"):
                 best = self.checkpoint_dir / "best"
                 best_tmp = self.checkpoint_dir / ".best.tmp"
-                if best_tmp.exists(): shutil.rmtree(best_tmp)
+                if best_tmp.exists():
+                    shutil.rmtree(best_tmp)
                 shutil.copytree(target_dir, best_tmp)
-                if best.exists(): shutil.rmtree(best)
+                if best.exists():
+                    shutil.rmtree(best)
                 best_tmp.rename(best)
-        if dist.is_available() and dist.is_initialized(): dist.barrier()
-        
-        # Clean up old checkpoints based on retention policy
-        self._prune_old_checkpoints(step)
+            self._prune_old_checkpoints(step)
+        if dist.is_available() and dist.is_initialized():
+            dist.barrier()
         return target_dir
 
     def _prune_old_checkpoints(self, current_step: int) -> None:
@@ -162,17 +160,17 @@ class CheckpointManager:
         print(f"[CheckpointManager] Loading latest checkpoint from: {latest_dir}")
         
         # Load weights
-        model.load_state_dict(torch.load(latest_dir / "model.pt", map_location="cpu"))
+        model.load_state_dict(torch.load(latest_dir / "model.pt", map_location="cpu", weights_only=False))
         
         # Load optimizer
         opt_file = latest_dir / f"optimizer_rank{rank}.pt"
         if optimizer is not None and opt_file.exists():
-            optimizer.load_state_dict(torch.load(opt_file, map_location="cpu"))
+            optimizer.load_state_dict(torch.load(opt_file, map_location="cpu", weights_only=False))
             
         # Load RNG states
         rng_file = latest_dir / f"rng_rank{rank}.pt"
         if rng_file.exists():
-            rng = torch.load(rng_file, map_location="cpu")
+            rng = torch.load(rng_file, map_location="cpu", weights_only=False)
             random.setstate(rng["python"])
             np.random.set_state(rng["numpy"])
             torch.set_rng_state(rng["torch_cpu"])
@@ -180,13 +178,13 @@ class CheckpointManager:
                 torch.cuda.set_rng_state(rng["torch_cuda"])
                 
         # Load meta & spike guard
-        meta = torch.load(latest_dir / "meta.pt", map_location="cpu")
+        meta = torch.load(latest_dir / "meta.pt", map_location="cpu", weights_only=False)
         saved_world = int(meta.get("world_size", 1))
         if saved_world != world_size:
             raise ValueError(f"Checkpoint world_size={saved_world} but current world_size={world_size}; refusing unsafe resume")
         loader_file = latest_dir / f"loader_rank{rank}.pt"
         if loader_file.exists():
-            meta["data_loader"] = torch.load(loader_file, map_location="cpu")
+            meta["data_loader"] = torch.load(loader_file, map_location="cpu", weights_only=False)
         if spike_guard is not None and "spike_guard" in meta:
             spike_guard.load_state_dict(meta["spike_guard"])
             

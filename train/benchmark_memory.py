@@ -166,7 +166,7 @@ def run_memory_benchmark():
         print("    -> PASS: VRAM consumption is within Tesla V100 (32GB) bounds!")
 
     print("=" * 80)
-    print(">>> MEMORY BENCHMARK PASSED: 1M inference is guaranteed safe from OOM! <<<")
+    print(">>> MEMORY BENCHMARK PASSED: cache stays inside the attention window on this short run. <<<")
     print("=" * 80)
 
 

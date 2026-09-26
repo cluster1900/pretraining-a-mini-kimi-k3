@@ -98,7 +98,7 @@ def main():
 
     cfg = DEFAULT_CONFIG
     model = MiniK3ForCausalLM(cfg).to(device)
-    model.load_state_dict(torch.load(model_file, map_location=device))
+    model.load_state_dict(torch.load(model_file, map_location=device, weights_only=False))
     tokenizer = K3Tokenizer(args.tokenizer_model)
 
     print("[*] Model loaded successfully.")

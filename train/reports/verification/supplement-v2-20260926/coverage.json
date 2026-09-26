@@ -1,0 +1,43 @@
+{
+  "status": "sufficient_fixed_mix",
+  "scope": "Training token availability versus the documented stable/decay mixture; no download or training performed",
+  "root": "/data/mini-k3/data/prepared-v2-supplement-v2",
+  "total_target_tokens": 10000007168,
+  "stable_fraction": 0.85,
+  "decay_fraction": 0.15,
+  "required_tokens": {
+    "fineweb-edu": 4275003064,
+    "chinese-fineweb-edu": 1425001021,
+    "dolma-body": 1000000716,
+    "finemath": 605000433,
+    "open-web-math": 545000390,
+    "code-python": 1225000878,
+    "cosmopedia": 925000663
+  },
+  "available_train_tokens": {
+    "fineweb-edu": 5070590896,
+    "chinese-fineweb-edu": 1439726521,
+    "dolma-body": 9008293636,
+    "finemath": 5237079424,
+    "open-web-math": 4480775152,
+    "code-python": 1288200254,
+    "cosmopedia": 1689844133
+  },
+  "deficits": {},
+  "recommended_supplement_tokens_with_buffer": {},
+  "max_tokens_without_reuse_at_fixed_mix": 10103344007,
+  "evidence": {
+    "fineweb-edu": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/fineweb-edu/COMPLETE.json",
+    "chinese-fineweb-edu": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/chinese-fineweb-edu/COMPLETE.json",
+    "dolma-body": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/dolma-body/COMPLETE.json",
+    "finemath": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/finemath/COMPLETE.json",
+    "open-web-math": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/open-web-math/COMPLETE.json",
+    "code-python": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/code-python/COMPLETE.json",
+    "cosmopedia": "/data/mini-k3/data/prepared-v2-supplement-v2/tokenized/cosmopedia/COMPLETE.json"
+  },
+  "completion_scope": "final_manifest",
+  "warnings": [
+    "A total-token surplus cannot substitute for a missing source while the mixture is fixed.",
+    "This report does not authorize downloads or a change to the training mixture."
+  ]
+}

@@ -49,7 +49,7 @@ def parse_args():
     parser.add_argument(
         "--data_manifest",
         type=str,
-        default="/data/mini-k3/data/prepared-v2-supplement-v1/manifests/pretrain_stable.json",
+        default="/data/mini-k3/data/prepared-v2-supplement-v2/manifests/pretrain_stable.json",
         help="Path to the audited pretraining manifest JSON",
     )
     parser.add_argument("--checkpoint_dir", type=str, default="/data/mini-k3/checkpoints", help="Directory to store checkpoints")
@@ -61,7 +61,7 @@ def parse_args():
     parser.add_argument(
         "--validation_manifest",
         type=str,
-        default="/data/mini-k3/data/prepared-v2-supplement-v1/manifests/validation.json",
+        default="/data/mini-k3/data/prepared-v2-supplement-v2/manifests/validation.json",
         help="Path to the audited validation manifest JSON",
     )
     parser.add_argument("--validation_interval", type=int, default=500)
@@ -161,8 +161,10 @@ def main():
         rank=rank,
         world_size=world_size,
     )
-    val_loader = MultiSourceDataLoader(manifest_path=args.validation_manifest, seq_len=seq_len,
-                                       batch_size=cfg.micro_batch_size) if Path(args.validation_manifest).is_file() else None
+    val_loader = MultiSourceDataLoader(
+        manifest_path=args.validation_manifest, seq_len=seq_len, batch_size=cfg.micro_batch_size,
+        rank=rank, world_size=world_size,
+    ) if Path(args.validation_manifest).is_file() else None
     random.seed(random.getstate()[1][0] + rank)
     if data_loader.streams:
         data_loader.set_mix(cfg.stable_mix)
@@ -186,18 +188,31 @@ def main():
     if start_step == 0:
         print("[*] Performing Step 0 initialization check...")
         assert_initialised(raw_model)
+        probe_cursor = data_loader.state_dict()
         model.eval()
         with torch.no_grad():
             x0, y0 = data_loader.next_batch(device)
             out0 = model(x0, labels=y0)
-            loss0 = out0["loss"].item()
-            expected_loss = math.log(cfg.vocab_size)
-            if rank == 0: print(f"[*] Step 0 Loss: {loss0:.4f} (Theoretical uniform ln(vocab) = {expected_loss:.4f})")
-            if not (11.90 <= loss0 <= 12.25):
-                raise ValueError(f"Initial loss {loss0:.4f} outside expected range [11.90, 12.25]. Check initialization, labels, and vocab.")
-            elif rank == 0:
-                print("    -> PASS: Initial loss conforms strictly to uniform random initialization.")
-        if distributed: dist.barrier()
+            loss0 = out0["loss"].detach().float()
+        data_loader.load_state_dict(probe_cursor)
+        if distributed:
+            dist.all_reduce(loss0, op=dist.ReduceOp.SUM)
+            loss0 = loss0 / world_size
+        loss0 = float(loss0)
+        expected_loss = math.log(cfg.vocab_size)
+        ok = 11.90 <= loss0 <= 12.25
+        if rank == 0:
+            print(f"[*] Step 0 Loss: {loss0:.4f} (Theoretical uniform ln(vocab) = {expected_loss:.4f})")
+        if distributed:
+            flag = torch.tensor([int(ok)], device=device, dtype=torch.int32)
+            dist.all_reduce(flag, op=dist.ReduceOp.MIN)
+            ok = bool(flag.item())
+        if not ok:
+            raise ValueError(f"Initial loss {loss0:.4f} outside expected range [11.90, 12.25]. Check initialization, labels, and vocab.")
+        if rank == 0:
+            print("    -> PASS: Initial loss conforms strictly to uniform random initialization.")
+        if distributed:
+            dist.barrier()
 
     # 7. Main Training Loop
     if rank == 0: print("\n" + "-" * 80)
@@ -245,27 +260,32 @@ def main():
                     loss = outputs["loss"] / cfg.gradient_accumulation_steps
 
                 scaler.scale(loss).backward()
-            step_loss += loss.item()
+            step_loss += loss.detach().float()
 
-        # Check for loss spike or NaN
-        skip_update, spike_reason = spike_guard.check(step, step_loss)
         if distributed:
-            # Every rank must make the same optimizer decision, otherwise
-            # DDP replicas silently diverge after a local spike.
-            skip_flag = torch.tensor([int(skip_update)], device=device, dtype=torch.int32)
-            dist.all_reduce(skip_flag, op=dist.ReduceOp.MAX)
-            if bool(skip_flag.item()) and not skip_update:
-                skip_update, spike_reason = True, "peer rank reported non-finite/spike loss"
-
+            dist.all_reduce(step_loss, op=dist.ReduceOp.SUM)
+            step_loss = step_loss / world_size
+        step_loss = float(step_loss)
+        skip_update, spike_reason = spike_guard.check(step, step_loss)
+        scaler.unscale_(optimizer)
+        nonfinite = torch.zeros((), device=device)
+        for param in raw_model.parameters():
+            if param.grad is not None and not torch.isfinite(param.grad).all():
+                nonfinite += 1
+                break
+        if distributed:
+            dist.all_reduce(nonfinite, op=dist.ReduceOp.MAX)
+        if bool(nonfinite.item()):
+            skip_update, spike_reason = True, "non-finite gradient"
         if skip_update:
-            if rank == 0: print(f"[!] Step {step} SKIPPED: {spike_reason}")
-            optimizer.zero_grad()
+            if rank == 0:
+                print(f"[!] Step {step} SKIPPED: {spike_reason}")
+            optimizer.zero_grad(set_to_none=True)
             grad_norm = 0.0
         else:
-            scaler.unscale_(optimizer)
             grad_norm = torch.nn.utils.clip_grad_norm_(raw_model.parameters(), max_norm=cfg.grad_clip).item()
             scaler.step(optimizer)
-            scaler.update()
+        scaler.update()
 
         # Update load balancer
         telemetry = balancer.step()
@@ -295,7 +315,28 @@ def main():
                 f"GradNorm: {grad_norm:.2f} | "
                 f"Cost: ${est_cost:.2f}"
             )
+            mix = data_loader.realised_mix()
+            mix_text = " ".join(f"{name}={share:.3f}" for name, share in mix.items())
+            print(f"    mix: {mix_text}")
             last_log_time = now
+
+        val_loss = None
+        if val_loader is not None and step % args.validation_interval == 0:
+            model.eval()
+            val_total = torch.zeros((), device=device)
+            val_batches = 4
+            amp_dtype = torch.float16 if cfg.precision == "fp16" else torch.bfloat16
+            with torch.no_grad():
+                for _ in range(val_batches):
+                    vx, vy = val_loader.next_batch(device)
+                    with torch.autocast(device_type=device.type, dtype=amp_dtype, enabled=device.type == "cuda"):
+                        val_total += model(vx, labels=vy)["loss"].detach().float()
+            model.train()
+            if distributed:
+                dist.all_reduce(val_total, op=dist.ReduceOp.SUM)
+            val_loss = float(val_total.item()) / (val_batches * world_size)
+            if rank == 0:
+                print(f"[*] Validation loss at step {step}: {val_loss:.4f}")
 
         # Periodic Checkpoint saving
         if ((step > 0 and step % args.save_interval == 0) or step == args.total_steps - 1):
@@ -307,12 +348,8 @@ def main():
                 "mfu": mfu,
                 "cost": elapsed_hours * V100_4X_HOURLY_COST,
             }
-            if val_loader is not None and step % args.validation_interval == 0:
-                model.eval()
-                with torch.no_grad():
-                    vx, vy = val_loader.next_batch(device)
-                    meta_info["val_loss"] = model(vx, labels=vy)["loss"].item()
-                model.train()
+            if val_loss is not None:
+                meta_info["val_loss"] = val_loss
             saved_path = ckpt_manager.save(
                 step=step,
                 model=raw_model,

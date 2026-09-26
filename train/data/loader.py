@@ -8,59 +8,119 @@ Features:
 - Realised vs target mix tracking
 """
 
-import os
+from __future__ import annotations
+
 import json
+import mmap
+import os
 import random
+import sys
+from array import array
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Any
-import numpy as np
-import torch
+from typing import Dict, List, Optional, Sequence, Tuple, Any
+
+
+def rank_token_range(n_tokens: int, rank: int, world_size: int) -> Tuple[int, int]:
+    """Return the half-open token interval of one shard owned by this rank.
+
+    The intervals of all ranks partition ``[0, n_tokens)``. Giving every rank a
+    slice of every shard keeps the per-rank totals within one token per shard,
+    instead of leaving a whole 50M-token shard on one GPU.
+    """
+    if world_size < 1 or not 0 <= rank < world_size:
+        raise ValueError(f"invalid rank {rank} for world size {world_size}")
+    if n_tokens < 0:
+        raise ValueError("token count must be non-negative")
+    if world_size == 1:
+        return 0, n_tokens
+    base, extra = divmod(int(n_tokens), world_size)
+    start = rank * base + min(rank, extra)
+    length = base + (1 if rank < extra else 0)
+    return start, start + length
+
+
+def segments_for_rank(items: Sequence[Tuple[Path, int]], rank: int, world_size: int) -> List[Tuple[Path, int, int]]:
+    """Disjoint ``(path, start, end)`` slices whose tokens belong to one rank."""
+    segments = []
+    for path, n_tokens in items:
+        start, end = rank_token_range(n_tokens, rank, world_size)
+        if end > start:
+            segments.append((Path(path), start, end))
+    return segments
 
 
 class SourceStream:
-    """Manages sequential reading over a list of uint32 binary token shards for one source."""
-    def __init__(self, name: str, shard_paths: List[Path], shard_idx: int = 0, offset: int = 0):
-        if not shard_paths:
-            raise ValueError(f"Source {name!r} has no shard paths provided.")
+    """Manages sequential reading over disjoint token slices of uint32 shards."""
+    def __init__(self, name: str, segments: Sequence[Tuple[Path, int, int]], shard_idx: int = 0, offset: Optional[int] = None):
+        if not segments:
+            raise ValueError(f"Source {name!r} has no shard slices.")
         self.name = name
-        self.shard_paths = shard_paths
+        self.segments = [(Path(path), int(start), int(end)) for path, start, end in segments]
+        for path, start, end in self.segments:
+            if end <= start:
+                raise ValueError(f"Source {name!r} has an empty slice of {path}")
+        self.shard_paths = [path for path, _, _ in self.segments]
         self.shard_idx = shard_idx
-        self.offset = offset  # Offset in uint32 tokens
-        self.current_mmap = None
+        self.offset = self.segments[shard_idx][1] if offset is None else offset
+        self._file = None
+        self._map = None
+        self._tokens = None
         self._open_current_shard()
 
-    def _open_current_shard(self):
-        if self.shard_idx >= len(self.shard_paths):
-            # Loop back to beginning for next epoch
-            self.shard_idx = 0
-            self.offset = 0
-        path = self.shard_paths[self.shard_idx]
-        self.current_mmap = np.memmap(path, dtype=np.uint32, mode="r")
+    def _close_current(self):
+        if self._tokens is not None:
+            self._tokens.release()
+            self._tokens = None
+        if self._map is not None:
+            self._map.close()
+            self._map = None
+        if self._file is not None:
+            self._file.close()
+            self._file = None
 
-    def take(self, n_tokens: int) -> np.ndarray:
-        """Reads exactly n_tokens from the shard stream."""
-        collected = []
+    def _open_current_shard(self):
+        if self.shard_idx >= len(self.segments):
+            self.shard_idx = 0
+            self.offset = self.segments[0][1]
+        self._close_current()
+        if sys.byteorder != "little":
+            raise RuntimeError("Token shards are little-endian uint32")
+        path, start, end = self.segments[self.shard_idx]
+        if self.offset < start or self.offset > end:
+            self.offset = start
+        self._file = path.open("rb")
+        self._map = mmap.mmap(self._file.fileno(), 0, access=mmap.ACCESS_READ)
+        if len(self._map) % 4:
+            raise ValueError(f"{path} is not a uint32 token shard")
+        self._tokens = memoryview(self._map).cast("I")
+        if end > len(self._tokens):
+            raise ValueError(f"{path} has {len(self._tokens)} tokens, slice ends at {end}")
+
+    def take(self, n_tokens: int) -> array:
+        """Reads exactly n_tokens from this rank's slices."""
+        collected = array("I")
         remaining = n_tokens
 
         while remaining > 0:
-            if self.current_mmap is None:
+            if self._tokens is None:
                 self._open_current_shard()
-
-            available = len(self.current_mmap) - self.offset
+            _path, _start, end = self.segments[self.shard_idx]
+            available = end - self.offset
             if available <= 0:
-                # Move to next shard
-                self.shard_idx = (self.shard_idx + 1) % len(self.shard_paths)
-                self.offset = 0
+                self.shard_idx = (self.shard_idx + 1) % len(self.segments)
+                self.offset = self.segments[self.shard_idx][1]
                 self._open_current_shard()
                 continue
 
             take_n = min(remaining, available)
-            chunk = self.current_mmap[self.offset : self.offset + take_n]
-            collected.append(chunk)
+            collected.extend(self._tokens[self.offset : self.offset + take_n])
             self.offset += take_n
             remaining -= take_n
 
-        return np.concatenate(collected) if len(collected) > 1 else collected[0]
+        return collected
+
+    def close(self):
+        self._close_current()
 
     def state_dict(self) -> Dict[str, Any]:
         return {"shard_idx": self.shard_idx, "offset": self.offset}
@@ -118,19 +178,23 @@ class MultiSourceDataLoader:
                     paths.append(p)
 
             if paths:
-                # In distributed training, partition shards across ranks so GPUs don't read duplicate data
-                if self.world_size > 1 and len(paths) >= self.world_size:
-                    assigned_paths = [p for i, p in enumerate(paths) if i % self.world_size == self.rank]
-                    if not assigned_paths:
-                        assigned_paths = paths
-                        initial_offset = self.rank * 1024 * 1024
-                    else:
-                        initial_offset = 0
-                else:
-                    assigned_paths = paths
-                    initial_offset = self.rank * 1024 * 1024 if self.world_size > 1 else 0
-
-                self.streams[src_name] = SourceStream(src_name, assigned_paths, offset=initial_offset)
+                # Each rank reads a disjoint token slice of every shard. Whole-shard
+                # striding left two ranks short of Chinese and Python for a 10B run,
+                # so those ranks would have repeated the start of the shard.
+                counted = {item["path"]: int(item["tokens"]) for item in src_info.get("shard_metadata", [])}
+                items = []
+                for path in paths:
+                    key = str(path)
+                    if key not in counted:
+                        size = path.stat().st_size
+                        if size % 4:
+                            raise ValueError(f"{path} is not a uint32 token shard")
+                        counted[key] = size // 4
+                    items.append((path, counted[key]))
+                segments = segments_for_rank(items, self.rank, self.world_size)
+                if not segments:
+                    raise ValueError(f"Source {src_name!r} assigned no tokens to rank {self.rank}")
+                self.streams[src_name] = SourceStream(src_name, segments)
                 self.target_weights[src_name] = weight
                 self.token_counts[src_name] = 0
 
@@ -152,7 +216,10 @@ class MultiSourceDataLoader:
 
     def set_mix(self, new_weights: Dict[str, float]):
         """Switches data mix (e.g. switching to decay phase)."""
-        self.target_weights = {k: v for k, v in new_weights.items() if k in self.streams}
+        missing = [name for name, weight in new_weights.items() if weight > 0 and name not in self.streams]
+        if missing:
+            raise KeyError(f"Mix names are not loaded from the manifest: {missing}")
+        self.target_weights = {k: float(v) for k, v in new_weights.items() if k in self.streams}
         self._normalize_weights()
 
     def next_batch(self, device: torch.device) -> Tuple[torch.Tensor, torch.Tensor]:
@@ -161,6 +228,7 @@ class MultiSourceDataLoader:
         """
         # If no streams loaded (e.g. during smoke testing without real data), generate dummy batch
         if not self.streams:
+            import torch
             dummy = torch.randint(0, 163840, (self.batch_size, self.seq_len), device=device, dtype=torch.long)
             return dummy, dummy.clone()
 
@@ -173,6 +241,8 @@ class MultiSourceDataLoader:
             self.total_tokens_served += self.seq_len
             batch_seqs.append(tokens)
 
+        import numpy as np
+        import torch
         batch_arr = np.stack(batch_seqs, axis=0)  # [B, L]
         input_ids = torch.tensor(batch_arr, dtype=torch.long, device=device)
         return input_ids, input_ids.clone()

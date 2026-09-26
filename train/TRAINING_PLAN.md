@@ -270,7 +270,7 @@ SFT 使用公开的 `OpenAssistant/oasst1`、`teknium/OpenHermes-2.5`、`open-r1
 
 1. **第 0 步有限性断言与初始损失对齐**：
    * 训练循环启动前必须运行 `assert_initialised(model)`，确保每一个参数和缓冲区都是有限浮点数（无 `inf`/`NaN`）。
-   * 对均匀分布在 163,840 词表的交叉熵损失为 $\ln(163,840) \approx 12.007$。第 0 步输出必须处于 $12.05 \sim 12.15$ 之间，偏差过大立即中断。
+   * 对均匀分布在 163,840 词表的交叉熵损失为 $\ln(163,840) \approx 12.007$。第 0 步输出必须处于 $11.90 \sim 12.25$ 之间，偏差过大立即中断。真实数据 smoke 测到过 12.00 和 12.19，收窄到 12.05–12.15 会把合格初始化判失败。
 2. **KDA 时间步偏置初始化**：
    * 官方代码的 `KimiDeltaAttention.dt_bias` 留存了未初始化的垃圾内存。必须使用类似 Mamba 的对数空间均匀采样加 `softplus` 反函数初始化：
      $$\text{dt} \sim \exp(\text{Uniform}(\ln 10^{-3}, \ln 10^{-1})), \quad \text{bias} = \text{dt} + \ln(1 - e^{-\text{dt}})$$
@@ -415,24 +415,24 @@ train/
 5. **冻结后的 manifest/shard 完整性复核**（不重新构建数据）：
    ```bash
    python train/data/validate_manifest.py \
-     --manifest /data/mini-k3/data/prepared-v2-supplement-v1/manifests/pretrain_stable.json
+     --manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/pretrain_stable.json
    python train/data/validate_manifest.py \
-     --manifest /data/mini-k3/data/prepared-v2-supplement-v1/manifests/validation.json
+     --manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/validation.json
    ```
 6. **启动主训练（4 卡 V100）**：
    ```bash
    mkdir -p /data/mini-k3/{data,checkpoints,logs,rollouts}
    torchrun --standalone --nproc_per_node=4 train/train.py \
-     --data_manifest /data/mini-k3/data/prepared-v2-supplement-v1/manifests/pretrain_stable.json \
-     --validation_manifest /data/mini-k3/data/prepared-v2-supplement-v1/manifests/validation.json \
+     --data_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/pretrain_stable.json \
+     --validation_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/validation.json \
      --checkpoint_dir /data/mini-k3/checkpoints \
      --total_steps 38147 --save_interval 1000
    ```
 7. **从中断检查点恢复训练**：
    ```bash
    torchrun --standalone --nproc_per_node=4 train/train.py --resume \
-     --data_manifest /data/mini-k3/data/prepared-v2-supplement-v1/manifests/pretrain_stable.json \
-     --validation_manifest /data/mini-k3/data/prepared-v2-supplement-v1/manifests/validation.json \
+     --data_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/pretrain_stable.json \
+     --validation_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/validation.json \
      --checkpoint_dir /data/mini-k3/checkpoints
    ```
 8. **评估模型检查点**：
@@ -604,3 +604,25 @@ train/
 4. **服务器算力与阶段报告归档**：
    - 硬件就绪：4× Tesla V100-SXM2-32GB 当前全部处于空闲就绪状态（0% 占用，显存 4MiB），磁盘剩余 4.2 TB。
    - 阶段报告归档：远端阶段归档保存在 `/data/mini-k3/project/train/reports/background/1790072703778497846-51070/`，小型元数据报告已完整同步到本地 `train/reports/background/1790072703778497846-51070/`。
+
+### 2026-09-26 OpenAssistant 分组收敛后，supplement-v2 终审通过
+
+09-24 的终审没有生成新 manifest：`prepared-v2-supplement-v2/manifests/` 当时是 v1 的硬链接，代码 token 仍记为 1,180,867,070。2026-09-26 只修这一处，没有重跑全局去重，也没有启动训练。
+
+1. `dedup_v2.py` 增加 `promote_content_holdout_groups`：官方验证文本出现在另一段对话里时，整段对话进入 holdout，不再只标中那一条。回归测试 `test_validation_text_promotes_the_whole_conversation` 通过。已有 v2 去重库不重跑；这条规则保证以后的新库不会再拆开同一 `split_group`。
+2. `repair_openassistant_split.py` 把会话 `bfe63f8ebe9065b57ad3b71b1ad7e22cea8a12d59e99a72e9979024af633f914` 里 3 条训练集分支改入验证集，分别写回 deduped、near-deduped、decontaminated，并刷新脚本哈希链。其余 10 个来源的正文没有改。
+3. OpenAssistant 重新编码：训练 50,266 条 / 17,380,419 token，验证 3,233 条 / 1,160,229 token。旧编码目录保留为 `tokenized/openassistant-before-split-repair-20260926`。
+4. `finalize_v2.py` 11/11 通过。`AUDIT.json` 状态 `passed`，`train_validation_overlap` 为 0，预训练训练 token **28,214,510,016**。`pretrain_stable.json` 的 567 个分片全部指向 `prepared-v2-supplement-v2`，其中 code-python 为 **1,288,200,254** token、26 个分片。该 manifest 与 v1 不再是同一 inode。
+5. 覆盖率 `reports/supplement-v2/coverage.json` 状态 `sufficient_fixed_mix`，缺口为空。固定配比不重复最多到 **10,103,344,007** token，绑住上限的是中文网页（1.440B 对需求 1.425B）。10B 目标落在这个上限之内。
+6. 真实数据 smoke（64 token、完整参数、两步）状态 `passed`。各来源初始 loss 12.00–12.19，第二步 11.58。这仍不是四卡 2048 短跑。
+7. 训练入口和本节启动命令改为 `prepared-v2-supplement-v2` 的 `pretrain_stable.json` 与 `validation.json`。
+
+### 2026-09-26 数据与脚本复核
+
+复核没有重跑去重，也没有启动训练。
+
+1. 服务器上对 v2 的 11 个来源重新执行 `verify_stage_chain`（到 tokenized）、`verify_source_review` 和 benchmark 索引校验，全部通过。OpenAssistant 去污染正文 53,499 条的 `content_sha256` 与正文重算一致，训练 50,266 / 验证 3,233，没有残留的跨 split 分组；分词索引的划分与正文一致。被改写的那 4 条都在验证集。
+2. 精确去重和近去重的 SQLite 仍记录修复前的 OpenAssistant 分片哈希，近去重的输入身份也不再等于当前 `deduped/COMPLETE.json`。训练不读这两个库。再次执行 `dedup_v2.py` 或 `near_dedup_v2.py` 会在改写产物之前因哈希不一致而停止。去污染脚本在已有 `COMPLETE.json` 时直接拒绝重跑。
+3. 加载器原来按分片下标对 4 取模。中文网页和 Python 的分片大多是 5,000 万 token，两张卡因此只有 3.50 亿和 3.00 亿，低于本卡在 10B 配比下要读的 3.5625 亿和 3.0625 亿，读完后会从分片开头再读。全局覆盖率看不出这个缺口。`loader.py` 改为每个分片按 token 切成 4 段互不重叠的区间，各卡读各的区间。按现有分片大小，四卡各自都能达到配比所需，不再靠整片取模。
+4. 训练代码补上三处已经写了开关、但行为不对的实现：MLA 滑动窗口按每个 query 保留最近 4096 个 token（2048 训练长度下仍是整段因果注意力）；MoE 的两个共享专家分开计算再相加，不再合成一个两倍宽的 MLP；`activation_checkpointing` 会包住注意力前向。CED 仍是独立的 `models/deepseek_coder.py`，不进入 `train.py`。它的 RoPE 已与半维旋转一致，线性层和词嵌入改为 \(N(0, 0.02)\)，避免默认初始化把初始 loss 撑到数百。KDA 的 delta 写入系数仍是固定 1，计划不把它算作正式 K3 门控。
+5. 四卡训练循环原先会让各卡各写一份 `model.pt`、用本卡 loss 单独决定是否跳步，并且验证只在存档时抽 1 条、还不做卡间平均。现在只由 rank 0 写模型权重，跳步用四卡平均 loss，非有限梯度会降低 GradScaler，验证每 500 步取 4 个 batch 的全局平均。第 0 步检查读完会把数据游标放回去，不丢掉第一批 token。检查点读取显式关闭 `weights_only`，否则 PyTorch 2.6 之后读不回优化器和随机数，中断后无法续跑。

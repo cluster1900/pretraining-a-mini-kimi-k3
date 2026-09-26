@@ -72,14 +72,30 @@ class MiniK3DecoderLayer(nn.Module):
         recurrent_state: Optional[torch.Tensor] = None,
         conv_state: Optional[Tuple[torch.Tensor, torch.Tensor, torch.Tensor]] = None,
     ) -> Tuple[torch.Tensor, Optional[torch.Tensor], Optional[Tuple[torch.Tensor, torch.Tensor, torch.Tensor]]]:
-        # Residual 1: Attention block
+        # Residual 1: Attention block. Checkpoint only the attention call:
+        # MoE load counters live in the MLP and must not run twice.
         normed = self.input_layernorm(hidden_states)
-        if self.is_mla:
+
+        def attention_out(normed_states):
+            if self.is_mla:
+                return self.self_attn(normed_states)
+            out, _, _ = self.self_attn(
+                normed_states, recurrent_state=recurrent_state, conv_state=conv_state
+            )
+            return out
+
+        use_ckpt = self.training and getattr(self.config, "activation_checkpointing", False)
+        if use_ckpt:
+            from torch.utils.checkpoint import checkpoint
+            attn_out = checkpoint(attention_out, normed, use_reentrant=False)
+            new_state, new_conv = None, None
+        elif self.is_mla:
             attn_out = self.self_attn(normed)
-            new_state = None
-            new_conv = None
+            new_state, new_conv = None, None
         else:
-            attn_out, new_state, new_conv = self.self_attn(normed, recurrent_state=recurrent_state, conv_state=conv_state)
+            attn_out, new_state, new_conv = self.self_attn(
+                normed, recurrent_state=recurrent_state, conv_state=conv_state
+            )
         hidden_states = hidden_states + attn_out
 
         # Residual 2: MLP / MoE block
@@ -123,12 +139,7 @@ class MiniK3ForCausalLM(nn.Module):
     def generate(self, input_ids: torch.Tensor, max_new_tokens: int = 128,
                  temperature: float = 1.0, top_p: float = 1.0,
                  eos_token_id: Optional[int] = None) -> torch.Tensor:
-        """Small, deterministic-compatible sampler for SFT/RL rollouts.
-
-        This reference implementation recomputes the prefix each step; it is
-        intentionally correct and easy to audit. Production rollouts should
-        replace it with a KV-cache engine after validating token equivalence.
-        """
+        """Greedy or sampled decoding. The prompt fills the cache once, then each new token is one step."""
         self.eval(); cache = self.new_kv_cache()
         # Prime all layer caches with the prompt, then decode one token at a time.
         out = self(input_ids, use_cache=True, past_key_values=cache)
@@ -186,13 +197,15 @@ class MiniK3ForCausalLM(nn.Module):
                 past = None
                 state = None
                 conv = None
-            if layer.is_mla:
+            if use_cache and layer.is_mla:
                 h = layer.input_layernorm(hidden_states)
-                attn = layer.self_attn(h, past_kv=past, use_cache=use_cache, cache_position=(past_key_values.position if past_key_values else 0))
-                if use_cache: attn, kv = attn; presents.append((None, kv))
+                attn = layer.self_attn(h, past_kv=past, use_cache=True, cache_position=(past_key_values.position if past_key_values else 0))
+                attn, kv = attn
+                presents.append((None, kv))
                 hidden_states = hidden_states + attn
                 hidden_states = hidden_states + layer.mlp(layer.post_attention_layernorm(hidden_states))
-                if use_cache and past_key_values is not None: past_key_values.mla_keys[i], past_key_values.mla_values[i] = kv
+                if past_key_values is not None:
+                    past_key_values.mla_keys[i], past_key_values.mla_values[i] = kv
             else:
                 hidden_states, state, conv = layer(hidden_states, recurrent_state=state, conv_state=conv)
                 if use_cache and past_key_values is not None:

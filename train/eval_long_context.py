@@ -152,7 +152,7 @@ def main():
         if not model_file.exists():
             raise FileNotFoundError(f"Checkpoint file not found: {model_file}")
         print(f"[*] Loading weights from: {model_file}")
-        model.load_state_dict(torch.load(model_file, map_location=device))
+        model.load_state_dict(torch.load(model_file, map_location=device, weights_only=False))
     else:
         print("[*] No checkpoint specified. Running architectural pipeline test on initialized model.")
 

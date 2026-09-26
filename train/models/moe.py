@@ -102,14 +102,16 @@ class KimiMoEBlock(nn.Module):
             for _ in range(self.num_experts)
         ])
 
-        # 2 Shared Experts (running in full hidden width)
-        shared_intermediate = config.moe_intermediate_size * config.num_shared_experts
-        self.shared_experts = ExpertMLP(
-            in_features=self.hidden_size,
-            intermediate_features=shared_intermediate,
-            beta=config.situ_beta,
-            linear_beta=config.situ_linear_beta,
-        )
+        # Two always-on experts at full hidden width. Their outputs are summed.
+        self.shared_experts = nn.ModuleList([
+            ExpertMLP(
+                in_features=self.hidden_size,
+                intermediate_features=config.moe_intermediate_size,
+                beta=config.situ_beta,
+                linear_beta=config.situ_linear_beta,
+            )
+            for _ in range(config.num_shared_experts)
+        ])
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         # x: [B, L, hidden_size]
@@ -117,8 +119,10 @@ class KimiMoEBlock(nn.Module):
         x_flat = x.view(-1, self.hidden_size)
         n_tok = x_flat.shape[0]
 
-        # 1. Unconditional Shared Expert path
-        shared_out = self.shared_experts(x_flat)
+        # 1. Unconditional shared experts
+        shared_out = self.shared_experts[0](x_flat)
+        for expert in self.shared_experts[1:]:
+            shared_out = shared_out + expert(x_flat)
 
         # 2. Project to Latent Space for routed experts
         x_lat = self.latent_norm(self.latent_down(x_flat))  # [tokens, latent_dim]

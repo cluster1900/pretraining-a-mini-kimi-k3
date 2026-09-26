@@ -29,7 +29,7 @@ def load_causal_model(checkpoint: str, device: torch.device) -> MiniK3ForCausalL
     model = MiniK3ForCausalLM(DEFAULT_CONFIG).to(device)
     ckpt_p = Path(checkpoint)
     model_file = ckpt_p / "model.pt" if ckpt_p.is_dir() else ckpt_p
-    state = torch.load(model_file, map_location="cpu")
+    state = torch.load(model_file, map_location="cpu", weights_only=False)
     model.load_state_dict(state)
     return model
 

@@ -13,7 +13,7 @@
 4. **13-gram 评测基准去污染 (decontaminated)**：2026-09-24 18:55 全部完成，11 来源报告绑定统一 13-gram 索引。11/11 已归档。
 5. **Tokenizer 编码 (tokenized)**：2026-09-24 22:15 全部完成。产出全部 uint32 shards 与 document ledgers。11/11 已归档。
 6. **10B 预训练配比核验 (7/7 全部达标)**：总可用预训练训练 Token 达 **28,214,510,016 (28.21B)**。`code-python` 达 **1,288,200,254**（要求 1,225,000,878，**净盈余 +63.2M tokens**）；其余 6 领域均大幅盈余，彻底满足 10B 固定混合纯净无重复采样。
-7. **终态 Manifest 审计 (finalize)**：2026-09-24 22:15 执行 `finalize_v2.py` 时在 `openassistant` 触发 `ValueError: Train/validation group overlap`。全库 16,097,968 个唯一分组经全量哈希扫描确认：其余 10 个数据源 0 冲突，仅有 `openassistant` 的 1 个对话树（`bfe63f8ebe9065b57ad3b71b1ad7e22cea8a12d59e99a72e9979024af633f914`）存在 3 条分支与 1 条验证集分支跨 split，等待执行收敛修复并生成最终 Manifest 与 Smoke。
+7. **终态 Manifest 审计 (finalize)**：2026-09-24 22:15 曾在 OpenAssistant 会话 `bfe63f8ebe9065b57ad3b71b1ad7e22cea8a12d59e99a72e9979024af633f914` 上失败。2026-09-26 将该会话 4 条全部分入验证集并重新编码后，`finalize_v2.py` 11/11 通过，`train_validation_overlap=0`。真实数据 smoke 与固定配比覆盖率均为通过。
 
 | 阶段 | 权威完成条件 | 本地报告路径 | 当前状态 |
 |---|---|---|---|
@@ -23,8 +23,9 @@
 | 全局近去重 (near-deduped) | 11 个来源 MinHash-LSH 完成，Jaccard>=0.9 滤除 | `train/reports/background/1790072703778497846-51070/near-deduped/*/COMPLETE.json` | 11/11 已归档并通过 (09-24 12:08) |
 | 13-gram 去污染 | 七项评测索引绑定，11 个来源过滤报告存在 | `train/reports/background/1790072703778497846-51070/decontaminated/*/COMPLETE.json` | 11/11 已归档并通过 (09-24 18:55) |
 | Tokenizer 编码 | 11 个来源 uint32 / sft jsonl 编码完成，指纹一致 | `train/reports/background/1790072703778497846-51070/tokenized/*/COMPLETE.json` | 11/11 已归档并通过 (09-24 22:15) |
-| Manifest 全量审计 | 4 份 manifest + AUDIT.json 生成，split 0 冲突 | `train/reports/manifests.json` | 待修复 openassistant 单组重叠并重跑 |
-| 模型 Smoke 验证 | 真实 manifest smoke 梯度/损失有限/显存报告通过 | `train/reports/smoke.json` | 待 manifest 审计完成后执行 |
+| Manifest 全量审计 | 4 份 manifest + AUDIT.json 生成，split 0 冲突 | 服务器 `prepared-v2-supplement-v2/manifests/AUDIT.json` | 2026-09-26 通过，overlap 0 |
+| 模型 Smoke 验证 | 真实 manifest smoke 梯度/损失有限/显存报告通过 | 服务器 `prepared-v2-supplement-v2/manifests/SMOKE.json` | 2026-09-26 通过（64 token，两步） |
+| 固定配比覆盖率 | 7 个预训练来源无缺口 | 服务器 `reports/supplement-v2/coverage.json` | `sufficient_fixed_mix`，无重复上限 10.103B |
 
 ## 2026-09-17 用户批准审核子集后的重建（历史记录）
 

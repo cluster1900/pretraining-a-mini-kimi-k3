@@ -13,6 +13,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from typing import Optional, Tuple
 from train.config import MiniK3Config
+from train.models.attention_mask import attention_blocked, window_key_start
 
 
 class RotaryEmbedding(nn.Module):
@@ -118,9 +119,11 @@ class MultiHeadLatentAttention(nn.Module):
             k = torch.cat([pk, k], dim=2); v = torch.cat([pv, v], dim=2)
             window = getattr(self.config, "attention_window", 4096)
             k = k[:, :, -window:]; v = v[:, :, -window:]
-            # Query attends to all cached keys and current keys; causal mask
-            # is only needed within the current token block.
             scores = torch.matmul(q, k.transpose(-1, -2)) / math.sqrt(q.shape[-1])
+            end_pos = cache_position + l - 1
+            k_abs = torch.arange(end_pos - k.shape[2] + 1, end_pos + 1, device=q.device)[None, :]
+            q_abs = torch.arange(cache_position, cache_position + l, device=q.device)[:, None]
+            scores = scores.masked_fill(attention_blocked(q_abs, k_abs, window), float("-inf"))
             weights = F.softmax(scores, dim=-1, dtype=torch.float32).to(q.dtype)
             out = torch.matmul(weights, v)
             result = self.out_proj(out.transpose(1, 2).contiguous().view(b, l, -1))
@@ -134,14 +137,14 @@ class MultiHeadLatentAttention(nn.Module):
         scale = 1.0 / math.sqrt(q.shape[-1])
         for start in range(0, l, block):
             end = min(l, start + block)
-            key_start = max(0, end - window)
+            key_start = window_key_start(start, window)
             qs = q[:, :, start:end]
             ks = k[:, :, key_start:end]
             vs = v[:, :, key_start:end]
             scores = torch.matmul(qs, ks.transpose(-1, -2)) * scale
             q_pos = torch.arange(start, end, device=q.device)[:, None]
             k_pos = torch.arange(key_start, end, device=q.device)[None, :]
-            scores = scores.masked_fill(k_pos > q_pos, float("-inf"))
+            scores = scores.masked_fill(attention_blocked(q_pos, k_pos, window), float("-inf"))
             weights = F.softmax(scores, dim=-1, dtype=torch.float32).to(q.dtype)
             outputs.append(torch.matmul(weights, vs))
         attn_out = torch.cat(outputs, dim=2)

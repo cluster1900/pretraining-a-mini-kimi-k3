@@ -25,9 +25,13 @@ class _Block(nn.Module):
     def forward(self,x):
         b,l,_=x.shape; q,k,v=self.qkv(self.n1(x)).chunk(3,-1); d=self.h//self.heads
         q=q.view(b,l,self.heads,d).transpose(1,2); k=k.view(b,l,self.heads,d).transpose(1,2); v=v.view(b,l,self.heads,d).transpose(1,2)
-        pos=torch.arange(l,device=x.device); inv=1/(10000**(torch.arange(0,d,2,device=x.device).float()/d)); a=pos[:,None]*inv[None,:]
-        cos=torch.repeat_interleave(a.cos(),2,-1)[None,None]; sin=torch.repeat_interleave(a.sin(),2,-1)[None,None]
-        def rot(z): return z*cos + torch.cat((-z[...,d//2:],z[...,:d//2]),-1)*sin
+        pos=torch.arange(l,device=x.device); inv=1/(10000**(torch.arange(0,d,2,device=x.device).float()/d))
+        freqs=pos[:,None]*inv[None,:]
+        cos=torch.cat((freqs.cos(), freqs.cos()), dim=-1)[None,None]
+        sin=torch.cat((freqs.sin(), freqs.sin()), dim=-1)[None,None]
+        def rot(z):
+            half=z.shape[-1]//2
+            return z*cos + torch.cat((-z[..., half:], z[..., :half]), -1)*sin
         y=F.scaled_dot_product_attention(rot(q),rot(k),v,is_causal=True); x=x+self.o(y.transpose(1,2).reshape(b,l,self.h))
         u,g=self.up(self.n2(x)).chunk(2,-1); return x+self.down(F.silu(g)*u)
 
@@ -35,6 +39,13 @@ class DeepSeekCoderForCausalLM(nn.Module):
     def __init__(self, config=None):
         super().__init__(); c=config or DeepSeekCoderConfig(); self.config=c
         self.embed=nn.Embedding(c.vocab_size,c.hidden_size); self.blocks=nn.ModuleList([_Block(c) for _ in range(c.layers)]); self.norm=nn.RMSNorm(c.hidden_size); self.lm_head=nn.Linear(c.hidden_size,c.vocab_size,bias=False); self.lm_head.weight=self.embed.weight
+        for module in self.modules():
+            if isinstance(module, nn.Linear):
+                nn.init.normal_(module.weight, mean=0.0, std=0.02)
+                if module.bias is not None:
+                    nn.init.zeros_(module.bias)
+            elif isinstance(module, nn.Embedding):
+                nn.init.normal_(module.weight, mean=0.0, std=0.02)
     def forward(self,input_ids,labels=None):
         x=self.embed(input_ids)
         for b in self.blocks: x=b(x)
