@@ -135,11 +135,12 @@ def main():
     parser.add_argument("--lengths", type=int, nargs="+", default=[2048, 4096, 8192, 16384], help="Context lengths to evaluate")
     parser.add_argument("--depths", type=float, nargs="+", default=[0.1, 0.5, 0.9], help="Needle depths (fractions from 0.0 to 1.0)")
     parser.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")
+    parser.add_argument("--tokenizer_model", default=None, help="Directory containing tiktoken.model")
     args = parser.parse_args()
 
     device = torch.device(args.device)
     cfg = DEFAULT_CONFIG
-    tokenizer = K3Tokenizer()
+    tokenizer = K3Tokenizer(args.tokenizer_model)
 
     print("=" * 80)
     print(f" Mini Kimi K3: Long-Context Retrieval Benchmark (AGENTS.md Rule 8)")

@@ -1,5 +1,5 @@
 """
-Unified single-model configuration for Mini Kimi K3 (1.02B Total / 145M Active).
+Unified single-model configuration for Mini Kimi K3 (1,150,739,900 total / 159,400,252 active).
 Tailored for training on 4 Tesla V100-SXM2 GPUs (32GB each).
 """
 
@@ -10,25 +10,24 @@ from typing import List
 @dataclass
 class MiniK3Config:
     """
-    Mini Kimi K3 Canonical Configuration (1.02B total parameters, 145M active parameters).
-    
+    Mini Kimi K3 Canonical Configuration (1,150,739,900 total parameters, 159,400,252 active).
+
     Structure:
-    - 12 layers total: 9 KDA (Kimi Delta Attention) + 3 MLA (Multi-Head Latent Attention)
-    - 3:1 KDA to MLA ratio, full attention on layers 4, 8, 12
-    - MoE: 256 routed experts (top-6) + 2 shared experts (always active)
-    - Latent MoE projection: hidden // 2 = 256
-    - situ activation: beta=4.0, linear_beta=25.0
-    - Vocab: 163,840 (official K3 BPE) with tied embeddings
+    - 13 layers: 9 KDA + 4 gated NoPE MLA, MLA on layers 4, 8, 12, 13
+    - Encoder layers 1-8, decoder layers 9-13, CSA2 on the MLA layers
+    - 4-stream single-pass mHC, Engram at layers 2 and 8, scaled MoonViT-V2
+    - MoE: 256 routed experts (top-6) + 2 shared experts
+    - Vocab: 163,840 with tied embeddings
     """
-    model_name: str = "mini-k3-1.02b"
+    model_name: str = "mini-k3"
     
     # Dimensions
     hidden_size: int = 512
-    num_layers: int = 12
+    num_layers: int = 13
     vocab_size: int = 163840
     max_position_embeddings: int = 1_048_576
     attention_window: int = 4096
-    rope_theta: float = 10_000_000.0          # Base frequency for 1M context RoPE
+    rope_theta: float = 10_000_000.0          # Unused. MLA is NoPE; position is carried by KDA.
     tie_word_embeddings: bool = True
     rms_norm_eps: float = 1e-6
     initializer_range: float = 0.02
@@ -37,11 +36,12 @@ class MiniK3Config:
     head_dim: int = 128
     num_attention_heads: int = 8       # MLA heads (8 * 128 = 1024)
     num_kda_heads: int = 4             # KDA heads (4 * 128 = 512 == hidden_size)
-    mla_layers: List[int] = field(default_factory=lambda: [4, 8, 12])
+    mla_layers: List[int] = field(default_factory=lambda: [4, 8, 12, 13])
+    encoder_layers: int = 8
     
-    # MLA specifics (nope: 128, rope: 64, value: 128)
+    # MLA is NoPE. qk_rope_head_dim stays at 0 so older callers can still read it.
     qk_nope_head_dim: int = 128
-    qk_rope_head_dim: int = 64
+    qk_rope_head_dim: int = 0
     v_head_dim: int = 128
     kv_lora_rank: int = 256
     q_lora_rank: int = 512
@@ -58,9 +58,9 @@ class MiniK3Config:
     routed_expert_hidden_size: int = 256     # hidden_size // 2
     first_k_dense_replace: int = 1           # Layer 0 is dense MLP
     
-    # Router & Balancer
-    topk_method: str = "noaux_tc"
-    balancer_gamma: float = 1e-2             # Optimal gamma measured for batch size 131k
+    # Router & Balancer. Quantile balancing ignores balancer_gamma.
+    topk_method: str = "quantile"
+    balancer_gamma: float = 1e-2
     
     # situ activation parameters
     situ_beta: float = 4.0
@@ -74,6 +74,24 @@ class MiniK3Config:
     precision: str = "fp16"
     distributed: bool = True
     activation_checkpointing: bool = True
+    mtp_enabled: bool = True
+    mtp_lambda: float = 0.3
+    mhc_streams: int = 4
+    mhc_sinkhorn_iters: int = 20
+    csa_group: int = 4
+    csa_top_k: int = 512
+    csa_local: int = 128
+    csa_index_dim: int = 64
+    kv_cache_fp4: bool = True
+    engram_layers: List[int] = field(default_factory=lambda: [2, 8])
+    engram_max_ngram: int = 4
+    engram_heads: int = 8
+    engram_head_dim: int = 32
+    engram_table_size: int = 10007
+    vision_layers: int = 4
+    vision_hidden: int = 512
+    vision_heads: int = 8
+    vision_patch: int = 14
     data_root: str = "/data/mini-k3/data"
     checkpoint_root: str = "/data/mini-k3/checkpoints"
     log_root: str = "/data/mini-k3/logs"
@@ -100,8 +118,18 @@ class MiniK3Config:
     })
 
     def validate(self) -> None:
-        if self.top_k > self.num_routed_experts or self.top_k < 1:
-            raise ValueError("top_k must be in [1, num_routed_experts]")
+        if self.top_k >= self.num_routed_experts or self.top_k < 1:
+            raise ValueError("top_k must leave one rejected expert for quantile balancing")
+        if self.gate_lower_bound >= 0:
+            raise ValueError("gate_lower_bound is the negative KDA log-decay floor")
+        if self.num_layers < 1 or self.mhc_streams < 2 or self.mhc_sinkhorn_iters < 1:
+            raise ValueError("layers and mHC streams must be positive")
+        if self.csa_group < 1 or self.csa_local < 1 or self.csa_top_k < 1:
+            raise ValueError("CSA2 group, local window, and top-k must be positive")
+        if any(layer < 1 or layer > self.num_layers for layer in self.mla_layers):
+            raise ValueError("mla_layers must point at real layers")
+        if self.encoder_layers < 0:
+            raise ValueError("encoder_layers must be non-negative")
         if self.micro_batch_size < 1 or self.gradient_accumulation_steps < 1:
             raise ValueError("batch sizes must be positive")
         if abs(sum(self.stable_mix.values()) - 1.0) > 1e-6:

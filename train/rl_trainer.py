@@ -83,6 +83,7 @@ class RolloutBatch:
     ref_logp: torch.Tensor         # [B]
     rewards: torch.Tensor          # [B]
     values: torch.Tensor           # [B]
+    attention_mask: torch.Tensor   # [B, L], true on real tokens, not on padding
 
 
 class PPOTrainer:
@@ -175,10 +176,13 @@ class PPOTrainer:
         ref_logp = sequence_logprob(ref_logits, labels, average_logprobs=False)
 
         # 3. Compute rewards from frozen RewardModel
-        rewards = self.reward_model(batch_ids, attention_mask=batch_ids.ne(0))
+        attention = torch.zeros_like(batch_ids, dtype=torch.bool)
+        for i, completion in enumerate(completed_ids):
+            attention[i, : len(completion)] = True
+        rewards = self.reward_model(batch_ids, attention_mask=attention)
 
         # 4. Compute baseline values from ValueModel
-        values = self.value_model(batch_ids, attention_mask=batch_ids.ne(0))
+        values = self.value_model(batch_ids, attention_mask=attention)
 
         return RolloutBatch(
             prompt_lens=prompt_lens,
@@ -188,6 +192,7 @@ class PPOTrainer:
             ref_logp=ref_logp,
             rewards=rewards,
             values=values,
+            attention_mask=attention,
         )
 
     def train_step(self, rollout: RolloutBatch) -> Dict[str, float]:
@@ -203,7 +208,7 @@ class PPOTrainer:
         # Current policy logprobs and values
         new_logits = self.policy(rollout.full_ids)["logits"]
         new_logp = sequence_logprob(new_logits, labels, average_logprobs=False)
-        current_values = self.value_model(rollout.full_ids, attention_mask=rollout.full_ids.ne(0))
+        current_values = self.value_model(rollout.full_ids, attention_mask=rollout.attention_mask)
 
         total_loss, metrics = ppo_step_loss(
             new_logp=new_logp,
@@ -229,3 +234,70 @@ class PPOTrainer:
         self.value_opt.step()
 
         return {k: v.item() for k, v in metrics.items()}
+
+
+def group_advantages(rewards: torch.Tensor, group_size: int) -> torch.Tensor:
+    """Normalize rewards inside each prompt's sample group. No value network."""
+    grouped = rewards.view(-1, group_size)
+    centered = grouped - grouped.mean(dim=-1, keepdim=True)
+    scale = grouped.std(dim=-1, keepdim=True, unbiased=False).clamp_min(1e-6)
+    return (centered / scale).view(-1)
+
+
+class GRPOTrainer:
+    """Group Relative Policy Optimization: one policy, one frozen reference, rule rewards."""
+
+    def __init__(self, policy, ref, optimizer, group_size=4, clip_eps=0.2, kl_beta=0.04):
+        self.policy = policy
+        self.ref = ref.eval()
+        self.optimizer = optimizer
+        self.group_size = group_size
+        self.clip_eps = clip_eps
+        self.kl_beta = kl_beta
+        for param in self.ref.parameters():
+            param.requires_grad = False
+
+    def step(self, prompts, golds, tokenizer, max_new_tokens=64):
+        from train.rule_reward import rule_reward
+        self.policy.eval()
+        sequences = []
+        prompt_lens = []
+        texts = []
+        for prompt, gold in zip(prompts, golds):
+            prompt_ids = prompt if torch.is_tensor(prompt) else torch.tensor([prompt], device=next(self.policy.parameters()).device)
+            if prompt_ids.dim() == 1:
+                prompt_ids = prompt_ids.unsqueeze(0)
+            for _ in range(self.group_size):
+                done = self.policy.generate(prompt_ids, max_new_tokens=max_new_tokens, temperature=0.8, top_p=0.95)
+                sequences.append(done.squeeze(0).tolist())
+                prompt_lens.append(int(prompt_ids.size(1)))
+                texts.append(tokenizer.decode(done.squeeze(0).tolist()))
+        rewards = []
+        gold_list = []
+        for gold in golds:
+            gold_list.extend([gold] * self.group_size)
+        for text, gold in zip(texts, gold_list):
+            rewards.append(rule_reward(text, gold))
+        device = next(self.policy.parameters()).device
+        reward_t = torch.tensor(rewards, device=device, dtype=torch.float32)
+        advantages = group_advantages(reward_t, self.group_size)
+        width = max(len(seq) for seq in sequences)
+        batch = torch.zeros(len(sequences), width, device=device, dtype=torch.long)
+        labels = torch.full_like(batch, -100)
+        for i, (seq, prompt_len) in enumerate(zip(sequences, prompt_lens)):
+            batch[i, : len(seq)] = torch.tensor(seq, device=device)
+            if len(seq) > prompt_len:
+                labels[i, prompt_len: len(seq)] = batch[i, prompt_len: len(seq)]
+        self.policy.train()
+        new_logp = sequence_logprob(self.policy(batch)["logits"], labels)
+        with torch.no_grad():
+            old_logp = new_logp.detach()
+            ref_logp = sequence_logprob(self.ref(batch)["logits"], labels)
+        policy_loss = clipped_policy_loss(new_logp, old_logp, advantages, self.clip_eps)
+        kl = (new_logp - ref_logp).mean()
+        loss = policy_loss + self.kl_beta * kl
+        self.optimizer.zero_grad(set_to_none=True)
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(self.policy.parameters(), 1.0)
+        self.optimizer.step()
+        return {"loss": float(loss.detach()), "reward_mean": float(reward_t.mean()), "kl": float(kl.detach())}

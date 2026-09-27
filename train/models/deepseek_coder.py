@@ -52,3 +52,8 @@ class DeepSeekCoderForCausalLM(nn.Module):
         logits=self.lm_head(self.norm(x)); loss=None
         if labels is not None: loss=F.cross_entropy(logits[...,:-1,:].reshape(-1,logits.size(-1)),labels[...,1:].reshape(-1),ignore_index=-100)
         return {"logits":logits,"loss":loss}
+
+    def count_parameters(self):
+        total = sum(p.numel() for p in self.parameters())
+        embed = self.embed.weight.numel()
+        return {"total": total, "active": total, "embed": embed, "non_embed_active": total - embed}

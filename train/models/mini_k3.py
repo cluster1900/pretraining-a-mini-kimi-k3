@@ -18,6 +18,11 @@ from train.models.mla import MultiHeadLatentAttention
 from train.models.moe import KimiMoEBlock, ExpertMLP
 from train.engine.init_patch import apply_init_patches
 from train.models.kv_cache import KVCache
+from train.models.mtp import MTPBlock
+from train.models.attn_res import AttentionResidual
+from train.models.mhc import MHCCoeffs, collapse_streams
+from train.models.engram import Engram
+from train.models.moonvit import MoonViT
 
 
 class DenseMLP(nn.Module):
@@ -58,52 +63,68 @@ class MiniK3DecoderLayer(nn.Module):
         # 2. Pre-norm for MLP / MoE
         self.post_attention_layernorm = nn.RMSNorm(config.hidden_size, eps=config.rms_norm_eps)
         
-        # Layer 0 is Dense MLP; Layer 1..11 are MoE blocks
         if layer_idx < config.first_k_dense_replace:
             self.mlp = DenseMLP(config)
             self.is_moe = False
         else:
             self.mlp = KimiMoEBlock(config)
             self.is_moe = True
+        self.mhc_attn = MHCCoeffs(config.hidden_size, config.mhc_streams, config.mhc_sinkhorn_iters)
+        self.mhc_mlp = MHCCoeffs(config.hidden_size, config.mhc_streams, config.mhc_sinkhorn_iters)
 
-    def forward(
-        self,
-        hidden_states: torch.Tensor,
-        recurrent_state: Optional[torch.Tensor] = None,
-        conv_state: Optional[Tuple[torch.Tensor, torch.Tensor, torch.Tensor]] = None,
-    ) -> Tuple[torch.Tensor, Optional[torch.Tensor], Optional[Tuple[torch.Tensor, torch.Tensor, torch.Tensor]]]:
-        # Residual 1: Attention block. Checkpoint only the attention call:
-        # MoE load counters live in the MLP and must not run twice.
-        normed = self.input_layernorm(hidden_states)
-
-        def attention_out(normed_states):
-            if self.is_mla:
-                return self.self_attn(normed_states)
-            out, _, _ = self.self_attn(
-                normed_states, recurrent_state=recurrent_state, conv_state=conv_state
+    def _run(self, streams, pre, attn_input, state, conv, past, use_cache, cache_position, memory, mode):
+        if self.is_mla:
+            result = self.self_attn(
+                self.input_layernorm(attn_input), past_kv=past, use_cache=use_cache,
+                cache_position=cache_position, memory=memory, mode=mode,
             )
-            return out
-
-        use_ckpt = self.training and getattr(self.config, "activation_checkpointing", False)
-        if use_ckpt:
-            from torch.utils.checkpoint import checkpoint
-            attn_out = checkpoint(attention_out, normed, use_reentrant=False)
-            new_state, new_conv = None, None
-        elif self.is_mla:
-            attn_out = self.self_attn(normed)
+            attn_out, cache = result if use_cache else (result, None)
             new_state, new_conv = None, None
         else:
             attn_out, new_state, new_conv = self.self_attn(
-                normed, recurrent_state=recurrent_state, conv_state=conv_state
+                self.input_layernorm(attn_input), recurrent_state=state, conv_state=conv,
             )
-        hidden_states = hidden_states + attn_out
+            cache = None
+        streams, pre = self.mhc_attn.mix(streams, attn_out, attn_input)
+        hidden = collapse_streams(streams, pre)
+        mlp_out = self.mlp(self.post_attention_layernorm(hidden))
+        streams, pre = self.mhc_mlp.mix(streams, mlp_out, hidden)
+        return streams, pre, new_state, new_conv, cache
 
-        # Residual 2: MLP / MoE block
-        normed_mlp = self.post_attention_layernorm(hidden_states)
-        mlp_out = self.mlp(normed_mlp)
-        hidden_states = hidden_states + mlp_out
+    def forward(self, streams, pre, attn_input, state=None, conv=None, past=None,
+                use_cache=False, cache_position=0, memory=None, mode="full"):
+        entries = None if memory is None else memory.get("entries")
+        index = None if memory is None else memory.get("index")
+        use_ckpt = self.training and self.config.activation_checkpointing and not use_cache
+        if use_ckpt:
+            from torch.utils.checkpoint import checkpoint
+            empty_entries = attn_input.new_zeros(0)
+            empty_index = torch.zeros(0, dtype=torch.long, device=attn_input.device)
 
-        return hidden_states, new_state, new_conv
+            def train_only(stream_in, pre_in, attn_in, entry_in, index_in):
+                mem = None
+                if entry_in.numel() > 0 and mode != "full":
+                    mem = {"entries": entry_in, "index": None if index_in.numel() == 0 else index_in}
+                next_streams, next_pre, _, _, _ = self._run(
+                    stream_in, pre_in, attn_in, None, None, None, False, 0, mem, mode,
+                )
+                return next_streams, next_pre
+
+            streams, pre = checkpoint(
+                train_only, streams, pre, attn_input,
+                entries if entries is not None else empty_entries,
+                index if index is not None else empty_index,
+                use_reentrant=False,
+            )
+            new_state, new_conv, cache = None, None, None
+        else:
+            streams, pre, new_state, new_conv, cache = self._run(
+                streams, pre, attn_input, state, conv, past, use_cache, cache_position, memory, mode,
+            )
+        if self.training and self.is_moe and self.mlp.gate._last_counts is not None:
+            self.mlp.gate.expert_load.add_(self.mlp.gate._last_counts)
+            self.mlp.gate.accumulate_margin_histogram()
+        return streams, pre, new_state, new_conv, cache
 
 
 class MiniK3ForCausalLM(nn.Module):
@@ -116,18 +137,33 @@ class MiniK3ForCausalLM(nn.Module):
         # Token embedding
         self.embed_tokens = nn.Embedding(self.vocab_size, self.hidden_size)
 
-        # 12 Decoder layers
+        # Decoder layers. The default stack is 9 KDA + 4 MLA.
         self.layers = nn.ModuleList([
             MiniK3DecoderLayer(i, self.config) for i in range(self.config.num_layers)
         ])
 
-        # Final normalization
+        self.layer_mix = nn.ModuleList([
+            AttentionResidual(self.hidden_size, self.config.rms_norm_eps)
+            for _ in range(self.config.num_layers)
+        ])
+        self.final_mix = AttentionResidual(self.hidden_size, self.config.rms_norm_eps)
+        self.mhc_pre = nn.Parameter(torch.zeros(self.config.mhc_streams))
+        self.mhc_pre.data[0] = 8
+        self.engrams = nn.ModuleDict({
+            str(layer_id): Engram(self.config, layer_id)
+            for layer_id in self.config.engram_layers
+            if 1 <= layer_id <= self.config.num_layers
+        })
+        self.vision = MoonViT(self.config)
         self.norm = nn.RMSNorm(self.hidden_size, eps=self.config.rms_norm_eps)
+        self.mtp = MTPBlock(self.config) if getattr(self.config, "mtp_enabled", False) else None
+        self.mtp_lambda = float(getattr(self.config, "mtp_lambda", 0.3))
 
         # Output LM Head (tied with embed_tokens)
         self.lm_head = nn.Linear(self.hidden_size, self.vocab_size, bias=False)
         if self.config.tie_word_embeddings:
             self.lm_head.weight = self.embed_tokens.weight
+        self.embed_tokens.weight.adam_only = True
 
         # Apply robust initialization patches
         apply_init_patches(self)
@@ -135,35 +171,71 @@ class MiniK3ForCausalLM(nn.Module):
     def get_input_embeddings(self):
         return self.embed_tokens
 
+    def _sample(self, logits, temperature, top_p):
+        logits = logits.float()
+        if temperature <= 0:
+            return logits.argmax(-1, keepdim=True)
+        logits = logits / temperature
+        probs = torch.softmax(logits, -1)
+        if top_p < 1.0:
+            sorted_p, sorted_i = torch.sort(probs, descending=True)
+            keep = torch.cumsum(sorted_p, -1) <= top_p
+            keep[..., 0] = True
+            probs = torch.where(keep, sorted_p, torch.zeros_like(sorted_p))
+            probs = probs / probs.sum(-1, keepdim=True)
+            return sorted_i.gather(-1, torch.multinomial(probs, 1))
+        return torch.multinomial(probs, 1)
+
+    def _verify_draft(self, target_logits, draft_logits, draft_id, temperature):
+        """Accept the MTP draft when it agrees with the main head; otherwise resample."""
+        if temperature <= 0:
+            target_id = target_logits.argmax(-1, keepdim=True)
+            return bool((target_id == draft_id).all()), target_id
+        target = torch.softmax(target_logits.float() / temperature, dim=-1)
+        draft = torch.softmax(draft_logits.float() / temperature, dim=-1)
+        draft_prob = draft.gather(-1, draft_id).clamp_min(1e-8)
+        target_prob = target.gather(-1, draft_id)
+        accept = torch.log(torch.rand_like(target_prob)) < (target_prob / draft_prob).clamp(max=1).log()
+        if bool(accept.all()):
+            return True, draft_id
+        residual = (target - draft).clamp_min(0)
+        residual = residual / residual.sum(-1, keepdim=True).clamp_min(1e-8)
+        return False, torch.multinomial(residual, 1)
+
     @torch.no_grad()
     def generate(self, input_ids: torch.Tensor, max_new_tokens: int = 128,
                  temperature: float = 1.0, top_p: float = 1.0,
                  eos_token_id: Optional[int] = None) -> torch.Tensor:
-        """Greedy or sampled decoding. The prompt fills the cache once, then each new token is one step."""
-        self.eval(); cache = self.new_kv_cache()
-        # Prime all layer caches with the prompt, then decode one token at a time.
+        """Decode with MTP speculative verification when the extra head is enabled."""
+        self.eval()
+        cache = self.new_kv_cache()
         out = self(input_ids, use_cache=True, past_key_values=cache)
-        eos = eos_token_id
-        for _ in range(max_new_tokens):
-            logits = out["logits"][:, -1].float()
-            if temperature <= 0:
-                next_id = logits.argmax(-1, keepdim=True)
-            else:
-                logits = logits / temperature
-                probs = torch.softmax(logits, -1)
-                if top_p < 1.0:
-                    sorted_p, sorted_i = torch.sort(probs, descending=True)
-                    keep = torch.cumsum(sorted_p, -1) <= top_p
-                    keep[..., 0] = True
-                    probs = torch.where(keep, sorted_p, torch.zeros_like(sorted_p))
-                    probs = probs / probs.sum(-1, keepdim=True)
-                    next_id = sorted_i.gather(-1, torch.multinomial(probs, 1))
-                else:
-                    next_id = torch.multinomial(probs, 1)
+        produced = 0
+        while produced < max_new_tokens:
+            next_id = self._sample(out["logits"][:, -1], temperature, top_p)
             input_ids = torch.cat((input_ids, next_id), dim=1)
-            if eos is not None and bool((next_id == eos).all()):
+            produced += 1
+            if eos_token_id is not None and bool((next_id == eos_token_id).all()):
                 break
-            out = self(next_id, use_cache=True, past_key_values=cache)
+            if self.mtp is None or produced >= max_new_tokens:
+                out = self(next_id, use_cache=True, past_key_values=cache)
+                continue
+            draft_hidden = self.mtp.step(out["hidden"][:, -1:], self.embed_tokens(next_id))
+            draft_logits = self.lm_head(draft_hidden)[:, -1]
+            draft_id = self._sample(draft_logits, temperature, top_p)
+            snapshot = cache.clone()
+            trial = torch.cat((next_id, draft_id), dim=1)
+            checked = self(trial, use_cache=True, past_key_values=cache)
+            accepted, verified = self._verify_draft(checked["logits"][:, 0], draft_logits, draft_id, temperature)
+            chosen = draft_id if accepted else verified
+            if not accepted:
+                cache = snapshot
+                checked = self(torch.cat((next_id, chosen), dim=1), use_cache=True, past_key_values=cache)
+            input_ids = torch.cat((input_ids, chosen), dim=1)
+            produced += 1
+            out = checked
+            if eos_token_id is not None and bool((chosen == eos_token_id).all()):
+                break
         return input_ids
 
     def new_kv_cache(self):
@@ -175,82 +247,150 @@ class MiniK3ForCausalLM(nn.Module):
             mla_values=[None] * self.config.num_layers,
         )
 
+    def _mla_mode(self, layer_index: int) -> str:
+        if layer_index < self.config.encoder_layers:
+            return "full"
+        decoder = [
+            index for index in range(self.config.num_layers)
+            if (index + 1) in self.config.mla_layers and index >= self.config.encoder_layers
+        ]
+        if layer_index not in decoder:
+            return "full"
+        return "reindex" if decoder.index(layer_index) % 2 == 0 else "reuse"
+
     def forward(
         self,
         input_ids: torch.Tensor,
         labels: Optional[torch.Tensor] = None,
         past_key_values=None, use_cache: bool = False,
+        pixel_values: Optional[torch.Tensor] = None,
     ) -> Dict[str, Any]:
         """
         input_ids: [B, L]
         labels: [B, L] (optional)
+        pixel_values: [B, 3, H, W] or [B, T, 3, H, W]
         """
-        hidden_states = self.embed_tokens(input_ids)
+        embedded = self.embed_tokens(input_ids)
+        text_offset = 0
+        if pixel_values is not None:
+            visual = self.vision(pixel_values)
+            text_offset = visual.shape[1]
+            embedded = torch.cat((visual, embedded), dim=1)
+            if labels is not None:
+                pad = labels.new_full((labels.shape[0], text_offset), -100)
+                labels = torch.cat((pad, labels), dim=1)
+        batch, length, _ = embedded.shape
+        streams = embedded.new_zeros(batch, length, self.config.mhc_streams, self.hidden_size)
+        streams[:, :, 0] = embedded
+        pre = torch.softmax(self.mhc_pre.float(), dim=0).to(dtype=embedded.dtype)
+        pre = pre.view(1, 1, -1).expand(batch, length, -1)
+        sources = [embedded]
+        encoder_memory = None
+        previous_memory = None
+        position = past_key_values.position if past_key_values is not None else 0
+        if past_key_values is not None and past_key_values.token_ids is not None:
+            text_ids = torch.cat((past_key_values.token_ids, input_ids), dim=1)
+        else:
+            text_ids = input_ids
 
-        presents = []
         for i, layer in enumerate(self.layers):
-            if past_key_values is not None:
-                past = (past_key_values.mla_keys[i], past_key_values.mla_values[i]) if layer.is_mla and past_key_values.mla_keys[i] is not None else None
-                state = past_key_values.kda_states[i]
-                conv = past_key_values.kda_conv_states[i]
-            else:
-                past = None
-                state = None
-                conv = None
-            if use_cache and layer.is_mla:
-                h = layer.input_layernorm(hidden_states)
-                attn = layer.self_attn(h, past_kv=past, use_cache=True, cache_position=(past_key_values.position if past_key_values else 0))
-                attn, kv = attn
-                presents.append((None, kv))
-                hidden_states = hidden_states + attn
-                hidden_states = hidden_states + layer.mlp(layer.post_attention_layernorm(hidden_states))
-                if past_key_values is not None:
-                    past_key_values.mla_keys[i], past_key_values.mla_values[i] = kv
-            else:
-                hidden_states, state, conv = layer(hidden_states, recurrent_state=state, conv_state=conv)
-                if use_cache and past_key_values is not None:
-                    past_key_values.kda_states[i] = state.detach()
+            mode = self._mla_mode(i) if layer.is_mla else "full"
+            memory = None
+            if layer.is_mla and mode == "reindex":
+                memory = encoder_memory
+            elif layer.is_mla and mode == "reuse":
+                memory = previous_memory
+            past = past_key_values.mla_keys[i] if past_key_values is not None and layer.is_mla else None
+            state = past_key_values.kda_states[i] if past_key_values is not None else None
+            conv = past_key_values.kda_conv_states[i] if past_key_values is not None else None
+            streams, pre, state, conv, cache = layer(
+                streams, pre, self.layer_mix[i](sources), state=state, conv=conv, past=past,
+                use_cache=use_cache, cache_position=position, memory=memory, mode=mode,
+            )
+            collapsed = collapse_streams(streams, pre)
+            engram = self.engrams[str(i + 1)] if str(i + 1) in self.engrams else None
+            if engram is not None:
+                delta = engram(text_ids, collapsed[:, text_offset:])
+                collapsed = collapsed.clone()
+                collapsed[:, text_offset:] = collapsed[:, text_offset:] + delta
+                streams = streams.clone()
+                streams[:, text_offset:, 0] = streams[:, text_offset:, 0] + delta
+            sources.append(collapsed)
+            if use_cache and past_key_values is not None:
+                if layer.is_mla:
+                    past_key_values.mla_keys[i] = cache
+                else:
+                    past_key_values.kda_states[i] = None if state is None else state.detach()
                     past_key_values.kda_conv_states[i] = conv
+            if layer.is_mla:
+                published = layer.self_attn._published
+                if i < self.config.encoder_layers:
+                    encoder_memory = published
+                previous_memory = published
 
-        hidden_states = self.norm(hidden_states)
+        hidden_states = self.norm(self.final_mix(sources))
+        token_embed = embedded
         logits = self.lm_head(hidden_states)
 
         loss = None
+        lm_loss = None
         if labels is not None:
             # Shift tokens for next-token prediction
             shift_logits = logits[..., :-1, :].contiguous()
             shift_labels = labels[..., 1:].contiguous()
-            loss = F.cross_entropy(
+            lm_loss = F.cross_entropy(
                 shift_logits.view(-1, self.vocab_size),
                 shift_labels.view(-1),
                 ignore_index=-100,
             )
+            loss = lm_loss
+            if self.mtp is not None and labels.size(1) >= 3 and (labels[:, 2:] != -100).any():
+                mtp_hidden = self.mtp(hidden_states, token_embed)
+                mtp_logits = self.lm_head(mtp_hidden)
+                mtp_labels = labels[:, 2:]
+                mtp_loss = F.cross_entropy(
+                    mtp_logits.reshape(-1, self.vocab_size),
+                    mtp_labels.reshape(-1),
+                    ignore_index=-100,
+                )
+                loss = lm_loss + self.mtp_lambda * mtp_loss
 
-        if use_cache and past_key_values is not None: past_key_values.position += input_ids.size(1)
+        if use_cache and past_key_values is not None:
+            past_key_values.position += length
+            past_key_values.token_ids = text_ids.detach()
         return {
             "loss": loss,
+            "lm_loss": lm_loss,
+            "hidden": hidden_states if use_cache else None,
             "logits": logits, "past_key_values": past_key_values if use_cache else None,
         }
 
     def count_parameters(self) -> Dict[str, int]:
         """Counts total, active, and non-embedding active parameters."""
         total = sum(p.numel() for p in self.parameters())
-        
-        # Count routed expert parameters
         expert_params = 0
+        engram_table = 0
+        vision = 0
         for name, p in self.named_parameters():
-            if ".experts." in name:
+            if ".experts." in name and "shared_experts" not in name:
                 expert_params += p.numel()
-                
-        # Active params: always-on params + (top_k / n_experts) * routed_experts
-        active = total - expert_params + int(expert_params * self.config.top_k / self.config.num_routed_experts)
+            elif ".tables." in name:
+                engram_table += p.numel()
+            elif name.startswith("vision."):
+                vision += p.numel()
+        routed_active = int(expert_params * self.config.top_k / self.config.num_routed_experts)
+        engram_active = 0
+        if self.engrams:
+            slots = (self.config.engram_max_ngram - 1) * self.config.engram_heads
+            engram_active = len(self.engrams) * slots * self.config.engram_head_dim
+        active = total - expert_params - engram_table - vision + routed_active + engram_active
         embed_params = self.embed_tokens.weight.numel()
-        non_embed_active = active - embed_params
-
         return {
             "total": total,
             "active": active,
             "embed": embed_params,
-            "non_embed_active": non_embed_active,
+            "non_embed_active": active - embed_params,
             "routed_expert_params": expert_params,
+            "engram_table": engram_table,
+            "vision": vision,
         }

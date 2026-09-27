@@ -1,7 +1,7 @@
 """
 Kimi MoE Block with TrainableMoEGate and Differentiable Dispatch.
 Implements:
-- Sigmoid Router with noaux_tc bias correction
+- Sigmoid router. Quantile balancing uses the bias only for expert choice.
 - Latent MoE bottleneck (hidden -> hidden // 2)
 - 256 routed experts using FusedSitu activation
 - 2 shared experts in full hidden width
@@ -33,7 +33,7 @@ class ExpertMLP(nn.Module):
 
 class TrainableMoEGate(nn.Module):
     """
-    Trainable Sigmoid Gate with noaux_tc load correction bias.
+    Trainable sigmoid gate. The bias changes which experts are chosen, not the mixture weights.
     Fixes the official `assert not self.training` and uninitialized bias bugs.
     """
     def __init__(self, config: MiniK3Config):
@@ -48,6 +48,17 @@ class TrainableMoEGate(nn.Module):
             torch.zeros(self.num_experts, dtype=torch.float32), requires_grad=False
         )
         self.register_buffer("expert_load", torch.zeros(self.num_experts, dtype=torch.long), persistent=False)
+        self.hist_bins = 256
+        self.hist_lo = -2.0
+        self.hist_hi = 2.0
+        self.register_buffer(
+            "margin_hist",
+            torch.zeros(self.num_experts, self.hist_bins, dtype=torch.float32),
+            persistent=False,
+        )
+        self._last_counts = None
+        self._last_scores = None
+        self._last_alpha = None
 
     def forward(self, hidden_states: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
         # hidden_states: [tokens, hidden_size]
@@ -55,22 +66,42 @@ class TrainableMoEGate(nn.Module):
         logits = F.linear(hidden_states.float(), self.weight.float(), None)
         scores = torch.sigmoid(logits)  # [tokens, num_experts]
 
-        # 2. Add unbiased bias for top-k selection ONLY
+        # 2. Bias corrects selection only. The extra candidate is the cutoff, not a route.
         scores_for_choice = scores + self.e_score_correction_bias.unsqueeze(0)
-        _, topk_idx = torch.topk(scores_for_choice, k=self.top_k, dim=-1, sorted=False)
+        chosen, topk_all = torch.topk(scores_for_choice, k=self.top_k + 1, dim=-1, sorted=True)
+        topk_idx = topk_all[:, : self.top_k]
+        alpha = chosen[:, self.top_k]
 
         # 3. Weights come from the ORIGINAL, UNBIASED scores
         topk_weights = scores.gather(dim=-1, index=topk_idx)
-        # Re-normalize weights to sum to 1.0 across selected top_k
         topk_weights = topk_weights / topk_weights.sum(dim=-1, keepdim=True).clamp(min=1e-6)
 
-        # 4. Track expert token count for load balancing
+        # 4. The layer copies these once, outside activation recomputation.
         if self.training:
             flat_indices = topk_idx.reshape(-1)
             counts = torch.bincount(flat_indices, minlength=self.num_experts)
-            self.expert_load.add_(counts)
+            self._last_counts = counts.detach()
+            self._last_scores = scores.detach()
+            self._last_alpha = alpha.detach()
 
         return topk_idx, topk_weights.to(hidden_states.dtype)
+
+    def accumulate_margin_histogram(self) -> None:
+        """Bin score-minus-cutoff margins. Called once per forward, not on recompute."""
+        if self._last_scores is None or self._last_alpha is None:
+            return
+        margins = self._last_scores.float() - self._last_alpha.float().unsqueeze(-1)
+        bins = self.margin_hist.shape[-1]
+        span = self.hist_hi - self.hist_lo
+        scaled = (margins.clamp(self.hist_lo, self.hist_hi) - self.hist_lo) / span
+        idx = (scaled * (bins - 1)).round().long().clamp(0, bins - 1)
+        tokens, experts = idx.shape
+        offsets = torch.arange(experts, device=idx.device) * bins
+        flat = idx.transpose(0, 1).reshape(-1) + offsets.repeat_interleave(tokens)
+        counts = torch.bincount(flat, minlength=experts * bins).view(experts, bins).to(self.margin_hist.dtype)
+        self.margin_hist += counts
+        self._last_scores = None
+        self._last_alpha = None
 
 
 class KimiMoEBlock(nn.Module):
@@ -124,39 +155,45 @@ class KimiMoEBlock(nn.Module):
         for expert in self.shared_experts[1:]:
             shared_out = shared_out + expert(x_flat)
 
-        # 2. Project to Latent Space for routed experts
-        x_lat = self.latent_norm(self.latent_down(x_flat))  # [tokens, latent_dim]
+        # 2. Routed experts run in the latent. Normalize after they are mixed.
+        x_lat = self.latent_down(x_flat)
 
         # 3. Route tokens
         topk_idx, topk_weight = self.gate(x_flat)  # [tokens, k], [tokens, k]
 
-        # 4. Differentiable MoE Dispatch
-        flat_idx = topk_idx.reshape(-1)            # [tokens * k]
+        # 4. One batched expert GEMM. Counts stay on device; no per-expert Python launch.
+        flat_idx = topk_idx.reshape(-1)
         order = flat_idx.argsort()
-        sorted_tokens = x_lat[order // self.top_k]  # Gather sorted tokens
+        sorted_tokens = x_lat[order // self.top_k]
         counts = torch.bincount(flat_idx, minlength=self.num_experts)
-
-        chunks = []
-        start = 0
-        counts_list = counts.tolist()
-        for i, c in enumerate(counts_list):
-            if c == 0:
-                continue
-            expert_in = sorted_tokens[start : start + c]
-            chunks.append(self.experts[i](expert_in))
-            start += c
-
-        if chunks:
-            dispatched_out = torch.cat(chunks, dim=0)
+        max_count = int(counts.max().item()) if flat_idx.numel() else 0
+        if max_count == 0:
+            routed_lat = torch.zeros_like(x_lat)
+        else:
+            dispatched = self._batched_experts(sorted_tokens, counts, max_count)
             inv_order = torch.empty_like(order)
             inv_order[order] = torch.arange(order.numel(), device=order.device)
-            restored_tokens = dispatched_out[inv_order].view(n_tok, self.top_k, self.latent_dim)
-            # Weighted combine
+            restored_tokens = dispatched[inv_order].view(n_tok, self.top_k, self.latent_dim)
             routed_lat = (restored_tokens * topk_weight.unsqueeze(-1)).sum(dim=1)
-        else:
-            routed_lat = torch.zeros_like(x_lat)
 
-        # 5. Project Latent back to Hidden & combine with Shared Experts
-        routed_out = self.latent_up(routed_lat)
+        # 5. RMSNorm sits between the mixture and the up projection.
+        routed_out = self.latent_up(self.latent_norm(routed_lat))
         out = routed_out + shared_out
         return out.view(*orig_shape)
+
+    def _batched_experts(self, sorted_tokens, counts, max_count):
+        """Run every routed expert as one [E, capacity, D] GEMM."""
+        device = sorted_tokens.device
+        positions = torch.arange(sorted_tokens.shape[0], device=device)
+        offsets = torch.cumsum(counts, 0)
+        expert_ids = torch.searchsorted(offsets, positions, right=True)
+        previous = torch.cat([offsets.new_zeros(1), offsets[:-1]])
+        local = positions - previous[expert_ids]
+        packed = sorted_tokens.new_zeros(self.num_experts, max_count, self.latent_dim)
+        packed[expert_ids, local] = sorted_tokens
+        gate_w = torch.stack([expert.gate_up_proj.weight for expert in self.experts], dim=0)
+        down_w = torch.stack([expert.down_proj.weight for expert in self.experts], dim=0)
+        hidden = torch.bmm(packed, gate_w.transpose(1, 2))
+        hidden = self.experts[0].act(hidden)
+        out = torch.bmm(hidden, down_w.transpose(1, 2))
+        return out[expert_ids, local]

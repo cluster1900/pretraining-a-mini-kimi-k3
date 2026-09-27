@@ -1,10 +1,11 @@
 """
 Unified Alignment & Post-Training Entry Point for Mini Kimi K3.
-Supports all 4 stages defined in Section 5 & 6 of TRAINING_PLAN.md:
+Supports the post-training stages in TRAINING_PLAN.md:
 1. SFT: Supervised Fine-Tuning on packed conversation JSONL
 2. RM:  Reward Model training on chosen/rejected preference pairs
 3. DPO: Direct Preference Optimization with frozen reference model
 4. PPO: Online Reinforcement Learning with Actor-Critic, GAE, and KL control
+5. GRPO: group-relative updates with format and answer rewards, no value model
 """
 
 import argparse
@@ -21,8 +22,10 @@ import torch.nn as nn
 from train.config import DEFAULT_CONFIG
 from train.models.mini_k3 import MiniK3ForCausalLM
 from train.alignment_models import RewardModel, ValueModel
-from train.alignment import causal_sft_loss, dpo_loss, sequence_logprob, pairwise_reward_loss
-from train.rl_trainer import PPOTrainer
+from train.alignment import dpo_loss, sequence_logprob, pairwise_reward_loss
+from train.alignment_fit import fit_preference, fit_sft
+from train.rl_trainer import GRPOTrainer, PPOTrainer
+from train.engine.muon import build_optimizer
 
 
 def load_causal_model(checkpoint: str, device: torch.device) -> MiniK3ForCausalLM:
@@ -36,7 +39,7 @@ def load_causal_model(checkpoint: str, device: torch.device) -> MiniK3ForCausalL
 
 def main():
     parser = argparse.ArgumentParser(description="Mini K3 Unified Post-Training Entry Point")
-    parser.add_argument("--mode", choices=("sft", "rm", "dpo", "ppo"), required=True, help="Alignment training mode")
+    parser.add_argument("--mode", choices=("sft", "rm", "dpo", "ppo", "grpo"), required=True, help="Alignment training mode")
     parser.add_argument("--checkpoint", required=True, help="Path to checkpoint directory or model.pt")
     parser.add_argument("--jsonl", required=True, help="Path to dataset JSONL")
     parser.add_argument("--steps", type=int, default=1000, help="Total training steps")
@@ -44,19 +47,32 @@ def main():
     parser.add_argument("--grad_accum_steps", type=int, default=8, help="Gradient accumulation steps")
     parser.add_argument("--output_dir", type=str, default="/data/mini-k3/checkpoints/alignment", help="Directory to save checkpoint")
     parser.add_argument("--reward_checkpoint", type=str, default=None, help="Path to trained reward model (required for PPO)")
+    parser.add_argument("--tokenizer_model", default=None, help="Tokenizer directory. Required for GRPO.")
+    parser.add_argument("--group_size", type=int, default=4, help="Completions sampled per prompt in GRPO.")
+    parser.add_argument("--prompt_batch", type=int, default=4, help="Prompts per GRPO step. Each is sampled group_size times.")
     args = parser.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     out_dir = Path(args.output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    with open(args.jsonl, "r", encoding="utf-8") as f:
-        rows = [json.loads(line) for line in f if line.strip()]
+    def records():
+        while True:
+            produced = False
+            with open(args.jsonl, "r", encoding="utf-8") as handle:
+                for line in handle:
+                    if line.strip():
+                        produced = True
+                        yield json.loads(line)
+            if not produced:
+                raise ValueError(f"No records in {args.jsonl}")
+
+    stream = records()
 
     print("=" * 80)
     print(f" Mini Kimi K3 Alignment Engine: Mode = [{args.mode.upper()}]")
     print(f" Checkpoint: {args.checkpoint}")
-    print(f" Dataset:    {args.jsonl} ({len(rows):,} samples)")
+    print(f" Dataset:    {args.jsonl}")
     print(f" Steps:      {args.steps} | LR = {args.lr:.2e} | Accum = {args.grad_accum_steps}")
     print("=" * 80)
 
@@ -65,16 +81,25 @@ def main():
     # -------------------------------------------------------------------------
     if args.mode == "sft":
         model = load_causal_model(args.checkpoint, device).train()
-        opt = torch.optim.AdamW((q for q in model.parameters() if q.requires_grad), lr=args.lr)
+        opt = build_optimizer((q for q in model.parameters() if q.requires_grad), lr=args.lr, weight_decay=0.01)
         opt.zero_grad()
         accum_loss = 0.0
 
+        limit = DEFAULT_CONFIG.sequence_length
         for step in range(args.steps):
-            row = rows[step % len(rows)]
-            ids = torch.tensor([row["input_ids"]], device=device)
-            labels = torch.tensor([row["labels"]], device=device)
-            out = model(ids)
-            loss = causal_sft_loss(out["logits"], labels) / args.grad_accum_steps
+            fitted = None
+            for _ in range(10000):
+                row = next(stream)
+                fitted = fit_sft(row["input_ids"], row["labels"], limit)
+                if fitted is not None:
+                    break
+            if fitted is None:
+                raise ValueError("No SFT row retains a supervised token within the sequence limit")
+            ids_list, labels_list, _dropped = fitted
+            ids = torch.tensor([ids_list], device=device)
+            labels = torch.tensor([labels_list], device=device)
+            out = model(ids, labels=labels)
+            loss = out["loss"] / args.grad_accum_steps
             loss.backward()
             accum_loss += loss.item() * args.grad_accum_steps
 
@@ -94,17 +119,26 @@ def main():
     # -------------------------------------------------------------------------
     elif args.mode == "rm":
         rm_model = RewardModel(DEFAULT_CONFIG, checkpoint=args.checkpoint).to(device).train()
-        opt = torch.optim.AdamW((q for q in rm_model.parameters() if q.requires_grad), lr=args.lr)
+        opt = build_optimizer((q for q in rm_model.parameters() if q.requires_grad), lr=args.lr, weight_decay=0.01)
         opt.zero_grad()
         accum_loss = 0.0
 
+        limit = DEFAULT_CONFIG.sequence_length
         for step in range(args.steps):
-            row = rows[step % len(rows)]
-            c = torch.tensor([row["chosen_ids"]], device=device)
-            r = torch.tensor([row["rejected_ids"]], device=device)
+            fitted = None
+            for _ in range(10000):
+                row = next(stream)
+                fitted = fit_preference(row["chosen_ids"], row["rejected_ids"], row.get("prompt_len", 0), limit)
+                if fitted is not None:
+                    break
+            if fitted is None:
+                raise ValueError("No preference row retains an answer within the sequence limit")
+            chosen_ids, rejected_ids, _chosen_prompt, _rejected_prompt = fitted
+            c = torch.tensor([chosen_ids], device=device)
+            r = torch.tensor([rejected_ids], device=device)
 
-            r_chosen = rm_model(c, attention_mask=c.ne(0))
-            r_rejected = rm_model(r, attention_mask=r.ne(0))
+            r_chosen = rm_model(c)
+            r_rejected = rm_model(r)
 
             loss = pairwise_reward_loss(r_chosen, r_rejected) / args.grad_accum_steps
             loss.backward()
@@ -131,30 +165,37 @@ def main():
         for q in ref.parameters():
             q.requires_grad = False
 
-        opt = torch.optim.AdamW((q for q in model.parameters() if q.requires_grad), lr=args.lr)
+        opt = build_optimizer((q for q in model.parameters() if q.requires_grad), lr=args.lr, weight_decay=0.01)
         opt.zero_grad()
         accum_loss = 0.0
 
+        limit = DEFAULT_CONFIG.sequence_length
         for step in range(args.steps):
-            row = rows[step % len(rows)]
-            c_list = row["chosen_ids"]
-            r_list = row["rejected_ids"]
+            fitted = None
+            for _ in range(10000):
+                row = next(stream)
+                prompt_len = row.get("prompt_len", 0)
+                if not prompt_len:
+                    for t1, t2 in zip(row["chosen_ids"], row["rejected_ids"]):
+                        if t1 == t2:
+                            prompt_len += 1
+                        else:
+                            break
+                fitted = fit_preference(row["chosen_ids"], row["rejected_ids"], prompt_len, limit)
+                if fitted is not None:
+                    break
+            if fitted is None:
+                raise ValueError("No preference row retains an answer within the sequence limit")
+            c_list, r_list, chosen_prompt, rejected_prompt = fitted
             c = torch.tensor([c_list], device=device)
             r = torch.tensor([r_list], device=device)
 
-            prompt_len = row.get("prompt_len", 0)
-            if not prompt_len:
-                for t1, t2 in zip(c_list, r_list):
-                    if t1 == t2:
-                        prompt_len += 1
-                    else:
-                        break
-
             c_labels = c.clone()
             r_labels = r.clone()
-            if prompt_len > 0:
-                c_labels[:, :prompt_len] = -100
-                r_labels[:, :prompt_len] = -100
+            if chosen_prompt > 0:
+                c_labels[:, :chosen_prompt] = -100
+            if rejected_prompt > 0:
+                r_labels[:, :rejected_prompt] = -100
 
             with torch.no_grad():
                 rc = ref(c)["logits"]
@@ -195,8 +236,8 @@ def main():
         reward_model = RewardModel(DEFAULT_CONFIG, checkpoint=rm_ckpt).to(device).eval()
         value_model = ValueModel(DEFAULT_CONFIG, checkpoint=args.checkpoint).to(device).train()
 
-        policy_opt = torch.optim.AdamW((q for q in policy.parameters() if q.requires_grad), lr=args.lr)
-        value_opt = torch.optim.AdamW((q for q in value_model.parameters() if q.requires_grad), lr=args.lr * 2)
+        policy_opt = build_optimizer((q for q in policy.parameters() if q.requires_grad), lr=args.lr, weight_decay=0.01)
+        value_opt = build_optimizer((q for q in value_model.parameters() if q.requires_grad), lr=args.lr * 2, weight_decay=0.01)
 
         ppo_trainer = PPOTrainer(
             policy_model=policy,
@@ -209,7 +250,7 @@ def main():
 
         batch_prompts_size = 4
         for step in range(args.steps):
-            batch_rows = [rows[(step * batch_prompts_size + i) % len(rows)] for i in range(batch_prompts_size)]
+            batch_rows = [next(stream) for _ in range(batch_prompts_size)]
             prompts = [r.get("prompt_ids", r.get("input_ids", [163584])) for r in batch_rows]
 
             # 1. Rollout with frozen reward model and baseline value model
@@ -227,6 +268,30 @@ def main():
 
         torch.save(policy.state_dict(), out_dir / "model.pt")
         print(f"[*] PPO training finished. Policy checkpoint saved to: {out_dir / 'model.pt'}")
+
+    elif args.mode == "grpo":
+        if not args.tokenizer_model:
+            raise ValueError("--tokenizer_model is required for GRPO so completions can be checked")
+        if args.prompt_batch < 1 or args.group_size < 2:
+            raise ValueError("GRPO needs at least one prompt and two samples in each group")
+        from train.data.tokenizer import K3Tokenizer
+        tokenizer = K3Tokenizer(args.tokenizer_model)
+        policy = load_causal_model(args.checkpoint, device).train()
+        ref = load_causal_model(args.checkpoint, device).eval()
+        opt = build_optimizer((p for p in policy.parameters() if p.requires_grad), lr=args.lr, weight_decay=0.01)
+        trainer = GRPOTrainer(policy, ref, opt, group_size=args.group_size)
+        for step in range(args.steps):
+            batch_rows = [next(stream) for _ in range(args.prompt_batch)]
+            prompts = [row.get("prompt_ids", row.get("input_ids", [1])) for row in batch_rows]
+            golds = [row.get("answer") for row in batch_rows]
+            metrics = trainer.step(prompts, golds, tokenizer)
+            if step % 5 == 0:
+                print(
+                    f"[GRPO Step {step:04d}/{args.steps}] Loss = {metrics['loss']:.4f} | "
+                    f"Reward = {metrics['reward_mean']:+.3f} | KL = {metrics['kl']:.4f}"
+                )
+        torch.save(policy.state_dict(), out_dir / "model.pt")
+        print(f"[*] GRPO training finished. Policy checkpoint saved to: {out_dir / 'model.pt'}")
 
 
 if __name__ == "__main__":

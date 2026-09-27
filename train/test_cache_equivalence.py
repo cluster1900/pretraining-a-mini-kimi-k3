@@ -4,15 +4,13 @@ Enforces Rule 8 of AGENTS.md:
 "1M 推理能力必须同时通过无 cache/cache logits 等价测试、长文档评测和显存基准；仅提高位置上限或创建 cache 数据结构不视为完成。"
 
 Tests:
-1. ShortConv1d & KDA recurrent state cache equivalence (single-token cached vs full prefill)
-2. MLA sliding window KV cache equivalence
+1. KDA log-decay stays inside (g_min, 0) for finite inputs
+2. MLA has no positional parameters
 3. End-to-end logits equivalence (max absolute difference < 1e-4)
 4. Deterministic greedy generation equivalence between cached decoding and prefix recomputation
-5. 1M position RoPE numerical stability check (pos 0 to 1,048,576)
 """
 
 import sys
-import math
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -20,36 +18,27 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 import torch
-import torch.nn.functional as F
 
 from train.config import DEFAULT_CONFIG, MiniK3Config
 from train.models.mini_k3 import MiniK3ForCausalLM
-from train.models.mla import RotaryEmbedding
+from train.models.kda import bounded_log_decay
 
 
-def test_rope_1m_stability():
+def test_position_comes_from_kda():
     print("\n" + "=" * 70)
-    print("[Test 1/3] Verifying 1M Context RoPE RotaryEmbedding Numerical Stability")
+    print("[Test 1/3] Verifying NoPE MLA and the KDA decay floor")
     print("=" * 70)
-    dim = 64
-    max_pos = 1_048_576
-    base = 10_000_000.0
-    rotary = RotaryEmbedding(dim=dim, max_position_embeddings=max_pos, base=base)
-    dummy_x = torch.zeros(1, 1, 1)
-
-    # Sample position checkpoints up to 1M
-    test_positions = [0, 2048, 4096, 32768, 131072, 524288, 1048576]
-    for pos in test_positions:
-        cos, sin = rotary(dummy_x, pos + 1)
-        cos_val = cos[pos]
-        sin_val = sin[pos]
-        assert torch.isfinite(cos_val).all(), f"RoPE cos became non-finite at position {pos}!"
-        assert torch.isfinite(sin_val).all(), f"RoPE sin became non-finite at position {pos}!"
-        norm_err = torch.abs(cos_val**2 + sin_val**2 - 1.0).max().item()
-        assert norm_err < 1e-5, f"Unitary circle violated at pos {pos}: max err = {norm_err}"
-        print(f"  -> Pos {pos:8d}: cos^2 + sin^2 error = {norm_err:.2e} (cos={cos_val[0].item():.4f}, sin={sin_val[0].item():.4f}) [PASS]")
-
-    print(">>> Test 1 Passed: RoPE is numerically stable up to 1,048,576 positions! <<<\n")
+    assert DEFAULT_CONFIG.qk_rope_head_dim == 0
+    z = torch.linspace(-8, 8, 9).view(1, 1, 1, 9)
+    log_decay = bounded_log_decay(z, torch.zeros(1), -5.0)
+    assert torch.isfinite(log_decay).all()
+    assert float(log_decay.min()) > -5.0
+    assert float(log_decay.max()) < 0.0
+    saturated = bounded_log_decay(torch.tensor([1e6, -1e6]).view(1, 1, 1, 2), torch.zeros(1), -5.0)
+    assert float(saturated.min()) >= -5.0
+    assert float(saturated.max()) <= 0.0
+    print(f"  -> log-decay range {float(log_decay.min()):.4f} .. {float(log_decay.max()):.4f} inside (-5, 0)")
+    print(">>> Test 1 Passed: MLA has no RoPE width and KDA decay stays bounded! <<<\n")
 
 
 def test_cache_logits_equivalence(device):
@@ -71,6 +60,8 @@ def test_cache_logits_equivalence(device):
         max_position_embeddings=1_048_576,
         attention_window=4096,
         rope_theta=10_000_000.0,
+        kv_cache_fp4=False,
+        engram_layers=[],
     )
     model = MiniK3ForCausalLM(cfg).to(device)
     model.eval()
@@ -134,6 +125,8 @@ def test_generation_equivalence(device):
         max_position_embeddings=1_048_576,
         attention_window=4096,
         rope_theta=10_000_000.0,
+        kv_cache_fp4=False,
+        engram_layers=[],
     )
     model = MiniK3ForCausalLM(cfg).to(device)
     model.eval()
@@ -173,7 +166,7 @@ def main():
     print("=" * 80)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    test_rope_1m_stability()
+    test_position_comes_from_kda()
     test_cache_logits_equivalence(device)
     test_generation_equivalence(device)
 

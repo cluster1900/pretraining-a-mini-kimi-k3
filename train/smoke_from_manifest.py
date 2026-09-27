@@ -14,6 +14,7 @@ import torch
 from train.config import MiniK3Config
 from train.models.mini_k3 import MiniK3ForCausalLM
 from train.engine.balancer import NoAuxBalancer
+from train.engine.muon import build_optimizer
 from train.engine.init_patch import assert_initialised
 from train.data.smoke_audit import verified_smoke_manifest
 
@@ -31,7 +32,7 @@ def main():
         if not torch.cuda.is_available():raise RuntimeError('CUDA required for production-model smoke')
         torch.manual_seed(1234);torch.cuda.manual_seed_all(1234)
         device=torch.device('cuda');model=MiniK3ForCausalLM(cfg).to(device);assert_initialised(model)
-        optimizer=torch.optim.AdamW([p for p in model.parameters() if p.requires_grad],lr=1e-5,betas=(.9,.95),foreach=False)
+        optimizer=build_optimizer((p for p in model.parameters() if p.requires_grad), lr=1e-5, weight_decay=cfg.weight_decay)
         scaler=torch.amp.GradScaler('cuda');balancer=NoAuxBalancer(model)
         losses={}
         for source,info in data['sources'].items():
@@ -39,8 +40,10 @@ def main():
             if len(tokens)!=a.sequence_length:raise ValueError('Shard too short for smoke')
             x=torch.tensor(tokens.astype(np.int64),device=device).unsqueeze(0)
             model.eval()
-            with torch.no_grad(),torch.autocast('cuda',dtype=torch.float16):loss=model(x,labels=x)['loss']
-            value=float(loss)
+            with torch.no_grad(),torch.autocast('cuda',dtype=torch.float16):
+                out=model(x,labels=x)
+            lm=out.get('lm_loss')
+            value=float(lm if lm is not None else out['loss'])
             if not math.isfinite(value):raise ValueError('Non-finite source loss: '+source)
             losses[source]=value
         if max(abs(x-math.log(cfg.vocab_size)) for x in losses.values())>2.0:
@@ -51,7 +54,7 @@ def main():
             with torch.autocast('cuda',dtype=torch.float16):loss=model(x,labels=x)['loss']
             scaler.scale(loss).backward();scaler.unscale_(optimizer)
             norm=torch.nn.utils.clip_grad_norm_(model.parameters(),1.0,error_if_nonfinite=True)
-            unused=[n for n,p in model.named_parameters() if p.requires_grad and p.grad is None and '.experts.' not in n]
+            unused=[n for n,p in model.named_parameters() if p.requires_grad and p.grad is None and '.experts.' not in n and not n.startswith('vision.')]
             if unused:raise ValueError('Unused non-expert trainable parameters: '+str(unused[:12]))
             scaler.step(optimizer);scaler.update();telemetry=balancer.step()
             steps.append({'loss':float(loss),'grad_norm':float(norm),'router':telemetry})

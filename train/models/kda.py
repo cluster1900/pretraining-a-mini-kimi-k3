@@ -59,6 +59,57 @@ class ShortConv1d(nn.Module):
         return out.transpose(1, 2), new_state
 
 
+def bounded_log_decay(z: torch.Tensor, a_log: torch.Tensor, g_min: float) -> torch.Tensor:
+    """K3 retention logit. Finite z stays strictly inside (g_min, 0)."""
+    scale = a_log.exp().view(1, -1, 1, 1)
+    return g_min * torch.sigmoid(scale * z)
+
+
+def chunk_delta_rule(q, k, v, decay, beta, state, chunk_size=64):
+    """Chunked delta rule. Each chunk is one triangular solve; state crosses chunks.
+
+    Matches the token recurrence: decay the key axis, then write beta * (v - S k) k^T.
+    """
+    batches, heads, length, dim = q.shape
+    outputs = []
+    for start in range(0, length, chunk_size):
+        end = min(length, start + chunk_size)
+        out, state = _one_chunk(
+            q[:, :, start:end], k[:, :, start:end], v[:, :, start:end],
+            decay[:, :, start:end], beta[:, :, start:end], state,
+        )
+        outputs.append(out)
+    return torch.cat(outputs, dim=2), state
+
+
+def _one_chunk(q, k, v, decay, beta, state):
+    batches, heads, steps, dim = q.shape
+    log_decay = torch.log(decay.clamp_min(1e-20))
+    cumulative = torch.cumsum(log_decay, dim=2)
+    cum_g = torch.exp(cumulative)
+    later = cumulative.unsqueeze(3)
+    earlier = cumulative.unsqueeze(2)
+    factor = torch.exp(later - earlier)
+    strict = torch.tril(torch.ones(steps, steps, device=q.device), diagonal=-1)
+    key_at_j = k.unsqueeze(2)
+    key_at_t = k.unsqueeze(3)
+    scaled = key_at_j * factor
+    dots = torch.einsum("bhtjd,bhtjd->bhtj", scaled, key_at_t.expand_as(scaled))
+    system = torch.eye(steps, device=q.device, dtype=q.dtype).view(1, 1, steps, steps)
+    system = system + beta.unsqueeze(-1) * dots * strict
+    pred0 = torch.einsum("bhvd,bhcd,bhcd->bhcv", state, cum_g, k)
+    written = torch.linalg.solve(system, beta.unsqueeze(-1) * (v - pred0))
+    identity = torch.eye(steps, device=q.device, dtype=q.dtype).view(1, 1, steps, steps, 1)
+    carry = torch.where(strict.view(1, 1, steps, steps, 1).bool(), factor, torch.zeros_like(factor)) + identity
+    key_query = torch.einsum("bhtjd,bhtjd->bhtj", key_at_j * carry, q.unsqueeze(3).expand_as(carry))
+    from_writes = torch.einsum("bhjd,bhtj->bhtd", written, key_query)
+    from_state = torch.einsum("bhvd,bhcd,bhcd->bhcv", state, cum_g, q)
+    last = cum_g[:, :, -1]
+    key_final = k * torch.exp(cumulative[:, :, -1].unsqueeze(2) - cumulative)
+    new_state = state * last.unsqueeze(-2) + torch.einsum("bhjd,bhje->bhde", written, key_final)
+    return from_state + from_writes, new_state
+
+
 class KimiDeltaAttention(nn.Module):
     def __init__(self, config: MiniK3Config):
         super().__init__()
@@ -73,6 +124,13 @@ class KimiDeltaAttention(nn.Module):
         self.k_proj = nn.Linear(self.hidden_size, self.proj_dim, bias=False)
         self.v_proj = nn.Linear(self.hidden_size, self.proj_dim, bias=False)
         self.out_proj = nn.Linear(self.proj_dim, self.hidden_size, bias=False)
+        self.q_proj.weight.muon_heads = self.num_heads
+        self.k_proj.weight.muon_heads = self.num_heads
+        self.v_proj.weight.muon_heads = self.num_heads
+        # Per-head write gate. sigmoid(0) = 0.5 after zero bias init, not a fixed overwrite.
+        self.beta_proj = nn.Linear(self.hidden_size, self.num_heads, bias=True)
+        # Per-channel output gate, applied in head space before the output projection.
+        self.out_gate = nn.Linear(self.hidden_size, self.proj_dim, bias=True)
 
         # Short depthwise conv for Q, K, V
         self.q_conv = ShortConv1d(self.proj_dim, config.short_conv_kernel_size)
@@ -85,12 +143,11 @@ class KimiDeltaAttention(nn.Module):
         self.gate_up = nn.Linear(gate_low_rank, self.proj_dim, bias=True)
         self.gate_lower_bound = config.gate_lower_bound
 
-        # Recurrence parameters: A_log and dt_bias
-        self.A_log = nn.Parameter(
-            torch.log(torch.empty(self.num_heads, dtype=torch.float32).uniform_(1, 16))
-        )
+        # A_h starts at 0. The per-channel bias is the Kimi Linear dt bias.
+        self.A_log = nn.Parameter(torch.zeros(self.num_heads, dtype=torch.float32))
         self.dt_bias = nn.Parameter(torch.empty(self.proj_dim, dtype=torch.float32))
         init_dt_bias(self.dt_bias)
+        self.head_norm = nn.RMSNorm(self.head_dim, eps=config.rms_norm_eps)
 
     def forward(
         self,
@@ -120,17 +177,16 @@ class KimiDeltaAttention(nn.Module):
         # 3. L2 Normalization on Q and K (critical for bf16 numerical stability)
         q = F.normalize(q, p=2, dim=-1, eps=1e-6)
         k = F.normalize(k, p=2, dim=-1, eps=1e-6)
+        beta = torch.sigmoid(self.beta_proj(hidden_states)).transpose(1, 2)  # [B, H, L]
+        out_gate = torch.sigmoid(self.out_gate(hidden_states))
+        out_gate = out_gate.view(b, l, self.num_heads, self.head_dim).transpose(1, 2)
 
-        # 4. Compute forget gate: g in range [lower_bound, 0]
+        # 4. Lower-bounded log decay: g_min * sigmoid(exp(A_h) * z), g_min = -5.
         gate_raw = self.gate_up(F.silu(self.gate_down(hidden_states)))  # [B, L, proj_dim]
         gate_raw = gate_raw.view(b, l, self.num_heads, self.head_dim).transpose(1, 2)
-        # Per-key-channel log decay. A_log must participate in the graph;
-        # the old exp(gate) * dt both ignored A_log and nearly erased memory.
         with torch.autocast(device_type=hidden_states.device.type, enabled=False):
-            dt = F.softplus(gate_raw.float() + self.dt_bias.float().view(1, self.num_heads, 1, self.head_dim))
-            log_decay = -self.A_log.float().exp().view(1, self.num_heads, 1, 1) * dt
-            if self.gate_lower_bound is not None:
-                log_decay = log_decay.clamp(min=self.gate_lower_bound)
+            z = gate_raw.float() + self.dt_bias.float().view(1, self.num_heads, 1, self.head_dim)
+            log_decay = bounded_log_decay(z, self.A_log.float(), self.gate_lower_bound)
             decay = log_decay.exp()
 
         # 5. Delta Rule Recurrence
@@ -142,19 +198,13 @@ class KimiDeltaAttention(nn.Module):
         else:
             state = recurrent_state.float()
 
-        outs = []
-        # .float() alone does not stop autocast from lowering matmul precision.
         with torch.autocast(device_type=hidden_states.device.type, enabled=False):
-            for t in range(l):
-                qt, kt, vt = q[:, :, t].float(), k[:, :, t].float(), v[:, :, t].float()
-                # State layout is [value, key]; decay acts on the key axis.
-                decayed = state * decay[:, :, t].unsqueeze(-2)
-                predicted = torch.matmul(decayed, kt.unsqueeze(-1)).squeeze(-1)
-                delta = vt - predicted
-                state = decayed + delta.unsqueeze(-1) * kt.unsqueeze(-2)
-                outs.append(torch.matmul(state, qt.unsqueeze(-1)).squeeze(-1).to(hidden_states.dtype))
-
-        out = torch.stack(outs, dim=2)  # [B, H, L, D]
+            out, state = chunk_delta_rule(
+                q.float(), k.float(), v.float(), decay, beta.float(), state, chunk_size=64
+            )
+            out = self.head_norm(out)
+        out = out.to(hidden_states.dtype)
+        out = out * out_gate.to(out.dtype)
         out = out.transpose(1, 2).contiguous().view(b, l, self.proj_dim)
         output = self.out_proj(out)
         return output, state, new_conv_state

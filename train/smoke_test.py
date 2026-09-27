@@ -20,6 +20,7 @@ from train.config import DEFAULT_CONFIG, MiniK3Config
 from train.models.mini_k3 import MiniK3ForCausalLM
 from train.engine.init_patch import assert_initialised
 from train.engine.balancer import NoAuxBalancer
+from train.engine.muon import build_optimizer
 
 
 def run_smoke_test():
@@ -56,34 +57,20 @@ def run_smoke_test():
     dummy_input = torch.randint(0, cfg.vocab_size, (smoke_b, smoke_l), device=device)
     dummy_labels = dummy_input.clone()
 
-    # 5. Optimizer Setup (excluding router bias)
-    decay_params = []
-    no_decay_params = []
-    for name, p in model.named_parameters():
-        if not p.requires_grad:
-            continue
-        if p.ndim >= 2:
-            decay_params.append(p)
-        else:
-            no_decay_params.append(p)
-
-    optimizer = torch.optim.AdamW(
-        [
-            {"params": decay_params, "weight_decay": 0.1},
-            {"params": no_decay_params, "weight_decay": 0.0},
-        ],
+    optimizer = build_optimizer(
+        (p for p in model.parameters() if p.requires_grad),
         lr=cfg.peak_lr,
-        betas=(0.9, 0.95),
-        eps=1e-8,
+        weight_decay=cfg.weight_decay,
     )
     balancer = NoAuxBalancer(model, gamma=cfg.balancer_gamma)
 
     # 6. Step 0 Forward & Initial Loss Check
     model.train()
     out = model(dummy_input, labels=dummy_labels)
-    initial_loss = out["loss"].item()
+    lm = out.get("lm_loss")
+    initial_loss = (lm if lm is not None else out["loss"]).detach().item()
     expected_uniform_loss = math.log(cfg.vocab_size)  # ln(163,840) ≈ 12.007
-    print(f"[*] Step 0 Loss: {initial_loss:.4f} (Expected uniform baseline: {expected_uniform_loss:.4f})")
+    print(f"[*] Step 0 LM loss: {initial_loss:.4f} (Expected uniform baseline: {expected_uniform_loss:.4f}; total loss includes MTP)")
 
     if not (11.90 <= initial_loss <= 12.25):
         raise AssertionError(f"Initial loss {initial_loss:.4f} outside expected range [11.90, 12.25]")

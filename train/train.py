@@ -29,13 +29,16 @@ import torch.nn as nn
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
 
+from dataclasses import replace
 from train.config import DEFAULT_CONFIG, MiniK3Config
 from train.models.mini_k3 import MiniK3ForCausalLM
+from train.run_options import resolve_run
 from train.engine.init_patch import assert_initialised
 from train.engine.scheduler import wsd_lr, is_in_decay_phase
 from train.engine.balancer import NoAuxBalancer
 from train.engine.spike_guard import SpikeGuard
 from train.engine.checkpoint import CheckpointManager
+from train.engine.muon import build_optimizer
 from train.data.loader import MultiSourceDataLoader
 
 
@@ -65,6 +68,18 @@ def parse_args():
         help="Path to the audited validation manifest JSON",
     )
     parser.add_argument("--validation_interval", type=int, default=500)
+    parser.add_argument("--model", choices=("mini-k3", "ced"), default="mini-k3",
+                        help="mini-k3 is the pretrained backbone. ced trains the separate dense baseline.")
+    parser.add_argument("--sequence-length", type=int, default=None,
+                        help="Override config sequence length. Default 2048. 4096, 8192 and 16384 continue long context.")
+    parser.add_argument("--attention-window", type=int, default=None,
+                        help="MLA sliding window. Default 4096. Ignored for ced.")
+    parser.add_argument("--allow-long-sequence", action="store_true",
+                        help="Permit a training sequence above 16384. 1048576 remains the inference ceiling.")
+    parser.add_argument("--init-checkpoint", type=str, default=None,
+                        help="Load model weights only and start a new run. Do not combine with --resume.")
+    parser.add_argument("--peak-lr", type=float, default=None,
+                        help="Override the pretrain peak. Required when continuing at a longer sequence.")
     return parser.parse_args()
 
 
@@ -77,7 +92,18 @@ def calculate_mfu(active_params: int, tokens_per_sec: float, peak_flops: float =
 
 def main():
     args = parse_args()
-    cfg = DEFAULT_CONFIG
+    if args.resume and args.init_checkpoint:
+        raise ValueError("--resume continues one run. --init-checkpoint starts a new run from weights. Pass only one.")
+    cfg = replace(DEFAULT_CONFIG)
+    opts = resolve_run(
+        args.model, args.sequence_length, args.attention_window, args.allow_long_sequence,
+        cfg.sequence_length, cfg.attention_window, cfg.max_position_embeddings,
+        args.peak_lr, cfg.peak_lr, args.init_checkpoint,
+    )
+    cfg.sequence_length = opts["sequence_length"]
+    cfg.peak_lr = opts["peak_lr"]
+    if opts["attention_window"] is not None:
+        cfg.attention_window = opts["attention_window"]
     cfg.validate()
     if not args.data_manifest or not Path(args.data_manifest).is_file():
         raise FileNotFoundError(f"Training manifest is required and must exist: {args.data_manifest}")
@@ -91,7 +117,7 @@ def main():
     scaler = torch.cuda.amp.GradScaler(enabled=(device.type == "cuda" and cfg.precision == "fp16"))
 
     print("=" * 80)
-    print(f" Mini Kimi K3 (1.02B) Pretraining Engine")
+    print(f" Mini Kimi K3 training  model={opts['model']}  sequence={cfg.sequence_length}  window={opts['attention_window']}")
     if rank == 0: print(f" Target Hardware: 4x Tesla V100-SXM2 (32GB), FP16")
     print("=" * 80)
 
@@ -99,8 +125,21 @@ def main():
         print("[!] WARNING: CUDA is not available. Training will be extremely slow on CPU!")
 
     # 1. Initialize Model
-    if rank == 0: print(f"[*] Building model {cfg.model_name}...")
-    model = MiniK3ForCausalLM(cfg).to(device)
+    if rank == 0: print(f"[*] Building model {opts['model']}...")
+    if opts["model"] == "mini-k3":
+        model = MiniK3ForCausalLM(cfg).to(device)
+    else:
+        from train.models.deepseek_coder import DeepSeekCoderConfig, DeepSeekCoderForCausalLM
+        ced_cfg = DeepSeekCoderConfig(vocab_size=cfg.vocab_size, max_seq_len=cfg.sequence_length)
+        model = DeepSeekCoderForCausalLM(ced_cfg).to(device)
+    if args.init_checkpoint:
+        init_path = Path(args.init_checkpoint)
+        init_file = init_path / "model.pt" if init_path.is_dir() else init_path
+        if not init_file.is_file():
+            raise FileNotFoundError(f"Init checkpoint not found: {init_file}")
+        if rank == 0:
+            print(f"[*] Loading initial weights from {init_file}")
+        model.load_state_dict(torch.load(init_file, map_location="cpu", weights_only=False))
     
     # Optional PyTorch 2.0 compile on supported CUDA
     if device.type == "cuda" and hasattr(torch, "compile"):
@@ -115,32 +154,19 @@ def main():
     raw_model = model._orig_mod if hasattr(model, "_orig_mod") else model
     if distributed:
         # find_unused_parameters=True is mandatory for MoE because routed experts with 0 tokens have no grad
-        model = DDP(model, device_ids=[local_rank], broadcast_buffers=False, find_unused_parameters=True)
+        model = DDP(model, device_ids=[local_rank], broadcast_buffers=False,
+                    find_unused_parameters=(opts["model"] == "mini-k3"))
     param_counts = raw_model.count_parameters()
     total_params = param_counts["total"]
     active_params = param_counts["active"]
     if rank == 0: print(f"[*] World size: {dist.get_world_size() if distributed else 1}; Parameters: Total = {total_params / 1e6:.2f}M | Active = {active_params / 1e6:.2f}M | Non-Embed Active = {param_counts['non_embed_active'] / 1e6:.2f}M")
 
-    # 3. Setup Optimizer (Excluding MoE correction biases)
-    decay_params = []
-    no_decay_params = []
-    for name, p in raw_model.named_parameters():
-        if not p.requires_grad:
-            continue
-        # Biases and layernorms are not weight-decayed
-        if p.ndim >= 2:
-            decay_params.append(p)
-        else:
-            no_decay_params.append(p)
-
-    optimizer = torch.optim.AdamW(
-        [
-            {"params": decay_params, "weight_decay": cfg.weight_decay},
-            {"params": no_decay_params, "weight_decay": 0.0},
-        ],
+    # Matrix weights use per-head Muon. Embeddings, gains, and biases use AdamW.
+    # The router correction bias is not trainable and is left out.
+    optimizer = build_optimizer(
+        (p for p in raw_model.parameters() if p.requires_grad),
         lr=cfg.peak_lr,
-        betas=(0.9, 0.95),
-        eps=1e-8,
+        weight_decay=cfg.weight_decay,
     )
 
     # 4. Engine Utilities
@@ -185,7 +211,7 @@ def main():
             if rank == 0: print("[*] No checkpoint found. Starting from Step 0.")
 
     # 6. Step 0 Sanity Check (if starting from 0)
-    if start_step == 0:
+    if start_step == 0 and not args.init_checkpoint:
         print("[*] Performing Step 0 initialization check...")
         assert_initialised(raw_model)
         probe_cursor = data_loader.state_dict()
@@ -193,7 +219,10 @@ def main():
         with torch.no_grad():
             x0, y0 = data_loader.next_batch(device)
             out0 = model(x0, labels=y0)
-            loss0 = out0["loss"].detach().float()
+            loss0 = out0.get("lm_loss", out0["loss"])
+            if loss0 is None:
+                loss0 = out0["loss"]
+            loss0 = loss0.detach().float()
         data_loader.load_state_dict(probe_cursor)
         if distributed:
             dist.all_reduce(loss0, op=dist.ReduceOp.SUM)

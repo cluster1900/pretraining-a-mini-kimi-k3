@@ -69,6 +69,8 @@ def apply_init_patches(model: nn.Module) -> None:
             with torch.no_grad():
                 module.e_score_correction_bias.zero_()
             module.e_score_correction_bias.requires_grad_(False)
-    
-    # Run pre-flight check
+    for module in model.modules():
+        reset = getattr(module, "reset_structural_init", None)
+        if reset is not None:
+            reset()
     assert_initialised(model)

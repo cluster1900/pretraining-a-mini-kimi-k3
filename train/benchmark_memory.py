@@ -50,18 +50,13 @@ def calculate_theoretical_cache_memory(cfg: MiniK3Config, batch_size: int = 1, s
     )
     total_kda_bytes = kda_state_bytes + kda_conv_bytes
 
-    # 2. MLA Layers (3 layers)
+    # 2. MLA layers store one KV latent per token, trimmed to the window.
     num_mla_layers = len(cfg.mla_layers)
-    # Sliding window caps key/value tokens at cfg.attention_window
     cached_tokens = min(seq_len, cfg.attention_window)
-    # Key: [B, H, cached_tokens, nope + rope] = [B, 8, W, 128 + 64]
-    key_dim = cfg.qk_nope_head_dim + cfg.qk_rope_head_dim
-    # Value: [B, H, cached_tokens, v_dim] = [B, 8, W, 128]
-    val_dim = cfg.v_head_dim
-    bytes_per_elem = 2  # fp16
-    mla_key_bytes = num_mla_layers * batch_size * cfg.num_attention_heads * cached_tokens * key_dim * bytes_per_elem
-    mla_val_bytes = num_mla_layers * batch_size * cfg.num_attention_heads * cached_tokens * val_dim * bytes_per_elem
-    total_mla_bytes = mla_key_bytes + mla_val_bytes
+    if cfg.kv_cache_fp4:
+        total_mla_bytes = num_mla_layers * batch_size * cached_tokens * (cfg.kv_lora_rank // 2 + 2)
+    else:
+        total_mla_bytes = num_mla_layers * batch_size * cached_tokens * cfg.kv_lora_rank * 2
 
     total_bytes = total_kda_bytes + total_mla_bytes
     return {
@@ -148,13 +143,13 @@ def run_memory_benchmark():
 
     # Verify sliding window trimming in MLA
     mla_layer_idx = test_cfg.mla_layers[0] - 1
-    k_cached, v_cached = cache.mla_keys[mla_layer_idx], cache.mla_values[mla_layer_idx]
+    k_cached = cache.mla_keys[mla_layer_idx]
     if k_cached is not None:
-        print(f"[*] MLA Layer {mla_layer_idx + 1} Cached Key Shape: {list(k_cached.shape)}")
-        assert k_cached.shape[2] <= test_cfg.attention_window, (
-            f"MLA Key cache length {k_cached.shape[2]} exceeded window {test_cfg.attention_window}!"
+        print(f"[*] MLA Layer {mla_layer_idx + 1} Cached Latent Shape: {list(k_cached.shape)}")
+        assert k_cached.shape[1] <= test_cfg.attention_window, (
+            f"MLA latent length {k_cached.shape[1]} exceeded window {test_cfg.attention_window}!"
         )
-        print("    -> PASS: MLA Key/Value cache is strictly trimmed to attention_window!")
+        print("    -> PASS: MLA latent cache is strictly trimmed to attention_window!")
 
     if device.type == "cuda":
         mem_end = torch.cuda.memory_allocated() / (1024 ** 2)

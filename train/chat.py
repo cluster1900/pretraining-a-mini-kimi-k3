@@ -37,41 +37,17 @@ def stream_generate(
     Decodes tokens sequentially using KV cache and yields text chunks.
     """
     model.eval()
-    cache = model.new_kv_cache()
-
-    # Prefill prompt tokens
+    prompt_len = input_ids.size(1)
     with torch.no_grad():
-        out = model(input_ids, use_cache=True, past_key_values=cache)
-
+        output = model.generate(
+            input_ids, max_new_tokens=max_new_tokens, temperature=temperature,
+            top_p=top_p, eos_token_id=tokenizer.eos_token_id,
+        )
     eos = tokenizer.eos_token_id
-    for _ in range(max_new_tokens):
-        logits = out["logits"][:, -1].float()
-        if temperature <= 0.0:
-            next_id = logits.argmax(-1, keepdim=True)
-        else:
-            logits = logits / temperature
-            probs = torch.softmax(logits, dim=-1)
-            if top_p < 1.0:
-                sorted_p, sorted_i = torch.sort(probs, descending=True)
-                keep = torch.cumsum(sorted_p, dim=-1) <= top_p
-                keep[..., 0] = True
-                probs = torch.where(keep, sorted_p, torch.zeros_like(sorted_p))
-                probs = probs / probs.sum(-1, keepdim=True)
-                next_id = sorted_i.gather(-1, torch.multinomial(probs, 1))
-            else:
-                next_id = torch.multinomial(probs, 1)
-
-        token_val = next_id.item()
+    for token_val in output[0, prompt_len:].tolist():
         if token_val == eos:
             break
-
-        # Decode token and yield
-        token_str = tokenizer.decode([token_val])
-        yield token_str
-
-        # Incremental single-token decode
-        with torch.no_grad():
-            out = model(next_id, use_cache=True, past_key_values=cache)
+        yield tokenizer.decode([token_val])
 
 
 def main():
