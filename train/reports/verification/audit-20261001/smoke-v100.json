@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "host": "v100",
+  "sequence_length": 64,
+  "sources": 7,
+  "optimizer_steps": 2,
+  "parameters": {"total": 1150739900, "active": 159400252},
+  "peak_memory_bytes": 15136763904,
+  "manifest_sha256": "d2cce19c492c5204bfd369578581ecf5a60f772087da45f002d516f8a2e1b7ea",
+  "audit_sha256": "9b99af75062aa0645a8de0fdf9d1a5f06d325ed7118ff1638341071c1d7f2632"
+}

@@ -20,6 +20,7 @@ import torch.nn.functional as F
 from train.config import DEFAULT_CONFIG, MiniK3Config
 from train.models.mini_k3 import MiniK3ForCausalLM
 from train.data.tokenizer import K3Tokenizer
+from train.readiness import check_validation_readiness
 from train.eval_answers import resolve_choice_index
 
 
@@ -27,7 +28,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Evaluate Mini K3 Checkpoints")
     parser.add_argument("--checkpoint", type=str, required=True, help="Path to checkpoint directory (must contain model.pt)")
     parser.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")
-    parser.add_argument("--tokenizer_model", default=None, help="Directory containing tiktoken.model. Required for --problems and --sanity.")
+    parser.add_argument("--tokenizer_model", default=None, help="Directory containing tiktoken.model. Required for --problems, --sanity, and audited-manifest fingerprint binding.")
     parser.add_argument("--manifest", default=None, help="Validation manifest. Reports held-out next-token loss, the training evaluation.")
     parser.add_argument("--batches", type=int, default=32, help="Validation batches when --manifest is set.")
     parser.add_argument("--sequence-length", type=int, default=None)
@@ -125,6 +126,14 @@ def main():
     print("[*] Model loaded successfully.")
     if args.manifest:
         from train.data.loader import MultiSourceDataLoader
+        tokenizer_fingerprint = None
+        if args.tokenizer_model:
+            tokenizer_fingerprint = K3Tokenizer(args.tokenizer_model).fingerprint
+        readiness = check_validation_readiness(
+            args.manifest,
+            vocab_size=cfg.vocab_size,
+            tokenizer_fingerprint=tokenizer_fingerprint,
+        )
         seq_len = args.sequence_length or cfg.sequence_length
         loader = MultiSourceDataLoader(manifest_path=args.manifest, seq_len=seq_len, batch_size=1)
         if not loader.streams:
@@ -139,7 +148,7 @@ def main():
                     total += float(model(batch, labels=labels)["loss"])
         loss = total / args.batches
         report = {"status": "validation_loss", "batches": args.batches, "sequence_length": seq_len,
-                  "loss": loss, "checkpoint": str(model_file)}
+                  "loss": loss, "checkpoint": str(model_file), "readiness": readiness}
         print(f"[*] Validation loss over {args.batches} batches: {loss:.4f}")
         if args.report:
             Path(args.report).write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

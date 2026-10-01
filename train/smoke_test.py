@@ -1,5 +1,10 @@
 """
-Pre-flight 2-Step Smoke Test.
+Architecture-only 2-step smoke test.
+
+This script uses deterministic random token IDs and deliberately does not read
+the audited corpus. It checks tensor shapes, initialization, gradients, and
+optimizer wiring only. It is never a data-readiness or permission-to-train
+signal; use ``smoke_from_manifest.py`` for the real-data gate.
 Verifies:
 1. Architecture instantiation & parameter count alignment
 2. Finite parameter initialization (no NaNs or Infs)
@@ -25,7 +30,8 @@ from train.engine.muon import build_optimizer
 
 def run_smoke_test():
     print("=" * 70)
-    print("Mini Kimi K3: Running Pre-flight Smoke Test")
+    print("Mini Kimi K3: Running architecture-only smoke test")
+    print("[!] Random tokens only; this does not validate the audited dataset or authorize training.")
     print("=" * 70)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -97,7 +103,8 @@ def run_smoke_test():
     # 8. Assertions
     assert math.isfinite(losses[-1]), "Loss became non-finite during smoke test!"
     print("=" * 70)
-    print(">>> SMOKE TEST PASSED SUCCESSFULLY! The model is ready for training. <<<")
+    print(">>> ARCHITECTURE SMOKE PASSED (random-token fixture only). <<<")
+    print("    Real-data readiness is checked by train/smoke_from_manifest.py and train/readiness.py.")
     print("=" * 70)
 
 

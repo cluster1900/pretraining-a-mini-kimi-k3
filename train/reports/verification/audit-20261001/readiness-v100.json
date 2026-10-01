@@ -1,0 +1,10 @@
+{
+  "status": "ready",
+  "training_tokens": 28214510016,
+  "validation_tokens": 285738391,
+  "target_tokens": 10000007168,
+  "coverage_status": "sufficient_fixed_mix",
+  "manifest_sha256": "d2cce19c492c5204bfd369578581ecf5a60f772087da45f002d516f8a2e1b7ea",
+  "validation_manifest_sha256": "541136c5a7f06cd6606513cecddc2bf20af8ace6cca5cb5ad92df503ded029c7",
+  "audit_sha256": "9b99af75062aa0645a8de0fdf9d1a5f06d325ed7118ff1638341071c1d7f2632"
+}

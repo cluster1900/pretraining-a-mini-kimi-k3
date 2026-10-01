@@ -98,7 +98,7 @@ def run_memory_benchmark():
     m_128k = calculate_theoretical_cache_memory(cfg, 1, 131072)
     m_1m = calculate_theoretical_cache_memory(cfg, 1, 1048576)
     assert abs(m_128k["total_cache_mb"] - m_1m["total_cache_mb"]) < 1e-4, "Cache memory is not O(1) bounded!"
-    print("[+] Verified: KV Cache footprint is strictly O(1) bounded at 1M positions by 4096-window attention!")
+    print("[+] Verified: theoretical cache storage is bounded by the 4096-token MLA window.")
 
     # 2. Empirical Allocation Test
     print("\n[Part 2: Live Incremental Decoding VRAM Measurement]")
@@ -161,7 +161,7 @@ def run_memory_benchmark():
         print("    -> PASS: VRAM consumption is within Tesla V100 (32GB) bounds!")
 
     print("=" * 80)
-    print(">>> MEMORY BENCHMARK PASSED: cache stays inside the attention window on this short run. <<<")
+    print(">>> ARCHITECTURE MEMORY CHECK PASSED for the small live model; this is not a 1M trained-model result. <<<")
     print("=" * 80)
 
 

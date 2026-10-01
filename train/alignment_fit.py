@@ -20,10 +20,30 @@ def fit_sft(ids, labels, limit):
 
 
 def fit_preference(chosen, rejected, prompt_len, limit):
-    chosen_kept, chosen_drop = fit_tail(chosen, limit)
-    rejected_kept, rejected_drop = fit_tail(rejected, limit)
-    chosen_prompt = max(0, prompt_len - chosen_drop)
-    rejected_prompt = max(0, prompt_len - rejected_drop)
-    if chosen_prompt >= len(chosen_kept) or rejected_prompt >= len(rejected_kept):
+    """Fit a pair while preserving one identical prompt boundary.
+
+    Trimming chosen and rejected independently changes the prompt tokens and
+    makes DPO compare different conditioning contexts.  Keep the shared prompt
+    tail and the same-length response prefix for both records.
+    """
+    chosen = list(chosen)
+    rejected = list(rejected)
+    if limit < 2:
+        raise ValueError("preference limit must leave a prompt and one answer token")
+    if prompt_len <= 0:
+        prompt_len = 0
+        for left, right in zip(chosen, rejected):
+            if left != right:
+                break
+            prompt_len += 1
+    prompt_len = min(prompt_len, len(chosen), len(rejected))
+    if prompt_len == 0 or chosen[:prompt_len] != rejected[:prompt_len]:
         return None
-    return chosen_kept, rejected_kept, chosen_prompt, rejected_prompt
+    prompt_keep = min(prompt_len, limit - 1)
+    prompt = chosen[prompt_len - prompt_keep:prompt_len]
+    response_limit = limit - prompt_keep
+    chosen_response = chosen[prompt_len:prompt_len + response_limit]
+    rejected_response = rejected[prompt_len:prompt_len + response_limit]
+    if not chosen_response or not rejected_response:
+        return None
+    return prompt + chosen_response, prompt + rejected_response, prompt_keep

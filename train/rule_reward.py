@@ -1,5 +1,7 @@
 """Format and answer checks for GRPO. No model import."""
 
+import re
+
 
 def rule_reward(text, gold=None):
     if not isinstance(text, str):
@@ -12,6 +14,11 @@ def rule_reward(text, gold=None):
     answer = text[end + len("</think>"):].strip()
     if answer:
         reward += 0.5
-    if gold is not None and str(gold).strip() and str(gold).strip() in answer:
+    if gold is not None and _normalise(answer) == _normalise(str(gold)):
         reward += 1.0
     return reward
+
+
+def _normalise(value: str) -> str:
+    value = re.sub(r"\s+", " ", value.strip().lower())
+    return value.strip(" .。!！?？")

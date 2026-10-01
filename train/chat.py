@@ -52,7 +52,7 @@ def stream_generate(
 
 def main():
     parser = argparse.ArgumentParser(description="Mini K3 Streaming Terminal Chat")
-    parser.add_argument("--checkpoint", type=str, default=None, help="Path to checkpoint directory or model.pt")
+    parser.add_argument("--checkpoint", type=str, required=True, help="Path to a trained checkpoint directory or model.pt")
     parser.add_argument("--temperature", type=float, default=0.7, help="Sampling temperature (0 for greedy)")
     parser.add_argument("--top_p", type=float, default=0.9, help="Top-p nucleus sampling")
     parser.add_argument("--max_tokens", type=int, default=512, help="Max generated tokens per response")
@@ -71,16 +71,13 @@ def main():
     print("=" * 70)
 
     model = MiniK3ForCausalLM(cfg).to(device)
-    if args.checkpoint:
-        ckpt_p = Path(args.checkpoint)
-        model_file = ckpt_p / "model.pt" if ckpt_p.is_dir() else ckpt_p
-        if not model_file.exists():
-            raise FileNotFoundError(f"Model file not found at: {model_file}")
-        print(f"[*] Loading weights from: {model_file}")
-        model.load_state_dict(torch.load(model_file, map_location=device, weights_only=False))
-        print("[*] Model loaded successfully.")
-    else:
-        print("[!] No checkpoint specified: running with randomly initialized model.")
+    ckpt_p = Path(args.checkpoint)
+    model_file = ckpt_p / "model.pt" if ckpt_p.is_dir() else ckpt_p
+    if not model_file.is_file():
+        raise FileNotFoundError(f"Model file not found at: {model_file}")
+    print(f"[*] Loading weights from: {model_file}")
+    model.load_state_dict(torch.load(model_file, map_location=device, weights_only=False))
+    print("[*] Model loaded successfully.")
 
     messages: List[Dict[str, str]] = []
 

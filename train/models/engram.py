@@ -62,7 +62,7 @@ class Engram(nn.Module):
                 slot = order_index * self.heads + head
                 mixed = torch.zeros(batch, length, dtype=torch.int64, device=ids.device)
                 for shift in range(order):
-                    shifted = torch.zeros_like(ids) if shift == 0 else ids.roll(shifts=shift, dims=1)
+                    shifted = ids if shift == 0 else ids.roll(shifts=shift, dims=1)
                     if shift:
                         shifted = shifted.clone()
                         shifted[:, :shift] = 0

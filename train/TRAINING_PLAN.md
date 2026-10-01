@@ -33,6 +33,25 @@ torchrun --standalone --nproc_per_node=4 train/train.py \
 4. 10B 完成之后才做长上下文。第一段 4096、学习率 \(6\times10^{-5}\)，单独目录。8192 和 16384 只在前一段损失和显存都稳时才开。
 5. SFT、DPO、PPO、GRPO 用决定保留的那一档检查点。视觉塔等有图像数据再单开，不放进这次文本预训练。
 
+## 2026-09-30 训练前复核：服务器版本与终态门禁
+
+本次只做只读核对和代码修复，没有启动训练、下载数据或重启服务。
+
+1. v100 的 `/data/mini-k3/project/train` 原来仍是 12 层、1,028,056,392 参数的旧副本；当前定案代码是 13 层、1,150,739,900 参数。正式短跑前必须重新同步当前 `train/`，并核对 `sha256sum`，不得使用旧副本。
+2. v100 的 `prepared-v2-supplement-v2/PIPELINE_STATUS.json` 停在 2026-09-24 的 `full_manifest_audit/failed`。这是修复 OpenAssistant 分组后遗留的旧状态；同一数据根的 2026-09-26 `manifests/AUDIT.json`、`SMOKE.json` 和 `reports/supplement-v2/coverage.json` 已分别为 `passed`、`passed`、`sufficient_fixed_mix`。启动前须通过当前代码重新收敛为 `PIPELINE_STATUS.status=complete`，不能只看 `AUDIT.json`。
+3. `train/readiness.py` 和 `train/data/check_training_readiness.py` 现在在模型建卡前检查：同一审计目录、schema-v2、词表、稳定期配比、全部 shard 存在且字节数一致、`AUDIT.json` 的 manifest 哈希绑定、真实数据 smoke 绑定、pipeline complete 和固定配比 coverage。训练入口不再只检查 manifest 文件是否存在。
+4. 训练入口固定默认种子 42，并恢复 step-0 探针消耗的 Python RNG；对齐的 Reward/Value head 改为调用完整 Mini K3 前向，不能再把四路 mHC 层当成单输入层调用。
+
+同步完成后，短跑前置检查命令为：
+
+```bash
+/data/mini-k3/venv/bin/python train/data/check_training_readiness.py \
+  --manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/pretrain_stable.json \
+  --validation-manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/validation.json
+```
+
+该检查通过后才允许执行下面已有的 200 步命令；通过不等于 200 步四卡显存和吞吐已经验证。
+
 ## 2026-09-27 架构对齐：小而完整的 K3，下一步仍是 2048 短跑
 
 原因：对照 Kimi K3 技术报告和 DeepSeek-V4 / V4.1 之后，主干里有几处和论文不一致，12 层上也缺了 K3 用来在深度上取信息的 Attention Residuals。这些都是参数和算子级的改动，不改数据、不改 2048 的训练命令。训练还没开始，没有旧检查点需要迁移。
@@ -281,7 +300,7 @@ Dolma 正文使用用户提供且已查询验证的 `modelscope/dolma`，保存�
 | 层归一化 | 13,824 | — |
 | **合计** | **1,150,739,900** | **100%** |
 
-激活参数 = 总参数 − 路由专家 − Engram 表 − 视觉塔 + 路由专家 × 6 / 256 + 每个 token 实际查到的 Engram 行。文本步不算视觉塔。四卡 DDP 每张卡都放整套权重：FP16 权重 2.30 GB，Muon 动量 4.20 GB，AdamW 动量和方差 0.80 GB，合计 7.30 GB。这是下限，不含梯度、激活和 KDA 扫描图。显存峰值仍以 2048、四卡、200 步实测填写。预训练记录的 loss 是下一个 token 加上 0.3 倍的 MTP；第 0 步是否合格只看下一个 token 的 loss。种子 42 的 64-token 主干损失是 12.14。矩阵权重走逐头 Muon，嵌入和一维参数走 AdamW。KDA 按 64 token 一块做三角求解。激活重计算包住注意力和 MoE；专家负载和分位数直方图都在重计算之外只累加一次。推理缓存使用 FP4 latent。`generate` 和 `chat.py` 用 MTP 草稿验证下一个 token，拒绝时回滚缓存。
+激活参数 = 总参数 − 路由专家 − Engram 表 − 视觉塔 + 路由专家 × 6 / 256 + 每个 token 实际查到的 Engram 行。文本步不算视觉塔。当前 `train.py` 保持 FP32 参数存储并在 V100 上用 FP16 autocast/GradScaler；因此 1,150,739,900 个参数仅权重约 4.60 GB，梯度、Muon/AdamW 状态、激活和 KDA 临时张量必须由 2048、四卡短跑实测，不能沿用旧的 7.30 GB 下限。64-token 单卡真实 smoke 峰值为 15,136,763,904 bytes，不外推正式长度。预训练记录的 loss 是下一个 token 加上 0.3 倍的 MTP；第 0 步是否合格只看下一个 token 的 loss。种子 42 的 64-token 主干损失是 12.14。矩阵权重走逐头 Muon，嵌入和一维参数走 AdamW。KDA 按 64 token 一块做三角求解。激活重计算包住注意力和 MoE；专家负载和分位数直方图都在重计算之外只累加一次。推理 FP4 latent cache 是 opt-in，默认先用未量化 cache 做等价性门禁。`generate` 目前只用目标模型逐 token cache 解码，MTP 仅作为训练损失，不宣称 speculative decoding。
 
 ### 2.2 开源训练集与全量来源台账
 
@@ -446,9 +465,9 @@ python3 train/alignment_train.py --mode ppo --checkpoint checkpoints/step_038147
 ```text
 train/
 ├── TRAINING_PLAN.md         # [本文件] 唯一定案训练规划与避坑规范
-├── config.py                # Mini K3 (1.02B) 唯一定案模型配置
-├── smoke_test.py            # 2 步冒烟自检脚本 (验证参数、初始化与数值下降)
-├── test_cache_equivalence.py# 缓存等价性与 1M RoPE 自检脚本 (严格满足红线第 8 条)
+├── config.py                # Mini K3 (1.150B total / 159M active) 唯一定案模型配置
+├── smoke_test.py            # 随机 token 的架构自检（不读取数据，不授权训练）
+├── test_cache_equivalence.py# 无 cache/cache logits 等价、KDA 衰减与 1M 位置上限自检 (严格满足红线第 8 条)
 ├── benchmark_memory.py      # 1M 序列推理显存基准脚本 (严格满足红线第 8 条)
 ├── eval_long_context.py     # 1M 长文本大海捞针 (NIAH) 检索评测 (严格满足红线第 8 条)
 ├── chat.py                  # 交互式流式终端对话命令行 (支持多轮与 KV Cache)
@@ -482,9 +501,15 @@ train/
 
 ### 快速启动命令
 
-1. **预检与冒烟自检（验证模型完好性）**：
+1. **架构自检（随机 token，不验证数据，也不授权训练）**：
    ```bash
    python train/smoke_test.py
+   ```
+   生产数据需要另跑真实 manifest smoke；它必须绑定当前 `AUDIT.json`：
+   ```bash
+   python train/smoke_from_manifest.py \
+     --manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/pretrain_stable.json \
+     --report /data/mini-k3/data/prepared-v2-supplement-v2/manifests/SMOKE.json
    ```
 2. **验证无缓存与缓存的 logits 一致，并检查 KDA 衰减下界**：
    ```bash
@@ -496,9 +521,12 @@ train/
    ```
 4. **验证 1M 长文本检索能力 (Needle In A Haystack)（红线第 8 条要求）**：
    ```bash
-   python train/eval_long_context.py --lengths 4096 8192 16384 32768
+   python train/eval_long_context.py \
+     --checkpoint /data/mini-k3/checkpoints/long-context-4096 \
+     --tokenizer_model /data/mini-k3/data/tokenizer \
+     --lengths 4096 8192 16384 32768
    ```
-5. **冻结后的 manifest/shard 完整性复核**（不重新构建数据）：
+5. **冻结后的 manifest/shard 完整性复核**（不重新构建数据；仅检查 shard，不授权训练）：
    ```bash
    python train/data/validate_manifest.py \
      --manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/pretrain_stable.json
@@ -689,7 +717,7 @@ train/
 为支持本地快速开发与算法验证，在 Mac (Apple Silicon) 本地基于 Python 3.12 搭建了隔离测试环境 `.venv` 并固化核心依赖配置于 `train/requirements.txt`：
 1. **依赖环境**：安装 `torch==2.14.0` (支持 MPS 加速与 CPU 推理)、`tiktoken==0.14.0`、`pyarrow==25.0.1`、`modelscope==1.40.1`、`datasets==5.0.1`、`pytest==9.1.1`。
 2. **轻量验证通过**：
-   - 模型架构 Smoke Test (`train/smoke_test.py`)：1.02B 参数量核算准确，Step 0 初始损失 12.0988，优化器 2 步反向传播与 MoE 路由分发均正常。
+   - 历史 12 层原型的模型架构 Smoke Test：1.02B 参数量核算准确，Step 0 初始损失 12.0988，优化器 2 步反向传播与 MoE 路由分发均正常；该原型不再作为当前 13 层模型的 readiness 证据。
    - 1M Cache 等价性验证 (`train/test_cache_equivalence.py`)：100 万长位置 RoPE 酉圆旋转稳定性误差 $< 1.19 \times 10^{-7}$，无 cache 与 cache logits 最大绝对误差 $1.67 \times 10^{-6} < 10^{-4}$，逐 token 贪婪解码完全一致。
    - KDA 运行时回归 (`train/test_kda_runtime.py`)：状态精度与分块等价完全一致。
    - 显存基准 (`train/benchmark_memory.py`)：1M 上下文 MLA 滑动窗口显存占用严格保持 $O(1)$ 边界。
@@ -748,3 +776,18 @@ train/
 4. 训练代码补上三处已经写了开关、但行为不对的实现：MLA 滑动窗口按每个 query 保留最近 4096 个 token（2048 训练长度下仍是整段因果注意力）；MoE 的两个共享专家分开计算再相加，不再合成一个两倍宽的 MLP；`activation_checkpointing` 会包住注意力前向。CED 的 RoPE 与 \(N(0, 0.02)\) 初始化是在独立文件里先修好的。
    2026-09-27 更正：`train.py --model ced` 仍是单独的稠密对照。主干里的因果编码器是前 8 层，不是这个开关。同日的结构对齐见文首。参数量为 1,150,739,900。正式 10B 从零训练。
 5. 四卡训练循环原先会让各卡各写一份 `model.pt`、用本卡 loss 单独决定是否跳步，并且验证只在存档时抽 1 条、还不做卡间平均。现在只由 rank 0 写模型权重，跳步用四卡平均 loss，非有限梯度会降低 GradScaler，验证每 500 步取 4 个 batch 的全局平均。第 0 步检查读完会把数据游标放回去，不丢掉第一批 token。检查点读取显式关闭 `weights_only`，否则 PyTorch 2.6 之后读不回优化器和随机数，中断后无法续跑。对齐脚本按 `sequence_length` 保留序列尾部，奖励和价值不再把 token 0 当成填充。`evaluate.py` 对 `--problems` JSONL 计算准确率；不带该文件时只允许显式的 `--sanity`，不能把一句样例当成评测结果。2026-09-27 确定介入顺序：200 步短跑和 38,147 步 10B 都保持 2048、Mini K3、峰值学习率 \(6\times10^{-4}\)。长上下文从 10B 检查点之后才开始，第一段是 4096、学习率 \(6\times10^{-5}\)；8192 和 16384 只在前一段 loss 和显存都稳时才开。CED 放在主线和长上下文决定之后，单独占卡。超过 16384 需要 `--allow-long-sequence`。不设学习率就加长序列会被拒绝。
+### 2026-10-01 训练前代码与数据门禁复核（未启动正式训练）
+
+本次修复对应当前 v2 数据和 13 层、1,150,739,900 总参数配置；所有改动先同步到 v100，再做只读或小张量验证：
+
+1. 数据门禁 `train/data/check_training_readiness.py` 现在同时校验 schema-v2、`<u4`、tokenizer fingerprint、每个 shard 的字节数/总 token、`AUDIT.json` 的 manifest 哈希与零重叠、`SMOKE.json` 的审计绑定、固定配比覆盖报告和目标 token 数。旧控制器的失败状态由 `reconcile_pipeline_status.py` 在保留旧状态哈希的前提下原子重写为 `reconciled_audited_finalization`；没有改 shard、没有下载。
+2. v100 readiness 结果为 `ready`：训练 manifest SHA256 `d2cce19c...1b7ea`，验证 manifest SHA256 `541136c5...29c7`，审计 SHA256 `9b99af75...2632`，固定配比覆盖 `sufficient_fixed_mix`，10,000,007,168 token 目标无缺口；训练池 28,214,510,016 token。
+3. 修复了真实 smoke 的 GradScaler 顺序（先 `unscale_` 再裁剪）、mHC 初始读出分布无梯度、KDA chunk future `exp` 溢出、Engram 的当前 token 哈希遗漏、数据加载器耗尽后静默复用、默认 FP4 cache 与默认 torch.compile 的未验证路径。v100 单卡真实七源两步 full-model smoke 通过：13 层参数签名与配置一致，loss/梯度/优化器有限，峰值显存 15,136,763,904 bytes（序列 64；不外推 2048 或 1M）。
+4. 对齐入口增加 `alignment.json` 的来源、文件大小、SHA256、tokenizer fingerprint 和模式检查；偏好样本裁剪保留同一个 prompt 边界；RM checkpoint 可以正确加载 `backbone.* + score.*` 格式。alignment manifest 的 openassistant SFT 文件已在 v100 通过绑定校验。
+5. 检查点现在保存/恢复 GradScaler、训练/验证游标和运行签名（模型、序列、学习率、world size、manifest 哈希、参数签名），恢复前先拒绝不一致实验。数据不足或 shard 读完会硬失败，不再生成合成 token。
+6. cache 等价性小配置测试在 v100 通过（最大 logits 差 `4.62e-6`，贪心 token 一致）；这只是实现回归。`eval_long_context.py` 现在必须提供已训练 checkpoint，`test_cache_equivalence.py` 和 `benchmark_memory.py` 的输出也明确不把小模型/理论窗口当成 1M 能力。按本文件第 8 条，尚无训练 checkpoint，因此 1M 长文档能力、长上下文 loss 和正式显存基准仍未完成。
+7. `smoke_test.py` 已明确标为随机 token 的架构自检，只检查初始化、反向传播和优化器，不再输出“可以训练”；真实语料门禁只能由 `smoke_from_manifest.py` 与 `readiness.py` 共同给出。`validate_manifest.py` 也降级为仅 shard 字节检查，不能替代完整 readiness。
+8. 长序列入口现在强制 `--init-checkpoint`，并在续训时显式提供较低的 `--peak-lr`；没有 2048 检查点时，4096/8192/16384 以及更长序列会直接拒绝。200 步短跑只要求审计覆盖量不低于本次预算，不再错误要求 coverage 的 10B 目标等于短跑 token 数。
+9. `evaluate.py --manifest` 先验证 validation manifest 的 AUDIT 哈希、零重叠、tokenizer fingerprint 和每个 shard 的字节元数据；命令仍是只读评估，验证集不再接受任意可读 JSON。
+
+正式 200 步短跑、10B 预训练及其长上下文延续均仍需用户明确启动；本次复核没有执行这些任务。

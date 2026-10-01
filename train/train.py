@@ -17,6 +17,7 @@ import time
 import math
 import random
 import argparse
+import numpy as np
 from pathlib import Path
 from contextlib import nullcontext
 # Permit both ``python -m train.train`` and the documented
@@ -30,7 +31,7 @@ import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
 
 from dataclasses import replace
-from train.config import DEFAULT_CONFIG, MiniK3Config
+from train.config import CANONICAL_PARAMETER_COUNTS, DEFAULT_CONFIG, MiniK3Config
 from train.models.mini_k3 import MiniK3ForCausalLM
 from train.run_options import resolve_run
 from train.engine.init_patch import assert_initialised
@@ -40,6 +41,7 @@ from train.engine.spike_guard import SpikeGuard
 from train.engine.checkpoint import CheckpointManager
 from train.engine.muon import build_optimizer
 from train.data.loader import MultiSourceDataLoader
+from train.readiness import check_training_readiness
 
 
 # 4x Tesla V100-SXM2 (32GB) FP16 Tensor Core theoretical peak: 4 * 125 TFLOP/s = 500 TFLOP/s
@@ -58,7 +60,6 @@ def parse_args():
     parser.add_argument("--checkpoint_dir", type=str, default="/data/mini-k3/checkpoints", help="Directory to store checkpoints")
     parser.add_argument("--total_steps", type=int, default=38147, help="Total training steps (default 38,147 for 10B tokens)")
     parser.add_argument("--resume", action="store_true", help="Resume training from latest valid checkpoint")
-    parser.add_argument("--allow_missing_data", action="store_true", help="Allow missing data shards (default False)")
     parser.add_argument("--save_interval", type=int, default=1000, help="Checkpoint save interval in steps")
     parser.add_argument("--log_interval", type=int, default=10, help="Telemetry reporting interval in steps")
     parser.add_argument(
@@ -80,6 +81,9 @@ def parse_args():
                         help="Load model weights only and start a new run. Do not combine with --resume.")
     parser.add_argument("--peak-lr", type=float, default=None,
                         help="Override the pretrain peak. Required when continuing at a longer sequence.")
+    parser.add_argument("--seed", type=int, default=42, help="Global initialization and data seed (default: 42)")
+    parser.add_argument("--compile", action="store_true",
+                        help="Opt in to torch.compile; disabled by default on V100/custom attention kernels")
     return parser.parse_args()
 
 
@@ -105,16 +109,40 @@ def main():
     if opts["attention_window"] is not None:
         cfg.attention_window = opts["attention_window"]
     cfg.validate()
-    if not args.data_manifest or not Path(args.data_manifest).is_file():
-        raise FileNotFoundError(f"Training manifest is required and must exist: {args.data_manifest}")
+    if args.total_steps < 1:
+        raise ValueError("--total_steps must be positive")
+    world_size_for_contract = int(os.environ.get("WORLD_SIZE", "1"))
+    expected_tokens = (
+        args.total_steps * cfg.micro_batch_size * cfg.gradient_accumulation_steps
+        * world_size_for_contract * cfg.sequence_length
+    )
+    readiness = check_training_readiness(
+        args.data_manifest,
+        args.validation_manifest,
+        vocab_size=cfg.vocab_size,
+        stable_mix=cfg.stable_mix,
+        expected_parameters=CANONICAL_PARAMETER_COUNTS.get(opts["model"]),
+        expected_training_tokens=expected_tokens,
+    )
     distributed = int(os.environ.get("WORLD_SIZE", "1")) > 1
     rank = int(os.environ.get("RANK", "0")); local_rank = int(os.environ.get("LOCAL_RANK", "0"))
+    # All ranks construct identical weights. Only Python/NumPy loader streams
+    # are rank-offset so source choices differ across DDP workers.
+    torch.manual_seed(args.seed)
+    random.seed(args.seed + rank)
+    np.random.seed((args.seed + rank) % (2**32 - 1))
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(args.seed)
     if distributed:
         if not torch.cuda.is_available(): raise RuntimeError("4-card training requires CUDA")
         torch.cuda.set_device(local_rank); dist.init_process_group(backend="nccl")
     device = torch.device("cuda", local_rank) if torch.cuda.is_available() else torch.device("cpu")
     seq_len = getattr(cfg, "sequence_length", cfg.max_position_embeddings)
-    scaler = torch.cuda.amp.GradScaler(enabled=(device.type == "cuda" and cfg.precision == "fp16"))
+    scaler = torch.cuda.amp.GradScaler(
+        enabled=(device.type == "cuda" and cfg.precision == "fp16"),
+        init_scale=1024.0,
+        growth_interval=2000,
+    )
 
     print("=" * 80)
     print(f" Mini Kimi K3 training  model={opts['model']}  sequence={cfg.sequence_length}  window={opts['attention_window']}")
@@ -142,7 +170,7 @@ def main():
         model.load_state_dict(torch.load(init_file, map_location="cpu", weights_only=False))
     
     # Optional PyTorch 2.0 compile on supported CUDA
-    if device.type == "cuda" and hasattr(torch, "compile"):
+    if args.compile and device.type == "cuda" and hasattr(torch, "compile"):
         print("[*] Compiling model with torch.compile()...")
         # compile with default mode (avoids breaking custom autograd)
         try:
@@ -183,7 +211,7 @@ def main():
         manifest_path=args.data_manifest,
         seq_len=seq_len,
         batch_size=cfg.micro_batch_size,
-        allow_missing=args.allow_missing_data,
+        allow_missing=False,
         rank=rank,
         world_size=world_size,
     )
@@ -191,7 +219,6 @@ def main():
         manifest_path=args.validation_manifest, seq_len=seq_len, batch_size=cfg.micro_batch_size,
         rank=rank, world_size=world_size,
     ) if Path(args.validation_manifest).is_file() else None
-    random.seed(random.getstate()[1][0] + rank)
     if data_loader.streams:
         data_loader.set_mix(cfg.stable_mix)
 
@@ -199,13 +226,28 @@ def main():
     start_step = 0
     total_tokens_seen = 0
     if args.resume:
+        run_signature = {
+            "model": opts["model"],
+            "total_steps": args.total_steps,
+            "sequence_length": cfg.sequence_length,
+            "attention_window": cfg.attention_window,
+            "peak_lr": cfg.peak_lr,
+            "world_size": world_size,
+            "train_manifest_sha256": readiness["manifest"]["sha256"],
+            "validation_manifest_sha256": readiness["validation"]["sha256"],
+            "parameter_counts": param_counts if "param_counts" in locals() else None,
+        }
         meta = ckpt_manager.load_latest(raw_model, optimizer, spike_guard, rank=rank,
-                                        world_size=(dist.get_world_size() if distributed else 1))
+                                        world_size=(dist.get_world_size() if distributed else 1),
+                                        scaler=scaler, expected_run_signature=run_signature)
         if meta:
             start_step = meta.get("step", 0) + 1
             total_tokens_seen = meta.get("total_tokens_seen", 0)
             if "data_loader" in meta and meta["data_loader"]:
-                data_loader.load_state_dict(meta["data_loader"])
+                saved_loader = meta["data_loader"]
+                data_loader.load_state_dict(saved_loader.get("train", saved_loader))
+                if val_loader is not None and isinstance(saved_loader, dict) and saved_loader.get("validation"):
+                    val_loader.load_state_dict(saved_loader["validation"])
             if rank == 0: print(f"[*] Resumed successfully at Step {start_step} (Tokens seen: {total_tokens_seen:,})")
         else:
             if rank == 0: print("[*] No checkpoint found. Starting from Step 0.")
@@ -215,6 +257,7 @@ def main():
         print("[*] Performing Step 0 initialization check...")
         assert_initialised(raw_model)
         probe_cursor = data_loader.state_dict()
+        probe_random_state = random.getstate()
         model.eval()
         with torch.no_grad():
             x0, y0 = data_loader.next_batch(device)
@@ -224,6 +267,7 @@ def main():
                 loss0 = out0["loss"]
             loss0 = loss0.detach().float()
         data_loader.load_state_dict(probe_cursor)
+        random.setstate(probe_random_state)
         if distributed:
             dist.all_reduce(loss0, op=dist.ReduceOp.SUM)
             loss0 = loss0 / world_size
@@ -305,10 +349,14 @@ def main():
         if distributed:
             dist.all_reduce(nonfinite, op=dist.ReduceOp.MAX)
         if bool(nonfinite.item()):
-            skip_update, spike_reason = True, "non-finite gradient"
+            skip_update, spike_reason = spike_guard.record_skip("non-finite gradient")
         if skip_update:
             if rank == 0:
                 print(f"[!] Step {step} SKIPPED: {spike_reason}")
+            if spike_guard.consecutive_skips >= 5:
+                raise RuntimeError(
+                    f"Aborting after {spike_guard.consecutive_skips} consecutive skipped updates: {spike_reason}"
+                )
             optimizer.zero_grad(set_to_none=True)
             grad_norm = 0.0
         else:
@@ -379,15 +427,30 @@ def main():
             }
             if val_loss is not None:
                 meta_info["val_loss"] = val_loss
+            run_signature = {
+                "model": opts["model"],
+                "total_steps": args.total_steps,
+                "sequence_length": cfg.sequence_length,
+                "attention_window": cfg.attention_window,
+                "peak_lr": cfg.peak_lr,
+                "world_size": world_size,
+                "train_manifest_sha256": readiness["manifest"]["sha256"],
+                "validation_manifest_sha256": readiness["validation"]["sha256"],
+                "parameter_counts": param_counts,
+            }
             saved_path = ckpt_manager.save(
                 step=step,
                 model=raw_model,
                 optimizer=optimizer,
                 spike_guard=spike_guard,
-                data_loader_state=data_loader.state_dict(),
-                extra_meta=meta_info,
+                data_loader_state={
+                    "train": data_loader.state_dict(),
+                    "validation": val_loader.state_dict() if val_loader is not None else None,
+                },
+                extra_meta={**meta_info, "run_signature": run_signature},
                 rank=rank,
                 world_size=(dist.get_world_size() if distributed else 1),
+                scaler=scaler,
             )
             if rank == 0: print(f"[*] Checkpoint saved at step {step}: {saved_path}")
 

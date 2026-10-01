@@ -47,6 +47,7 @@ class CheckpointManager:
         extra_meta: Optional[Dict[str, Any]] = None,
         rank: int = 0,
         world_size: int = 1,
+        scaler: Optional[Any] = None,
     ) -> Path:
         """
         Saves a complete checkpoint atomically.
@@ -64,6 +65,8 @@ class CheckpointManager:
         if rank == 0:
             torch.save(model.state_dict(), tmp_dir / "model.pt")
         torch.save(optimizer.state_dict(), tmp_dir / f"optimizer_rank{rank}.pt")
+        if scaler is not None:
+            torch.save(scaler.state_dict(), tmp_dir / f"scaler_rank{rank}.pt")
         
         # 3. RNG States
         rng_state = {
@@ -146,6 +149,8 @@ class CheckpointManager:
         spike_guard: Optional[Any] = None,
         rank: int = 0,
         world_size: int = 1,
+        scaler: Optional[Any] = None,
+        expected_run_signature: Optional[Dict[str, Any]] = None,
     ) -> Optional[Dict[str, Any]]:
         """
         Finds and loads the latest valid checkpoint containing COMPLETE.
@@ -159,29 +164,36 @@ class CheckpointManager:
         latest_dir = valid_dirs[-1]
         print(f"[CheckpointManager] Loading latest checkpoint from: {latest_dir}")
         
-        # Load weights
-        model.load_state_dict(torch.load(latest_dir / "model.pt", map_location="cpu", weights_only=False))
-        
-        # Load optimizer
-        opt_file = latest_dir / f"optimizer_rank{rank}.pt"
-        if optimizer is not None and opt_file.exists():
-            optimizer.load_state_dict(torch.load(opt_file, map_location="cpu", weights_only=False))
-            
-        # Load RNG states
-        rng_file = latest_dir / f"rng_rank{rank}.pt"
-        if rng_file.exists():
-            rng = torch.load(rng_file, map_location="cpu", weights_only=False)
-            random.setstate(rng["python"])
-            np.random.set_state(rng["numpy"])
-            torch.set_rng_state(rng["torch_cpu"])
-            if torch.cuda.is_available() and rng.get("torch_cuda") is not None:
-                torch.cuda.set_rng_state(rng["torch_cuda"])
-                
-        # Load meta & spike guard
         meta = torch.load(latest_dir / "meta.pt", map_location="cpu", weights_only=False)
         saved_world = int(meta.get("world_size", 1))
         if saved_world != world_size:
             raise ValueError(f"Checkpoint world_size={saved_world} but current world_size={world_size}; refusing unsafe resume")
+        if expected_run_signature is not None and meta.get("run_signature") != expected_run_signature:
+            raise ValueError("Checkpoint run signature differs from current manifest/config; refusing unsafe resume")
+        # Validate all rank-local state before mutating the model.
+        opt_file = latest_dir / f"optimizer_rank{rank}.pt"
+        rng_file = latest_dir / f"rng_rank{rank}.pt"
+        if optimizer is not None and not opt_file.exists():
+            raise FileNotFoundError(f"Missing optimizer state: {opt_file}")
+        if not rng_file.exists():
+            raise FileNotFoundError(f"Missing RNG state: {rng_file}")
+        if scaler is not None and not (latest_dir / f"scaler_rank{rank}.pt").exists():
+            raise FileNotFoundError(f"Missing GradScaler state: {latest_dir / f'scaler_rank{rank}.pt'}")
+        model.load_state_dict(torch.load(latest_dir / "model.pt", map_location="cpu", weights_only=False))
+        if optimizer is not None:
+            optimizer.load_state_dict(torch.load(opt_file, map_location="cpu", weights_only=False))
+        if scaler is not None:
+            scaler.load_state_dict(torch.load(latest_dir / f"scaler_rank{rank}.pt", map_location="cpu", weights_only=False))
+            
+        # Load RNG states
+        rng = torch.load(rng_file, map_location="cpu", weights_only=False)
+        random.setstate(rng["python"])
+        np.random.set_state(rng["numpy"])
+        torch.set_rng_state(rng["torch_cpu"])
+        if torch.cuda.is_available() and rng.get("torch_cuda") is not None:
+            torch.cuda.set_rng_state(rng["torch_cuda"])
+                
+        # Load meta & spike guard
         loader_file = latest_dir / f"loader_rank{rank}.pt"
         if loader_file.exists():
             meta["data_loader"] = torch.load(loader_file, map_location="cpu", weights_only=False)

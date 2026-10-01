@@ -80,8 +80,8 @@ class SourceStream:
 
     def _open_current_shard(self):
         if self.shard_idx >= len(self.segments):
-            self.shard_idx = 0
-            self.offset = self.segments[0][1]
+            self._close_current()
+            raise EOFError(f"Source {self.name!r} has no unread tokens left")
         self._close_current()
         if sys.byteorder != "little":
             raise RuntimeError("Token shards are little-endian uint32")
@@ -107,7 +107,9 @@ class SourceStream:
             _path, _start, end = self.segments[self.shard_idx]
             available = end - self.offset
             if available <= 0:
-                self.shard_idx = (self.shard_idx + 1) % len(self.segments)
+                self.shard_idx += 1
+                if self.shard_idx >= len(self.segments):
+                    raise EOFError(f"Source {self.name!r} exhausted while reading {n_tokens} tokens")
                 self.offset = self.segments[self.shard_idx][1]
                 self._open_current_shard()
                 continue
@@ -118,6 +120,14 @@ class SourceStream:
             remaining -= take_n
 
         return collected
+
+    def remaining(self) -> int:
+        """Unread tokens in this rank's disjoint slices."""
+        if self.shard_idx >= len(self.segments):
+            return 0
+        total = self.segments[self.shard_idx][2] - self.offset
+        total += sum(end - start for _, start, end in self.segments[self.shard_idx + 1:])
+        return total
 
     def close(self):
         self._close_current()
@@ -157,6 +167,7 @@ class MultiSourceDataLoader:
         self.source_probs: List[float] = []
         self.token_counts: Dict[str, int] = {}
         self.total_tokens_served: int = 0
+        self.mix_tokens_served: Dict[str, int] = {}
 
         if manifest_path and os.path.exists(manifest_path):
             self._load_manifest(manifest_path)
@@ -221,23 +232,40 @@ class MultiSourceDataLoader:
             raise KeyError(f"Mix names are not loaded from the manifest: {missing}")
         self.target_weights = {k: float(v) for k, v in new_weights.items() if k in self.streams}
         self._normalize_weights()
+        # The WSD decay phase has its own exact-mixture accounting.  Without
+        # this reset, the stable phase would bias every later choice.
+        self.mix_tokens_served = {name: 0 for name in self.source_names}
 
     def next_batch(self, device: torch.device) -> Tuple[torch.Tensor, torch.Tensor]:
         """
         Samples a micro-batch [B, L] of input tokens and shifted labels.
         """
-        # If no streams loaded (e.g. during smoke testing without real data), generate dummy batch
+        # Synthetic batches are only useful for unit tests.  A training process
+        # must be bound to an audited manifest and never silently invent data.
         if not self.streams:
-            import torch
-            dummy = torch.randint(0, 163840, (self.batch_size, self.seq_len), device=device, dtype=torch.long)
-            return dummy, dummy.clone()
+            raise RuntimeError("No audited data streams are loaded; refusing synthetic training data")
 
         batch_seqs = []
         for _ in range(self.batch_size):
-            src = random.choices(self.source_names, weights=self.source_probs, k=1)[0]
+            available = [
+                name for name in self.source_names
+                if self.streams[name].remaining() >= self.seq_len
+            ]
+            if not available:
+                raise EOFError("All audited data sources are exhausted; refusing token reuse")
+            # Weighted deficit scheduling keeps the realised mix near the
+            # documented proportions while making exhaustion deterministic.
+            src = min(
+                available,
+                key=lambda name: (
+                    self.mix_tokens_served.get(name, 0) / max(self.target_weights[name], 1e-12),
+                    name,
+                ),
+            )
             stream = self.streams[src]
             tokens = stream.take(self.seq_len)
             self.token_counts[src] += self.seq_len
+            self.mix_tokens_served[src] = self.mix_tokens_served.get(src, 0) + self.seq_len
             self.total_tokens_served += self.seq_len
             batch_seqs.append(tokens)
 
@@ -261,6 +289,7 @@ class MultiSourceDataLoader:
             "streams": {s: stream.state_dict() for s, stream in self.streams.items()},
             "token_counts": dict(self.token_counts),
             "total_tokens_served": self.total_tokens_served,
+            "mix_tokens_served": dict(self.mix_tokens_served),
         }
 
     def load_state_dict(self, state: Dict[str, Any]):
@@ -270,3 +299,4 @@ class MultiSourceDataLoader:
                 self.streams[s].load_state_dict(s_state)
         self.token_counts = state.get("token_counts", {})
         self.total_tokens_served = state.get("total_tokens_served", 0)
+        self.mix_tokens_served = state.get("mix_tokens_served", dict(self.token_counts))

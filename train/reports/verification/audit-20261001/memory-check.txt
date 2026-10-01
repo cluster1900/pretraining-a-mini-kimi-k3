@@ -1,0 +1,4 @@
+v100, CUDA_VISIBLE_DEVICES=3, train/benchmark_memory.py
+Theoretical cache at 131072 and 1048576 positions: 10.41 MiB in both cases.
+Small live model peak: 340.79 MiB; net cache growth: 9.32 MiB.
+The bounded-window architecture check passed. This is not a 1M prefill or trained-model quality result.

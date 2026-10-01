@@ -44,6 +44,12 @@ class SpikeGuard:
         self.consecutive_skips = 0
         return False, "ok"
 
+    def record_skip(self, reason: str) -> Tuple[bool, str]:
+        """Record a bad gradient discovered after the loss check."""
+        self.total_skips += 1
+        self.consecutive_skips += 1
+        return True, reason
+
     def state_dict(self) -> Dict[str, Any]:
         return {
             "ema_loss": self.ema_loss,

@@ -17,6 +17,9 @@ class RuleRewardTests(unittest.TestCase):
     def test_format_without_gold_match(self):
         self.assertEqual(rule_reward("<think>work</think> 7", "42"), 1.0)
 
+    def test_answer_is_not_a_substring_match(self):
+        self.assertEqual(rule_reward("<think>work</think> 142", "42"), 1.0)
+
 
 if __name__ == "__main__":
     unittest.main()

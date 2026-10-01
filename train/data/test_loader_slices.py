@@ -53,6 +53,17 @@ class SliceTests(unittest.TestCase):
                 stream.close()
             self.assertEqual(seen, values.tolist())
 
+    def test_stream_exhaustion_is_loud_and_never_wraps(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "shard.bin"
+            with path.open("wb") as handle:
+                array("I", range(4)).tofile(handle)
+            stream = SourceStream("s", [(path, 0, 4)])
+            self.assertEqual(stream.take(4).tolist(), [0, 1, 2, 3])
+            with self.assertRaises(EOFError):
+                stream.take(1)
+            stream.close()
+
     def test_missing_mix_source_is_rejected(self):
         loader = MultiSourceDataLoader()
         with self.assertRaises(KeyError):

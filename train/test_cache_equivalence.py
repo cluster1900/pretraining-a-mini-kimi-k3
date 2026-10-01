@@ -1,5 +1,5 @@
 """
-Cache Equivalence and 1M Long Context Verification Script.
+Cache Equivalence implementation checks.
 Enforces Rule 8 of AGENTS.md:
 "1M 推理能力必须同时通过无 cache/cache logits 等价测试、长文档评测和显存基准；仅提高位置上限或创建 cache 数据结构不视为完成。"
 
@@ -171,7 +171,9 @@ def main():
     test_generation_equivalence(device)
 
     print("=" * 80)
-    print(" ALL TESTS PASSED SUCCESSFULLY! The architecture strictly adheres to Rule 8.")
+    print(" CACHE CHECKS PASSED: implementation equivalence holds for this small model.")
+    print(" 1M capability remains unverified until a trained checkpoint also passes the")
+    print(" long-document retrieval and live memory benchmarks.")
     print("=" * 80)
 
 

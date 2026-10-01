@@ -33,7 +33,10 @@ def main():
         torch.manual_seed(1234);torch.cuda.manual_seed_all(1234)
         device=torch.device('cuda');model=MiniK3ForCausalLM(cfg).to(device);assert_initialised(model)
         optimizer=build_optimizer((p for p in model.parameters() if p.requires_grad), lr=1e-5, weight_decay=cfg.weight_decay)
-        scaler=torch.amp.GradScaler('cuda');balancer=NoAuxBalancer(model)
+        # V100 FP16 needs explicit unscale before clipping.  Clipping scaled
+        # gradients was the cause of the earlier false non-finite smoke.
+        scaler=torch.amp.GradScaler('cuda', init_scale=1024.0, growth_interval=2000)
+        balancer=NoAuxBalancer(model)
         losses={}
         for source,info in data['sources'].items():
             path=info['shards'][0];tokens=np.fromfile(path,dtype='<u4',count=a.sequence_length)
@@ -53,6 +56,10 @@ def main():
             optimizer.zero_grad(set_to_none=True)
             with torch.autocast('cuda',dtype=torch.float16):loss=model(x,labels=x)['loss']
             scaler.scale(loss).backward();scaler.unscale_(optimizer)
+            nonfinite = [n for n,p in model.named_parameters()
+                         if p.grad is not None and not torch.isfinite(p.grad).all()]
+            if nonfinite:
+                raise FloatingPointError('Non-finite gradients: ' + str(nonfinite[:12]))
             norm=torch.nn.utils.clip_grad_norm_(model.parameters(),1.0,error_if_nonfinite=True)
             unused=[n for n,p in model.named_parameters() if p.requires_grad and p.grad is None and '.experts.' not in n and not n.startswith('vision.')]
             if unused:raise ValueError('Unused non-expert trainable parameters: '+str(unused[:12]))

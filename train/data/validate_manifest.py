@@ -1,4 +1,9 @@
-"""Fail-loud manifest and shard integrity audit."""
+"""Basic shard integrity check.
+
+This command does not establish an audited training input and never authorizes
+training. Use ``check_training_readiness.py`` for the full manifest, audit,
+smoke, pipeline, and coverage gate used by ``train.py``.
+"""
 import argparse,hashlib,json,os
 from pathlib import Path
 def main():
@@ -12,5 +17,5 @@ def main():
    if size%4: raise SystemExit(f'{name}: non-uint32 shard {q}')
    total+=size//4
  if not total: raise SystemExit('manifest has zero tokens')
- print(json.dumps({'sources':len(m['sources']),'tokens':total,'status':'ok'}))
+ print(json.dumps({'sources':len(m['sources']),'tokens':total,'status':'shard_integrity_only'}))
 if __name__=='__main__':main()

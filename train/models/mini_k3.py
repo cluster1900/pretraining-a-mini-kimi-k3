@@ -1,7 +1,7 @@
 """
 Mini Kimi K3 Causal Language Model.
 Assembles:
-- 12 decoder layers: 9 KDA (Linear Attention) + 3 MLA (Full Attention, Layers 4, 8, 12)
+- 13 decoder layers: 9 KDA (Linear Attention) + 4 MLA (gated latent attention, Layers 4, 8, 12, 13)
 - Layer 0 Dense MLP + Layers 1..11 Latent MoE (256 routed experts + 2 shared experts)
 - RMSNorm pre-layer normalizations
 - Weight-tied word embeddings and LM head
@@ -85,10 +85,10 @@ class MiniK3DecoderLayer(nn.Module):
                 self.input_layernorm(attn_input), recurrent_state=state, conv_state=conv,
             )
             cache = None
-        streams, pre = self.mhc_attn.mix(streams, attn_out, attn_input)
+        streams, pre = self.mhc_attn.mix(streams, attn_out, attn_input, previous_pre=pre)
         hidden = collapse_streams(streams, pre)
         mlp_out = self.mlp(self.post_attention_layernorm(hidden))
-        streams, pre = self.mhc_mlp.mix(streams, mlp_out, hidden)
+        streams, pre = self.mhc_mlp.mix(streams, mlp_out, hidden, previous_pre=pre)
         return streams, pre, new_state, new_conv, cache
 
     def forward(self, streams, pre, attn_input, state=None, conv=None, past=None,
@@ -179,7 +179,8 @@ class MiniK3ForCausalLM(nn.Module):
         probs = torch.softmax(logits, -1)
         if top_p < 1.0:
             sorted_p, sorted_i = torch.sort(probs, descending=True)
-            keep = torch.cumsum(sorted_p, -1) <= top_p
+            # Retain the first token that crosses the nucleus threshold.
+            keep = (torch.cumsum(sorted_p, -1) - sorted_p) < top_p
             keep[..., 0] = True
             probs = torch.where(keep, sorted_p, torch.zeros_like(sorted_p))
             probs = probs / probs.sum(-1, keepdim=True)
@@ -206,36 +207,28 @@ class MiniK3ForCausalLM(nn.Module):
     def generate(self, input_ids: torch.Tensor, max_new_tokens: int = 128,
                  temperature: float = 1.0, top_p: float = 1.0,
                  eos_token_id: Optional[int] = None) -> torch.Tensor:
-        """Decode with MTP speculative verification when the extra head is enabled."""
+        """Sample the target model using its cache; MTP remains a training loss.
+
+        The former speculative path verified unfiltered probabilities after
+        sampling from top-p and was not distribution preserving.
+        """
+        if max_new_tokens < 0 or not 0 < top_p <= 1:
+            raise ValueError("max_new_tokens must be nonnegative and top_p in (0, 1]")
+        if max_new_tokens == 0:
+            return input_ids
         self.eval()
         cache = self.new_kv_cache()
         out = self(input_ids, use_cache=True, past_key_values=cache)
-        produced = 0
-        while produced < max_new_tokens:
+        finished = torch.zeros(input_ids.shape[0], dtype=torch.bool, device=input_ids.device)
+        for step in range(max_new_tokens):
             next_id = self._sample(out["logits"][:, -1], temperature, top_p)
+            if eos_token_id is not None:
+                next_id = torch.where(finished[:, None], eos_token_id, next_id)
+                finished |= next_id.squeeze(-1).eq(eos_token_id)
             input_ids = torch.cat((input_ids, next_id), dim=1)
-            produced += 1
-            if eos_token_id is not None and bool((next_id == eos_token_id).all()):
+            if finished.all() or step + 1 == max_new_tokens:
                 break
-            if self.mtp is None or produced >= max_new_tokens:
-                out = self(next_id, use_cache=True, past_key_values=cache)
-                continue
-            draft_hidden = self.mtp.step(out["hidden"][:, -1:], self.embed_tokens(next_id))
-            draft_logits = self.lm_head(draft_hidden)[:, -1]
-            draft_id = self._sample(draft_logits, temperature, top_p)
-            snapshot = cache.clone()
-            trial = torch.cat((next_id, draft_id), dim=1)
-            checked = self(trial, use_cache=True, past_key_values=cache)
-            accepted, verified = self._verify_draft(checked["logits"][:, 0], draft_logits, draft_id, temperature)
-            chosen = draft_id if accepted else verified
-            if not accepted:
-                cache = snapshot
-                checked = self(torch.cat((next_id, chosen), dim=1), use_cache=True, past_key_values=cache)
-            input_ids = torch.cat((input_ids, chosen), dim=1)
-            produced += 1
-            out = checked
-            if eos_token_id is not None and bool((chosen == eos_token_id).all()):
-                break
+            out = self(next_id, use_cache=True, past_key_values=cache)
         return input_ids
 
     def new_kv_cache(self):
@@ -264,12 +257,17 @@ class MiniK3ForCausalLM(nn.Module):
         labels: Optional[torch.Tensor] = None,
         past_key_values=None, use_cache: bool = False,
         pixel_values: Optional[torch.Tensor] = None,
+        return_hidden: bool = False, compute_logits: bool = True,
     ) -> Dict[str, Any]:
         """
         input_ids: [B, L]
         labels: [B, L] (optional)
         pixel_values: [B, 3, H, W] or [B, T, 3, H, W]
         """
+        if labels is not None and not compute_logits:
+            raise ValueError("labels require compute_logits=True")
+        if use_cache and past_key_values is None:
+            past_key_values = self.new_kv_cache()
         embedded = self.embed_tokens(input_ids)
         text_offset = 0
         if pixel_values is not None:
@@ -330,7 +328,7 @@ class MiniK3ForCausalLM(nn.Module):
 
         hidden_states = self.norm(self.final_mix(sources))
         token_embed = embedded
-        logits = self.lm_head(hidden_states)
+        logits = self.lm_head(hidden_states) if compute_logits else None
 
         loss = None
         lm_loss = None
@@ -357,11 +355,13 @@ class MiniK3ForCausalLM(nn.Module):
 
         if use_cache and past_key_values is not None:
             past_key_values.position += length
-            past_key_values.token_ids = text_ids.detach()
+            # N-gram history plus the three preceding convolution positions.
+            history = self.config.engram_max_ngram - 1 + 3
+            past_key_values.token_ids = text_ids[:, -history:].detach()
         return {
             "loss": loss,
             "lm_loss": lm_loss,
-            "hidden": hidden_states if use_cache else None,
+            "hidden": hidden_states if use_cache or return_hidden else None,
             "logits": logits, "past_key_values": past_key_values if use_cache else None,
         }
 

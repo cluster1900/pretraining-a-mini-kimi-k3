@@ -26,6 +26,7 @@ from train.alignment import dpo_loss, sequence_logprob, pairwise_reward_loss
 from train.alignment_fit import fit_preference, fit_sft
 from train.rl_trainer import GRPOTrainer, PPOTrainer
 from train.engine.muon import build_optimizer
+from train.alignment_readiness import check_alignment_jsonl
 
 
 def load_causal_model(checkpoint: str, device: torch.device) -> MiniK3ForCausalLM:
@@ -42,6 +43,11 @@ def main():
     parser.add_argument("--mode", choices=("sft", "rm", "dpo", "ppo", "grpo"), required=True, help="Alignment training mode")
     parser.add_argument("--checkpoint", required=True, help="Path to checkpoint directory or model.pt")
     parser.add_argument("--jsonl", required=True, help="Path to dataset JSONL")
+    parser.add_argument(
+        "--alignment-manifest",
+        default="/data/mini-k3/data/prepared-v2-supplement-v2/manifests/alignment.json",
+        help="Audited alignment manifest that must bind --jsonl",
+    )
     parser.add_argument("--steps", type=int, default=1000, help="Total training steps")
     parser.add_argument("--lr", type=float, default=1e-5, help="Peak learning rate")
     parser.add_argument("--grad_accum_steps", type=int, default=8, help="Gradient accumulation steps")
@@ -51,6 +57,10 @@ def main():
     parser.add_argument("--group_size", type=int, default=4, help="Completions sampled per prompt in GRPO.")
     parser.add_argument("--prompt_batch", type=int, default=4, help="Prompts per GRPO step. Each is sampled group_size times.")
     args = parser.parse_args()
+
+    alignment_evidence = check_alignment_jsonl(
+        args.alignment_manifest, args.jsonl, args.mode, DEFAULT_CONFIG.vocab_size,
+    )
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     out_dir = Path(args.output_dir)
@@ -73,6 +83,7 @@ def main():
     print(f" Mini Kimi K3 Alignment Engine: Mode = [{args.mode.upper()}]")
     print(f" Checkpoint: {args.checkpoint}")
     print(f" Dataset:    {args.jsonl}")
+    print(f" Dataset audit: {alignment_evidence['jsonl_sha256']}")
     print(f" Steps:      {args.steps} | LR = {args.lr:.2e} | Accum = {args.grad_accum_steps}")
     print("=" * 80)
 
@@ -133,7 +144,7 @@ def main():
                     break
             if fitted is None:
                 raise ValueError("No preference row retains an answer within the sequence limit")
-            chosen_ids, rejected_ids, _chosen_prompt, _rejected_prompt = fitted
+            chosen_ids, rejected_ids, _prompt_len = fitted
             c = torch.tensor([chosen_ids], device=device)
             r = torch.tensor([rejected_ids], device=device)
 
@@ -186,16 +197,14 @@ def main():
                     break
             if fitted is None:
                 raise ValueError("No preference row retains an answer within the sequence limit")
-            c_list, r_list, chosen_prompt, rejected_prompt = fitted
+            c_list, r_list, prompt_len = fitted
             c = torch.tensor([c_list], device=device)
             r = torch.tensor([r_list], device=device)
 
             c_labels = c.clone()
             r_labels = r.clone()
-            if chosen_prompt > 0:
-                c_labels[:, :chosen_prompt] = -100
-            if rejected_prompt > 0:
-                r_labels[:, :rejected_prompt] = -100
+            c_labels[:, :prompt_len] = -100
+            r_labels[:, :prompt_len] = -100
 
             with torch.no_grad():
                 rc = ref(c)["logits"]

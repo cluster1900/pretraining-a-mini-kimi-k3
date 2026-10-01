@@ -45,12 +45,19 @@ class MHCCoeffs(nn.Module):
             self.next_pre.bias.zero_()
             self.next_pre.bias[0] = 8
 
-    def mix(self, streams: torch.Tensor, update: torch.Tensor, coeff_input: torch.Tensor):
+    def mix(self, streams: torch.Tensor, update: torch.Tensor, coeff_input: torch.Tensor,
+            previous_pre: torch.Tensor | None = None):
         batch, length, width, _ = streams.shape
         res = sinkhorn(self.res(coeff_input).view(batch, length, width, width), self.sinkhorn_iters)
         res = res.to(streams.dtype)
         post = torch.softmax(self.post(coeff_input).float(), dim=-1).to(streams.dtype)
-        nxt = torch.softmax(self.next_pre(coeff_input).float(), dim=-1).to(streams.dtype)
+        nxt = torch.softmax(self.next_pre(coeff_input).float(), dim=-1)
+        if previous_pre is not None:
+            # Keep the learned initial/readout distribution in the graph.  A
+            # previous implementation overwrote it before the first collapse,
+            # leaving ``mhc_pre`` permanently unused.
+            nxt = 0.5 * (nxt + previous_pre.float())
+        nxt = nxt.to(streams.dtype)
         mixed = torch.einsum("bsij,bsjd->bsid", res, streams)
         mixed = mixed + post.unsqueeze(-1) * update.unsqueeze(2)
         return mixed, nxt

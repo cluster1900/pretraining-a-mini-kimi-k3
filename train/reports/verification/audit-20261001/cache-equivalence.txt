@@ -1,0 +1,6 @@
+v100, CUDA_VISIBLE_DEVICES=3, train/test_cache_equivalence.py
+Result: implementation checks passed on the reduced configuration.
+Max logits absolute difference: 4.619e-06
+Mean logits absolute difference: 2.607e-07
+Greedy cached tokens matched prefix recomputation token-for-token.
+This is not a trained 1M long-context result.

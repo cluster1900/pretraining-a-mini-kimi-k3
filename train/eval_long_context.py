@@ -131,11 +131,11 @@ def evaluate_needle_retrieval(
 
 def main():
     parser = argparse.ArgumentParser(description="Mini K3 Needle In A Haystack Benchmark")
-    parser.add_argument("--checkpoint", type=str, default=None, help="Path to checkpoint directory or model.pt")
+    parser.add_argument("--checkpoint", type=str, required=True, help="Path to a trained checkpoint directory or model.pt")
     parser.add_argument("--lengths", type=int, nargs="+", default=[2048, 4096, 8192, 16384], help="Context lengths to evaluate")
     parser.add_argument("--depths", type=float, nargs="+", default=[0.1, 0.5, 0.9], help="Needle depths (fractions from 0.0 to 1.0)")
     parser.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")
-    parser.add_argument("--tokenizer_model", default=None, help="Directory containing tiktoken.model")
+    parser.add_argument("--tokenizer_model", required=True, help="Directory containing the audited tiktoken.model")
     args = parser.parse_args()
 
     device = torch.device(args.device)
@@ -147,15 +147,12 @@ def main():
     print("=" * 80)
 
     model = MiniK3ForCausalLM(cfg).to(device)
-    if args.checkpoint:
-        ckpt_p = Path(args.checkpoint)
-        model_file = ckpt_p / "model.pt" if ckpt_p.is_dir() else ckpt_p
-        if not model_file.exists():
-            raise FileNotFoundError(f"Checkpoint file not found: {model_file}")
-        print(f"[*] Loading weights from: {model_file}")
-        model.load_state_dict(torch.load(model_file, map_location=device, weights_only=False))
-    else:
-        print("[*] No checkpoint specified. Running architectural pipeline test on initialized model.")
+    ckpt_p = Path(args.checkpoint)
+    model_file = ckpt_p / "model.pt" if ckpt_p.is_dir() else ckpt_p
+    if not model_file.is_file():
+        raise FileNotFoundError(f"Checkpoint file not found: {model_file}")
+    print(f"[*] Loading weights from: {model_file}")
+    model.load_state_dict(torch.load(model_file, map_location=device, weights_only=False))
 
     evaluate_needle_retrieval(model, tokenizer, args.lengths, args.depths, device)
 

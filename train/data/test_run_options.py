@@ -14,15 +14,23 @@ class RunOptionTests(unittest.TestCase):
         self.assertEqual(opts["attention_window"], 4096)
         self.assertEqual(opts["peak_lr"], 6.0e-4)
 
-    def test_continuation_lengths_are_open(self):
+    def test_continuation_lengths_require_a_checkpoint(self):
         for length in (4096, 8192, 16384):
-            opts = resolve_run("mini-k3", length, None, False, 2048, 4096, 1_048_576)
+            with self.assertRaises(ValueError):
+                resolve_run("mini-k3", length, None, False, 2048, 4096, 1_048_576)
+            opts = resolve_run(
+                "mini-k3", length, None, False, 2048, 4096, 1_048_576,
+                peak_lr=6.0e-5, init_checkpoint="step",
+            )
             self.assertEqual(opts["sequence_length"], length)
 
     def test_million_token_training_requires_the_flag(self):
         with self.assertRaises(ValueError):
             resolve_run("mini-k3", 1_048_576, None, False, 2048, 4096, 1_048_576)
-        opts = resolve_run("mini-k3", 32768, None, True, 2048, 4096, 1_048_576)
+        opts = resolve_run(
+            "mini-k3", 32768, None, True, 2048, 4096, 1_048_576,
+            peak_lr=6.0e-5, init_checkpoint="step",
+        )
         self.assertEqual(opts["sequence_length"], 32768)
 
     def test_continuation_refuses_the_pretrain_peak_by_default(self):

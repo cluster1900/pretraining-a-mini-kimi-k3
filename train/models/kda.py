@@ -89,7 +89,12 @@ def _one_chunk(q, k, v, decay, beta, state):
     cum_g = torch.exp(cumulative)
     later = cumulative.unsqueeze(3)
     earlier = cumulative.unsqueeze(2)
-    factor = torch.exp(later - earlier)
+    # Future entries are unused. Exponentiating their positive log-ratios
+    # first can overflow (exp(315) at the documented -5 floor), and inf*0
+    # contaminates both the triangular system and its gradients.
+    causal = torch.ones(steps, steps, device=q.device, dtype=torch.bool).tril()
+    differences = (later - earlier).masked_fill(~causal[None, None, :, :, None], 0)
+    factor = torch.exp(differences)
     strict = torch.tril(torch.ones(steps, steps, device=q.device), diagonal=-1)
     key_at_j = k.unsqueeze(2)
     key_at_t = k.unsqueeze(3)

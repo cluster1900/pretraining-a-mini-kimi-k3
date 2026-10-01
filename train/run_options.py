@@ -31,6 +31,12 @@ def resolve_run(
             "Continue from the 2048 checkpoint at 4096, 8192, or 16384 first. "
             "Pass --allow-long-sequence only after a shorter run fits in memory."
         )
+    if seq > int(default_sequence) and not init_checkpoint:
+        raise ValueError(
+            "A sequence longer than the 2048 pretraining length must start from "
+            "an explicit --init-checkpoint. Train 2048 first, then continue in a "
+            "separate checkpoint directory."
+        )
     if model == "ced":
         window = None
     elif attention_window is None:

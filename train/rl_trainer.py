@@ -130,7 +130,7 @@ class PPOTrainer:
         max_new_tokens: int = 64,
         eos_token_id: Optional[int] = None,
         temperature: float = 1.0,
-        top_p: float = 0.9,
+        top_p: float = 1.0,
     ) -> RolloutBatch:
         """
         Generates completions for a batch of prompts, computes reference logprobs,
@@ -268,10 +268,10 @@ class GRPOTrainer:
             if prompt_ids.dim() == 1:
                 prompt_ids = prompt_ids.unsqueeze(0)
             for _ in range(self.group_size):
-                done = self.policy.generate(prompt_ids, max_new_tokens=max_new_tokens, temperature=0.8, top_p=0.95)
+                done = self.policy.generate(prompt_ids, max_new_tokens=max_new_tokens, temperature=1.0, top_p=1.0)
                 sequences.append(done.squeeze(0).tolist())
                 prompt_lens.append(int(prompt_ids.size(1)))
-                texts.append(tokenizer.decode(done.squeeze(0).tolist()))
+                texts.append(tokenizer.decode(done.squeeze(0)[prompt_ids.size(1):].tolist()))
         rewards = []
         gold_list = []
         for gold in golds:

@@ -7,6 +7,13 @@ from dataclasses import dataclass, field
 from typing import List
 
 
+# The parameter contract is part of the audited run identity. A smoke report
+# from the older 12-layer prototype must never authorize the 13-layer run.
+CANONICAL_PARAMETER_COUNTS = {
+    "mini-k3": {"total": 1_150_739_900, "active": 159_400_252},
+}
+
+
 @dataclass
 class MiniK3Config:
     """
@@ -82,7 +89,9 @@ class MiniK3Config:
     csa_top_k: int = 512
     csa_local: int = 128
     csa_index_dim: int = 64
-    kv_cache_fp4: bool = True
+    # FP4 cache is an opt-in memory experiment.  The default must preserve
+    # the logits/cache equivalence gate used before any long-context claim.
+    kv_cache_fp4: bool = False
     engram_layers: List[int] = field(default_factory=lambda: [2, 8])
     engram_max_ngram: int = 4
     engram_heads: int = 8

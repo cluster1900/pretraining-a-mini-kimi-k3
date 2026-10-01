@@ -19,13 +19,12 @@ class FitTests(unittest.TestCase):
     def test_sft_without_a_target_is_rejected(self):
         self.assertIsNone(fit_sft([1, 2, 3], [-100, -100, -100], 2))
 
-    def test_preference_prompt_shrinks_with_the_tail(self):
-        chosen, rejected, chosen_prompt, rejected_prompt = fit_preference(
+    def test_preference_keeps_one_shared_prompt_boundary(self):
+        chosen, rejected, prompt_len = fit_preference(
             [1, 2, 3, 9], [1, 2, 3, 3, 8], 3, 3)
         self.assertEqual(chosen, [2, 3, 9])
-        self.assertEqual(chosen_prompt, 2)
-        self.assertEqual(rejected, [3, 3, 8])
-        self.assertEqual(rejected_prompt, 1)
+        self.assertEqual(rejected, [2, 3, 3])
+        self.assertEqual(prompt_len, 2)
 
 
 if __name__ == "__main__":

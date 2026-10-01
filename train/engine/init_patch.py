@@ -31,6 +31,10 @@ def assert_initialised(model: nn.Module) -> None:
     """
     bad = []
     for name, t in list(model.named_parameters()) + list(model.named_buffers()):
+        if t.is_meta:
+            # Meta construction is used for parameter accounting without
+            # allocating the 1B model; there are no values to validate yet.
+            continue
         if t.is_floating_point() and not torch.isfinite(t).all():
             bad.append(name)
     if bad:
