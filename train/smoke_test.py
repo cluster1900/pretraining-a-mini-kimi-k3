@@ -67,12 +67,13 @@ def run_smoke_test():
         (p for p in model.parameters() if p.requires_grad),
         lr=cfg.peak_lr,
         weight_decay=cfg.weight_decay,
+        muon_update_scale=cfg.muon_update_scale,
     )
     balancer = NoAuxBalancer(model, gamma=cfg.balancer_gamma)
 
     # 6. Step 0 Forward & Initial Loss Check
     model.train()
-    out = model(dummy_input, labels=dummy_labels)
+    out = model(dummy_input, labels=dummy_labels, compute_logits=False)
     lm = out.get("lm_loss")
     initial_loss = (lm if lm is not None else out["loss"]).detach().item()
     expected_uniform_loss = math.log(cfg.vocab_size)  # ln(163,840) ≈ 12.007
@@ -87,7 +88,8 @@ def run_smoke_test():
     losses = [initial_loss]
     for step in range(1, 3):
         optimizer.zero_grad()
-        out = model(dummy_input, labels=dummy_labels)
+        # Production training path: chunked LM + MTP loss, no full logits.
+        out = model(dummy_input, labels=dummy_labels, compute_logits=False)
         loss = out["loss"]
         loss.backward()
 

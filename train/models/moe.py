@@ -62,9 +62,11 @@ class TrainableMoEGate(nn.Module):
 
     def forward(self, hidden_states: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
         # hidden_states: [tokens, hidden_size]
-        # 1. Compute scores with sigmoid in float32
-        logits = F.linear(hidden_states.float(), self.weight.float(), None)
-        scores = torch.sigmoid(logits)  # [tokens, num_experts]
+        # 1. Scores in float32. Autocast would otherwise run F.linear in FP16
+        #    regardless of the .float() casts.
+        with torch.autocast(device_type=hidden_states.device.type, enabled=False):
+            logits = F.linear(hidden_states.float(), self.weight.float(), None)
+            scores = torch.sigmoid(logits)  # [tokens, num_experts]
 
         # 2. Bias corrects selection only. The extra candidate is the cutoff, not a route.
         scores_for_choice = scores + self.e_score_correction_bias.unsqueeze(0)
@@ -79,7 +81,8 @@ class TrainableMoEGate(nn.Module):
         # 4. The layer copies these once, outside activation recomputation.
         if self.training:
             flat_indices = topk_idx.reshape(-1)
-            counts = torch.bincount(flat_indices, minlength=self.num_experts)
+            counts = torch.zeros(self.num_experts, dtype=torch.long, device=flat_indices.device)
+            counts.scatter_add_(0, flat_indices, torch.ones_like(flat_indices))
             self._last_counts = counts.detach()
             self._last_scores = scores.detach()
             self._last_alpha = alpha.detach()
@@ -97,11 +100,85 @@ class TrainableMoEGate(nn.Module):
         idx = (scaled * (bins - 1)).round().long().clamp(0, bins - 1)
         tokens, experts = idx.shape
         offsets = torch.arange(experts, device=idx.device) * bins
-        flat = idx.transpose(0, 1).reshape(-1) + offsets.repeat_interleave(tokens)
-        counts = torch.bincount(flat, minlength=experts * bins).view(experts, bins).to(self.margin_hist.dtype)
-        self.margin_hist += counts
+        flat = (idx + offsets.view(1, -1)).reshape(-1)
+        counts = torch.zeros(experts * bins, dtype=self.margin_hist.dtype, device=idx.device)
+        counts.scatter_add_(0, flat, torch.ones_like(flat, dtype=counts.dtype))
+        self.margin_hist += counts.view(experts, bins)
         self._last_scores = None
         self._last_alpha = None
+
+
+class RoutedExperts(nn.Module):
+    """All routed experts as two stacked weights, dispatched in fixed-size blocks.
+
+    The earlier layout padded every expert to the busiest expert's token count.
+    One 2048-token document can send ~900 of its 12,288 routings to a single
+    expert, so 256 experts were padded to ~900 rows each and the situ
+    temporaries alone exceeded the V100 headroom.  Here each expert's tokens
+    are padded only up to a multiple of ``block`` and every block multiplies
+    against its own expert's weights.  Padded rows are bounded by
+    ``num_experts * (block - 1)`` whatever the routing imbalance, and no token
+    is dropped.
+    """
+
+    def __init__(self, num_experts: int, in_features: int, intermediate: int,
+                 beta: float, linear_beta: float, init_std: float, block: int = 64):
+        super().__init__()
+        self.num_experts = num_experts
+        self.in_features = in_features
+        self.intermediate = intermediate
+        self.block = block
+        self.init_std = init_std
+        # Same per-expert shapes as nn.Linear(in, 2*inter) and nn.Linear(inter, in).
+        self.gate_up = nn.Parameter(torch.empty(num_experts, 2 * intermediate, in_features))
+        self.down = nn.Parameter(torch.empty(num_experts, in_features, intermediate))
+        # Muon orthogonalizes each expert matrix separately.
+        self.gate_up.muon_batched = True
+        self.down.muon_batched = True
+        self.act = FusedSitu(beta=beta, linear_beta=linear_beta)
+        self.reset_structural_init()
+
+    def reset_structural_init(self) -> None:
+        with torch.no_grad():
+            nn.init.normal_(self.gate_up, mean=0.0, std=self.init_std)
+            nn.init.normal_(self.down, mean=0.0, std=self.init_std)
+
+    def forward(self, x: torch.Tensor, topk_idx: torch.Tensor, topk_weight: torch.Tensor) -> torch.Tensor:
+        """x: [tokens, D]; topk_idx/topk_weight: [tokens, k]. Returns the weighted mixture [tokens, D]."""
+        n_tok, dim = x.shape
+        k = topk_idx.shape[1]
+        if n_tok == 0:
+            return x.new_zeros(0, dim)
+        block = self.block
+        flat = topk_idx.reshape(-1)
+        order = torch.argsort(flat, stable=True)
+        expert_sorted = flat[order]
+        counts = torch.zeros(self.num_experts, dtype=torch.long, device=x.device)
+        counts.scatter_add_(0, flat, torch.ones_like(flat))
+        padded = (counts + block - 1) // block * block
+        padded_start = torch.cumsum(padded, 0) - padded
+        count_start = torch.cumsum(counts, 0) - counts
+        rank_in_expert = torch.arange(flat.numel(), device=x.device) - count_start[expert_sorted]
+        dest = padded_start[expert_sorted] + rank_in_expert
+        total = int(padded.sum().item())  # one host sync per layer
+        blocks = total // block
+        block_expert = torch.repeat_interleave(
+            torch.arange(self.num_experts, device=x.device), padded // block, output_size=blocks,
+        )
+        packed = x.new_zeros(total, dim)
+        packed = packed.index_copy(0, dest, x[order // k])
+        packed = packed.view(blocks, block, dim)
+        # Cast the stacked weights once, then pick one matrix per block.
+        gate_up = self.gate_up.to(x.dtype).index_select(0, block_expert)
+        hidden = torch.bmm(packed, gate_up.transpose(1, 2))
+        hidden = self.act(hidden)
+        down = self.down.to(x.dtype).index_select(0, block_expert)
+        out = torch.bmm(hidden, down.transpose(1, 2)).reshape(total, dim)
+        out_sorted = out.index_select(0, dest)
+        inv_order = torch.empty_like(order)
+        inv_order[order] = torch.arange(order.numel(), device=order.device)
+        per_slot = out_sorted.index_select(0, inv_order).view(n_tok, k, dim)
+        return (per_slot * topk_weight.unsqueeze(-1).to(per_slot.dtype)).sum(dim=1)
 
 
 class KimiMoEBlock(nn.Module):
@@ -122,16 +199,16 @@ class KimiMoEBlock(nn.Module):
         self.latent_up = nn.Linear(self.latent_dim, self.hidden_size, bias=False)
         self.latent_norm = nn.RMSNorm(self.latent_dim, eps=config.rms_norm_eps)
 
-        # 256 Routed Experts
-        self.experts = nn.ModuleList([
-            ExpertMLP(
-                in_features=self.latent_dim,
-                intermediate_features=config.moe_intermediate_size,
-                beta=config.situ_beta,
-                linear_beta=config.situ_linear_beta,
-            )
-            for _ in range(self.num_experts)
-        ])
+        # 256 routed experts, stacked.
+        self.experts = RoutedExperts(
+            self.num_experts,
+            in_features=self.latent_dim,
+            intermediate=config.moe_intermediate_size,
+            beta=config.situ_beta,
+            linear_beta=config.situ_linear_beta,
+            init_std=config.initializer_range,
+            block=getattr(config, "moe_block_size", 64),
+        )
 
         # Two always-on experts at full hidden width. Their outputs are summed.
         self.shared_experts = nn.ModuleList([
@@ -148,7 +225,6 @@ class KimiMoEBlock(nn.Module):
         # x: [B, L, hidden_size]
         orig_shape = x.shape
         x_flat = x.view(-1, self.hidden_size)
-        n_tok = x_flat.shape[0]
 
         # 1. Unconditional shared experts
         shared_out = self.shared_experts[0](x_flat)
@@ -161,39 +237,10 @@ class KimiMoEBlock(nn.Module):
         # 3. Route tokens
         topk_idx, topk_weight = self.gate(x_flat)  # [tokens, k], [tokens, k]
 
-        # 4. One batched expert GEMM. Counts stay on device; no per-expert Python launch.
-        flat_idx = topk_idx.reshape(-1)
-        order = flat_idx.argsort()
-        sorted_tokens = x_lat[order // self.top_k]
-        counts = torch.bincount(flat_idx, minlength=self.num_experts)
-        max_count = int(counts.max().item()) if flat_idx.numel() else 0
-        if max_count == 0:
-            routed_lat = torch.zeros_like(x_lat)
-        else:
-            dispatched = self._batched_experts(sorted_tokens, counts, max_count)
-            inv_order = torch.empty_like(order)
-            inv_order[order] = torch.arange(order.numel(), device=order.device)
-            restored_tokens = dispatched[inv_order].view(n_tok, self.top_k, self.latent_dim)
-            routed_lat = (restored_tokens * topk_weight.unsqueeze(-1)).sum(dim=1)
+        # 4. Dropless block dispatch; memory does not grow with routing imbalance.
+        routed_lat = self.experts(x_lat, topk_idx, topk_weight)
 
         # 5. RMSNorm sits between the mixture and the up projection.
         routed_out = self.latent_up(self.latent_norm(routed_lat))
         out = routed_out + shared_out
         return out.view(*orig_shape)
-
-    def _batched_experts(self, sorted_tokens, counts, max_count):
-        """Run every routed expert as one [E, capacity, D] GEMM."""
-        device = sorted_tokens.device
-        positions = torch.arange(sorted_tokens.shape[0], device=device)
-        offsets = torch.cumsum(counts, 0)
-        expert_ids = torch.searchsorted(offsets, positions, right=True)
-        previous = torch.cat([offsets.new_zeros(1), offsets[:-1]])
-        local = positions - previous[expert_ids]
-        packed = sorted_tokens.new_zeros(self.num_experts, max_count, self.latent_dim)
-        packed[expert_ids, local] = sorted_tokens
-        gate_w = torch.stack([expert.gate_up_proj.weight for expert in self.experts], dim=0)
-        down_w = torch.stack([expert.down_proj.weight for expert in self.experts], dim=0)
-        hidden = torch.bmm(packed, gate_w.transpose(1, 2))
-        hidden = self.experts[0].act(hidden)
-        out = torch.bmm(hidden, down_w.transpose(1, 2))
-        return out[expert_ids, local]

@@ -4,10 +4,14 @@ Enforces Rule 8 of AGENTS.md:
 "1M 推理能力必须同时通过无 cache/cache logits 等价测试、长文档评测和显存基准；仅提高位置上限或创建 cache 数据结构不视为完成。"
 
 Tests:
-1. KDA log-decay stays inside (g_min, 0) for finite inputs
-2. MLA has no positional parameters
-3. End-to-end logits equivalence (max absolute difference < 1e-4)
-4. Deterministic greedy generation equivalence between cached decoding and prefix recomputation
+1. KDA log-decay stays inside (g_min, 0); MLA has no RoPE width
+2. End-to-end logits equivalence (max |diff| < 1e-4) between one no-cache forward
+   and three cached schedules (prefill + decode, irregular chunked prefill, pure
+   decode) on a model with encoder/reindex/reuse CSA2 layers, Engram, MoE and
+   active top-k entry selection at 15x csa_local; cache holds L/csa_group entries
+3. Greedy generation: cached decoding == prefix recomputation token for token
+
+These are implementation checks only. They do not establish 1M capability.
 """
 
 import sys
@@ -41,128 +45,86 @@ def test_position_comes_from_kda():
     print(">>> Test 1 Passed: MLA has no RoPE width and KDA decay stays bounded! <<<\n")
 
 
+def _cache_config():
+    from train.test_model_runtime import tiny_config
+    # csa_local 8, group 4, top-3: at 120 tokens there are 30 entries and the
+    # indexer keeps 3 of up to 28 eligible, so selection is active.
+    return tiny_config()
+
+
+def _run_cached(model, ids, splits):
+    cache = model.new_kv_cache()
+    parts, start = [], 0
+    with torch.no_grad():
+        for size in splits:
+            out = model(ids[:, start:start + size], use_cache=True, past_key_values=cache)
+            parts.append(out["logits"])
+            start += size
+    assert start == ids.shape[1]
+    return torch.cat(parts, dim=1), cache
+
+
 def test_cache_logits_equivalence(device):
     print("=" * 70)
-    print(f"[Test 2/3] Verifying No-Cache vs Cached Logits Equivalence on {device}")
+    print(f"[Test 2/3] No-cache vs cached logits (CSA2 encoder/reindex/reuse, Engram) on {device}")
     print("=" * 70)
     torch.manual_seed(42)
-
-    cfg = MiniK3Config(
-        hidden_size=256,
-        num_layers=4,
-        num_attention_heads=4,
-        num_kda_heads=2,
-        mla_layers=[4],
-        num_routed_experts=16,
-        top_k=2,
-        moe_intermediate_size=128,
-        routed_expert_hidden_size=128,
-        max_position_embeddings=1_048_576,
-        attention_window=4096,
-        rope_theta=10_000_000.0,
-        kv_cache_fp4=False,
-        engram_layers=[],
-    )
-    model = MiniK3ForCausalLM(cfg).to(device)
-    model.eval()
-
-    prompt_len = 16
-    input_ids = torch.randint(0, cfg.vocab_size, (1, prompt_len), device=device)
-
-    # 1. Full prefill without cache
+    cfg = _cache_config()
+    model = MiniK3ForCausalLM(cfg).to(device).eval()
+    length = 120
+    input_ids = torch.randint(0, cfg.vocab_size, (1, length), device=device)
     with torch.no_grad():
-        out_prefill = model(input_ids)
-        logits_prefill = out_prefill["logits"]
-
-    # 2. Token-by-token cached execution
-    cache = model.new_kv_cache()
-    cached_logits_list = []
-    with torch.no_grad():
-        prefill_len = 8
-        out0 = model(input_ids[:, :prefill_len], use_cache=True, past_key_values=cache)
-        cached_logits_list.append(out0["logits"])
-
-        for t in range(prefill_len, prompt_len):
-            next_token = input_ids[:, t:t+1]
-            out_step = model(next_token, use_cache=True, past_key_values=cache)
-            cached_logits_list.append(out_step["logits"])
-
-    logits_cached = torch.cat(cached_logits_list, dim=1)
-
-    abs_diff = torch.abs(logits_prefill - logits_cached)
-    max_diff = abs_diff.max().item()
-    mean_diff = abs_diff.mean().item()
-
-    print(f"[*] Sequence Length: {prompt_len} (Prefill {prefill_len} + Decoded {prompt_len - prefill_len})")
-    print(f"[*] Max Logits Absolute Difference:  {max_diff:.3e}")
-    print(f"[*] Mean Logits Absolute Difference: {mean_diff:.3e}")
-
+        logits_full = model(input_ids)["logits"]
+    schedules = {
+        "prefill 37 + token decode": [37] + [1] * (length - 37),
+        "chunked prefill 13/29/41/37": [13, 29, 41, 37],
+        "token decode from 1": [1] * length,
+    }
     tolerance = 1e-4
-    if max_diff < tolerance:
-        print(f"    -> PASS: Max diff {max_diff:.2e} is strictly below tolerance {tolerance}!")
-    else:
-        raise AssertionError(f"Cache equivalence failed! Max diff {max_diff} exceeds tolerance {tolerance}")
-
-    print(">>> Test 2 Passed: Full Prefill vs Cached Logits are bit-exact! <<<\n")
+    for name, splits in schedules.items():
+        logits_cached, cache = _run_cached(model, input_ids, splits)
+        max_diff = (logits_full - logits_cached).abs().max().item()
+        print(f"[*] {name:28s} max |diff| = {max_diff:.3e}")
+        if max_diff >= tolerance:
+            raise AssertionError(f"Cache equivalence failed for {name}: {max_diff} >= {tolerance}")
+    # Cache size is O(L / csa_group) entries plus a bounded raw tail.
+    encoder_layer = cfg.mla_layers[0] - 1
+    entry = cache.mla_keys[encoder_layer]
+    stored = entry["entries"].count
+    assert stored == length // cfg.csa_group, stored
+    assert entry["tail"].shape[1] == max(cfg.csa_local, cfg.csa_group)
+    for layer_index in cfg.mla_layers[1:]:
+        assert cache.mla_keys[layer_index - 1]["entries"] is None, "decoder MLA must not duplicate entries"
+    print(f"    -> cache holds {stored} compressed entries + {entry['tail'].shape[1]} raw latents per encoder MLA layer")
+    print(">>> Test 2 Passed <<<\n")
 
 
 def test_generation_equivalence(device):
     print("=" * 70)
-    print(f"[Test 3/3] Verifying Autoregressive Generation Equivalence on {device}")
+    print(f"[Test 3/3] Greedy generation: cached decode vs prefix recomputation on {device}")
     print("=" * 70)
-    torch.manual_seed(42)
-
-    cfg = MiniK3Config(
-        hidden_size=256,
-        num_layers=4,
-        num_attention_heads=4,
-        num_kda_heads=2,
-        mla_layers=[4],
-        num_routed_experts=16,
-        top_k=2,
-        moe_intermediate_size=128,
-        routed_expert_hidden_size=128,
-        max_position_embeddings=1_048_576,
-        attention_window=4096,
-        rope_theta=10_000_000.0,
-        kv_cache_fp4=False,
-        engram_layers=[],
-    )
-    model = MiniK3ForCausalLM(cfg).to(device)
-    model.eval()
-
-    prompt = torch.randint(0, cfg.vocab_size, (1, 8), device=device)
-    max_new_tokens = 6
-
-    # 1. Greedy generation with KV Cache
+    torch.manual_seed(7)
+    cfg = _cache_config()
+    model = MiniK3ForCausalLM(cfg).to(device).eval()
+    prompt = torch.randint(0, cfg.vocab_size, (1, 50), device=device)
+    max_new_tokens = 12
     with torch.no_grad():
         gen_cached = model.generate(prompt.clone(), max_new_tokens=max_new_tokens, temperature=0.0)
-
-    # 2. Greedy generation with Full Prefix Recomputation
-    curr_ids = prompt.clone()
-    with torch.no_grad():
+        curr_ids = prompt.clone()
         for _ in range(max_new_tokens):
-            out = model(curr_ids, use_cache=False)
-            next_id = out["logits"][:, -1].argmax(-1, keepdim=True)
+            next_id = model(curr_ids)["logits"][:, -1].argmax(-1, keepdim=True)
             curr_ids = torch.cat([curr_ids, next_id], dim=1)
-
-    cached_tokens = gen_cached[0, 8:].tolist()
-    recompute_tokens = curr_ids[0, 8:].tolist()
-
-    print(f"[*] Prompt Tokens:             {prompt[0].tolist()}")
-    print(f"[*] Cached Generated Tokens:   {cached_tokens}")
-    print(f"[*] Ground Truth Tokens:       {recompute_tokens}")
-
-    assert cached_tokens == recompute_tokens, (
-        f"Token generation diverged!\nCached: {cached_tokens}\nRecompute: {recompute_tokens}"
-    )
-    print("    -> PASS: Cached generation perfectly matches prefix recomputation token-for-token!")
-    print(">>> Test 3 Passed: Autoregressive decoding satisfies Rule 8 requirements! <<<\n")
+    cached_tokens = gen_cached[0, 50:].tolist()
+    recompute_tokens = curr_ids[0, 50:].tolist()
+    print(f"[*] Cached:    {cached_tokens}")
+    print(f"[*] Recompute: {recompute_tokens}")
+    assert cached_tokens == recompute_tokens, "Token generation diverged"
+    print(">>> Test 3 Passed <<<\n")
 
 
 def main():
     print("=" * 80)
-    print(" Mini Kimi K3: Cache Equivalence & 1M Context Verification Suite")
+    print(" Mini Kimi K3: Cache Equivalence Suite (implementation level)")
     print("=" * 80)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -173,7 +135,7 @@ def main():
     print("=" * 80)
     print(" CACHE CHECKS PASSED: implementation equivalence holds for this small model.")
     print(" 1M capability remains unverified until a trained checkpoint also passes the")
-    print(" long-document retrieval and live memory benchmarks.")
+    print(" long-document retrieval and live memory benchmarks (AGENTS.md rule 8).")
     print("=" * 80)
 
 

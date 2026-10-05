@@ -13,6 +13,22 @@ import torch.distributed as dist
 from typing import Dict
 
 
+def histogram_bin_values(bins: int, lo: float, hi: float, device=None) -> torch.Tensor:
+    """Margin value represented by each histogram bin.
+
+    ``KimiGate.accumulate_margin_histogram`` (train/models/moe.py) writes a
+    margin ``m`` to bin ``round((m - lo) / (hi - lo) * (bins - 1))``. Bin ``i``
+    therefore stands for ``lo + i * (hi - lo) / (bins - 1)``: bin 0 is exactly
+    ``lo`` and the last bin is exactly ``hi``. Reading it with the
+    ``lo + (i + 0.5) * (hi - lo) / bins`` convention would shift and stretch
+    every quantile, so reader and writer must stay in this form together.
+    """
+    if bins < 2:
+        raise ValueError("margin histogram needs at least two bins")
+    step = (hi - lo) / (bins - 1)
+    return lo + torch.arange(bins, device=device, dtype=torch.float32) * step
+
+
 def bias_from_histogram(hist: torch.Tensor, level: float, lo: float, hi: float) -> torch.Tensor:
     """Read one quantile per expert from pooled bin counts and center the result."""
     total = hist.sum(dim=-1).clamp(min=1)
@@ -20,8 +36,8 @@ def bias_from_histogram(hist: torch.Tensor, level: float, lo: float, hi: float) 
     target = level * total
     reached = cdf >= target.unsqueeze(-1)
     bin_idx = reached.to(torch.int64).argmax(dim=-1)
-    width = (hi - lo) / hist.shape[-1]
-    value = lo + (bin_idx.float() + 0.5) * width
+    values = histogram_bin_values(hist.shape[-1], lo, hi, device=hist.device)
+    value = values[bin_idx]
     bias = -value
     return bias - bias.mean()
 

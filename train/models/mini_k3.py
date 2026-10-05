@@ -1,9 +1,11 @@
 """
 Mini Kimi K3 Causal Language Model.
 Assembles:
-- 13 decoder layers: 9 KDA (Linear Attention) + 4 MLA (gated latent attention, Layers 4, 8, 12, 13)
-- Layer 0 Dense MLP + Layers 1..11 Latent MoE (256 routed experts + 2 shared experts)
-- RMSNorm pre-layer normalizations
+- 13 decoder layers: 9 KDA (linear attention) + 4 MLA/CSA2 (1-indexed layers 4, 8, 12, 13;
+  0-indexed 3, 7, 11, 12). Layers 4 and 8 are encoder MLA (own indexer); 12 reindexes
+  layer 8's compressed entries, 13 reuses layer 12's entries and selection.
+- Layer 0 dense MLP + layers 1..12 (0-indexed) latent MoE (256 routed + 2 shared experts)
+- mHC 4-stream residual, Attention Residual layer mixing, Engram on layers 2 and 8, MTP head
 - Weight-tied word embeddings and LM head
 """
 
@@ -51,7 +53,7 @@ class MiniK3DecoderLayer(nn.Module):
         # 1. Pre-norm for Attention
         self.input_layernorm = nn.RMSNorm(config.hidden_size, eps=config.rms_norm_eps)
         
-        # Layer 4, 8, 12 (1-indexed, i.e., idx 3, 7, 11) use MLA; others use KDA
+        # config.mla_layers (1-indexed 4, 8, 12, 13 -> idx 3, 7, 11, 12) use MLA; others use KDA
         is_mla = (layer_idx + 1) in config.mla_layers
         if is_mla:
             self.self_attn = MultiHeadLatentAttention(config)
@@ -73,6 +75,7 @@ class MiniK3DecoderLayer(nn.Module):
         self.mhc_mlp = MHCCoeffs(config.hidden_size, config.mhc_streams, config.mhc_sinkhorn_iters)
 
     def _run(self, streams, pre, attn_input, state, conv, past, use_cache, cache_position, memory, mode):
+        aux = None
         if self.is_mla:
             result = self.self_attn(
                 self.input_layernorm(attn_input), past_kv=past, use_cache=use_cache,
@@ -80,6 +83,7 @@ class MiniK3DecoderLayer(nn.Module):
             )
             attn_out, cache = result if use_cache else (result, None)
             new_state, new_conv = None, None
+            aux = self.self_attn._aux_loss
         else:
             attn_out, new_state, new_conv = self.self_attn(
                 self.input_layernorm(attn_input), recurrent_state=state, conv_state=conv,
@@ -89,42 +93,48 @@ class MiniK3DecoderLayer(nn.Module):
         hidden = collapse_streams(streams, pre)
         mlp_out = self.mlp(self.post_attention_layernorm(hidden))
         streams, pre = self.mhc_mlp.mix(streams, mlp_out, hidden, previous_pre=pre)
-        return streams, pre, new_state, new_conv, cache
+        return streams, pre, new_state, new_conv, cache, aux
 
-    def forward(self, streams, pre, attn_input, state=None, conv=None, past=None,
+    def forward(self, streams, pre, sources, layer_mix, state=None, conv=None, past=None,
                 use_cache=False, cache_position=0, memory=None, mode="full"):
+        """``layer_mix`` is the Attention Residual that reads ``sources`` into this layer's input."""
         entries = None if memory is None else memory.get("entries")
         index = None if memory is None else memory.get("index")
         use_ckpt = self.training and self.config.activation_checkpointing and not use_cache
+        aux = None
         if use_ckpt:
             from torch.utils.checkpoint import checkpoint
-            empty_entries = attn_input.new_zeros(0)
-            empty_index = torch.zeros(0, dtype=torch.long, device=attn_input.device)
+            empty_entries = streams.new_zeros(0)
+            empty_index = torch.zeros(0, dtype=torch.long, device=streams.device)
 
-            def train_only(stream_in, pre_in, attn_in, entry_in, index_in):
+            def train_only(stream_in, pre_in, entry_in, index_in, *source_in):
                 mem = None
                 if entry_in.numel() > 0 and mode != "full":
                     mem = {"entries": entry_in, "index": None if index_in.numel() == 0 else index_in}
-                next_streams, next_pre, _, _, _ = self._run(
+                attn_in = layer_mix(list(source_in))
+                next_streams, next_pre, _, _, _, layer_aux = self._run(
                     stream_in, pre_in, attn_in, None, None, None, False, 0, mem, mode,
                 )
-                return next_streams, next_pre
+                if layer_aux is None:
+                    layer_aux = stream_in.new_zeros((), dtype=torch.float32)
+                return next_streams, next_pre, layer_aux
 
-            streams, pre = checkpoint(
-                train_only, streams, pre, attn_input,
+            streams, pre, aux = checkpoint(
+                train_only, streams, pre,
                 entries if entries is not None else empty_entries,
                 index if index is not None else empty_index,
+                *sources,
                 use_reentrant=False,
             )
             new_state, new_conv, cache = None, None, None
         else:
-            streams, pre, new_state, new_conv, cache = self._run(
-                streams, pre, attn_input, state, conv, past, use_cache, cache_position, memory, mode,
+            streams, pre, new_state, new_conv, cache, aux = self._run(
+                streams, pre, layer_mix(sources), state, conv, past, use_cache, cache_position, memory, mode,
             )
         if self.training and self.is_moe and self.mlp.gate._last_counts is not None:
             self.mlp.gate.expert_load.add_(self.mlp.gate._last_counts)
             self.mlp.gate.accumulate_margin_histogram()
-        return streams, pre, new_state, new_conv, cache
+        return streams, pre, new_state, new_conv, cache, aux
 
 
 class MiniK3ForCausalLM(nn.Module):
@@ -218,7 +228,7 @@ class MiniK3ForCausalLM(nn.Module):
             return input_ids
         self.eval()
         cache = self.new_kv_cache()
-        out = self(input_ids, use_cache=True, past_key_values=cache)
+        out = self(input_ids, use_cache=True, past_key_values=cache, logits_to_keep=1)
         finished = torch.zeros(input_ids.shape[0], dtype=torch.bool, device=input_ids.device)
         for step in range(max_new_tokens):
             next_id = self._sample(out["logits"][:, -1], temperature, top_p)
@@ -258,14 +268,19 @@ class MiniK3ForCausalLM(nn.Module):
         past_key_values=None, use_cache: bool = False,
         pixel_values: Optional[torch.Tensor] = None,
         return_hidden: bool = False, compute_logits: bool = True,
+        logits_to_keep: int = 0,
     ) -> Dict[str, Any]:
         """
         input_ids: [B, L]
         labels: [B, L] (optional)
         pixel_values: [B, 3, H, W] or [B, T, 3, H, W]
+        compute_logits=False with labels computes the loss in checkpointed
+        sequence chunks and never materialises [L, vocab] logits.
+        logits_to_keep=k > 0 returns logits for the last k positions only
+        (prefill/generation); it cannot be combined with labels.
         """
-        if labels is not None and not compute_logits:
-            raise ValueError("labels require compute_logits=True")
+        if logits_to_keep and labels is not None:
+            raise ValueError("logits_to_keep is for inference; use compute_logits=False for losses")
         if use_cache and past_key_values is None:
             past_key_values = self.new_kv_cache()
         embedded = self.embed_tokens(input_ids)
@@ -285,6 +300,7 @@ class MiniK3ForCausalLM(nn.Module):
         sources = [embedded]
         encoder_memory = None
         previous_memory = None
+        aux_terms = []
         position = past_key_values.position if past_key_values is not None else 0
         if past_key_values is not None and past_key_values.token_ids is not None:
             text_ids = torch.cat((past_key_values.token_ids, input_ids), dim=1)
@@ -301,10 +317,12 @@ class MiniK3ForCausalLM(nn.Module):
             past = past_key_values.mla_keys[i] if past_key_values is not None and layer.is_mla else None
             state = past_key_values.kda_states[i] if past_key_values is not None else None
             conv = past_key_values.kda_conv_states[i] if past_key_values is not None else None
-            streams, pre, state, conv, cache = layer(
-                streams, pre, self.layer_mix[i](sources), state=state, conv=conv, past=past,
+            streams, pre, state, conv, cache, aux = layer(
+                streams, pre, sources, self.layer_mix[i], state=state, conv=conv, past=past,
                 use_cache=use_cache, cache_position=position, memory=memory, mode=mode,
             )
+            if aux is not None and self.training:
+                aux_terms.append(aux)
             collapsed = collapse_streams(streams, pre)
             engram = self.engrams[str(i + 1)] if str(i + 1) in self.engrams else None
             if engram is not None:
@@ -328,30 +346,33 @@ class MiniK3ForCausalLM(nn.Module):
 
         hidden_states = self.norm(self.final_mix(sources))
         token_embed = embedded
-        logits = self.lm_head(hidden_states) if compute_logits else None
+        if compute_logits and logits_to_keep:
+            logits = self.lm_head(hidden_states[:, -int(logits_to_keep):])
+        else:
+            logits = self.lm_head(hidden_states) if compute_logits else None
 
         loss = None
         lm_loss = None
+        mtp_loss = None
+        aux_loss = None
         if labels is not None:
-            # Shift tokens for next-token prediction
-            shift_logits = logits[..., :-1, :].contiguous()
-            shift_labels = labels[..., 1:].contiguous()
-            lm_loss = F.cross_entropy(
-                shift_logits.view(-1, self.vocab_size),
-                shift_labels.view(-1),
-                ignore_index=-100,
-            )
+            shift_labels = labels[:, 1:]
+            if compute_logits:
+                lm_loss = self._mean_ce(logits[:, :-1], shift_labels)
+            else:
+                lm_loss = self._chunked_ce(hidden_states[:, :-1], shift_labels)
             loss = lm_loss
-            if self.mtp is not None and labels.size(1) >= 3 and (labels[:, 2:] != -100).any():
+            if self.mtp is not None and labels.size(1) >= 3:
                 mtp_hidden = self.mtp(hidden_states, token_embed)
-                mtp_logits = self.lm_head(mtp_hidden)
                 mtp_labels = labels[:, 2:]
-                mtp_loss = F.cross_entropy(
-                    mtp_logits.reshape(-1, self.vocab_size),
-                    mtp_labels.reshape(-1),
-                    ignore_index=-100,
-                )
-                loss = lm_loss + self.mtp_lambda * mtp_loss
+                if compute_logits:
+                    mtp_loss = self._mean_ce(self.lm_head(mtp_hidden), mtp_labels)
+                else:
+                    mtp_loss = self._chunked_ce(mtp_hidden, mtp_labels)
+                loss = loss + self.mtp_lambda * mtp_loss
+            if aux_terms:
+                aux_loss = torch.stack([term.float() for term in aux_terms]).sum()
+                loss = loss + self.config.csa_indexer_loss_weight * aux_loss
 
         if use_cache and past_key_values is not None:
             past_key_values.position += length
@@ -361,9 +382,42 @@ class MiniK3ForCausalLM(nn.Module):
         return {
             "loss": loss,
             "lm_loss": lm_loss,
+            "mtp_loss": mtp_loss,
+            "aux_loss": aux_loss,
             "hidden": hidden_states if use_cache or return_hidden else None,
             "logits": logits, "past_key_values": past_key_values if use_cache else None,
         }
+
+    def _mean_ce(self, logits: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
+        """Mean CE over non-ignored targets; 0 (not NaN) when a batch has none."""
+        total = F.cross_entropy(
+            logits.reshape(-1, self.vocab_size).float(), labels.reshape(-1),
+            ignore_index=-100, reduction="sum",
+        )
+        count = (labels != -100).sum()
+        return total / count.clamp_min(1)
+
+    def _ce_sum_block(self, hidden: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
+        logits = self.lm_head(hidden)
+        return F.cross_entropy(
+            logits.reshape(-1, self.vocab_size).float(), labels.reshape(-1),
+            ignore_index=-100, reduction="sum",
+        )
+
+    def _chunked_ce(self, hidden: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
+        """Same value as ``_mean_ce(lm_head(hidden), labels)`` without resident full logits."""
+        from torch.utils.checkpoint import checkpoint
+        chunk = max(1, int(getattr(self.config, "loss_chunk_size", 512)))
+        total = hidden.new_zeros((), dtype=torch.float32)
+        for start in range(0, hidden.shape[1], chunk):
+            h = hidden[:, start:start + chunk]
+            y = labels[:, start:start + chunk]
+            if torch.is_grad_enabled():
+                total = total + checkpoint(self._ce_sum_block, h, y, use_reentrant=False)
+            else:
+                total = total + self._ce_sum_block(h, y)
+        count = (labels != -100).sum()
+        return total / count.clamp_min(1)
 
     def count_parameters(self) -> Dict[str, int]:
         """Counts total, active, and non-embedding active parameters."""

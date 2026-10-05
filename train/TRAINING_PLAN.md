@@ -2,7 +2,88 @@
 
 > 本文档覆盖当前 4 卡 V100 机器的预训练、SFT、DPO 与 PPO 对齐流程。所有训练相关代码均归档于 `train/` 目录中。
 
+## 2026-10-04 当前状态：门禁通过，200 步四卡短跑完成
+
+* 当前 `train/` 已同步到 `v100:/data/mini-k3/project/train/`，关键文件哈希与本地一致；远端旧的根目录测试副本已删除，训练只使用 `train/` 下的代码。
+* 真实数据 smoke 通过，`SMOKE.json` 记录的模型代码哈希为 `4daf36695d48cf88224f04fe932e50b1f2ae23015ad75ea7123cb0f70ab018b7`；单卡峰值 allocated/reserved 显存约 14.09/14.72 GiB，失败与运行 sidecar 均已清理。
+* readiness 通过：训练 manifest 为 `d2cce19c492c5204bfd369578581ecf5a60f772087da45f002d516f8a2e1b7ea`，验证 manifest 为 `541136c5a7f06cd6606513cecddc2bf20af8ace6cca5cb5ad92df503ded029c7`，coverage 为 `sufficient_fixed_mix`。
+* 按文档参数完成 4 卡 FP16/GradScaler 200 步短跑（远端 shell 的 `PATH` 没有 `torchrun`，实际使用等价的 `/data/mini-k3/venv/bin/torchrun`）。第 0 步 lm 为 12.1114，最终第 199 步 lm 为 8.3152，验证 lm 为 8.4983；总 token 52,428,800；全程无 OOM、非有限值、梯度跳过或连续溢出。每卡峰值约 19.50 GiB allocated / 20.80 GiB reserved，稳定吞吐约 3,304 token/s。
+* 完整检查点位于 `/data/mini-k3/checkpoints/pretrain-short-2048/step_000199`，`best/` 同步存在且带 `COMPLETE` 标记；GPU 已释放。10B 长跑尚未启动，仍需用户确认短跑吞吐后再执行。
+
+## 2026-10-03 第一次短跑两次 OOM：根因与整改（训练当前没有在跑）
+
+**现状**：短跑没有跑成，四张卡空闲，没有任何检查点。下面列出两次失败、根因、本次改动和下一步。本次只改了本地 `train/` 的代码和文档，没有 ssh 改服务器、没有启动训练、没有下载数据。
+
+**两次失败**（服务器日志 `/data/mini-k3/logs/pretrain-short-2048.log`，以及 `.20261003191012.bak`）：
+
+1. 07:02 EDT 第一次：第 0 步主干损失 12.1101（在 11.90–12.25 内），记录损失 15.7229（= lm + 0.3×MTP）。第 1 步反向申请 1.25 GiB 时 OOM。此时 PyTorch 已分配约 24.9 GiB，缓存约 5.0 GiB。
+2. 07:10 EDT 第二次：加了 `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True`。日志里有 `expandable_segments not supported on this platform`，所以这个变量没起作用。07:57 在第 10–19 步之间 OOM，位置在 situ 的反向。申请 372 MiB 时已分配 30.43 GiB。速度约 1,660 token/s（每个微步约 4.9 s），照这个速度 10B 要约 70 天。第 10 步 loss 15.35，Imb 1.64–2.21，Dead 0%。
+
+**根因**（四个只读评审复核过）：
+
+| 问题 | 原因 | 本次修改 | 影响 |
+|---|---|---|---|
+| 直接 OOM | 256 个专家都补齐到最忙专家的 token 数。单篇 2048 文档可让一个专家拿到约 915 次路由，372 MiB = 256×915×416×4 B。step 级 Imb 看不到微批次内的不均衡 | `RoutedExperts`：专家权重堆成 `gate_up [256, 832, 256]`、`down [256, 256, 416]`；每个专家只补齐到 64 的倍数，按块 bmm。不丢 token。补齐行数上限为 256×63，与路由不均无关 | 检查点键名变为 `layers.N.mlp.experts.gate_up/down`（之前没有可用检查点）。参数量不变：1,150,739,900 / 159,400,252 |
+| 静态显存约 19 GB | FP32 参数 4.6 GB + 梯度 4.6 GB + DDP 桶副本 4.6 GB + Muon 动量 4.2 GB + AdamW 0.8 GB | DDP `gradient_as_bucket_view=True` | 每卡省一份 FP32 梯度，约 4.6 GB |
+| logits | 训练时整段 `[2048, 163840]` logits 和 MTP 的一份同时驻留，约 5–7 GB | `compute_logits=False`：按 512 token 分块，在重计算下做 lm_head+CE，值与整段相同 | 不再驻留全词表 logits。训练、验证、step-0 探针、smoke、evaluate、SFT 都走这条路径 |
+| MLA/CSA2 | gather 中间量约 2 GB；局部窗 unfold 实体化；全局分支丢掉压缩 key，直接把单头索引分数当注意力 logit；缓存与无缓存在 4096 之后不一致（违反红线第 8 条） | 重写 CSA2：每个 query 在同一个 softmax 里看最近 128 个原始 token 和索引器选出的 top-k 压缩条目，条目 logit 是逐头的 q·k/√d。索引器在 FP32、输入 detach，用 DSA 风格 KL 训练，权重 `csa_indexer_loss_weight=0.1`。缓存保存原始尾部 max(128,4) 个 latent 和全部压缩条目（只在第 4、8 层），不再有 4096 窗口。条目多时自动改用 MLA 权重吸收，结果完全相同 | 语义变化：缓存为 O(L/4)。1M 时 FP16 约 256 MiB，不是 O(1)。缓存与无缓存在任意长度都应一致，已用 120 token、15 倍局部窗、三种分块方式测试 |
+| KDA | 每个 64-chunk 一次 `torch.linalg.solve`（LU 加主机同步），每微步 576 次；5D 临时张量每层约 2 GB | UT 变换：所有 chunk 的块内计算一次并行完成；单位下三角用 `solve_triangular`；块间只剩两次小矩阵乘；直接传 log 衰减；chunk 32（`kda_chunk_size`，结果与 chunk 大小无关） | 没有主机同步，5D 临时张量约 134 MB/层。与逐 token 递推在 float64 下对齐，包括梯度 |
+| 其他同步 | Engram 每次前向约 144 次 `int(gpu_tensor)`；MoE bincount；逐参数 isfinite 循环；约 6k 个矩阵逐个做 Muon | Engram 哈希向量化（与旧哈希逐位相同）；用 scatter_add 计数；一次梯度范数判有限；专家按批做 Newton–Schulz | 每层 MoE 只剩 1 次同步（补齐总数） |
+| 路由精度 | 路由器在 autocast 下跑 FP16 | 路由 logits 关闭 autocast，用 FP32 | 选择更稳定 |
+| AttentionResidual | 堆叠在 checkpoint 外保存，约 1 GB | 放进每层的 checkpoint | — |
+| situ 文档 | `situ_fused.py` 里有从未调用的 Triton 内核和“省 40GB”的说法 | 删除死代码和错误说法 | 行为不变 |
+
+**超参变化（规则 3）**：
+
+* **Muon 更新尺度**：每个正交化后的矩阵乘以 `0.2·sqrt(max(m,n))`（Moonlight 约定，`muon_update_scale=0.2`），更新的逐元素 RMS 约为 0.2，与 AdamW 共用 `6e-4`。原来的 RMS 是 `1/sqrt(max(m,n))`，约 0.03–0.06，所以 Muon 实际步长比原来大约 4–7 倍。峰值学习率不变。短跑要重点看前 200 步的 loss 和 grad norm。
+* 新增配置：`moe_block_size=64`、`loss_chunk_size=512`、`kda_chunk_size=32`、`csa_indexer_loss_weight=0.1`、`muon_update_scale=0.2`。`attention_window` 不再使用，`--attention-window` 参数会被直接拒绝。
+* 总损失 = lm + 0.3×MTP + 0.1×索引器 KL。日志分别打印 `loss / lm / mtp / aux`。第 0 步门禁、验证、best 检查点和 spike 检测都只看 **lm**。
+
+**训练引擎**：
+
+* 验证集是固定切片：每次评测前把验证 loader 倒回构造时的游标。`--validation_batches 8`（每卡）。评测发生在每 `--validation_interval`、每个存档步和最后一步。
+* FP16 溢出跳步：只调用 `scaler.update()` 降低缩放，不计入 spike。连续 20 次溢出才中止（相当于缩放降了 2^20）。损失尖峰（lm 超过 EMA 的 1.5 倍）连续 5 次中止。
+* 检查点：optimizer/scaler 只由 rank 0 写一份，所有卡都读这一份。每卡单独保存 RNG 和 loader。文件和目录都做 fsync。`best_metric` 持久化，`best/` 用硬链接。最新检查点损坏时，回退到上一个 COMPLETE 并大声警告。
+* 运行签名新增：GA、micro batch、种子、WSD 比例、`schedule_total_steps`、两套配比、上述新配置、整份 config 的哈希。所以 config.py 一改，`--resume` 就会拒绝。
+* 衰减期内恢复：loader 状态保存当前目标配比，从衰减期中途恢复是逐位一致的（CPU 测试：中断后恢复与不中断的最终权重完全相同）。
+* `--schedule_total_steps`：短跑用 10B 的学习率曲线（预热 762 步）。不加这个参数时，200 步短跑只预热 4 步，并在第 170 步切到衰减配比。
+* loader 遇到正权重来源读完时报错，不再静默重新归一化。readiness 不再回退到写死的 coverage 文件。
+* **新门禁**：`SMOKE.json` 必须记录 `model_code_sha256`（`train/model_fingerprint.py`：config.py、models/、kernels/、engine/muon.py、engine/balancer.py 的哈希），而且必须与当前代码一致，否则 readiness 和 train.py 都拒绝启动。本次改了模型代码，服务器上现有的 SMOKE.json 已失效，必须重跑 smoke。smoke 每个优化步对每个来源各取一批，只有通过时才原子替换 SMOKE.json，失败写到 `SMOKE.failed.json`。
+* NCCL 超时 60 分钟；改用 `torch.amp.GradScaler('cuda')`；日志新增每步时间、tok/s、各卡最大 allocated/reserved 显存（第 0、1 步和每个日志间隔都打印）。
+
+**本地验证**（Mac CPU，torch 2.14）：`pytest train --ignore=train/reports` 134 通过、1 跳过（缺真实分词器）。另外直接运行 `test_architecture.py`、`test_v41_modules.py`、`test_kda_runtime.py`、`test_cache_equivalence.py`、`test_model_runtime.py`、`benchmark_memory.py`，全部通过。`test_model_runtime.py` 覆盖：块分发 MoE 与朴素逐专家循环一致；分块 CE 与整段 CE 一致；批量 Muon 与逐矩阵一致；CSA2 与逐 query 朴素实现一致；开关 checkpoint 时 loss 和梯度一致，且除视觉塔外每个参数都有梯度。另用真实维度（仅把路由专家减到 8 个以省内存）在 CPU 上跑 L=2048 前向+反向：lm 12.109（\(\ln 163840=12.007\)）、mtp 12.057、aux 0.019，全部有限，进程峰值 RSS 5.7 GB；这只证明真实形状能跑通，不代表 V100 显存。**V100 上的显存峰值和吞吐还没测**，只能由下面的 GPU 步骤回答。
+
+**下一步，按顺序执行，每一步都要用户明确同意**：
+
+1. 把本地 `train/` 同步到 `v100:/data/mini-k3/project/train/`，逐文件核对 `sha256sum`。删除服务器上多出来的旧文件：`train/test_readiness.py`、`train/test_run_options.py`、`train/validate_manifest.py`（真正的文件在 `train/data/` 下）。
+2. 单卡重跑真实数据 smoke，生成带 `model_code_sha256` 的 SMOKE.json：
+   ```bash
+   CUDA_VISIBLE_DEVICES=0 /data/mini-k3/venv/bin/python train/smoke_from_manifest.py \
+     --manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/pretrain_stable.json \
+     --report /data/mini-k3/data/prepared-v2-supplement-v2/manifests/SMOKE.json
+   ```
+3. 运行 readiness：`train/data/check_training_readiness.py`，命令见 2026-09-30 一节。
+4. 200 步四卡短跑。不再带 `PYTORCH_CUDA_ALLOC_CONF`：
+   ```bash
+   /data/mini-k3/venv/bin/torchrun --standalone --nproc_per_node=4 train/train.py \
+     --data_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/pretrain_stable.json \
+     --validation_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/validation.json \
+     --checkpoint_dir /data/mini-k3/checkpoints/pretrain-short-2048 \
+     --total_steps 200 --schedule_total_steps 38147 --save_interval 200 --log_interval 10
+   ```
+   合格标准：
+   * 不 OOM；第 0 步 lm 在 11.90–12.25；lm 下降。
+   * 第 0/1 步和每个日志间隔的 `max alloc / reserved` 都记下来，峰值要比 32 GiB 低出余量。
+   * 记下 tok/s，按它重新估算 10B 的耗时。
+   * Dead 0% 左右，Imb 有界；没有连续溢出中止。
+   
+   最后一步是第 199 步，存档为 `step_000199`。
+5. 短跑合格并且用户确认吞吐可以接受之后，才开 10B。10B 的最后一个存档是 `step_038146`（步号从 0 开始）。
+
+
 ## 2026-09-27 收口记录与下一步
+
+> **已被 2026-10-03 一节取代。** 本节写于短跑之前（当时“训练还没启动”）。之后短跑已尝试两次，都 OOM。其中“CSA 按 32 个 query 分块取回”“benchmark 检查窗口”等实现说明已被重写。下一步和命令以文首为准。下面保留原文作为记录，但删除了旧的短跑命令：它缺少 `--schedule_total_steps`，而且带着无效的 `PYTORCH_CUDA_ALLOC_CONF`。
 
 代码和数据都停在「可以开短跑」这一步。训练还没启动。
 
@@ -17,17 +98,9 @@
 下一步，按这个顺序做，不要插别的阶段：
 
 1. 四张 V100 空出来之后，先把当前 `train/` 同步到 `v100:/data/mini-k3/project/train/`，确认服务器跑的就是这一版。
-2. 在 `/data/mini-k3/project` 跑 200 步短跑。目录不要拿去恢复 10B。
+2. 在 `/data/mini-k3/project` 跑 200 步短跑。目录不要拿去恢复 10B。（命令见文首 2026-10-03 一节）
 
-```bash
-torchrun --standalone --nproc_per_node=4 train/train.py \
-  --data_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/pretrain_stable.json \
-  --validation_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/validation.json \
-  --checkpoint_dir /data/mini-k3/checkpoints/pretrain-short-2048 \
-  --total_steps 200 --save_interval 200 --log_interval 10
-```
-
-合格标准：四卡不 OOM，第 0 步主干损失在 11.90–12.25，随后损失下降，日志配比接近稳定期配比。同时记下每步时间和 `dead_frac`。这一跑要回答的就是显存峰值和速度；序列 2048 时 CSA 的临时张量大约 2GB，权重量级状态大约 7.3GB。
+合格标准：四卡不 OOM，第 0 步主干损失在 11.90–12.25，随后损失下降，日志配比接近稳定期配比。同时记下每步时间和 `dead_frac`。这一跑要回答的就是显存峰值和速度。2026-10-03 的两次尝试都 OOM，见文首记录。
 
 3. 短跑合格后，再跑 38,147 步，检查点目录用 `/data/mini-k3/checkpoints`，不要从短跑目录恢复。
 4. 10B 完成之后才做长上下文。第一段 4096、学习率 \(6\times10^{-5}\)，单独目录。8192 和 16384 只在前一段损失和显存都稳时才开。
@@ -53,6 +126,12 @@ torchrun --standalone --nproc_per_node=4 train/train.py \
 该检查通过后才允许执行下面已有的 200 步命令；通过不等于 200 步四卡显存和吞吐已经验证。
 
 ## 2026-09-27 架构对齐：小而完整的 K3，下一步仍是 2048 短跑
+
+> **部分已被 2026-10-03 取代：**
+> * 第 2 条“2048 训练走整段因果注意力，超过 4096 按窗口截断”不再成立。现在所有长度都走 CSA2：局部 128 加压缩条目，没有 4096 窗口。
+> * 第 6 条中“全局最多取 512 条”仍然成立，但条目 logit 改为逐头 q·k，索引器只负责选条目。
+> * 第 9 条的 FP4 缓存现在存的是压缩条目（opt-in）。
+> * 文末 CSA 实现说明和“权重量级状态约 7.30 GB”作废。7.30 GB 只算了 FP16 权重和优化器状态；实际训练用 FP32 参数存储，静态显存约 14 GB 起，外加激活，见文首。
 
 原因：对照 Kimi K3 技术报告和 DeepSeek-V4 / V4.1 之后，主干里有几处和论文不一致，12 层上也缺了 K3 用来在深度上取信息的 Attention Residuals。这些都是参数和算子级的改动，不改数据、不改 2048 的训练命令。训练还没开始，没有旧检查点需要迁移。
 
@@ -234,7 +313,7 @@ Dolma 正文使用用户提供且已查询验证的 `modelscope/dolma`，保存�
 
 ## 1. 硬件基准与核心约束
 
-**训练基准**：4×Tesla V100-SXM2 32GB，FP16 + GradScaler，预训练序列长度 2048，micro-batch 1 / GPU，梯度累积 32，四进程 NCCL DDP。推理位置上限为 1,048,576，MLA 使用 4,096 窗口分块注意力，避免 1M×1M 显存；发布 1M 能力前必须完成长上下文继续训练和评测。
+**训练基准**：4×Tesla V100-SXM2 32GB，FP16 + GradScaler，预训练序列长度 2048，micro-batch 1 / GPU，梯度累积 32，四进程 NCCL DDP。推理位置上限为 1,048,576。MLA 走 CSA2：局部 128 个原始 token 加最多 512 条压缩条目，不做 1M×1M 注意力。缓存随长度按 L/4 条增长，1M 时 FP16 约 256 MiB。发布 1M 能力前必须完成长上下文继续训练和评测（红线第 8 条）。
 
 **存储规划**：所有大文件统一放在 `/data/mini-k3/`：原始下载集和 uint32 shards 在 `/data/mini-k3/data/`，checkpoint 在 `/data/mini-k3/checkpoints/`，日志在 `/data/mini-k3/logs/`，RL rollout 在 `/data/mini-k3/rollouts/`。代码、配置和小型索引继续放在 SSD 工作目录，不把数据下载到项目目录。
 
@@ -300,7 +379,7 @@ Dolma 正文使用用户提供且已查询验证的 `modelscope/dolma`，保存�
 | 层归一化 | 13,824 | — |
 | **合计** | **1,150,739,900** | **100%** |
 
-激活参数 = 总参数 − 路由专家 − Engram 表 − 视觉塔 + 路由专家 × 6 / 256 + 每个 token 实际查到的 Engram 行。文本步不算视觉塔。当前 `train.py` 保持 FP32 参数存储并在 V100 上用 FP16 autocast/GradScaler；因此 1,150,739,900 个参数仅权重约 4.60 GB，梯度、Muon/AdamW 状态、激活和 KDA 临时张量必须由 2048、四卡短跑实测，不能沿用旧的 7.30 GB 下限。64-token 单卡真实 smoke 峰值为 15,136,763,904 bytes，不外推正式长度。预训练记录的 loss 是下一个 token 加上 0.3 倍的 MTP；第 0 步是否合格只看下一个 token 的 loss。种子 42 的 64-token 主干损失是 12.14。矩阵权重走逐头 Muon，嵌入和一维参数走 AdamW。KDA 按 64 token 一块做三角求解。激活重计算包住注意力和 MoE；专家负载和分位数直方图都在重计算之外只累加一次。推理 FP4 latent cache 是 opt-in，默认先用未量化 cache 做等价性门禁。`generate` 目前只用目标模型逐 token cache 解码，MTP 仅作为训练损失，不宣称 speculative decoding。
+激活参数 = 总参数 − 路由专家 − Engram 表 − 视觉塔 + 路由专家 × 6 / 256 + 每个 token 实际查到的 Engram 行。文本步不算视觉塔。当前 `train.py` 保持 FP32 参数存储并在 V100 上用 FP16 autocast/GradScaler；因此 1,150,739,900 个参数仅权重约 4.60 GB，梯度、Muon/AdamW 状态、激活和 KDA 临时张量必须由 2048、四卡短跑实测，不能沿用旧的 7.30 GB 下限。64-token 单卡真实 smoke 峰值为 15,136,763,904 bytes，不外推正式长度。预训练记录的 loss = 下一个 token + 0.3 倍 MTP + 0.1 倍 CSA 索引器 KL，日志分开打印 lm/mtp/aux。第 0 步是否合格、验证和 best 检查点都只看下一个 token 的 loss（lm）。种子 42 的 64-token 主干损失是 12.14。矩阵权重走逐头 Muon：堆叠的路由专家逐个专家正交化，更新乘 0.2·sqrt(max(m,n))。嵌入、Engram 表、卷积核和一维参数走 AdamW。KDA 按 32 token 一块做 UT 变换，求解单位下三角，没有主机同步。激活重计算包住注意力和 MoE；专家负载和分位数直方图都在重计算之外只累加一次。推理 FP4 条目缓存是 opt-in，默认先用未量化 cache 做等价性门禁。`generate` 目前只用目标模型逐 token cache 解码，MTP 仅作为训练损失，不宣称 speculative decoding。
 
 ### 2.2 开源训练集与全量来源台账
 
@@ -354,9 +433,10 @@ SFT 使用公开的 `OpenAssistant/oasst1`、`teknium/OpenHermes-2.5`、`open-r1
 * **峰值学习率**：$\text{LR} = 6.00 \times 10^{-4}$
 * **衰减底限**：$\text{min\_LR} = 6.00 \times 10^{-5}$（峰值的 10%）
 * **三阶段切分**（总计 38,147 步，对应四卡全局约 10,000,007,168 个 token）：
-  * **预热期（Warmup）**：第 0 ~ 762 步（前 2.0%），从 $0$ 线性上升至 $6.00 \times 10^{-4}$；
-  * **稳定期（Stable）**：第 763 ~ 32,429 步（中间 83.0%），恒定维持峰值 LR，采用通用网络 + 基础代码语料；
-  * **衰减期（Decay）**：第 32,430 ~ 38,147 步（最后 15.0%），从 $6.00 \times 10^{-4}$ 线性降至 $6.00 \times 10^{-5}$，同时数据加载器切换为强化数学/代码的退火混合比。
+  * **预热期（Warmup）**：第 0 ~ 761 步，共 762 = int(38147×0.02) 步。第 s 步 LR = 6e-4×(s+1)/762，第 761 步达到 $6.00 \times 10^{-4}$；
+  * **稳定期（Stable）**：第 762 ~ 32,423 步，恒定维持峰值 LR，使用稳定期配比；
+  * **衰减期（Decay）**：第 32,424 = int(38147×0.85) ~ 38,146 步（最后一步的步号是 38,146），从 $6.00 \times 10^{-4}$ 线性降到第 38,146 步的 $6.009 \times 10^{-5}$。数据加载器在第 32,424 步切换为强化数学/代码的衰减配比。
+  * 短跑用 `--total_steps 200 --schedule_total_steps 38147` 沿用这条曲线：第 199 步 LR ≈ 1.575e-4，不进入衰减期。
 
 ---
 
@@ -376,8 +456,9 @@ SFT 使用公开的 `OpenAssistant/oasst1`、`teknium/OpenHermes-2.5`、`open-r1
    * 偏置取「分数减第 k+1 名截止值」的分位数，再减去均值。256 个箱子覆盖 \([-2, 2]\)，四卡和 32 次微批次的计数加总后再读。本步前向不用本步算出的偏置。
    * `e_score_correction_bias` 必须排除在 AdamW 之外。
    * 监控 **`dead_frac`** 和 **`imbalance`**，不用路由器分数熵。
-4. **Triton 融合算子释放显存**：
-   * 激活函数 `situ` 计算涉及模型最大的张量 `[experts, capacity, ffn_dim]`。V100 路径使用可审计的重计算实现，禁止调用仅支持 sm_90 的 BF16/FP8 内核。
+4. **MoE 显存不得随路由不均增长**：
+   * 路由专家按 64 token 的块分发，每个专家只补齐到 64 的倍数，补齐行数上限为 专家数×63。禁止把所有专家补齐到最忙专家的 token 数（2026-10-03 OOM 的直接原因）。
+   * `situ` 用重计算实现，只保存输入；V100 上禁止调用仅支持 sm_90 的 BF16/FP8 内核。仓库里没有 Triton 内核。
 5. **数据加载器严禁静默归一化**：
    * 严禁用 `split("-", 1)` 重新拼接文件名（会导致带有连字符的来源如 `fineweb-edu` 丢失）；
    * 分片缺失时必须显式抛出 `FileNotFoundError`，禁止静默剔除并自动对剩余数据重新归一化。
@@ -392,7 +473,9 @@ SFT 使用公开的 `OpenAssistant/oasst1`、`teknium/OpenHermes-2.5`、`open-r1
 * **微批次大小 (Micro-batch Size)**：1 / GPU
 * **梯度累积步数 (Gradient Accumulation Steps)**：32 次，四卡等效单步 $4 \times 1 \times 32 \times 2048 = 262,144$ tokens
 * **总训练步数**：38,147 步（四卡全局处理约 $10,000,007,168$ 个 token）
-* **吞吐与耗时**：必须通过 200-step benchmark 实测后填写，禁止沿用 H100 估算。
+* **吞吐与耗时**：必须通过 200-step benchmark 实测后填写，禁止沿用 H100 估算。2026-10-03 旧代码实测约 1,660 token/s（10B 约 70 天），新代码待测。
+* **显存（每卡，估算）**：FP32 参数 4.6 GB + FP32 梯度 4.6 GB（DDP 桶视图，不再多一份）+ Muon 动量约 4.2 GB + AdamW 约 0.8 GB ≈ 14.2 GB 静态。激活靠逐层重计算、分块 CE、按块 MoE、CSA2 分块控制，峰值以短跑日志里的 `max alloc / reserved` 为准。
+* **logits**：训练、验证、smoke 一律 `compute_logits=False`，按 512 token 分块算 CE；推理预填充用 `logits_to_keep=1`。
 
 ---
 
@@ -411,13 +494,13 @@ SFT 使用公开的 `OpenAssistant/oasst1`、`teknium/OpenHermes-2.5`、`open-r1
 | FP4 KV | 推理缓存 E2M1 | 软件打包，训练激活仍是 FP16 | V100 没有 FP4 张量核 |
 | 优化器 | Per-Head Muon | 矩阵用逐头 Muon，其余用 AdamW | 对齐阶段同样使用这个优化器 |
 | MTP | V4 仍保留深度 1 的 MTP | 损失权重 0.3，默认开启 | 第 0 步门禁用的是下一个 token 的 loss |
-| MLA/全局注意力 | 门控、无位置编码 | 3 层，4096 窗口，缓存只存 KV latent | 2048 时窗口不生效 |
+| MLA/全局注意力 | 门控、无位置编码 | 4 层 CSA2：局部 128 加索引器 top-512 压缩条目（逐头 q·k），无 4096 窗口 | 缓存为原始尾部加压缩条目，O(L/4) |
 | 稠密对照 | 不是 V4.1 的 Causal Encoder-Decoder | `models/deepseek_coder.py`，`train.py --model ced` | 默认关闭，不写入 Mini K3 |
 | MoE | Stable LatentMoE，分位数均衡 | 256 routed + 2 shared，上投影前 RMSNorm | 偏置不进 AdamW |
 | 长上下文 | KDA 携带位置，MLA 不加 RoPE | 位置上限仍记 1,048,576 | 这不是训练长度 |
-| 1M 上下文与缓存等价性 | 严格等价 | `models/kv_cache.py`, `test_cache_equivalence.py` | 架构自检。不能代替长上下文继续训练后的检索成绩 |
-| 1M 显存基准 | O(1) 状态 | `benchmark_memory.py` | 检查 cache 是否停在窗口内。不是 1M 预填充的显存证明 |
-| 长文档检索评测 (NIAH) | 大海捞针检索 | `eval_long_context.py` | 继续训练之后再评。默认长度 2048、4096、8192、16384 |
+| 1M 上下文与缓存等价性 | 严格等价 | `models/kv_cache.py`, `test_cache_equivalence.py` | 小模型上 Full/Reindex/Reuse 三种模式、15 倍局部窗、三种分块方式一致（差异 <1e-6）。这只是实现自检，不能代替长上下文继续训练后的检索成绩 |
+| 1M 显存基准 | KDA O(1) + CSA 条目 O(L/4) | `benchmark_memory.py` | 理论表（1M 时约 259 MB）加小模型实测条目数。不是 1M 预填充的显存证明 |
+| 长文档检索评测 (NIAH) | 大海捞针检索 | `eval_long_context.py` | 继续训练之后再评。默认长度：2048/4096/8192/16384 中不超过训练长度的那些；更长要加 `--allow-untrained-length`，结果标 UNTRAINED |
 | 数据流与二进制分片 | uint32 分片 | `data/build_shards.py` + `data/loader.py` | 完整实现，生成 manifest.json |
 | 训练后对齐 | SFT、RM、DPO、PPO、GRPO | `alignment_train.py --mode grpo` | GRPO 不用价值网络；奖励检查 `<think>` 和答案 |
 | 交互式终端推理 | 流式对话 | `chat.py` (基于 KV Cache 逐 Token 输出) | 完整实现 |
@@ -429,7 +512,7 @@ SFT 使用公开的 `OpenAssistant/oasst1`、`teknium/OpenHermes-2.5`、`open-r1
 
 1. **预训练**：约 10B tokens（四卡全局 batch），WSD，混合网页/代码/数学语料；保存模型、AdamW、数据游标、Python/NumPy/PyTorch RNG 和监控状态。
 2. **SFT**：使用 `chat_template.py` 把 system/user/assistant 对话打包，prompt 标签为 `-100`，只训练 assistant token，并保留 0.3 倍 MTP；保留 EOS，按长度分桶并验证截断率。
-3. **偏好对齐**：先训练 `RewardModel`（chosen 分数高于 rejected 的 pairwise loss），再用冻结 reference 做 DPO；DPO 使用长度归一化 log-prob 和显式 KL 监控。
+3. **偏好对齐**：先训练 `RewardModel`（chosen 分数高于 rejected 的 pairwise loss），再用冻结 reference 做 DPO；DPO 默认对响应 log-prob 求和，`--dpo_length_norm` 改为按 token 平均，并记录隐式奖励、margin 和 k3 KL。
 4. **在线 RL/PPO**：policy、reference、value、reward 四个模型分工；rollout 记录 token、old log-prob、reference log-prob、value、reward 和终止原因，PPO 使用 ratio clipping、value clipping、优势标准化和 KL 惩罚。奖励模型、EOS、最大长度、拒答/安全规则都必须版本化。
 5. **最终 SFT**：用人工审核和 RL 过滤后的高质量轨迹再做短程 SFT，低学习率、冻结或降低底层层学习率，作为最终发布 checkpoint。
 
@@ -437,112 +520,160 @@ SFT 使用公开的 `OpenAssistant/oasst1`、`teknium/OpenHermes-2.5`、`open-r1
 
 ### 5.1 四卡 checkpoint 红线
 
-每个保存点由所有 rank 写入各自的 `optimizer_rankN.pt`、`rng_rankN.pt`、`loader_rankN.pt`；rank 0 在 barrier 后写入 `COMPLETE` 并原子改名。恢复时必须校验 `world_size`，并加载当前 rank 对应的 optimizer、RNG 和数据游标；world size、模型配置或 manifest 不一致时拒绝恢复。
+每个保存点 `step_{step:06d}/`：rank 0 写一份 `model.pt`、`optimizer.pt`、`scaler.pt`、`meta.pt`（DDP 下各卡的优化器状态相同）；每个 rank 写自己的 `rng_rankN.pt`、`loader_rankN.pt`。文件和目录都 fsync，rank 0 在 barrier 后写 `COMPLETE` 并原子改名。恢复时校验 `world_size` 和运行签名（含整份 config 哈希、schedule_total_steps、两套配比），任一不一致就拒绝。最新 COMPLETE 损坏时回退到上一个并警告。`best/` 按验证 lm loss 选择，用硬链接发布。
 
 ## 6. 监督微调、偏好优化与强化学习
 
+> 2026-10-03 修订（原因：评审发现 GRPO 不截 EOS、拿不到金标答案、KL 是序列均值几乎不起作用、PPO 只有 1 个 epoch 且 ratio 恒为 1、各模式共用输出目录、对话模板与 `tokenize_v2` 不一致、PPO 四个 FP32 模型放不进一张 V100；影响：后训练命令、默认值和输出目录全部更新）。
+
 预训练检查点之后的统一接口在 `alignment.py`、`alignment_models.py`、`rl_trainer.py` 与 `alignment_train.py`：
 
-* **SFT**：JSONL 提供 `input_ids` 与 `labels`，prompt 标签使用 `-100`。损失由模型计算，包含 assistant 的下一个 token 和 0.3 倍 MTP。
-* **RM**：JSONL 提供 `chosen_ids` 与 `rejected_ids`，训练 `RewardModel` 拟合 pairwise Bradley-Terry 损失。
-* **DPO**：提供同一 prompt 的 `chosen_ids`/`rejected_ids`，冻结 reference checkpoint，使用长度归一化序列 log-prob。
-* **PPO/RL**：`PPOTrainer` 协调 policy、reference、reward 与 value 四个模型；通过 KV Cache 生成 rollout，计算 GAE、ratio clipping、value clipping 与 KL 惩罚。
+* **输出目录**：默认 `/data/mini-k3/checkpoints/alignment-<mode>`，每个模式分开。目录里已有 `model.pt`、`reward_model.pt`、`value_model.pt` 或 `alignment_meta.json` 时拒绝写入，除非 `--overwrite`。预训练 checkpoint 目录永远拒绝写入。每次保存都写 `alignment_meta.json`，记录模式、基座、序列长度、数据集证据、参数和产物 SHA256。
+* **checkpoint 解析**：`--checkpoint` 可以是以下任一种：
+  * 运行根目录：取最新带 `COMPLETE` 的 `step_*`，没有就报错；
+  * step 目录；
+  * 对齐输出目录；
+  * `model.pt` 文件。
+  
+  序列长度依次取 `meta.pt` 的 `run_signature.sequence_length`、`alignment_meta.json`；`--sequence_length` 可以覆盖；都没有时用 2048。
+* **SFT**：损失由模型的分块路径计算（`compute_logits=False`），包含 assistant 的下一个 token、0.3 倍 MTP 和训练态的索引器 KL。`--steps` 按 micro-batch 计数，每 `--grad_accum_steps` 个做一次更新。最后不满一组时按实际个数平均。`--log_interval` 按优化器更新计数。
+* **RM**：`RewardModel` 从因果 LM 初始化（`source=causal`），输出 `reward_model.pt`。margin 和准确率取一组 micro-batch 的平均。打分头（1×512）标记 `adam_only`，走 AdamW。
+* **DPO**：reference 冻结，CUDA 上为 FP16。默认对响应 log-prob 求和；`--dpo_length_norm` 改为按 token 平均。日志记录 chosen/rejected 隐式奖励、margin、准确率和 chosen 上的 k3 KL。`--dpo_beta` 默认 0.1。
+* **PPO**：
+  * rollout 在第一个 EOS 截断：保留 EOS，丢弃之后的 token。
+  * rollout 时一次性记录逐 token 的 old log-prob、reference log-prob 和 value。
+  * 奖励模型分数放在最后一个响应 token 上，做逐 token GAE（`--gamma 1.0 --lam 0.95`），优势在响应 token 上标准化。
+  * 损失 = 逐 token clipped surrogate + `kl_beta`×逐 token k3 KL（默认 0.02）+ clipped value loss。KL 是损失项，不并入奖励。
+  * `--ppo_epochs` 默认 2。
+  * `--reward_checkpoint` 必须是含 `reward_model.pt` 的目录或该文件本身，没有静默回退。value 默认从 `--checkpoint` 初始化，也可以用 `--value_checkpoint` 指定 `value_model.pt`。
+* **GRPO**：
+  * 只读审计过的 SFT 文件（OpenR1）。提示是第一个监督标签之前的 token，含 `<|assistant|>\n` 头；金标答案绝不进入提示。
+  * tokenized 行里没有答案字段，答案按 `id` 从 `decontaminated/openr1/part-*.jsonl` 的 `answer` 字段读取。`decontaminated/openr1/COMPLETE.json` 的哈希必须等于 alignment manifest 中该源的 `upstream_sha256`，每个分片都核对大小和 SHA256。
+  * 没有答案的源（OpenAssistant、OpenHermes）直接报错。
+  * 奖励 = `<think>` 格式 0.5 + 非空答案 0.5 + 与金标完全一致 1.0（也接受最后一个 `\boxed{}` 里的内容）。
+  * KL 为逐 token k3（默认 0.04）；`--grpo_epochs` 默认 1；rollout 时记录 old log-prob。
+* **共用 RL 参数**：`--max_new_tokens 256`（OpenR1 推理链很长，正式跑大概率要调大）、`--temperature 1.0`、`--top_p 1.0`、`--clip_eps 0.2`、`--prompt_batch 4`、`--group_size 4`、`--micro_batch_size 1`、`--eos_token_id 163585`、`--pad_token_id 163839`。
+* **显存方案（4×V100 32GB，FP16）**：
+  * 可训练模型保留 FP32 主权重，前向用 `autocast(float16)`，反向用 `GradScaler`。
+  * 冻结的 reference/reward 转 FP16（`--frozen_dtype fp16`，每个约 2.3 GB）。
+  * PPO 建议 `--device cuda:0 --value_device cuda:1 --ref_device cuda:2 --reward_device cuda:3`。
+  * log-prob 从 hidden 分块计算，不常驻全词表 logits。
+  * CUDA 路径还没在 V100 上实测。
+* **MoE 均衡**：每次优化器更新后，对 policy/value/RM 调用 `NoAuxBalancer.step()`；`--no_balancer` 可关闭。
+* **已知限制**：
+  * RL/DPO 的 log-prob 前向不带 labels，所以 CSA 索引器 KL 在 DPO/PPO/GRPO 中不训练（SFT 中仍训练）。
+  * padding token 会计入 MoE 负载统计。
+  * `encode_preference`（UltraFeedback）把 prompt 轮整串编码，响应不带结尾换行，与 SFT 模板不同；推理按 SFT 模板。这是已审计数据代码的行为，不改。
 
-示例命令：
+示例命令。`<ctx>` 用决定保留的那一档检查点：长上下文目录，或 `/data/mini-k3/checkpoints/step_038146`。
+
 ```bash
-# 1. 监督微调 (SFT)
-python3 train/alignment_train.py --mode sft --checkpoint checkpoints/step_038147 --jsonl data/sft.jsonl
-# 2. 奖励模型训练 (RM)
-python3 train/alignment_train.py --mode rm --checkpoint checkpoints/step_038147 --jsonl data/preferences.jsonl
-# 3. 直接偏好优化 (DPO)
-python3 train/alignment_train.py --mode dpo --checkpoint checkpoints/step_038147 --jsonl data/preferences.jsonl
-# 4. 在线强化学习 (PPO)
-python3 train/alignment_train.py --mode ppo --checkpoint checkpoints/step_038147 --reward_checkpoint checkpoints/rm_model.pt --jsonl data/prompts.jsonl
+python3 train/alignment_train.py --mode sft --checkpoint <ctx> \
+  --jsonl /data/mini-k3/data/prepared-v2-supplement-v2/tokenized/openhermes/train.jsonl
+python3 train/alignment_train.py --mode rm --checkpoint /data/mini-k3/checkpoints/alignment-sft \
+  --jsonl /data/mini-k3/data/prepared-v2-supplement-v2/tokenized/ultrafeedback/train.jsonl
+python3 train/alignment_train.py --mode dpo --checkpoint /data/mini-k3/checkpoints/alignment-sft \
+  --jsonl /data/mini-k3/data/prepared-v2-supplement-v2/tokenized/ultrafeedback/train.jsonl --ref_device cuda:1
+python3 train/alignment_train.py --mode ppo --checkpoint /data/mini-k3/checkpoints/alignment-sft \
+  --reward_checkpoint /data/mini-k3/checkpoints/alignment-rm \
+  --jsonl /data/mini-k3/data/prepared-v2-supplement-v2/tokenized/ultrafeedback/train.jsonl \
+  --device cuda:0 --value_device cuda:1 --ref_device cuda:2 --reward_device cuda:3
+python3 train/alignment_train.py --mode grpo --checkpoint /data/mini-k3/checkpoints/alignment-sft \
+  --jsonl /data/mini-k3/data/prepared-v2-supplement-v2/tokenized/openr1/train.jsonl \
+  --tokenizer_model /data/mini-k3/data/tokenizer --ref_device cuda:1
 ```
+
+**对话模板**：`chat_template.pack_chat` 与 `tokenize_v2.encode_messages` 逐 token 一致。头部与正文分开编码，assistant 正文为 `content+"\n"+EOS`。截断时从最旧的整轮开始丢，开头的 system 放得下就保留，最新的 user 轮绝不丢。
+
+**chat.py / eval_long_context.py**：
+* `chat.py` 用 KV cache 逐 token 流式输出，按累计 id 增量解码，不会拆开多字节 UTF-8。
+* `eval_long_context.py` 做分块缓存预填充（`--prefill_chunk 4096`），参数默认 `--samples 5`、`--seed 1234`、`--max_new_tokens 8`，CUDA 上默认 FP16 autocast。
 
 ## 7. 目录组织与可执行脚本
 
 ```text
 train/
-├── TRAINING_PLAN.md         # [本文件] 唯一定案训练规划与避坑规范
-├── config.py                # Mini K3 (1.150B total / 159M active) 唯一定案模型配置
-├── smoke_test.py            # 随机 token 的架构自检（不读取数据，不授权训练）
-├── test_cache_equivalence.py# 无 cache/cache logits 等价、KDA 衰减与 1M 位置上限自检 (严格满足红线第 8 条)
-├── benchmark_memory.py      # 1M 序列推理显存基准脚本 (严格满足红线第 8 条)
-├── eval_long_context.py     # 1M 长文本大海捞针 (NIAH) 检索评测 (严格满足红线第 8 条)
-├── chat.py                  # 交互式流式终端对话命令行 (支持多轮与 KV Cache)
-├── train.py                 # 主训练启动入口 (4 卡 V100 DDP)
-├── evaluate.py              # 独立评测脚本 (基于右填充与长度归一化评估)
-├── alignment.py             # SFT/RM/DPO/PPO 损失函数与工具库
-├── alignment_models.py      # 奖励模型与价值模型标量输出头
-├── alignment_train.py       # 四阶段统一后训练启动入口
-├── rl_trainer.py            # PPO 训练器与 GAE 优势计算器
-├── chat_template.py         # Kimi 对话模板打包器
+├── TRAINING_PLAN.md          # [本文件] 唯一定案训练规划
+├── PIPELINE_STAGE_REPORTS.md # 数据流水线阶段报告
+├── config.py                 # Mini K3 唯一定案配置（1,150,739,900 / 159,400,252）
+├── model_fingerprint.py      # 模型代码哈希，SMOKE.json 与 readiness 绑定
+├── readiness.py              # 训练前数据/审计/smoke/覆盖率门禁
+├── run_options.py            # 序列长度、学习率、schedule 长度等运行参数解析
+├── train.py                  # 预训练入口（4 卡 V100 DDP，FP16 GradScaler）
+├── smoke_test.py             # 随机 token 架构自检（不授权训练）
+├── smoke_from_manifest.py    # 真实数据 smoke，写 SMOKE.json（含 model_code_sha256）
+├── evaluate.py               # 验证集 lm loss 与题目准确率
+├── eval_answers.py           # 选择题答案解析
+├── eval_long_context.py      # 大海捞针长文检索（红线第 8 条）
+├── benchmark_memory.py       # CSA2 缓存显存理论表与小模型实测（红线第 8 条）
+├── test_cache_equivalence.py # 无 cache / cache logits 等价（红线第 8 条）
+├── test_model_runtime.py     # MoE 分发、分块 CE、Muon、CSA2 参考实现、重计算梯度
+├── test_kda_runtime.py       # KDA 分块与逐步递推、梯度
+├── test_architecture.py / test_v41_modules.py
+├── test_training_engine.py / test_train_loop_cpu.py  # 检查点、spike、恢复逐位一致
+├── chat.py / chat_template.py
+├── alignment.py / alignment_models.py / alignment_train.py / alignment_fit.py / alignment_readiness.py
+├── rl_trainer.py / rule_reward.py
 ├── models/
-│   ├── kda.py               # 带遗忘门、短卷积和状态缓存的 KDA 线性注意力层
-│   ├── mla.py               # 128/64/128 切分的 MLA 潜在注意力与滑动窗口
-│   ├── moe.py               # 批处理 BMM 可微分分发与 TrainableMoEGate
-│   ├── kv_cache.py          # KDA 状态 + 卷积状态 + MLA KV Cache 缓存结构
-│   ├── deepseek_coder.py    # 独立解耦的 DeepSeek-Coder 风格 Dense 对照基线
-│   └── mini_k3.py           # 完整组装的 Mini K3 CausalLM 架构与增量解码
+│   ├── mini_k3.py            # 组装、分块 CE、logits_to_keep、缓存解码
+│   ├── kda.py                # KDA，UT 变换分块递推
+│   ├── mla.py                # 门控 NoPE MLA + CSA2（局部带 + 索引器 top-k 条目）
+│   ├── moe.py                # 路由器（FP32）、堆叠专家按块分发、共享专家
+│   ├── kv_cache.py           # KDA 状态、卷积状态、CSA2 尾部与条目存储
+│   ├── mhc.py / attn_res.py / engram.py / mtp.py / moonvit.py / fp4.py / attention_mask.py
+│   └── deepseek_coder.py     # CED 稠密对照（不进 Mini K3）
 ├── kernels/
-│   └── situ_fused.py        # Triton 融合 situ 激活函数算子 (支持 FP16 / V100)
-├── data/
-│   ├── tokenizer.py         # K3 官方词表包装器 (防字面[EOS]注入)
-│   ├── build_shards.py      # 原始语料分词与 uint32 二进制分片构建工具
-│   └── loader.py            # uint32 二进制分片加权数据加载器
-└── engine/
-    ├── init_patch.py        # Mamba 风格初始化与有限性断言
-    ├── scheduler.py         # WSD 学习率调度器
-    ├── balancer.py          # 分位数均衡，偏置不进 AdamW
-    ├── spike_guard.py       # EMA 损失尖峰守护
-    └── checkpoint.py        # 逐位等价的断点续训管理器
+│   └── situ_fused.py         # situ 重计算实现（无 Triton）
+├── engine/
+│   ├── muon.py               # 逐头/逐专家 Muon + AdamW
+│   ├── scheduler.py          # WSD
+│   ├── balancer.py           # 分位数均衡
+│   ├── spike_guard.py        # lm EMA 尖峰与溢出跳步
+│   ├── checkpoint.py         # 原子检查点、回退、best
+│   └── init_patch.py
+└── data/                     # 数据流水线（*_v2.py、stage_audit.py 等受哈希绑定，禁止修改）、loader.py、测试
 ```
 
 ### 快速启动命令
+
+以下 GPU 命令都需要用户明确同意后才能执行（红线第 7 条）。
 
 1. **架构自检（随机 token，不验证数据，也不授权训练）**：
    ```bash
    python train/smoke_test.py
    ```
-   生产数据需要另跑真实 manifest smoke；它必须绑定当前 `AUDIT.json`：
+   生产数据另跑真实 manifest smoke。它绑定当前 `AUDIT.json` 和模型代码哈希，只在通过时原子替换 SMOKE.json：
    ```bash
-   python train/smoke_from_manifest.py \
+   CUDA_VISIBLE_DEVICES=0 python train/smoke_from_manifest.py \
      --manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/pretrain_stable.json \
      --report /data/mini-k3/data/prepared-v2-supplement-v2/manifests/SMOKE.json
    ```
-2. **验证无缓存与缓存的 logits 一致，并检查 KDA 衰减下界**：
-   ```bash
-   python train/test_cache_equivalence.py
-   ```
-3. **验证 1M 序列推理显存基准（红线第 8 条要求）**：
-   ```bash
-   python train/benchmark_memory.py
-   ```
-4. **验证 1M 长文本检索能力 (Needle In A Haystack)（红线第 8 条要求）**：
+   改动 `config.py`、`models/`、`kernels/` 或 `engine/muon.py` 后，必须重跑这一步。
+2. **无缓存与缓存的 logits 一致**：`python train/test_cache_equivalence.py`
+3. **缓存显存表**：`python train/benchmark_memory.py`
+4. **长文检索（只评到训过的长度）**：
    ```bash
    python train/eval_long_context.py \
      --checkpoint /data/mini-k3/checkpoints/long-context-4096 \
-     --tokenizer_model /data/mini-k3/data/tokenizer \
-     --lengths 4096 8192 16384 32768
+     --tokenizer_model /data/mini-k3/data/tokenizer --lengths 2048 4096
    ```
-5. **冻结后的 manifest/shard 完整性复核**（不重新构建数据；仅检查 shard，不授权训练）：
+   `--checkpoint` 可以给运行根目录，会自动取最新 COMPLETE 的 step。超过训练长度需要加 `--allow-untrained-length`，结果标 UNTRAINED。
+5. **manifest/shard 字节复核**（不授权训练）：
    ```bash
    python train/data/validate_manifest.py \
      --manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/pretrain_stable.json
    python train/data/validate_manifest.py \
      --manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/validation.json
    ```
-6. **先做 200 步短跑，通过后再开 10B**。短跑目录不作为 10B 的恢复点。四张卡被别的任务占用时不要启动。
+6. **200 步短跑，通过后再开 10B**。短跑目录不作为 10B 的恢复点。四张卡被占用时不要启动。
    ```bash
-   mkdir -p /data/mini-k3/{data,checkpoints,logs,rollouts}
    torchrun --standalone --nproc_per_node=4 train/train.py \
      --data_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/pretrain_stable.json \
      --validation_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/validation.json \
      --checkpoint_dir /data/mini-k3/checkpoints/pretrain-short-2048 \
-     --total_steps 200 --save_interval 200 --log_interval 10
+     --total_steps 200 --schedule_total_steps 38147 --save_interval 200 --log_interval 10
    ```
-   短跑合格的标准：四卡没有 OOM，第 0 步主干 loss 在 11.90–12.25，随后 loss 下降，日志里的配比接近稳定期配比。然后再跑 38,147 步：
+   合格标准见文首。合格之后跑 10B：
    ```bash
    torchrun --standalone --nproc_per_node=4 train/train.py \
      --data_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/pretrain_stable.json \
@@ -550,23 +681,21 @@ train/
      --checkpoint_dir /data/mini-k3/checkpoints \
      --total_steps 38147 --save_interval 1000
    ```
-7. **长上下文的第一段，只在 10B 的 2048 预训练结束之后**。不要放进 200 步短跑，也不要插进 38,147 步中间。第一段用 4096，因为这正好是 MLA 窗口；2048 训练时窗口不起作用。学习率用预训练结束时的 \(6\times10^{-5}\)，不用 \(6\times10^{-4}\)。检查点目录分开。
+   最后一个存档是 `/data/mini-k3/checkpoints/step_038146`。
+7. **长上下文第一段，只在 10B 结束之后**。不要放进短跑，也不要插进 10B 中间。CSA2 没有 4096 窗口，选 4096 只是第一次把长度翻倍。学习率用 \(6\times10^{-5}\)，检查点目录分开。
    ```bash
    torchrun --standalone --nproc_per_node=4 train/train.py \
      --sequence-length 4096 --peak-lr 6e-5 \
-     --init-checkpoint /data/mini-k3/checkpoints/step_038147 \
+     --init-checkpoint /data/mini-k3/checkpoints/step_038146 \
      --checkpoint_dir /data/mini-k3/checkpoints/long-context-4096 \
      --total_steps 500 --save_interval 100 \
      --data_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/pretrain_stable.json \
      --validation_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/validation.json
    ```
-   分片不用重写。4096 这一段的 loss 没有明显高于 2048 结束时的 loss，并且显存放得下，才把 `--sequence-length` 改成 8192，再改成 16384。每一段都换新目录，上一段的检查点作为 `--init-checkpoint`。超过 16384 还要 `--allow-long-sequence`。1,048,576 不排进训练。
-   每一段结束只评到刚训过的长度：
-   ```bash
-   python train/eval_long_context.py --checkpoint /data/mini-k3/checkpoints/long-context-4096 --lengths 2048 4096
-   ```
-   SFT、DPO、PPO 用决定保留的那一档长上下文检查点，不要用只训过 2048 的检查点，也不要在对齐之后再改上下文。
-8. **CED 不在这条主线上。** 它不占 10B 和长上下文的卡。主模型的 2048 预训练完成、长上下文做完或不做的决定已经定了之后，才单独开。权重不能载入 Mini K3。
+   这一段自身的 WSD：预热 10 步，从第 425 步起衰减，并切到衰减配比。最后一个存档是 `long-context-4096/step_000499`。
+   
+   只有 4096 段的 lm loss 没有明显高于 2048 结束时，而且显存放得下，才开 8192，再开 16384。每段换新目录，用上一段最后的 step 目录作 `--init-checkpoint`。超过 16384 还要加 `--allow-long-sequence`。1,048,576 不排进训练。每段结束只评到刚训过的长度（见第 4 条）。SFT、DPO、PPO 用决定保留的那一档检查点。
+8. **CED 不在这条主线上**。主模型 2048 预训练和长上下文的决定都定了之后才单独开，权重不能载入 Mini K3。
    ```bash
    torchrun --standalone --nproc_per_node=4 train/train.py --model ced \
      --sequence-length 2048 --total_steps 200 \
@@ -574,24 +703,24 @@ train/
      --data_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/pretrain_stable.json \
      --validation_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/validation.json
    ```
-9. **从中断检查点恢复训练**：
+9. **从中断检查点恢复**。运行签名（含 config 哈希）不一致时会拒绝：
    ```bash
    torchrun --standalone --nproc_per_node=4 train/train.py --resume \
      --data_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/pretrain_stable.json \
      --validation_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/validation.json \
      --checkpoint_dir /data/mini-k3/checkpoints
    ```
-10. **评估模型检查点**（正式结果是验证集 loss，不是一句样例）：
-   ```bash
-   python train/evaluate.py --checkpoint /data/mini-k3/checkpoints/step_038147 \
-     --manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/validation.json \
-     --batches 32 --sequence-length 2048
-   ```
-   有题目文件时另加 `--problems questions.jsonl --tokenizer_model /data/mini-k3/data/tokenizer`。`answer` 可以是选项原文、从 0 起的下标，或 `A`–`Z` 字母标号。`--sanity` 只检查打分代码，不产生成绩。
-11. **交互式终端对话**：
-   ```bash
-   python train/chat.py --checkpoint /data/mini-k3/checkpoints/step_038147 --tokenizer_model /data/mini-k3/data/tokenizer
-   ```
+10. **评估检查点**（正式结果是验证集 lm loss，不是一句样例）：
+    ```bash
+    python train/evaluate.py --checkpoint /data/mini-k3/checkpoints/step_038146 \
+      --manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/validation.json \
+      --batches 32 --sequence-length 2048
+    ```
+    有题目文件时，另加 `--problems questions.jsonl --tokenizer_model /data/mini-k3/data/tokenizer`。`--sanity` 只检查打分代码。
+11. **交互式对话**：
+    ```bash
+    python train/chat.py --checkpoint /data/mini-k3/checkpoints/step_038146 --tokenizer_model /data/mini-k3/data/tokenizer
+    ```
 
 ## 2026-09-14 全仓库容量与数据源审计结果
 
@@ -776,7 +905,12 @@ train/
 4. 训练代码补上三处已经写了开关、但行为不对的实现：MLA 滑动窗口按每个 query 保留最近 4096 个 token（2048 训练长度下仍是整段因果注意力）；MoE 的两个共享专家分开计算再相加，不再合成一个两倍宽的 MLP；`activation_checkpointing` 会包住注意力前向。CED 的 RoPE 与 \(N(0, 0.02)\) 初始化是在独立文件里先修好的。
    2026-09-27 更正：`train.py --model ced` 仍是单独的稠密对照。主干里的因果编码器是前 8 层，不是这个开关。同日的结构对齐见文首。参数量为 1,150,739,900。正式 10B 从零训练。
 5. 四卡训练循环原先会让各卡各写一份 `model.pt`、用本卡 loss 单独决定是否跳步，并且验证只在存档时抽 1 条、还不做卡间平均。现在只由 rank 0 写模型权重，跳步用四卡平均 loss，非有限梯度会降低 GradScaler，验证每 500 步取 4 个 batch 的全局平均。第 0 步检查读完会把数据游标放回去，不丢掉第一批 token。检查点读取显式关闭 `weights_only`，否则 PyTorch 2.6 之后读不回优化器和随机数，中断后无法续跑。对齐脚本按 `sequence_length` 保留序列尾部，奖励和价值不再把 token 0 当成填充。`evaluate.py` 对 `--problems` JSONL 计算准确率；不带该文件时只允许显式的 `--sanity`，不能把一句样例当成评测结果。2026-09-27 确定介入顺序：200 步短跑和 38,147 步 10B 都保持 2048、Mini K3、峰值学习率 \(6\times10^{-4}\)。长上下文从 10B 检查点之后才开始，第一段是 4096、学习率 \(6\times10^{-5}\)；8192 和 16384 只在前一段 loss 和显存都稳时才开。CED 放在主线和长上下文决定之后，单独占卡。超过 16384 需要 `--allow-long-sequence`。不设学习率就加长序列会被拒绝。
+
+> 2026-10-03 更正（已被文首“第一次短跑两次 OOM：根因与整改”取代）：第 4 条的 MLA 滑动窗口已删除，`--attention-window` 现在直接报错，注意力是 CSA2；第 5 条的“每 500 步取 4 个 batch”改为固定验证切片 `--validation_batches 8`，按 `lm_loss` 选 best；优化器/GradScaler 只由 rank 0 保存一份。以文首为准。
+
 ### 2026-10-01 训练前代码与数据门禁复核（未启动正式训练）
+
+> 2026-10-03 更正：下文第 3 条的单卡 smoke 与第 6 条的 cache 测试针对旧模型代码。模型代码已改（MoE、CSA2、KDA、Muon），`SMOKE.json` 现在绑定 `model_code_sha256`，旧 smoke 失效，必须重跑 `smoke_from_manifest.py`。第 5 条的运行签名已加入配置 sha256 等字段，旧检查点不能续跑。第 7 条提到的 `validate_manifest.py` 本地已删除，服务器上的残留文件需要清理。
 
 本次修复对应当前 v2 数据和 13 层、1,150,739,900 总参数配置；所有改动先同步到 v100，再做只读或小张量验证：
 

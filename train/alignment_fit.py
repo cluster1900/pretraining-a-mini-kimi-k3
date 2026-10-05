@@ -19,6 +19,22 @@ def fit_sft(ids, labels, limit):
     return kept, kept_labels, dropped
 
 
+def sft_prompt(ids, labels):
+    """Prompt of an encoded SFT row: every token before the first supervised label.
+
+    ``tokenize_v2.encode_messages`` masks headers and non-assistant bodies with
+    -100, so this is the conversation up to and including the first
+    ``<|assistant|>\\n`` header. The assistant answer is never included.
+    Returns ``None`` when the row has no supervised token.
+    """
+    if len(ids) != len(labels):
+        raise ValueError("input_ids and labels differ in length")
+    for index, label in enumerate(labels):
+        if label != -100:
+            return list(ids[:index]) if index > 0 else None
+    return None
+
+
 def fit_preference(chosen, rejected, prompt_len, limit):
     """Fit a pair while preserving one identical prompt boundary.
 

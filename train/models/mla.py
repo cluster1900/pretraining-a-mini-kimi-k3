@@ -1,9 +1,29 @@
-"""
-Gated Multi-Head Latent Attention.
+"""Gated Multi-Head Latent Attention with CSA2 (compressed sparse attention).
 
 K3 applies no positional encoding here. Position stays in the KDA decay.
-The cache stores the KV latent and rebuilds per-head K and V. A full-rank
-sigmoid gate scales the attention output before the output projection.
+
+Every query attends to two key sets inside one softmax:
+
+* a local band of the last ``csa_local`` raw tokens (keys/values rebuilt
+  from the KV latent), and
+* compressed entries: every ``csa_group`` consecutive latents are projected
+  into one entry. A light indexer scores entries per query and keeps the top
+  ``csa_top_k`` among the entries that end before the local band starts. The
+  attention logits for the kept entries are the per-head ``q . k_entry``
+  products, the same as for raw keys. The indexer only chooses.
+
+The indexer is trained with a KL loss towards the head-summed attention mass
+over the kept entries (DeepSeek-V3.2 DSA style). Its inputs are detached, so
+this loss does not move the backbone; the layer exposes it as ``_aux_loss``.
+
+Cache. The cache keeps the last raw latents needed for the local band and
+for the next incomplete group, plus every compressed entry from position 0.
+Entries grow by one ``kv_lora_rank`` vector per ``csa_group`` tokens, so the
+cache is O(L / csa_group), not O(1); in exchange cached decoding equals the
+no-cache forward at any length. There is no separate attention window.
+
+A full-rank sigmoid gate scales the attention output before the output
+projection.
 """
 
 import math
@@ -12,8 +32,11 @@ import torch.nn as nn
 import torch.nn.functional as F
 from typing import Optional, Tuple
 from train.config import MiniK3Config
-from train.models.attention_mask import attention_blocked, window_key_start
-from train.models.fp4 import PackedKV, dequantize_fp4, quantize_fp4
+from train.models.attention_mask import attention_blocked
+from train.models.kv_cache import EntryStore
+
+# Upper bound on the elements of one [batch, heads, queries, keys] score block.
+_SCORE_BUDGET = 1 << 24
 
 
 class MultiHeadLatentAttention(nn.Module):
@@ -45,138 +68,151 @@ class MultiHeadLatentAttention(nn.Module):
         self.q_up.weight.muon_heads = self.num_heads
         self.kv_up.weight.muon_heads = self.num_heads
         self._published = None
+        self._aux_loss = None
+        # None = pick the cheaper exact formulation; True/False forces one (tests).
+        self._absorb_override = None
 
+    # ------------------------------------------------------------------ helpers
     def _gate(self, hidden_states: torch.Tensor, attn_out: torch.Tensor) -> torch.Tensor:
         b, length, _ = hidden_states.shape
         gate = torch.sigmoid(self.out_gate(hidden_states))
         gate = gate.view(b, length, self.num_heads, self.v_head_dim).transpose(1, 2)
         return attn_out * gate.to(attn_out.dtype)
 
-    def _load_past(self, past_kv):
-        if past_kv is None:
-            return None
-        if isinstance(past_kv, PackedKV):
-            return dequantize_fp4(past_kv).to(self.kv_down.weight.dtype)
-        return past_kv
+    def _rebuild_kv(self, kv_lat: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+        b, length, _ = kv_lat.shape
+        kv_full = self.kv_up(kv_lat).view(b, length, self.num_heads, self.qk_nope_dim + self.v_head_dim)
+        keys = kv_full[..., : self.qk_nope_dim].transpose(1, 2)
+        values = kv_full[..., self.qk_nope_dim :].transpose(1, 2)
+        return keys, values
 
-    def _store(self, kv_lat: torch.Tensor):
-        window = self.config.attention_window
-        kept = kv_lat[:, -window:].detach()
-        if self.config.kv_cache_fp4:
-            return quantize_fp4(kept)
-        return kept
-
-    def _entries(self, latent: torch.Tensor, origin: int) -> torch.Tensor:
-        """Complete groups aligned to absolute positions, not to the cache slice."""
+    def _project_groups(self, latent: torch.Tensor, first_group: int, last_group: int, origin: int) -> torch.Tensor:
+        """Entries for absolute groups [first_group, last_group); ``latent[:, j]`` is position origin+j."""
         group = self.config.csa_group
-        batch, tokens, rank = latent.shape
-        start = ((origin + group - 1) // group) * group - origin
-        groups = 0 if start >= tokens else (tokens - start) // group
-        if groups <= 0:
-            filler = latent.new_zeros(batch, 1, group * rank)
-            if tokens:
-                filler[:, 0, :rank] = latent[:, 0]
-            return self.entry_proj(filler)[:, :0]
-        chunk = latent[:, start:start + groups * group]
-        return self.entry_proj(chunk.reshape(batch, groups, group * rank))
+        batch, _, rank = latent.shape
+        count = last_group - first_group
+        if count <= 0:
+            return latent.new_zeros(batch, 0, rank)
+        start = first_group * group - origin
+        if start < 0:
+            raise RuntimeError("CSA2 cache lost latents of an incomplete group")
+        chunk = latent[:, start:start + count * group]
+        return self.entry_proj(chunk.reshape(batch, count, group * rank))
 
-    def _dense_or_csa(self, hidden_states, q, kv_lat, cache_position, memory, mode):
-        """Local tokens stay dense. Older context is compressed and indexed."""
-        length = hidden_states.shape[1]
-        origin = cache_position + length - kv_lat.shape[1]
-        own_entries = self._entries(kv_lat, origin)
-        entries = own_entries
-        if mode in ("reindex", "reuse") and memory is not None:
-            entries = memory["entries"]
-        connect = own_entries.reshape(-1)[:1].sum() * 0
-        connect = connect + self.index_q(hidden_states).reshape(-1)[:1].sum() * 0
-        connect = connect + self.index_k(own_entries).reshape(-1)[:1].sum() * 0
-        return self._compressed(hidden_states, q, kv_lat, entries, cache_position, memory, mode) + connect
+    @staticmethod
+    def _index_linear(linear: nn.Linear, x: torch.Tensor) -> torch.Tensor:
+        """Indexer projection in FP32 (or FP64 when the module is FP64)."""
+        dtype = linear.weight.dtype if linear.weight.dtype == torch.float64 else torch.float32
+        return F.linear(x.to(dtype), linear.weight.to(dtype))
 
-    def _cached_dense(self, q, k, v, cache_position):
-        window = self.config.attention_window
-        length = q.shape[2]
-        scores = torch.matmul(q, k.transpose(-1, -2)) / math.sqrt(q.shape[-1])
-        end_pos = cache_position + length - 1
-        k_abs = torch.arange(end_pos - k.shape[2] + 1, end_pos + 1, device=q.device)[None, :]
-        q_abs = torch.arange(cache_position, cache_position + length, device=q.device)[:, None]
-        scores = scores.masked_fill(attention_blocked(q_abs, k_abs, window), float("-inf"))
-        weights = F.softmax(scores, dim=-1, dtype=torch.float32).to(q.dtype)
-        return torch.matmul(weights, v)
+    @staticmethod
+    def _cached_entries(past):
+        if past is None or past.get("entries") is None:
+            return None
+        return past["entries"].dense()
 
-    def _local_bank(self, q, k, v, cache_position):
-        """One causal window of `csa_local` raw keys for every query."""
-        local = self.config.csa_local
+    # ---------------------------------------------------------------- attention
+    def _attend(self, hidden_states, q, kv_lat, kv_origin, entries, cache_position, memory, mode):
+        """q: [B,H,L,D] for positions cache_position.. ; kv_lat[:, j] is position kv_origin + j."""
         batch, heads, length, dim = q.shape
-        total = k.shape[2]
-        pad = local - 1
-        k_pad = F.pad(k, (0, 0, pad, 0))
-        v_pad = F.pad(v, (0, 0, pad, 0))
-        k_bank = k_pad.unfold(2, local, 1).permute(0, 1, 2, 4, 3)
-        v_bank = v_pad.unfold(2, local, 1).permute(0, 1, 2, 4, 3)
-        start = total - length
-        k_bank = k_bank[:, :, start:start + length]
-        v_bank = v_bank[:, :, start:start + length]
-        scores = torch.einsum("bhld,bhlwd->bhlw", q, k_bank) / math.sqrt(dim)
-        offset = torch.arange(local, device=q.device)
-        kv_index = torch.arange(start, start + length, device=q.device)[:, None]
-        source = kv_index - local + 1 + offset
-        scores = scores.masked_fill(source[None, None] < 0, torch.finfo(scores.dtype).min)
-        return scores, v_bank
-
-    def _attend_gathered(self, values, chosen, weights):
-        """Project the shared entries once, then gather per query in small chunks."""
-        batch, heads, _, dim = values.shape
-        length, n_take = chosen.shape[1], chosen.shape[2]
-        outputs = []
-        for start in range(0, length, 32):
-            end = min(length, start + 32)
-            take = chosen[:, start:end]
-            index = take[:, None, :, :, None].expand(batch, heads, end - start, n_take, dim)
-            source = values[:, :, None].expand(batch, heads, end - start, values.shape[2], dim)
-            picked = torch.gather(source, 3, index)
-            outputs.append(torch.einsum("bhlk,bhlkd->bhld", weights[:, :, start:end], picked))
+        local = self.config.csa_local
+        group = self.config.csa_group
+        scale = 1.0 / math.sqrt(dim)
+        k_raw, v_raw = self._rebuild_kv(kv_lat)
+        complete = 0 if entries is None else entries.shape[1]
+        reuse_index = None
+        if mode == "reuse" and memory is not None and memory.get("index") is not None:
+            reuse_index = memory["index"]
+        if complete:
+            entry_last = torch.arange(complete, device=q.device) * group + (group - 1)
+            n_take = min(self.config.csa_top_k, complete)
+            with torch.autocast(device_type=q.device.type, enabled=False):
+                index_keys = self._index_linear(self.index_k, entries.detach())
+            # Exact alternatives for the entry keys/values:
+            #   rebuild: kv_up over every entry once  ~ C*R*H*(Dk+Dv) + L*H*C*(Dk+Dv)
+            #   absorb:  fold kv_up into q and into the output ~ L*H*(R*(Dk+Dv) + 2*C*R)
+            rank = entries.shape[-1]
+            kv_dim = self.qk_nope_dim + self.v_head_dim
+            rebuild_cost = complete * rank * kv_dim + length * complete * kv_dim
+            absorb_cost = length * (rank * kv_dim + 2 * complete * rank)
+            absorb = absorb_cost < rebuild_cost if self._absorb_override is None else self._absorb_override
+            if absorb:
+                w_kv = self.kv_up.weight.view(heads, kv_dim, rank)
+                w_k, w_v = w_kv[:, : self.qk_nope_dim], w_kv[:, self.qk_nope_dim:]
+                ent = entries.unsqueeze(1)                                   # [B,1,C,R]
+            else:
+                k_ent, v_ent = self._rebuild_kv(entries)
+        # Band scores are [chunk, chunk + local - 1]; a small block keeps most of them live.
+        cap = max(256, 2 * local)
+        chunk = max(1, min(length, cap, _SCORE_BUDGET // max(1, batch * heads * (cap + local + complete))))
+        outputs, chosen_parts, aux_parts = [], [], []
+        for s in range(0, length, chunk):
+            e = min(length, s + chunk)
+            q_c = q[:, :, s:e]
+            q_pos = torch.arange(cache_position + s, cache_position + e, device=q.device)
+            # Local band: raw keys in (pos - local, pos].
+            k_lo = max(0, cache_position + s - local + 1 - kv_origin)
+            k_hi = cache_position + e - kv_origin
+            k_pos = torch.arange(kv_origin + k_lo, kv_origin + k_hi, device=q.device)
+            band = torch.matmul(q_c, k_raw[:, :, k_lo:k_hi].transpose(-1, -2)).float() * scale
+            band = band.masked_fill(attention_blocked(q_pos[:, None], k_pos[None, :], local), float("-inf"))
+            scores = band
+            if complete:
+                with torch.autocast(device_type=q.device.type, enabled=False):
+                    index_q = self._index_linear(self.index_q, hidden_states[:, s:e].detach())
+                    index_scores = torch.matmul(index_q, index_keys.transpose(-1, -2)) / math.sqrt(index_keys.shape[-1])
+                eligible = entry_last.view(1, 1, -1) < (q_pos - local + 1).view(1, -1, 1)
+                eligible = eligible.expand(batch, -1, -1)
+                if reuse_index is not None:
+                    chosen = reuse_index[:, s:e].clamp(0, complete - 1)
+                else:
+                    masked = index_scores.masked_fill(~eligible, float("-inf"))
+                    chosen = torch.topk(masked, k=n_take, dim=-1).indices
+                chosen_parts.append(chosen)
+                selected = torch.zeros_like(eligible).scatter(2, chosen, True) & eligible
+                if absorb:
+                    q_abs = torch.einsum("bhld,hdr->bhlr", q_c, w_k.to(q_c.dtype))
+                    glob = torch.matmul(q_abs, ent.transpose(-1, -2).to(q_abs.dtype)).float() * scale
+                else:
+                    glob = torch.matmul(q_c, k_ent.transpose(-1, -2)).float() * scale
+                glob = glob.masked_fill(~selected.unsqueeze(1), float("-inf"))
+                scores = torch.cat((band, glob), dim=-1)
+            weights = torch.softmax(scores, dim=-1)
+            w_band = weights[..., : band.shape[-1]].to(v_raw.dtype)
+            out = torch.matmul(w_band, v_raw[:, :, k_lo:k_hi])
+            if complete:
+                w_glob = weights[..., band.shape[-1]:]
+                if absorb:
+                    mixed_lat = torch.matmul(w_glob.to(ent.dtype), ent)          # [B,H,Lc,R]
+                    out = out + torch.einsum("bhlr,hdr->bhld", mixed_lat, w_v.to(mixed_lat.dtype)).to(out.dtype)
+                else:
+                    out = out + torch.matmul(w_glob.to(v_ent.dtype), v_ent)
+                if self.training:
+                    aux_parts.append(self._indexer_kl(index_scores, selected, w_glob.detach()))
+            outputs.append(out)
+        if aux_parts:
+            total = sum(part[0] for part in aux_parts)
+            rows = sum(part[1] for part in aux_parts)
+            self._aux_loss = total / rows.clamp_min(1)
+        index = torch.cat(chosen_parts, dim=1) if chosen_parts else None
+        self._published = {"entries": entries, "index": index}
         return torch.cat(outputs, dim=2)
 
-    def _compressed(self, hidden_states, q, kv_lat, entries, cache_position, memory, mode):
-        batch, heads, length, _ = q.shape
-        group = self.config.csa_group
-        local = self.config.csa_local
-        usable = entries
-        complete = usable.shape[1]
-        k_raw, v_raw = self._rebuild_kv(kv_lat)
-        local_scores, local_values = self._local_bank(q, k_raw, v_raw, cache_position)
-        if complete == 0:
-            weights = torch.softmax(local_scores.float(), dim=-1).to(q.dtype)
-            self._published = {"entries": entries, "index": None}
-            return torch.einsum("bhlw,bhlwd->bhld", weights, local_values)
-        q_index = self.index_q(hidden_states)
-        raw_scores = torch.matmul(q_index, self.index_k(usable).transpose(-1, -2))
-        origin = cache_position + length - kv_lat.shape[1]
-        start_group = (origin + group - 1) // group
-        entry_last = (start_group + torch.arange(complete, device=q.device)) * group + (group - 1)
-        query = torch.arange(cache_position, cache_position + length, device=q.device)
-        eligible = entry_last.view(1, 1, -1) < (query - local + 1).clamp_min(0).view(1, -1, 1)
-        eligible = eligible.expand(batch, -1, -1)
-        masked = raw_scores.masked_fill(~eligible, torch.finfo(raw_scores.dtype).min)
-        n_take = min(self.config.csa_top_k, usable.shape[1])
-        chosen_scores, chosen = torch.topk(masked, k=n_take, dim=-1)
-        if mode == "reuse" and memory is not None and memory.get("index") is not None:
-            chosen = memory["index"]
-            if chosen.shape[1] != length:
-                chosen = chosen[:, cache_position:cache_position + length]
-            chosen_scores = torch.gather(raw_scores, -1, chosen.clamp(0, complete - 1))
-        _, all_values = self._rebuild_kv(usable)
-        global_logits = chosen_scores.unsqueeze(1).expand(-1, heads, -1, -1)
-        allowed = torch.gather(eligible, 2, chosen.clamp(0, complete - 1))
-        global_logits = global_logits.masked_fill(~allowed.unsqueeze(1), torch.finfo(global_logits.dtype).min)
-        scores = torch.cat((local_scores, global_logits.to(local_scores.dtype)), dim=-1)
-        weights = torch.softmax(scores.float(), dim=-1).to(q.dtype)
-        local_out = torch.einsum("bhlw,bhlwd->bhld", weights[..., :local], local_values)
-        global_out = self._attend_gathered(all_values, chosen, weights[..., local:])
-        self._published = {"entries": entries, "index": chosen}
-        return local_out + global_out
+    @staticmethod
+    def _indexer_kl(index_scores, selected, w_glob):
+        """Sum over rows of KL(head-summed attention mass || indexer softmax), kept entries only."""
+        target = w_glob.sum(dim=1)                                   # [B, Lc, C]
+        target = target * selected
+        mass = target.sum(dim=-1, keepdim=True)
+        has_rows = mass.squeeze(-1) > 0
+        target = target / mass.clamp_min(1e-12)
+        logits = index_scores.masked_fill(~selected, torch.finfo(index_scores.dtype).min)
+        log_pred = torch.log_softmax(logits, dim=-1)
+        kl = (target * (torch.log(target.clamp_min(1e-12)) - log_pred)).masked_fill(~selected, 0.0).sum(-1)
+        kl = kl.masked_fill(~has_rows, 0.0)
+        return kl.sum(), has_rows.sum()
 
+    # ------------------------------------------------------------------ forward
     def forward(
         self,
         hidden_states: torch.Tensor,
@@ -185,42 +221,54 @@ class MultiHeadLatentAttention(nn.Module):
         memory=None, mode: str = "full",
     ):
         del attention_mask
+        self._aux_loss = None
         b, l, _ = hidden_states.shape
+        group = self.config.csa_group
         q_lat = self.q_norm(self.q_down(hidden_states))
         q = self.q_up(q_lat).view(b, l, self.num_heads, self.qk_nope_dim).transpose(1, 2)
-        kv_lat = self.kv_norm(self.kv_down(hidden_states))
-        past = self._load_past(past_kv)
-        if past is not None:
-            kv_lat = torch.cat([past, kv_lat], dim=1)[:, -self.config.attention_window:]
-        attn_out = self._dense_or_csa(hidden_states, q, kv_lat, cache_position, memory, mode)
+        new_lat = self.kv_norm(self.kv_down(hidden_states))
+        if past_kv is not None:
+            tail = past_kv["tail"].to(new_lat.dtype)
+            kv_lat = torch.cat([tail, new_lat], dim=1)
+            kv_origin = cache_position - tail.shape[1]
+            old_entries = self._cached_entries(past_kv)
+            old_count = int(past_kv["count"])
+        else:
+            if cache_position != 0:
+                raise ValueError("A no-cache MLA forward must start at position 0")
+            kv_lat, kv_origin, old_entries, old_count = new_lat, 0, None, 0
+        new_count = (cache_position + l) // group
+        own_new = None
+        if mode == "full":
+            own_new = self._project_groups(kv_lat, old_count, new_count, kv_origin)
+            if old_entries is not None:
+                entries = torch.cat([old_entries.to(own_new.dtype), own_new], dim=1)
+            else:
+                entries = own_new
+            connect = None
+        else:
+            # Reindex/Reuse read the encoder's entries; this layer's projection
+            # is unused by design.  Keep it in the graph with an exact zero.
+            entries = None if memory is None else memory.get("entries")
+            connect = self.entry_proj.weight.sum() * 0.0
+        attn_out = self._attend(hidden_states, q, kv_lat, kv_origin, entries, cache_position, memory, mode)
+        if connect is not None:
+            attn_out = attn_out + connect.to(attn_out.dtype)
         attn_out = self._gate(hidden_states, attn_out)
         result = self.out_proj(attn_out.transpose(1, 2).contiguous().view(b, l, -1))
         if not use_cache:
             return result
-        return result, self._store(kv_lat)
+        return result, self._store(past_kv, kv_lat, own_new, new_count)
 
-    def _windowed_attention(self, q, k, v, window):
-        block = min(window, 512)
-        outputs = []
-        scale = 1.0 / math.sqrt(q.shape[-1])
-        length = q.shape[2]
-        for start in range(0, length, block):
-            end = min(length, start + block)
-            key_start = window_key_start(start, window)
-            qs = q[:, :, start:end]
-            ks = k[:, :, key_start:end]
-            vs = v[:, :, key_start:end]
-            scores = torch.matmul(qs, ks.transpose(-1, -2)) * scale
-            q_pos = torch.arange(start, end, device=q.device)[:, None]
-            k_pos = torch.arange(key_start, end, device=q.device)[None, :]
-            scores = scores.masked_fill(attention_blocked(q_pos, k_pos, window), float("-inf"))
-            weights = F.softmax(scores, dim=-1, dtype=torch.float32).to(q.dtype)
-            outputs.append(torch.matmul(weights, vs))
-        return torch.cat(outputs, dim=2)
-
-    def _rebuild_kv(self, kv_lat: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
-        b, length, _ = kv_lat.shape
-        kv_full = self.kv_up(kv_lat).view(b, length, self.num_heads, self.qk_nope_dim + self.v_head_dim)
-        keys = kv_full[..., : self.qk_nope_dim].transpose(1, 2)
-        values = kv_full[..., self.qk_nope_dim :].transpose(1, 2)
-        return keys, values
+    def _store(self, past_kv, kv_lat, own_new, new_count):
+        keep = max(self.config.csa_local, self.config.csa_group)
+        store = None if past_kv is None else past_kv.get("entries")
+        if own_new is not None and own_new.shape[1]:
+            if store is None:
+                store = EntryStore(fp4=bool(self.config.kv_cache_fp4))
+            store.append(own_new.detach())
+        return {
+            "tail": kv_lat[:, -keep:].detach(),
+            "entries": store,
+            "count": new_count,
+        }

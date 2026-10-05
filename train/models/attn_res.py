@@ -1,6 +1,6 @@
 """Full Attention Residuals.
 
-At 12 layers the block-compressed form is unnecessary. Each layer reads a
+At 13 layers the block-compressed form is unnecessary. Each layer reads a
 softmax over the embedding and every previous layer output. A zero query
 weights those sources uniformly, so the initial residual stream stays near
 the embedding.

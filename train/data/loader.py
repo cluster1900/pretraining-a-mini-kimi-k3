@@ -225,55 +225,92 @@ class MultiSourceDataLoader:
             self.source_names = list(self.target_weights.keys())
             self.source_probs = [self.target_weights[n] / total_w for n in self.source_names]
 
-    def set_mix(self, new_weights: Dict[str, float]):
-        """Switches data mix (e.g. switching to decay phase)."""
+    @staticmethod
+    def _normalized(weights: Dict[str, float]) -> Dict[str, float]:
+        total = sum(float(v) for v in weights.values())
+        if total <= 0:
+            return {}
+        return {k: float(v) / total for k, v in weights.items() if float(v) > 0}
+
+    def same_mix(self, weights: Dict[str, float], tol: float = 1e-9) -> bool:
+        """True if ``weights`` (restricted to loaded streams) equals the current target mix."""
+        new = self._normalized({k: v for k, v in weights.items() if k in self.streams})
+        old = self._normalized(self.target_weights)
+        if set(new) != set(old):
+            return False
+        return all(abs(new[k] - old[k]) <= tol for k in new)
+
+    def set_mix(self, new_weights: Dict[str, float]) -> bool:
+        """Switches data mix (e.g. switching to decay phase).
+
+        Returns True if the mix changed. Setting the mix that is already active
+        is a no-op, so the deficit counters are kept and a resume inside the
+        decay phase stays exact.
+        """
         missing = [name for name, weight in new_weights.items() if weight > 0 and name not in self.streams]
         if missing:
             raise KeyError(f"Mix names are not loaded from the manifest: {missing}")
+        if self.target_weights and self.same_mix(new_weights):
+            return False
         self.target_weights = {k: float(v) for k, v in new_weights.items() if k in self.streams}
         self._normalize_weights()
         # The WSD decay phase has its own exact-mixture accounting.  Without
         # this reset, the stable phase would bias every later choice.
         self.mix_tokens_served = {name: 0 for name in self.source_names}
+        return True
 
     def next_batch(self, device: torch.device) -> Tuple[torch.Tensor, torch.Tensor]:
         """
         Samples a micro-batch [B, L] of input tokens and shifted labels.
         """
+        import numpy as np
+        import torch
+
         # Synthetic batches are only useful for unit tests.  A training process
         # must be bound to an audited manifest and never silently invent data.
         if not self.streams:
             raise RuntimeError("No audited data streams are loaded; refusing synthetic training data")
 
-        batch_seqs = []
-        for _ in range(self.batch_size):
-            available = [
-                name for name in self.source_names
-                if self.streams[name].remaining() >= self.seq_len
-            ]
-            if not available:
-                raise EOFError("All audited data sources are exhausted; refusing token reuse")
+        active = [name for name in self.source_names if self.target_weights.get(name, 0.0) > 0]
+        if not active:
+            raise RuntimeError("Target data mix has no source with positive weight")
+        batch = np.empty((self.batch_size, self.seq_len), dtype=np.int64)
+        for row in range(self.batch_size):
             # Weighted deficit scheduling keeps the realised mix near the
             # documented proportions while making exhaustion deterministic.
             src = min(
-                available,
+                active,
                 key=lambda name: (
-                    self.mix_tokens_served.get(name, 0) / max(self.target_weights[name], 1e-12),
+                    self.mix_tokens_served.get(name, 0) / self.target_weights[name],
                     name,
                 ),
             )
             stream = self.streams[src]
+            if stream.remaining() < self.seq_len:
+                # Never fall back to the other sources: that would silently
+                # renormalise the audited mix (and on one rank only).
+                raise EOFError(
+                    f"Source {src!r} (target weight {self.target_weights[src]}) is exhausted on rank "
+                    f"{self.rank}/{self.world_size}: {stream.remaining()} tokens left, need {self.seq_len}. "
+                    "Refusing to renormalise the data mix or reuse tokens."
+                )
             tokens = stream.take(self.seq_len)
-            self.token_counts[src] += self.seq_len
+            # uint32 -> int64 on the host; torch has no general uint32 support.
+            batch[row] = np.frombuffer(tokens, dtype="<u4")
+            self.token_counts[src] = self.token_counts.get(src, 0) + self.seq_len
             self.mix_tokens_served[src] = self.mix_tokens_served.get(src, 0) + self.seq_len
             self.total_tokens_served += self.seq_len
-            batch_seqs.append(tokens)
 
-        import numpy as np
-        import torch
-        batch_arr = np.stack(batch_seqs, axis=0)  # [B, L]
-        input_ids = torch.tensor(batch_arr, dtype=torch.long, device=device)
+        input_ids = torch.from_numpy(batch)
+        if torch.device(device).type == "cuda":
+            input_ids = input_ids.pin_memory().to(device, non_blocking=True)
+        else:
+            input_ids = input_ids.to(device)
         return input_ids, input_ids.clone()
+
+    def close(self) -> None:
+        for stream in self.streams.values():
+            stream.close()
 
     def realised_mix(self) -> Dict[str, float]:
         """Calculates actual realized token ratio across sources."""
@@ -290,13 +327,23 @@ class MultiSourceDataLoader:
             "token_counts": dict(self.token_counts),
             "total_tokens_served": self.total_tokens_served,
             "mix_tokens_served": dict(self.mix_tokens_served),
+            "target_weights": dict(self.target_weights),
         }
 
     def load_state_dict(self, state: Dict[str, Any]):
         stream_states = state.get("streams", {})
         for s, s_state in stream_states.items():
             if s in self.streams:
-                self.streams[s].load_state_dict(s_state)
-        self.token_counts = state.get("token_counts", {})
-        self.total_tokens_served = state.get("total_tokens_served", 0)
-        self.mix_tokens_served = state.get("mix_tokens_served", dict(self.token_counts))
+                self.streams[s].load_state_dict(dict(s_state))
+        # Copy: the caller may keep ``state`` as a fixed snapshot (validation).
+        self.token_counts = dict(state.get("token_counts", {}))
+        self.total_tokens_served = int(state.get("total_tokens_served", 0))
+        self.mix_tokens_served = dict(state.get("mix_tokens_served", self.token_counts))
+        saved_weights = state.get("target_weights")
+        if saved_weights is not None:
+            missing = [k for k, v in saved_weights.items() if float(v) > 0 and k not in self.streams]
+            if missing:
+                raise KeyError(f"Saved data mix names are not loaded from the manifest: {missing}")
+            # Restore the mix without resetting the deficit counters just loaded.
+            self.target_weights = {k: float(v) for k, v in saved_weights.items() if k in self.streams}
+            self._normalize_weights()

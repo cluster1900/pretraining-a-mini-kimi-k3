@@ -46,6 +46,10 @@ class Engram(nn.Module):
         self.register_buffer("multipliers", multipliers, persistent=True)
         self.register_buffer("primes", torch.tensor(primes, dtype=torch.int64), persistent=True)
         self.register_buffer("compress_id", torch.arange(config.vocab_size, dtype=torch.int64), persistent=True)
+        # Slot s hashes order orders[s // heads]; shifts >= order contribute 0.
+        slot_orders = torch.tensor([order for order in self.orders for _ in range(self.heads)])
+        shift_mask = torch.arange(config.engram_max_ngram).view(1, -1) < slot_orders.view(-1, 1)
+        self.register_buffer("shift_mask", shift_mask, persistent=False)
         self.reset_structural_init()
 
     def reset_structural_init(self) -> None:
@@ -53,22 +57,21 @@ class Engram(nn.Module):
             nn.init.zeros_(self.out.weight)
 
     def _hashes(self, token_ids: torch.Tensor) -> torch.Tensor:
+        """[B, L] ids -> [B, L, slots] bucket ids, fully on device (no host sync).
+
+        hash_s(t) = XOR_{shift < order_s} (id[t - shift] * mult[s, shift]) mod prime_s,
+        with ids before the window start treated as 0.
+        """
         ids = self.compress_id[token_ids.clamp(0, self.vocab_size - 1)]
-        batch, length = ids.shape
-        slots = self.primes.numel()
-        hashes = []
-        for order_index, order in enumerate(self.orders):
-            for head in range(self.heads):
-                slot = order_index * self.heads + head
-                mixed = torch.zeros(batch, length, dtype=torch.int64, device=ids.device)
-                for shift in range(order):
-                    shifted = ids if shift == 0 else ids.roll(shifts=shift, dims=1)
-                    if shift:
-                        shifted = shifted.clone()
-                        shifted[:, :shift] = 0
-                    mixed = torch.bitwise_xor(mixed, shifted * int(self.multipliers[slot, shift]))
-                hashes.append(torch.remainder(mixed, int(self.primes[slot])))
-        return torch.stack(hashes, dim=-1)
+        length = ids.shape[1]
+        max_order = self.multipliers.shape[1]
+        multipliers = self.multipliers * self.shift_mask.to(self.multipliers.dtype)  # [slots, O]
+        mixed = None
+        for shift in range(max_order):
+            shifted = F.pad(ids, (shift, 0))[:, :length] if shift else ids
+            term = shifted.unsqueeze(-1) * multipliers[:, shift]          # [B, L, slots]
+            mixed = term if mixed is None else torch.bitwise_xor(mixed, term)
+        return torch.remainder(mixed, self.primes)
 
     def forward(self, token_ids: torch.Tensor, hidden: torch.Tensor) -> torch.Tensor:
         hashes = self._hashes(token_ids)

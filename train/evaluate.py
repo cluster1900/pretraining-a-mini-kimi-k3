@@ -139,17 +139,28 @@ def main():
         if not loader.streams:
             raise RuntimeError(f"Validation manifest has no readable shards: {args.manifest}")
         total = 0.0
+        mtp_total = 0.0
+        mtp_batches = 0
         model.eval()
         amp = torch.autocast(device_type=device.type, dtype=torch.float16, enabled=device.type == "cuda")
         with torch.no_grad():
             for _ in range(args.batches):
                 batch, labels = loader.next_batch(device)
                 with amp:
-                    total += float(model(batch, labels=labels)["loss"])
+                    out = model(batch, labels=labels, compute_logits=False)
+                # Held-out next-token loss of the backbone; the 0.3*MTP term in
+                # out["loss"] is a training objective, not the evaluation metric.
+                total += float(out["lm_loss"])
+                if out.get("mtp_loss") is not None:
+                    mtp_total += float(out["mtp_loss"])
+                    mtp_batches += 1
         loss = total / args.batches
+        mtp = mtp_total / mtp_batches if mtp_batches else None
         report = {"status": "validation_loss", "batches": args.batches, "sequence_length": seq_len,
-                  "loss": loss, "checkpoint": str(model_file), "readiness": readiness}
-        print(f"[*] Validation loss over {args.batches} batches: {loss:.4f}")
+                  "loss": loss, "lm_loss": loss, "mtp_loss": mtp,
+                  "checkpoint": str(model_file), "readiness": readiness}
+        print(f"[*] Validation LM loss over {args.batches} batches: {loss:.4f}"
+              + (f" (MTP {mtp:.4f})" if mtp is not None else ""))
         if args.report:
             Path(args.report).write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
         return

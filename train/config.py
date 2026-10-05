@@ -33,6 +33,8 @@ class MiniK3Config:
     num_layers: int = 13
     vocab_size: int = 163840
     max_position_embeddings: int = 1_048_576
+    # Unused by Mini K3 since CSA2 (local 128 band + compressed entries over the
+    # whole prefix, cached or not). Kept so older run signatures still parse.
     attention_window: int = 4096
     rope_theta: float = 10_000_000.0          # Unused. MLA is NoPE; position is carried by KDA.
     tie_word_embeddings: bool = True
@@ -86,9 +88,15 @@ class MiniK3Config:
     mhc_streams: int = 4
     mhc_sinkhorn_iters: int = 20
     csa_group: int = 4
+    # At sequence 2048 there are exactly 2048/4 = 512 entries, so top-512
+    # keeps every eligible entry; selection only bites in long-context runs.
     csa_top_k: int = 512
     csa_local: int = 128
     csa_index_dim: int = 64
+    # The indexer is trained by a KL loss to the head-summed attention mass over
+    # the kept entries. Its inputs are detached, so this weight only scales the
+    # indexer's own gradient (and its share of the global grad-norm clip).
+    csa_indexer_loss_weight: float = 0.1
     # FP4 cache is an opt-in memory experiment.  The default must preserve
     # the logits/cache equivalence gate used before any long-context claim.
     kv_cache_fp4: bool = False
@@ -107,11 +115,22 @@ class MiniK3Config:
     rollout_root: str = "/data/mini-k3/rollouts"
     total_steps: int = 38147                 # 10,000,007,168 total tokens on 4x V100 (262,144 tokens/step)
     peak_lr: float = 6.00e-4
-    warmup_frac: float = 0.02                # ~762 steps
-    decay_frac: float = 0.15                 # Starts at step 32,430
+    warmup_frac: float = 0.02                # int(38147*0.02) = 762 warmup steps: 0..761
+    decay_frac: float = 0.15                 # decay starts at int(38147*0.85) = step 32,424
     min_lr_frac: float = 0.10                # Linear decay down to 6.00e-5
     weight_decay: float = 0.10
     grad_clip: float = 1.0
+    # Muon multiplies each orthogonalized matrix by 0.2*sqrt(max(m, n)) so its
+    # update RMS matches AdamW and both share peak_lr (Moonlight convention).
+    muon_update_scale: float = 0.2
+    # Routed experts are padded per expert to a multiple of this block size.
+    moe_block_size: int = 64
+    # Training loss is computed over sequence chunks under recomputation so the
+    # full [tokens, vocab] FP32 logits are never resident.
+    loss_chunk_size: int = 512
+    # KDA chunked delta rule block. Exact for any value; 32 keeps the
+    # intra-chunk [B, H, L/C, C, C, D] tensors near 134 MB per layer at L=2048.
+    kda_chunk_size: int = 32
 
     # Data curriculum.  These are deliberately explicit so the decay phase
     # cannot silently continue using the stable mixture.
@@ -139,6 +158,14 @@ class MiniK3Config:
             raise ValueError("mla_layers must point at real layers")
         if self.encoder_layers < 0:
             raise ValueError("encoder_layers must be non-negative")
+        decoder_mla = [layer for layer in self.mla_layers if layer > self.encoder_layers]
+        encoder_mla = [layer for layer in self.mla_layers if layer <= self.encoder_layers]
+        if decoder_mla and not encoder_mla:
+            raise ValueError("decoder MLA layers reindex/reuse encoder CSA2 entries; add an encoder MLA layer")
+        if min(self.moe_block_size, self.loss_chunk_size, self.kda_chunk_size) < 1:
+            raise ValueError("moe_block_size, loss_chunk_size and kda_chunk_size must be positive")
+        if self.muon_update_scale < 0:
+            raise ValueError("muon_update_scale must be non-negative")
         if self.micro_batch_size < 1 or self.gradient_accumulation_steps < 1:
             raise ValueError("batch sizes must be positive")
         if abs(sum(self.stable_mix.values()) - 1.0) > 1e-6:

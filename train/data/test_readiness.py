@@ -10,11 +10,13 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from train.readiness import ReadinessError, check_training_readiness, check_validation_readiness
+from train.model_fingerprint import model_code_fingerprint
 
 
 class ReadinessTests(unittest.TestCase):
-    def _fixture(self, root: Path, pipeline_status: str = "complete") -> tuple[Path, Path, Path]:
-        data_root = root / "prepared-v2-supplement-v2"
+    def _fixture(self, root: Path, pipeline_status: str = "complete",
+                 data_root_name: str = "prepared-v2-supplement-v2") -> tuple[Path, Path, Path]:
+        data_root = root / data_root_name
         manifest_root = data_root / "manifests"
         manifest_root.mkdir(parents=True)
         (data_root / "PIPELINE_STATUS.json").write_text(json.dumps({"status": pipeline_status}))
@@ -75,6 +77,7 @@ class ReadinessTests(unittest.TestCase):
         (manifest_root / "SMOKE.json").write_text(json.dumps({
             "status": "passed", "manifest_sha256": hashes[train.name],
             "audit_sha256": hashlib.sha256(audit_path.read_bytes()).hexdigest(),
+            "model_code_sha256": model_code_fingerprint(),
         }))
         return train, validation, coverage
 
@@ -126,6 +129,71 @@ class ReadinessTests(unittest.TestCase):
             with self.assertRaises(ReadinessError):
                 check_training_readiness(train, validation, vocab_size=8, coverage_path=coverage,
                                          require_pipeline_complete=False)
+
+    def test_smoke_must_be_bound_to_current_model_code(self):
+        with tempfile.TemporaryDirectory() as td:
+            train, validation, coverage = self._fixture(Path(td))
+            smoke_path = Path(train).parent / "SMOKE.json"
+            smoke = json.loads(smoke_path.read_text())
+            kwargs = dict(vocab_size=8, coverage_path=coverage)
+            self.assertEqual(check_training_readiness(train, validation, **kwargs)["status"], "ready")
+
+            smoke.pop("model_code_sha256")
+            smoke_path.write_text(json.dumps(smoke))
+            with self.assertRaisesRegex(ReadinessError, "model code changed since SMOKE.json"):
+                check_training_readiness(train, validation, **kwargs)
+
+            smoke["model_code_sha256"] = "0" * 64
+            smoke_path.write_text(json.dumps(smoke))
+            with self.assertRaisesRegex(ReadinessError, "re-run smoke_from_manifest.py"):
+                check_training_readiness(train, validation, **kwargs)
+            # An explicit expected fingerprint is honoured.
+            result = check_training_readiness(train, validation, model_code_sha256="0" * 64, **kwargs)
+            self.assertEqual(result["status"], "ready")
+
+    def test_model_fingerprint_tracks_model_code(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            for rel in ("config.py", "engine/muon.py", "engine/balancer.py", "models/a.py", "kernels/k.py"):
+                path = root / rel
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(f"# {rel}\n")
+            (root / "train.py").write_text("# not model code\n")
+            first = model_code_fingerprint(root)
+            (root / "train.py").write_text("# edited\n")
+            self.assertEqual(model_code_fingerprint(root), first)
+            (root / "models" / "a.py").write_text("# edited\n")
+            self.assertNotEqual(model_code_fingerprint(root), first)
+            (root / "models" / "a.py").write_text("# models/a.py\n")
+            self.assertEqual(model_code_fingerprint(root), first)
+            (root / "engine" / "balancer.py").write_text("# edited\n")
+            self.assertNotEqual(model_code_fingerprint(root), first)
+            (root / "engine" / "balancer.py").write_text("# engine/balancer.py\n")
+            self.assertEqual(model_code_fingerprint(root), first)
+            (root / "kernels" / "new.py").write_text("x = 1\n")
+            self.assertNotEqual(model_code_fingerprint(root), first)
+
+    def test_coverage_must_name_this_root(self):
+        with tempfile.TemporaryDirectory() as td:
+            train, validation, coverage = self._fixture(Path(td))
+            data = json.loads(coverage.read_text())
+            data.pop("root")
+            coverage.write_text(json.dumps(data))
+            with self.assertRaisesRegex(ReadinessError, "does not name its data root"):
+                check_training_readiness(train, validation, vocab_size=8, coverage_path=coverage)
+
+    def test_no_fallback_to_another_dataset_report(self):
+        with tempfile.TemporaryDirectory() as td:
+            # Data root prepared-v2-other has no report of its own; the
+            # reports/supplement-v2 report next to it must not be picked up.
+            train, validation, coverage = self._fixture(Path(td), data_root_name="prepared-v2-other")
+            self.assertEqual(coverage.parent.name, "supplement-v2")
+            with self.assertRaisesRegex(ReadinessError, "No coverage.json"):
+                check_training_readiness(train, validation, vocab_size=8)
+            # The matching report name is still discovered automatically.
+            train, validation, coverage = self._fixture(Path(td) / "b")
+            result = check_training_readiness(train, validation, vocab_size=8)
+            self.assertEqual(Path(result["coverage"]["path"]), coverage.resolve())
 
     def test_validation_gate_binds_audit_and_tokenizer(self):
         with tempfile.TemporaryDirectory() as td:

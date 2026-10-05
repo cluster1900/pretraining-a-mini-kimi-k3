@@ -2,18 +2,24 @@
 
 Defaults preserve the audited pretraining command. Longer sequences and the
 dense CED baseline stay off until a flag asks for them.
+
+The MLA sliding ``attention_window`` switch was retired (2026-10-03): the CSA2
+cache is exact at any length, so no window is part of a run any more.
 """
 
 LONG_CONTEXT_SOFT_LIMIT = 16384
+
+RETIRED_ATTENTION_WINDOW_MESSAGE = (
+    "--attention-window was retired: the model no longer uses a sliding MLA window "
+    "(the CSA2 cache is exact at any length). Remove the flag."
+)
 
 
 def resolve_run(
     model,
     sequence_length,
-    attention_window,
     allow_long_sequence,
     default_sequence,
-    default_window,
     max_position,
     peak_lr=None,
     default_peak_lr=6.0e-4,
@@ -37,14 +43,6 @@ def resolve_run(
             "an explicit --init-checkpoint. Train 2048 first, then continue in a "
             "separate checkpoint directory."
         )
-    if model == "ced":
-        window = None
-    elif attention_window is None:
-        window = int(default_window)
-    else:
-        window = int(attention_window)
-        if window < 1:
-            raise ValueError("attention window must be positive")
     if peak_lr is None:
         if init_checkpoint and seq > int(default_sequence):
             raise ValueError(
@@ -56,4 +54,25 @@ def resolve_run(
         lr = float(peak_lr)
     if lr <= 0:
         raise ValueError("peak lr must be positive")
-    return {"model": model, "sequence_length": seq, "attention_window": window, "peak_lr": lr}
+    return {"model": model, "sequence_length": seq, "peak_lr": lr}
+
+
+def resolve_schedule_total_steps(total_steps, schedule_total_steps=None):
+    """LR/decay schedule length; defaults to the number of steps this run executes.
+
+    A short run may borrow the shape of a longer schedule (e.g. 200 steps of
+    the 38,147-step 10B schedule run the real 762-step warmup prefix). The
+    schedule may not be shorter than the run: steps past its end would sit at
+    the minimum LR forever.
+    """
+    total_steps = int(total_steps)
+    if total_steps < 1:
+        raise ValueError("--total_steps must be positive")
+    if schedule_total_steps is None:
+        return total_steps
+    schedule = int(schedule_total_steps)
+    if schedule < total_steps:
+        raise ValueError(
+            f"--schedule_total_steps={schedule} is shorter than --total_steps={total_steps}"
+        )
+    return schedule

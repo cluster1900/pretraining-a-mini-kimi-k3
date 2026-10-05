@@ -44,7 +44,7 @@ def _coverage_path(root: Path) -> Path | None:
         candidates.append(root.parent / "reports" / name.removeprefix("prepared-v2-") / "coverage.json")
     # Never fall back to another dataset version.  A stale report can make a
     # complete-looking manifest appear to have enough tokens for this run.
-    candidates.append(root.parent / "reports" / "supplement-v2" / "coverage.json")
+    # (The selected report must also name this root; see check_training_readiness.)
     for candidate in candidates:
         if candidate.is_file():
             return candidate
@@ -126,8 +126,14 @@ def check_training_readiness(
     coverage_path: str | Path | None = None,
     expected_parameters: Mapping[str, int] | None = None,
     expected_training_tokens: int | None = None,
+    model_code_sha256: str | None = None,
+    require_model_code_binding: bool = True,
 ) -> dict[str, Any]:
-    """Validate manifests, audit bindings, smoke bindings, and coverage."""
+    """Validate manifests, audit bindings, smoke bindings, and coverage.
+
+    ``model_code_sha256`` defaults to the fingerprint of the current checkout
+    (``train/model_fingerprint.py``); SMOKE.json must carry the same value.
+    """
 
     manifest = Path(manifest_path).resolve()
     validation = Path(validation_manifest_path).resolve()
@@ -161,6 +167,19 @@ def check_training_readiness(
         raise ReadinessError(f"{smoke_path}: model smoke is missing or bound to another manifest")
     if smoke.get("audit_sha256") != _sha256(audit_path):
         raise ReadinessError(f"{smoke_path}: model smoke is bound to a different AUDIT.json")
+    current_code = None
+    if require_model_code_binding:
+        if model_code_sha256 is None:
+            from train.model_fingerprint import model_code_fingerprint
+
+            model_code_sha256 = model_code_fingerprint()
+        current_code = model_code_sha256
+        recorded = smoke.get("model_code_sha256")
+        if not recorded or recorded != current_code:
+            raise ReadinessError(
+                f"{smoke_path}: model code changed since SMOKE.json; re-run smoke_from_manifest.py "
+                f"(SMOKE.json model_code_sha256={recorded!r}, current={current_code!r})"
+            )
     if expected_parameters is not None:
         actual_parameters = smoke.get("parameters")
         if not isinstance(actual_parameters, dict):
@@ -183,7 +202,9 @@ def check_training_readiness(
     if selected_coverage is None:
         raise ReadinessError("No coverage.json found for the audited data root")
     coverage = _read_json(selected_coverage)
-    if coverage.get("root") and Path(str(coverage["root"])).resolve() != manifest.parent.parent:
+    if not coverage.get("root"):
+        raise ReadinessError(f"{selected_coverage}: coverage report does not name its data root")
+    if Path(str(coverage["root"])).resolve() != manifest.parent.parent:
         raise ReadinessError(f"{selected_coverage}: coverage root is not this manifest's data root")
     if coverage.get("status") != "sufficient_fixed_mix" or coverage.get("deficits"):
         raise ReadinessError(f"{selected_coverage}: fixed-mix coverage is not sufficient")
@@ -206,6 +227,7 @@ def check_training_readiness(
         "validation": validation_info,
         "audit": str(audit_path),
         "smoke": str(smoke_path),
+        "model_code_sha256": current_code,
         "pipeline": str(pipeline_path),
         "coverage": {"path": str(selected_coverage), "status": coverage.get("status")},
     }

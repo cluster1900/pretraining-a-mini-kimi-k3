@@ -65,54 +65,75 @@ def bounded_log_decay(z: torch.Tensor, a_log: torch.Tensor, g_min: float) -> tor
     return g_min * torch.sigmoid(scale * z)
 
 
-def chunk_delta_rule(q, k, v, decay, beta, state, chunk_size=64):
-    """Chunked delta rule. Each chunk is one triangular solve; state crosses chunks.
+def chunk_delta_rule(q, k, v, log_decay, beta, state, chunk_size=32):
+    """Chunked delta rule (UT transform). Matches the token recurrence
 
-    Matches the token recurrence: decay the key axis, then write beta * (v - S k) k^T.
+        S_t = S_{t-1} diag(g_t);  S_t += beta_t (v_t - S_t k_t) k_t^T;  o_t = S_t q_t
+
+    with S stored as [value, key] and g_t = exp(log_decay_t) per key channel.
+
+    All intra-chunk work is computed for every chunk at once. Each chunk's
+    unit-lower-triangular system is solved with ``solve_triangular`` (no LU,
+    no host synchronisation). Only two small matmuls per chunk cross the
+    sequential state carry. Peak 5D tensors are [B, H, L/C, C, C, D], i.e.
+    O(L * C * D) per head instead of the previous per-chunk loop of LU solves.
+
+    Inputs are float32: q/k/v [B, H, L, D], log_decay [B, H, L, D] (<= 0),
+    beta [B, H, L], state [B, H, D, D]. Returns (out [B, H, L, D], state).
     """
     batches, heads, length, dim = q.shape
-    outputs = []
-    for start in range(0, length, chunk_size):
-        end = min(length, start + chunk_size)
-        out, state = _one_chunk(
-            q[:, :, start:end], k[:, :, start:end], v[:, :, start:end],
-            decay[:, :, start:end], beta[:, :, start:end], state,
-        )
-        outputs.append(out)
-    return torch.cat(outputs, dim=2), state
-
-
-def _one_chunk(q, k, v, decay, beta, state):
-    batches, heads, steps, dim = q.shape
-    log_decay = torch.log(decay.clamp_min(1e-20))
-    cumulative = torch.cumsum(log_decay, dim=2)
+    vdim = v.shape[-1]
+    size = max(1, min(int(chunk_size), length))
+    pad = (-length) % size
+    if pad:
+        # Zero beta + zero log decay at the tail: no write, no decay, so the
+        # final state and every real output are unchanged.
+        q = F.pad(q, (0, 0, 0, pad))
+        k = F.pad(k, (0, 0, 0, pad))
+        v = F.pad(v, (0, 0, 0, pad))
+        log_decay = F.pad(log_decay, (0, 0, 0, pad))
+        beta = F.pad(beta, (0, pad))
+    chunks = (length + pad) // size
+    shape = (batches, heads, chunks, size)
+    q = q.reshape(*shape, dim)
+    k = k.reshape(*shape, dim)
+    v = v.reshape(*shape, vdim)
+    beta = beta.reshape(*shape)
+    cumulative = torch.cumsum(log_decay.reshape(*shape, dim), dim=3)
     cum_g = torch.exp(cumulative)
-    later = cumulative.unsqueeze(3)
-    earlier = cumulative.unsqueeze(2)
-    # Future entries are unused. Exponentiating their positive log-ratios
-    # first can overflow (exp(315) at the documented -5 floor), and inf*0
-    # contaminates both the triangular system and its gradients.
-    causal = torch.ones(steps, steps, device=q.device, dtype=torch.bool).tril()
-    differences = (later - earlier).masked_fill(~causal[None, None, :, :, None], 0)
-    factor = torch.exp(differences)
-    strict = torch.tril(torch.ones(steps, steps, device=q.device), diagonal=-1)
-    key_at_j = k.unsqueeze(2)
-    key_at_t = k.unsqueeze(3)
-    scaled = key_at_j * factor
-    dots = torch.einsum("bhtjd,bhtjd->bhtj", scaled, key_at_t.expand_as(scaled))
-    system = torch.eye(steps, device=q.device, dtype=q.dtype).view(1, 1, steps, steps)
-    system = system + beta.unsqueeze(-1) * dots * strict
-    pred0 = torch.einsum("bhvd,bhcd,bhcd->bhcv", state, cum_g, k)
-    written = torch.linalg.solve(system, beta.unsqueeze(-1) * (v - pred0))
-    identity = torch.eye(steps, device=q.device, dtype=q.dtype).view(1, 1, steps, steps, 1)
-    carry = torch.where(strict.view(1, 1, steps, steps, 1).bool(), factor, torch.zeros_like(factor)) + identity
-    key_query = torch.einsum("bhtjd,bhtjd->bhtj", key_at_j * carry, q.unsqueeze(3).expand_as(carry))
-    from_writes = torch.einsum("bhjd,bhtj->bhtd", written, key_query)
-    from_state = torch.einsum("bhvd,bhcd,bhcd->bhcv", state, cum_g, q)
-    last = cum_g[:, :, -1]
-    key_final = k * torch.exp(cumulative[:, :, -1].unsqueeze(2) - cumulative)
-    new_state = state * last.unsqueeze(-2) + torch.einsum("bhjd,bhje->bhde", written, key_final)
-    return from_state + from_writes, new_state
+
+    tril = torch.ones(size, size, device=q.device, dtype=torch.bool).tril()
+    strict = tril.clone().fill_diagonal_(False)
+    # Upper (future) log-ratios are positive and can overflow exp(); zero them
+    # before exponentiating, then mask the factor itself.
+    differences = (cumulative.unsqueeze(4) - cumulative.unsqueeze(3))
+    differences = differences.masked_fill(~tril[:, :, None], 0.0)
+    factor = torch.exp(differences).masked_fill(~tril[:, :, None], 0.0)
+    keyed = factor * k.unsqueeze(3)                            # [B,H,N,C(t),C(j),D]
+    dots = torch.einsum("bhntjd,bhntd->bhntj", keyed, k)        # k_t^T G_tj k_j
+    key_query = torch.einsum("bhntjd,bhntd->bhntj", keyed, q)   # q_t^T G_tj k_j, j <= t
+
+    eye = torch.eye(size, device=q.device, dtype=q.dtype)
+    system = eye + (beta.unsqueeze(-1) * dots).masked_fill(~strict, 0.0)
+    rhs = torch.cat([beta.unsqueeze(-1) * v, beta.unsqueeze(-1) * cum_g * k], dim=-1)
+    solved = torch.linalg.solve_triangular(system, rhs, upper=False, unitriangular=True)
+    u_part, w_part = solved.split([vdim, dim], dim=-1)          # written = u - W S^T
+
+    last = cum_g[:, :, :, -1]                                    # [B,H,N,D]
+    key_final = k * torch.exp(cumulative[:, :, :, -1:] - cumulative)
+    starts = []
+    writes = []
+    for n in range(chunks):
+        starts.append(state)
+        written = u_part[:, :, n] - w_part[:, :, n] @ state.transpose(-1, -2)
+        writes.append(written)
+        state = state * last[:, :, n].unsqueeze(-2) + written.transpose(-1, -2) @ key_final[:, :, n]
+    start_states = torch.stack(starts, dim=2)                    # [B,H,N,V,D]
+    written_all = torch.stack(writes, dim=2)                     # [B,H,N,C,V]
+    from_state = torch.einsum("bhnvd,bhncd->bhncv", start_states, cum_g * q)
+    from_writes = torch.einsum("bhntj,bhnjv->bhntv", key_query, written_all)
+    out = (from_state + from_writes).reshape(batches, heads, chunks * size, vdim)
+    return out[:, :, :length], state
 
 
 class KimiDeltaAttention(nn.Module):
@@ -192,7 +213,6 @@ class KimiDeltaAttention(nn.Module):
         with torch.autocast(device_type=hidden_states.device.type, enabled=False):
             z = gate_raw.float() + self.dt_bias.float().view(1, self.num_heads, 1, self.head_dim)
             log_decay = bounded_log_decay(z, self.A_log.float(), self.gate_lower_bound)
-            decay = log_decay.exp()
 
         # 5. Delta Rule Recurrence
         # State: S of shape [B, H, head_dim, head_dim]
@@ -205,7 +225,8 @@ class KimiDeltaAttention(nn.Module):
 
         with torch.autocast(device_type=hidden_states.device.type, enabled=False):
             out, state = chunk_delta_rule(
-                q.float(), k.float(), v.float(), decay, beta.float(), state, chunk_size=64
+                q.float(), k.float(), v.float(), log_decay, beta.float(), state,
+                chunk_size=int(getattr(self.config, "kda_chunk_size", 32)),
             )
             out = self.head_norm(out)
         out = out.to(hidden_states.dtype)
