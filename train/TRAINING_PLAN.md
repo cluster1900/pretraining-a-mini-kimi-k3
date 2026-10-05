@@ -675,7 +675,7 @@ train/
    ```
    合格标准见文首。合格之后跑 10B：
    ```bash
-   torchrun --standalone --nproc_per_node=4 train/train.py \
+   /data/mini-k3/venv/bin/torchrun --standalone --nproc_per_node=4 train/train.py \
      --data_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/pretrain_stable.json \
      --validation_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/validation.json \
      --checkpoint_dir /data/mini-k3/checkpoints \
