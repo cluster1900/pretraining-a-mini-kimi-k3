@@ -290,7 +290,7 @@ def main(argv=None):
     if rank == 0:
         print("=" * 80)
         print(f" Mini Kimi K3 training  model={opts['model']}  sequence={cfg.sequence_length}")
-        print(f" Target Hardware: 4x Tesla V100-SXM2 (32GB), FP16")
+        print(f" Target Hardware: 3x healthy Tesla V100-SXM2 (32GB), FP16")
         print("=" * 80)
 
     if device.type != "cuda" and rank == 0:
