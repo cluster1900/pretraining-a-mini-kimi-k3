@@ -111,9 +111,9 @@
      --report /data/mini-k3/data/prepared-v2-supplement-v2/manifests/SMOKE.json
    ```
 3. 运行 readiness：`train/data/check_training_readiness.py`，命令见 2026-09-30 一节。
-4. 200 步四卡短跑。不再带 `PYTORCH_CUDA_ALLOC_CONF`：
+4. 200 步三卡短跑。不再带 `PYTORCH_CUDA_ALLOC_CONF`；GPU 3 已排除：
    ```bash
-   /data/mini-k3/venv/bin/torchrun --standalone --nproc_per_node=4 train/train.py \
+   CUDA_VISIBLE_DEVICES=0,1,2 /data/mini-k3/venv/bin/torchrun --standalone --nproc_per_node=3 train/train.py \
      --data_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/pretrain_stable.json \
      --validation_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/validation.json \
      --checkpoint_dir /data/mini-k3/checkpoints/pretrain-short-2048 \
