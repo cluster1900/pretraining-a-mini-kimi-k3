@@ -14,11 +14,18 @@ import hashlib
 import json
 import os
 import shutil
+import sys
 import time
 from pathlib import Path
 from typing import Any, Dict, Iterable, List
 
 import torch
+
+# Permit the documented ``python train/migrate_checkpoint.py`` invocation:
+# the script directory otherwise shadows the top-level ``train`` package.
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from train.config import DEFAULT_CONFIG
 from train.data.loader import MultiSourceDataLoader
