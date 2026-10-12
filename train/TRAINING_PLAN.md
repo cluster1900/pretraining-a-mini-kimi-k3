@@ -8,6 +8,15 @@
 * 硬件核查：GPU 3 累计设备显存单比特 ECC 错误 8,152 次、5 个 retired pages；GPU 0/1/2 均为 0。当前没有新的 volatile 或 double-bit ECC，也没有本次启动周期的 Xid，但 GPU 3 不再用于长时间训练。
 * 三卡配置：每卡 micro-batch 1、梯度累积 43、序列长度 2048、FP16 + GradScaler、3 进程 NCCL DDP。每个优化步为 `3 × 1 × 43 × 2048 = 264,192` tokens；38,147 步共 `10,078,132,224` tokens，比原四卡 10B 目标多 0.78%，以保持原有优化器步数和 WSD 学习率阶段。
 * 四卡 `step_004000` 检查点不能直接用 `--resume` 续到三卡：检查点保存了四个 rank 的 RNG/loader 状态，且运行签名绑定 world size、GA 和 config 哈希。启动前必须完成一次受控 checkpoint 迁移并重跑真实数据 smoke；禁止删除恢复校验。
+* 受控迁移命令（只执行一次，归档原四卡检查点；迁移后的数据游标按来源聚合后分到三卡，因此恢复可继续但不宣称 bit-exact）：
+  ```bash
+  /data/mini-k3/venv/bin/python train/migrate_checkpoint.py \
+    --checkpoint /data/mini-k3/checkpoints/step_004000 \
+    --train-manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/pretrain_stable.json \
+    --validation-manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/validation.json \
+    --new-world-size 3 \
+    --archive-root /data/mini-k3/checkpoint-archives/step_004000-4gpu
+  ```
 * 迁移完成后的正式命令（尚未启动）：
   ```bash
   CUDA_VISIBLE_DEVICES=0,1,2 /data/mini-k3/venv/bin/torchrun --standalone --nproc_per_node=3 train/train.py --resume \
