@@ -1,9 +1,9 @@
 """
-Main Pretraining Entrypoint for Mini Kimi K3 on 4 Tesla V100 32GB GPUs.
+Main Pretraining Entrypoint for Mini Kimi K3 on 3 healthy Tesla V100 32GB GPUs.
 
 Features:
-- Micro-batch gradient accumulation: micro-batch 1 x 2048 tokens x 32 accumulation
-  steps x 4 GPUs = 262,144 tokens / optimizer step (38,147 steps = 10,000,007,168 tokens)
+- Micro-batch gradient accumulation: micro-batch 1 x 2048 tokens x 43 accumulation
+  steps x 3 GPUs = 264,192 tokens / optimizer step (38,147 steps = 10,078,132,224 tokens)
 - Warmup-Stable-Decay (WSD) scheduler (2% warmup, last 15% linear decay to 10% of peak);
   ``--schedule_total_steps`` lets a short run follow the 10B schedule shape
 - Auxiliary-loss-free MoE balancing by per-expert score quantiles (NoAuxBalancer;
@@ -60,12 +60,12 @@ from train.readiness import check_training_readiness
 
 # Tesla V100-SXM2 (32GB) FP16 Tensor Core theoretical peak per GPU.
 V100_PEAK_FLOPS_PER_GPU = 125e12
-V100_4X_PEAK_FLOPS = 4 * V100_PEAK_FLOPS_PER_GPU
+V100_3X_PEAK_FLOPS = 3 * V100_PEAK_FLOPS_PER_GPU
 GIB = float(1 << 30)
 
 
 def parse_args(argv=None):
-    parser = argparse.ArgumentParser(description="Train Mini Kimi K3 on 4x V100")
+    parser = argparse.ArgumentParser(description="Train Mini Kimi K3 on 3 healthy V100 GPUs")
     parser.add_argument(
         "--data_manifest",
         type=str,
@@ -121,7 +121,7 @@ def parse_args(argv=None):
     return args
 
 
-def calculate_mfu(active_params: int, tokens_per_sec: float, peak_flops: float = V100_4X_PEAK_FLOPS) -> float:
+def calculate_mfu(active_params: int, tokens_per_sec: float, peak_flops: float = V100_3X_PEAK_FLOPS) -> float:
     """
     Standard MFU formula: (6 * active_parameters * tokens_per_sec) / peak_flops
     """

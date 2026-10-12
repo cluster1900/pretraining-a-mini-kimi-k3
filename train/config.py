@@ -1,6 +1,6 @@
 """
 Unified single-model configuration for Mini Kimi K3 (1,150,739,900 total / 159,400,252 active).
-Tailored for training on 4 Tesla V100-SXM2 GPUs (32GB each).
+Tailored for training on 3 healthy Tesla V100-SXM2 GPUs (32GB each).
 """
 
 from dataclasses import dataclass, field
@@ -75,10 +75,10 @@ class MiniK3Config:
     situ_beta: float = 4.0
     situ_linear_beta: float = 25.0
     
-    # Training Parameters on 4x V100-SXM2 (32GB each). V100 has no BF16
+    # Training Parameters on 3x V100-SXM2 (32GB each). V100 has no BF16
     # Tensor Cores, so the runner must use FP16 GradScaler.
     micro_batch_size: int = 1                # 1 seq * 2048 tokens per forward
-    gradient_accumulation_steps: int = 32    # 4 GPUs * 1 * 32 * 2048 = 262,144 tokens/step
+    gradient_accumulation_steps: int = 43    # 3 GPUs * 1 * 43 * 2048 = 264,192 tokens/step
     sequence_length: int = 2048
     precision: str = "fp16"
     distributed: bool = True
@@ -113,7 +113,7 @@ class MiniK3Config:
     checkpoint_root: str = "/data/mini-k3/checkpoints"
     log_root: str = "/data/mini-k3/logs"
     rollout_root: str = "/data/mini-k3/rollouts"
-    total_steps: int = 38147                 # 10,000,007,168 total tokens on 4x V100 (262,144 tokens/step)
+    total_steps: int = 38147                 # 10,078,132,224 total tokens on 3x V100 (264,192 tokens/step)
     peak_lr: float = 6.00e-4
     warmup_frac: float = 0.02                # int(38147*0.02) = 762 warmup steps: 0..761
     decay_frac: float = 0.15                 # decay starts at int(38147*0.85) = step 32,424
