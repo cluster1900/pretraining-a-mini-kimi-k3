@@ -84,6 +84,8 @@ def parse_args(argv=None):
               "short run tests the real early LR curve. Must be >= --total_steps."),
     )
     parser.add_argument("--resume", action="store_true", help="Resume training from latest valid checkpoint")
+    parser.add_argument("--stop-after-steps", type=int, default=None,
+                        help="Save and stop after this many additional steps; preserve the full run signature and schedule")
     parser.add_argument("--save_interval", type=int, default=1000, help="Checkpoint save interval in steps")
     parser.add_argument("--log_interval", type=int, default=10, help="Telemetry reporting interval in steps")
     parser.add_argument(
@@ -118,6 +120,8 @@ def parse_args(argv=None):
         parser.error("--validation_batches must be positive")
     if args.log_interval < 1 or args.save_interval < 1:
         parser.error("--log_interval and --save_interval must be positive")
+    if args.stop_after_steps is not None and args.stop_after_steps < 1:
+        parser.error("--stop-after-steps must be positive")
     return args
 
 
@@ -408,7 +412,7 @@ def main(argv=None):
                 print(f"[*] Resumed successfully at Step {start_step} (Tokens seen: {total_tokens_seen:,}; "
                       f"phase={phase}; best val lm={_fmt(ckpt_manager.best_metric)} @ {ckpt_manager.best_step})")
         else:
-            if rank == 0: print("[*] No checkpoint found. Starting from Step 0.")
+            raise FileNotFoundError("--resume requested but no complete checkpoint could be loaded")
 
     # 6. Step 0 Sanity Check (if starting from 0)
     if start_step == 0 and not args.init_checkpoint:
@@ -449,6 +453,9 @@ def main(argv=None):
             dist.barrier()
 
     # 7. Main Training Loop
+    run_end_step = args.total_steps
+    if args.stop_after_steps is not None:
+        run_end_step = min(run_end_step, start_step + args.stop_after_steps)
     tokens_per_step = cfg.micro_batch_size * cfg.gradient_accumulation_steps * world_size * seq_len
     if rank == 0:
         print("\n" + "-" * 80)
@@ -460,6 +467,8 @@ def main(argv=None):
         print(f" Effective step batch: {tokens_per_step:,} tokens")
         print(f" Validation: {args.validation_batches} batches/rank x {world_size} ranks (fixed slice), "
               f"every {args.validation_interval} steps, at checkpoints and at the final step")
+        if run_end_step < args.total_steps:
+            print(f" Bounded continuation: save and stop after step {run_end_step - 1}; full target remains {args.total_steps}")
         print("-" * 80 + "\n")
 
     model.train()
@@ -470,7 +479,7 @@ def main(argv=None):
     if device.type == "cuda":
         torch.cuda.reset_peak_memory_stats(device)
 
-    for step in range(start_step, args.total_steps):
+    for step in range(start_step, run_end_step):
         step_start_time = time.time()
 
         # Update learning rate (WSD schedule, possibly longer than this run)
@@ -561,7 +570,7 @@ def main(argv=None):
         interval_steps += 1
         total_tokens_seen += tokens_per_step
 
-        is_final = step == args.total_steps - 1
+        is_final = step == run_end_step - 1
         early = step - start_step < 2
         is_log_step = step % args.log_interval == 0 or is_final or early
         if is_log_step:
@@ -642,7 +651,8 @@ def main(argv=None):
 
     if distributed: dist.barrier(); dist.destroy_process_group()
     if rank == 0:
-        print("\n" + "=" * 80); print(f" Training Complete! Total tokens: {total_tokens_seen:,}"); print("=" * 80)
+        status = "Training Complete!" if run_end_step == args.total_steps else "Bounded continuation complete."
+        print("\n" + "=" * 80); print(f" {status} Total tokens: {total_tokens_seen:,}"); print("=" * 80)
 
 
 if __name__ == "__main__":

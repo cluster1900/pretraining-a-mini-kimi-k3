@@ -2,6 +2,38 @@
 
 > 本文档覆盖当前 3 卡 V100 机器的预训练、SFT、DPO 与 PPO 对齐流程。所有训练相关代码均归档于 `train/` 目录中。
 
+## 2026-10-13 重启后从第 4000 步恢复三卡训练
+
+* 原因：服务器再次重启，原训练和接续脚本均已退出。10 月 12 日独立三卡短跑最后日志为 step 80，没有 `step_000199/COMPLETE`，因此不能算通过；正式训练最新完整断点仍为 `step_004000`，三卡迁移已经完成，禁止重复迁移。
+* 本次先从该断点执行 **200 步续训短跑（4001–4200）**，通过后从 step 4201 自动继续长跑。替代重新从随机初始化运行的短跑，保留这 200 步的模型、优化器、scaler、RNG 与 loader 进度。原三卡真实数据 smoke 绑定的模型哈希仍有效；启动前重新运行 readiness。
+* 数据、tokenizer、配比、FP16、序列 2048、micro batch 1、GA 43、GPU 0/1/2、学习率与 38147 步总计划不变。新增 `--stop-after-steps` 只限制本次执行的额外步数，停止前验证并完整存档，不改变运行签名和 WSD 曲线。`--resume` 无可读完整断点时改为报错，禁止意外从零开始。
+* 预算门禁修正：旧覆盖报告只审核了 10,000,007,168 tokens，低于三卡配置的保守全程预算 10,078,132,224，readiness 因此拒绝启动。用既有 `assess_training_coverage.py --total-tokens 10078132224` 重新计算，报告写入数据根 `/data/mini-k3/data/prepared-v2-supplement-v2/coverage.json`，由 readiness 优先读取；旧报告保留。仅重新统计已有审计数据，不修改语料或配比，必须覆盖率通过才启动。
+* 续训短跑每 50 步存档、每 10 步记录日志；通过后长跑恢复每 1000 步存档。改变存档频率只影响 I/O 与故障回退范围。所有断点仍写入 `/data/mini-k3/checkpoints`，原四卡 step 4000 已归档于 `/data/mini-k3/checkpoint-archives/step_004000-4gpu`。
+* 续训门禁：子进程正常退出，完整运行 200 步，最终 checkpoint 与初始运行签名完全一致，新增 52,838,400 tokens；日志无 OOM、非有限值、跳步、异常或回退旧断点；验证 loss 有限；末 5 条 lm 均值不超过前 5 条的 110%（已训练模型允许采样波动）；峰值 reserved <30 GiB、dead ≤5%、imb ≤10。随机初始化损失门禁不适用于已训练 checkpoint，原 smoke 仍单独校验。
+* `train/resume_three_gpu.py` 顺序执行 readiness、续训短跑、门禁核验和正式续训，持有训练互斥锁，并写出 `status.json`、`readiness.json`、`gate.log`、`gate.json`、`formal.log`。任何失败均停止，不自动重试；后台进程不依赖 SSH 连接，但机器重启后仍需重新检查并启动。
+* 本次验证：本地相关测试 40 通过、2 个 subtest 通过，其中受控停止再恢复与不中断训练的最终权重逐位一致；服务器 162 个已有 Python 文件及本次新增脚本/文档哈希与本地一致。新覆盖率报告 `sufficient_fixed_mix`、无来源缺口（中文来源余量 3,592,680 tokens），完整三卡预算的 readiness 为 `ready`。
+* 2026-10-13 11:00（Asia/Singapore）已后台启动，控制器 PID 3619，torchrun PID 3678，rank PID 3736–3738。日志确认 `Resumed successfully at Step 4001`，已读 token 数 1,048,838,144；当前为 4001–4200 的续训验证阶段，GPU 0/1/2 工作，GPU 3 空闲。最终通过与否以该运行目录的 `gate.json` 和 `status.json` 为准。
+
+在 `/data/mini-k3/project` 执行（本次目录名唯一，不复用旧日志）：
+
+```bash
+nohup /data/mini-k3/venv/bin/python -u train/resume_three_gpu.py \
+  --run-dir /data/mini-k3/logs/pretrain-3gpu-resume-20261013 \
+  </dev/null >/data/mini-k3/logs/pretrain-3gpu-resume-20261013-controller.log 2>&1 &
+```
+
+控制器内部的续训短跑命令为：
+
+```bash
+CUDA_VISIBLE_DEVICES=0,1,2 /data/mini-k3/venv/bin/torchrun --standalone --nproc_per_node=3 train/train.py --resume \
+  --data_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/pretrain_stable.json \
+  --validation_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/validation.json \
+  --checkpoint_dir /data/mini-k3/checkpoints --total_steps 38147 \
+  --stop-after-steps 200 --save_interval 50 --log_interval 10
+```
+
+通过后使用相同命令，移除 `--stop-after-steps 200` 并改为 `--save_interval 1000`。不得在控制器运行时手动并行启动另一个训练进程。
+
 ## 2026-10-12 当前执行配置：禁用 GPU 3，三卡续训
 
 * 只在训练范围内禁用物理 GPU 3（PCI `0000:89:00.0`，UUID `GPU-95cd31d0-9b01-eae6-2b3c-2522f1bad350`），通过 `CUDA_VISIBLE_DEVICES=0,1,2` 排除；不卸载驱动、不改系统启动配置，也不影响 GPU 0 上的推理服务。
@@ -17,7 +49,7 @@
     --new-world-size 3 \
     --archive-root /data/mini-k3/checkpoint-archives/step_004000-4gpu
   ```
-* 迁移完成后的正式命令（尚未启动）：
+* 迁移完成后的正式命令（最新启动与门禁流程见 2026-10-13 一节）：
   ```bash
   CUDA_VISIBLE_DEVICES=0,1,2 /data/mini-k3/venv/bin/torchrun --standalone --nproc_per_node=3 train/train.py --resume \
     --data_manifest /data/mini-k3/data/prepared-v2-supplement-v2/manifests/pretrain_stable.json \

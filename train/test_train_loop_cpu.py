@@ -170,6 +170,32 @@ class TrainLoopTests(unittest.TestCase):
             for p in reversed(patches):
                 p.stop()
 
+    def test_bounded_continuation_preserves_progress_and_schedule(self):
+        reference_dir = self.root / "reference"
+        self._run(reference_dir, ["--save_interval", "3"])
+        ckpt = self.root / "bounded"
+        self._run(ckpt, ["--save_interval", "3"], interrupt_after=3)
+        self._run(ckpt, ["--resume", "--stop-after-steps", "2"])
+        saved = ckpt / "step_000005"
+        self.assertTrue((saved / "COMPLETE").is_file())
+        self.assertFalse((ckpt / "step_000006").exists())
+        meta = torch.load(saved / "meta.pt", weights_only=False)
+        self.assertEqual(meta["run_signature"]["total_steps"], 8)
+        self.assertEqual(meta["run_signature"]["schedule_total_steps"], 8)
+        self.assertTrue(math.isfinite(meta["val_lm_loss"]))
+        self._run(ckpt, ["--resume", "--stop-after-steps", "200"])
+        for key, value in self._final(reference_dir).items():
+            self.assertTrue(torch.equal(value, self._final(ckpt)[key]), key)
+
+    def test_resume_without_checkpoint_fails_closed(self):
+        with self.assertRaisesRegex(FileNotFoundError, "no complete checkpoint"):
+            self._run(self.root / "missing", ["--resume"])
+
+    def test_invalid_stop_limit_is_rejected(self):
+        for limit in ("0", "-1"):
+            with self.assertRaises(SystemExit):
+                tt.parse_args(["--stop-after-steps", limit])
+
 
 if __name__ == "__main__":
     unittest.main()
